@@ -1,0 +1,125 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 1 févr. 2016, 19:53:32
+    Author     : Jean
+*/
+#info {
+    border: 1px solid #f0f0f0;   
+    padding: 0 10px;
+}
+
+#maincontent {
+    /*float: left;*/
+    width: 100%;
+}
+
+#maincontent h1 {
+    font-size: 1.6em;
+}
+
+#maincontent-center {
+    float: left;
+    width: 48%;
+}
+
+#maincontent-center #box-content-table {
+    font-size: 1em;
+}
+
+#maincontent-right {
+    float: right;
+    width: 48%;
+    margin-top: 24px;
+}
+
+#attributs {
+    border: 1px solid #f0f0f0;
+    padding:10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+#attributs ul {
+    padding-left: 0;
+    margin:0;
+}
+
+#attributs li {
+    margin-top: 5px;
+    list-style: none;
+}
+
+#content-view-children {
+        margin-top: 20px;
+}
+
+#content-view-children-result {
+        margin-top: 10px;
+margin-bottom: 5px;
+}
+
+.context-title {
+        margin-bottom: 5px;
+}
+
+#navHeader {
+        width: 330px;
+float: left;
+        padding-bottom: 5px;
+}
+
+#navHeader span {
+        text-decoration: underline;
+}
+
+#navHeader-a {
+        float: right;
+}
+
+#box-content-table {
+        width: 100%;
+}
+
+.pagination {
+        text-align: center;
+}
+
+.pagination ul {
+        padding: 0;
+        margin-top: 0;
+}
+
+#first-li-pagination {
+        display: inline;
+        margin: 0 10px;
+}
+
+#second-li-pagination {
+        display: inline;
+}
+
+#box-content-table-priority {
+        width: 50px;
+}
+
+#firstRespiration {
+        margin-top: 40px;
+}
+
+.onglets {
+    margin-top: 5px;
+}
+
+.contenu_onglet {
+    margin-bottom: 7px; 
+    border: 1px solid #f0f0f0;
+    padding: 10px;
+}
+
+#modifyLocations {
+    margin-bottom: 10px;
+}

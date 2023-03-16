@@ -1,0 +1,18 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 17 févr. 2016, 19:15:54
+    Author     : Jean
+*/
+
+.imageAttributeView {
+    height: 100px;
+    border: 1px solid #f0f0f0;
+}
+
+.imageAttributeDelimiter {
+    color: #f0f0f0;
+}

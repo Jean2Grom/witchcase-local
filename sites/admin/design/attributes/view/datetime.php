@@ -1,0 +1,3 @@
+<p>
+    <?=$inputValue?>
+</p>

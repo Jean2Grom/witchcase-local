@@ -1,0 +1,104 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 1 févr. 2016, 16:30:21
+    Author     : Jean
+*/
+
+#maincontent {
+        float: left;
+width: 100%;
+}
+
+#maincontentHeader {
+        margin-bottom: 30px;	
+}
+
+#rootDescriptionEdit {
+        margin-bottom: 10px; 
+        display: none;
+}
+
+#rootDescriptionEdit texarea {
+        width: 100%;
+}
+
+#leftMainPart {
+        float: left;
+width: 47%;
+margin-right: 5%;
+}
+
+#rootNavigation {
+        height: 250px;
+margin-bottom: 65px;
+}
+
+#rootSubTree {
+        height: 230px;
+border: 1px solid #dedede;
+overflow: auto;
+margin-bottom: 10px;
+}
+
+#rootSubTree-table {
+        width:100%;
+}
+
+#priorities-input {
+        width: 50px;
+}
+
+#changerPriorities-input {
+        float: right;
+}
+
+#rootActions {
+        height: 100px;
+        margin-top: 80px;
+}
+
+#rootActionBox {
+        border: 1px solid #dedede;
+padding: 5px;
+margin-top: 10px;
+}
+
+#rightMainPart {
+        float: left;
+width: 47%;
+}
+
+#myDrafts {
+        height: 175px;
+margin-bottom: 30px;
+}
+
+#myDraftsElements {
+        height: 155px;
+border: 1px solid #dedede;
+overflow: auto;
+}
+
+#myDraftsElements-table {
+        width: 100%;
+}
+
+#myContents {
+        height: 175px;
+}
+
+#myContents-rootSubTree {
+        height: 155px;
+border: 1px solid #dedede;
+overflow: auto;
+}
+
+#myContents-rootSubTree-table {
+        width: 100%;
+}
+
+
