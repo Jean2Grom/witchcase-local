@@ -42,9 +42,9 @@ class Database
         }
     }
     
-    function singleRowQuery( $query )
+    function singleRowQuery( $query, $bindParams=false )
     {
-        $result = $this->mysqli->query( $query );
+        $result = $this->query($query, $bindParams);
         
         if( !$result ){
             return false;
@@ -67,37 +67,15 @@ class Database
     
     function multipleRowsQuery( $query, $bindParams=false )
     {
-        if( !$bindParams )
-        {
-            $result = $this->mysqli->query( $query );
-
-            if( !$result ){
-                return false;
-            }
-
-            if( $result->num_rows == 0 ){
-                return array();
-            }
-
-            $rows = array();
-            while( $row = $result->fetch_assoc() ){
-                $rows[] = $row;
-            }
-
-            $result->free();
-
-            return $rows;
+        $result = $this->query($query, $bindParams);
+        
+        if( !$result ){
+            return false;
         }
-        
-        $stmt = $this->mysqli->prepare($query);
-        
-        if( !is_array($bindParams) ){
-            $bindParams = [ $bindParams ];
+
+        if( $result->num_rows == 0 ){
+            return [];
         }
-        
-        $stmt->bind_param(self::getMysqliParamType($bindParams), ...$bindParams);
-        $stmt->execute();
-        $result = $stmt->get_result();
 
         $rows = [];
         while( $row = $result->fetch_assoc() ){
@@ -107,6 +85,24 @@ class Database
         $result->free();
 
         return $rows;        
+    }
+    
+    private function query( $query, $bindParams=false )
+    {
+        if( $bindParams !== false )
+        {
+            $stmt = $this->mysqli->prepare($query);
+            
+            if( !is_array($bindParams) ){
+                $bindParams = [ $bindParams ];
+            }
+
+            $stmt->bind_param(self::getMysqliParamType($bindParams), ...$bindParams);
+            $stmt->execute();
+            return $stmt->get_result();
+        }
+        
+        return $this->mysqli->query( $query );
     }
     
     private static function getMysqliParamType($params) 
@@ -127,9 +123,9 @@ class Database
         return $returnTypeString;
     }
             
-    function countQuery( $query )
+    function countQuery( $query, $bindParams=false )
     {
-        $result = $this->mysqli->query( $query );
+        $result = $this->query($query, $bindParams);
         
         if( !$result )
         {
@@ -148,14 +144,13 @@ class Database
         return $rowCount;
     }
     
-    function selectQuery( $query )
-    {
+    function selectQuery( $query ){
         return $this->multipleRowsQuery($query);
     }
     
-    function insertQuery( $query )
+    function insertQuery( $query, $bindParams=false )
     {
-        $result = $this->mysqli->query( $query );
+        $result = $this->query($query, $bindParams);
         
         if( !$result ){
             return false;
@@ -164,39 +159,31 @@ class Database
         return $this->mysqli->insert_id;
     }
     
-    function updateQuery( $query )
-    {
-        return $this->mysqli->query( $query );
+    function updateQuery( $query, $bindParams=false ){
+        return $this->query($query, $bindParams);
     }
     
-    
-    function deleteQuery( $query )
-    {
-        return $this->mysqli->query( $query );
+    function deleteQuery( $query, $bindParams=false ){
+        return $this->query($query, $bindParams);
     }
     
-    function alterQuery( $query )
-    {
-        return $this->mysqli->query( $query );
+    function alterQuery( $query, $bindParams=false ){
+        return $this->query($query, $bindParams);
     }
     
-    function createQuery( $query )
-    {
-        return $this->mysqli->query( $query );
+    function createQuery( $query, $bindParams=false ){
+        return $this->query($query, $bindParams);
     }
     
-    function escape_string( $string )
-    {
+    function escape_string( $string ){
         return $this->mysqli->real_escape_string( $string );
     }
     
-    function begin()
-    {
+    function begin(){
         return $this->mysqli->query( "BEGIN" );
     }
     
-    function savePoint( $savePointName )
-    {
+    function savePoint( $savePointName ){
         return $this->mysqli->query( "SAVEPOINT ".$this->escape_string($savePointName) );
     }
     
@@ -214,13 +201,11 @@ class Database
         return $this->mysqli->query( "ROLLBACK" );
     }
     
-    function commit()
-    {
+    function commit(){
         return $this->mysqli->query( "COMMIT" );
     }
     
-    function errno()
-    {
+    function errno(){
         return $this->mysqli->errno;
     }
 }

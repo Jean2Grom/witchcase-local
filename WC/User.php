@@ -387,7 +387,8 @@ class User
         $query  .=      "ON witch.id = policy.fk_witch ";
         
         $query  .=  "WHERE user_profile.name = ? ";
-        $result = $wc->db->multipleRowsQuery($query."WHERE user_profile.name = ? ", $profile);
+        
+        $result = $wc->db->multipleRowsQuery($query, $profile);
 
         $profiles   = [];
         $policies   = [];

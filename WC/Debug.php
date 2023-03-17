@@ -104,9 +104,7 @@ class Debug
                 echo $userPrefix."\n";
             }
             
-            if( !empty($this->prefix($callerArray)) ){
-                echo $this->prefix($callerArray)."\n\n";
-            }
+            echo $this->prefix($callerArray);
             
             if( $depth == 0 ){
                 var_dump($variable);
@@ -287,7 +285,7 @@ class Debug
             return '';
         }
         
-        return $this->wc->log->prefix($callerArray);
+        return $this->wc->log->prefix($callerArray)."\n\n";
     }
     
     

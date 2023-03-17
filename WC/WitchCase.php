@@ -42,7 +42,7 @@ class WitchCase
             $this->cache            =   new Cache( $this );
         }
         catch (\Exception $e){
-            $this->log->error($e->getMessage(), true);
+            $this->log->error($e->getMessage(), true, [ 'file' => $e->getFile(), 'line' => $e->getLine() ]);
         }
     }
     
@@ -56,7 +56,7 @@ class WitchCase
             $this->website->summonWitches();
         }
         catch (\Exception $e){
-            $this->log->error($e->getMessage(), true);
+            $this->log->error($e->getMessage(), true, [ 'file' => $e->getFile(), 'line' => $e->getLine() ]);
         }
         
         return $this;
@@ -69,7 +69,7 @@ class WitchCase
             $this->website->display();        
         }
         catch (\Exception $e){
-            $this->log->error($e->getMessage(), true);
+            $this->log->error($e->getMessage(), true, [ 'file' => $e->getFile(), 'line' => $e->getLine() ]);
         }
         
         $this->debug->display();

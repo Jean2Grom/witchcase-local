@@ -73,12 +73,12 @@ class Log
         $this->errorLogFP = fopen( $this->logFilename, 'a' );
     }
     
-    function debug( $variable, $userPrefix=false, $depth=5 )
+    function debug( $variable, $userPrefix=false, $depth=5, $callerArray=null )
     {
-        return $this->wc->debug->dump( $variable, $userPrefix, $depth );
+        return $this->wc->debug->dump( $variable, $userPrefix, $depth, $callerArray );
     }
     
-    function error( $message, $fatal=false )
+    function error( $message, $fatal=false, $callerArray=null )
     {
         $userprefix = "ERROR : ";
         
@@ -86,11 +86,12 @@ class Log
             $userprefix = "FATAL ".$userprefix; 
         }
         
-        $this->debug( $message."\n", $userprefix, 0, true );
+        $this->debug( $message."\n", $userprefix, 0, $callerArray );
         
         fwrite( $this->errorLogFP, $this->prefix().$message."\n" );
         
-        if( $fatal ){
+        if( $fatal )
+        {
             $this->wc->debug->display();
             die(self::FATALERRORMESSAGE);
         }
@@ -118,7 +119,7 @@ class Log
         if( !$caller )
         {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-
+            
             foreach( $backtrace as $i => $backtraceData )
             {
                 if( $backtraceData['class'] == "WC\Log"
