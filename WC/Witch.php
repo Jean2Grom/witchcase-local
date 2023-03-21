@@ -69,7 +69,7 @@ class Witch
             $query  .=  "SELECT * FROM witch ";
             $query  .=  "WHERE id = ".( (integer) $id );
             
-            $data = $wc->db->singleRowQuery($query);
+            $data = $wc->db->fetchQuery($query);
         }
         
         return self::createFromData( $wc, $data );
@@ -738,7 +738,7 @@ class Witch
             $linkingCondition = "AND ";
         }
         
-        $result = $this->wc->db->singleRowQuery($query);
+        $result = $this->wc->db->fetchQuery($query);
         
         if( !$result ){
             return false;
@@ -893,7 +893,7 @@ class Witch
         $query  .=  "WHERE `witch`.`target_table` = '".$targetTable."' ";
         $query  .=  "AND `witch`.`target_fk` = ".$targetId." ";
         
-        $result = $this->wc->db->singleRowQuery($query);
+        $result = $this->wc->db->fetchQuery($query);
         
         $singleContent = ($result['qtt'] == 1);
         

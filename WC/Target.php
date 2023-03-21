@@ -219,7 +219,7 @@ class Target
         }
         else
         {
-            $targetData = $this->wc->db->singleRowQuery($query);
+            $targetData = $this->wc->db->fetchQuery($query);
             
             if( !is_array($targetData) )
             {

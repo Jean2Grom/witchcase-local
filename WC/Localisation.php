@@ -144,7 +144,7 @@ class Localisation
             $query  .=  "WHERE site = '".$this->wc->db->escape_string($this->site)."' ";
             $query  .=  "AND url = '".$this->wc->db->escape_string($url_field)."' ";
             
-            $data = $this->wc->db->singleRowQuery($query);
+            $data = $this->wc->db->fetchQuery($query);
             
             if( $data === false ){   
                 $this->wc->log->error("Query error in implementing Localisation access", true);   
@@ -166,7 +166,7 @@ class Localisation
             $query  =   "SELECT * FROM localisation ";
             $query  .=  "WHERE id = '".$this->wc->db->escape_string($id)."' ";
             
-            $data = $this->wc->db->singleRowQuery($query);
+            $data = $this->wc->db->fetchQuery($query);
             if( $data === false ){
                 $this->wc->log->error("Query error in implementing Localisation from ID: ".$id);
             }
@@ -378,7 +378,7 @@ $this->wc->debug->dump( $targetClass, 'TARGET CLASS' );
         $query  =   "SELECT count(*) FROM localisation ";
         $query  .=  $this->childrenCondition( $viewDraft, $viewArchive );
         
-        $this->childrenCount = $this->wc->db->singleRowQuery($query)["count(*)"];
+        $this->childrenCount = $this->wc->db->fetchQuery($query)["count(*)"];
         
         return $this->childrenCount;
     }
@@ -755,7 +755,7 @@ $this->wc->debug->dump( $targetClass, 'TARGET CLASS' );
         
         $query  .=  "ORDER BY `level_".$depth."` DESC LIMIT 1 ";
         
-        $max = (int) $this->wc->db->singleRowQuery($query)["MAX"];
+        $max = (int) $this->wc->db->fetchQuery($query)["MAX"];
         
         if( !is_numeric($max) )
         {   return false;   }
@@ -862,7 +862,7 @@ $this->wc->debug->dump( $targetClass, 'TARGET CLASS' );
         $query  .=  "WHERE site='".$site."' ";
         $query  .=  "AND url='".$url."' ";
         
-        $existingUrlLocalisation = $this->wc->db->singleRowQuery($query);
+        $existingUrlLocalisation = $this->wc->db->fetchQuery($query);
         
         if( !$existingUrlLocalisation 
             || strcmp($existingUrlLocalisation["id"], $this->id) == 0
@@ -907,7 +907,7 @@ $this->wc->debug->dump( $targetClass, 'TARGET CLASS' );
             }
         }
         
-        $data = $wc->db->singleRowQuery($query);
+        $data = $wc->db->fetchQuery($query);
         
         return new self( $wc, $data['id'], $data );
     }

@@ -115,7 +115,7 @@ class TargetStructure
         $query  .=  "WHERE table_type = 'BASE TABLE' ";
         $query  .=  "AND table_name LIKE 'archive_".$this->name."' ";
         
-        $data           = $this->wc->db->singleRowQuery($query);
+        $data           = $this->wc->db->fetchQuery($query);
         $this->created  = new ExtendedDateTime($data['create_time']);
         
         return $this->created;
@@ -299,7 +299,7 @@ class TargetStructure
             $query  .=  "AND table_name LIKE 'archive_%' ";
         }
         
-        $data = $wc->db->singleRowQuery($query);
+        $data = $wc->db->fetchQuery($query);
         
         return $data['count(*)'];
     }
@@ -312,7 +312,7 @@ class TargetStructure
             $query  =   "SELECT COUNT(*) ";
             $query  .=  "FROM `".$type."_".$structure."` ";
             
-            $countData  = $wc->db->singleRowQuery($query);
+            $countData  = $wc->db->fetchQuery($query);
             
             if( $countData !== false ){
                 $count[$type] = $countData['COUNT(*)'];

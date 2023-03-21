@@ -58,7 +58,7 @@ class Archive extends Target
         $contentTable = "content_".$this->structure;
         $query = "SELECT * FROM `".$contentTable."` WHERE id = '".$this->content_key."' ";
         
-        $result = $this->wc->db->singleRowQuery($query);
+        $result = $this->wc->db->fetchQuery($query);
         
         if( $result )
         {
@@ -95,7 +95,7 @@ class Archive extends Target
         $contentTable = "content_".$this->structure;
         $query = "SELECT * FROM `".$contentTable."` WHERE id = '".$this->content_key."' ";
         
-        $contentData = $this->wc->db->singleRowQuery($query);
+        $contentData = $this->wc->db->fetchQuery($query);
         
         $userID = $_SESSION[$this->wc->website->name]["user"]["connexionID"];
         

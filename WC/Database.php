@@ -1,10 +1,15 @@
 <?php
 namespace WC;
 
+use WC\Database\PDO;
+use WC\Database\MySQLi;
+
 class Database
 {
     /** @var WitchCase */
     var $wc;
+    var $ressource;
+    
     var $mysqli;
     
     function __construct( WitchCase $wc )
@@ -12,171 +17,65 @@ class Database
         $this->wc   = $wc;
         $parameters = $this->wc->configuration->read('database');
         
-        if( !empty($parameters['port']) ){
-            $this->mysqli   =   new \mysqli(   
-                $parameters['server'], 
-                $parameters['user'], 
-                $parameters['password'], 
-                $parameters['database'],
-                $parameters['port']
-            );
+        if( $parameters['driver'] === "mysqli"){        
+            $this->ressource    =   new MySQLi($this->wc, $parameters);            
         }
         else {
-            $this->mysqli   =   new \mysqli(   
-                $parameters['server'], 
-                $parameters['user'], 
-                $parameters['password'], 
-                $parameters['database']
-            );
-        }
-
-        if( !empty($parameters['charset']) ){
-            $this->mysqli->set_charset( $parameters['charset'] );
-        }
-        
-        if( $this->mysqli->connect_error ){
-            $this->wc->log->error(    
-                'Database connexion failed (' .$this->mysqli->connect_errno . ') '.$this->mysqli->connect_error, 
-                true
-            );
-        }
+            $this->ressource    = new PDO( $this->wc, $parameters );
+        }        
     }
     
-    function singleRowQuery( $query, $bindParams=false )
+    
+    function fetchQuery( string $query, array $bindParams=[] )
     {
-        $result = $this->query($query, $bindParams);
+        return $this->ressource->fetchQuery($query, $bindParams);
+    }
+    
+    function multipleRowsQuery( string $query, array $bindParams=[] )
+    {
+        return $this->selectQuery( $query, $bindParams );        
+    }
+    
+    function countQuery( string $query, array $bindParams=[] )
+    {
+        $result = $this->fetchQuery($query, $bindParams);
         
-        if( !$result ){
+        if( !is_array($result) || count($result) !== 1 ){
             return false;
         }
         
-        if( $result->num_rows == 0 ){
-            $return  = 0;
-        }
-        elseif( $result->num_rows > 1 ){
-            $return = $result->num_rows;
-        }
-        else {
-            $return = $result->fetch_assoc();
-        }
-        
-        $result->free();
-        
-        return $return;
+        return array_values($result)[0] ?? false;
     }
     
-    function multipleRowsQuery( $query, $bindParams=false )
+    function selectQuery( string $query, array $bindParams=[] )
     {
-        $result = $this->query($query, $bindParams);
-        
-        if( !$result ){
-            return false;
-        }
-
-        if( $result->num_rows == 0 ){
-            return [];
-        }
-
-        $rows = [];
-        while( $row = $result->fetch_assoc() ){
-            $rows[] = $row;
-        }
-
-        $result->free();
-
-        return $rows;        
+        return $this->ressource->selectQuery($query, $bindParams);   
     }
     
-    private function query( $query, $bindParams=false )
+    function insertQuery( string $query, array $bindParams=[], $multiple=false )
     {
-        if( $bindParams !== false )
-        {
-            $stmt = $this->mysqli->prepare($query);
-            
-            if( !is_array($bindParams) ){
-                $bindParams = [ $bindParams ];
-            }
-
-            $stmt->bind_param(self::getMysqliParamType($bindParams), ...$bindParams);
-            $stmt->execute();
-            return $stmt->get_result();
-        }
-        
-        return $this->mysqli->query( $query );
-    }
-    
-    private static function getMysqliParamType($params) 
-    {
-        $returnTypeString = "";
-        foreach( $params as $param ){
-            if( ctype_digit($param) ){
-                $returnTypeString .= "i";
-            }
-            elseif( is_numeric($param) ){
-                $returnTypeString .= "d";
-            }
-            else {
-                $returnTypeString .= "s"; 
-            }
-        }
-        
-        return $returnTypeString;
-    }
-            
-    function countQuery( $query, $bindParams=false )
-    {
-        $result = $this->query($query, $bindParams);
-        
-        if( !$result )
-        {
-            $result->free();
-            return false;
-        }
-        
-        $rows = $result->fetch_assoc();
-        
-        foreach( $rows as $value ){
-            $rowCount = $value;
-        }
-        
-        $result->free();
-        
-        return $rowCount;
-    }
-    
-    function selectQuery( $query ){
-        return $this->multipleRowsQuery($query);
-    }
-    
-    function insertQuery( $query, $bindParams=false )
-    {
-        $result = $this->query($query, $bindParams);
-        
-        if( !$result ){
-            return false;
-        }
-        
-        return $this->mysqli->insert_id;
+        return $this->ressource->insertQuery($query, $bindParams, $multiple); 
     }
     
     function updateQuery( $query, $bindParams=false ){
-        return $this->query($query, $bindParams);
+        return $this->mysqli->query($query, $bindParams);
     }
     
     function deleteQuery( $query, $bindParams=false ){
-        return $this->query($query, $bindParams);
+        return $this->mysqli->query($query, $bindParams);
     }
     
     function alterQuery( $query, $bindParams=false ){
-        return $this->query($query, $bindParams);
+        return $this->mysqli->query($query, $bindParams);
     }
     
     function createQuery( $query, $bindParams=false ){
-        return $this->query($query, $bindParams);
+        return $this->mysqli->query($query, $bindParams);
     }
     
-    function escape_string( $string ){
-        return $this->mysqli->real_escape_string( $string );
+    function escape_string( string $string ): string
+    {
+        return $this->ressource->escape_string( $string );
     }
     
     function begin(){

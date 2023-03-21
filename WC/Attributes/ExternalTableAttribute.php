@@ -174,7 +174,7 @@ class ExternalTableAttribute extends Attribute {
         $query  =   "SELECT content_key FROM attribute_".$this->type." ";
         $query  .=  "ORDER BY content_key DESC LIMIT 0,1 ";
         
-        $result = $this->module->wc->db->singleRowQuery($query);
+        $result = $this->module->wc->db->fetchQuery($query);
         
         if( $result == 0 ){
             return 1;
