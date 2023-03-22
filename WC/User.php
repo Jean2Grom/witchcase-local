@@ -24,12 +24,11 @@ class User
         $this->connexion    = false;
         $this->profiles     = [];
         $this->policies     = [];
-                
+        
         // If previous page is login page
-        if( filter_has_var(INPUT_POST, 'login') 
-                && strcmp(filter_input(INPUT_POST, 'login'), 'login') == 0 )
+        if( $this->wc->request->param('login') === 'login' )
         {
-            $userName = filter_input(INPUT_POST, 'username');
+            $userName = $this->wc->request->param('username');
             
             $userConnexionData = UserDA::getUserLoginData( $this->wc, $userName );
             
@@ -48,7 +47,7 @@ class User
             {
                 $connexionData = array_values($userConnexionData)[0];
                 
-                $hash = crypt( filter_input(INPUT_POST, 'password'), $connexionData['pass_hash'] );
+                $hash = crypt( $this->wc->request->param('password'), $connexionData['pass_hash'] );
                 
                 if( $hash !== $connexionData['pass_hash'] )
                 {
