@@ -9,11 +9,8 @@ use WC\Website\WitchSummoning;
 
 class User
 {    
-    static function getUserLoginData( WitchCase $wc, string $username )
+    static function getUserLoginData( WitchCase $wc, string $login )
     {
-        //$login = $wc->db->escape_string( $username );
-        $login = $username;
-        
         $query = "";
         $query  .=  "SELECT user_connexion.id AS connexion_id ";
         $query  .=  ", user_connexion.name AS connexion_name ";
@@ -166,9 +163,9 @@ class User
         $query  .=  "LEFT JOIN witch ";
         $query  .=      "ON witch.id = policy.fk_witch ";
         
-        $query  .=  "WHERE user_profile.name = ? ";
+        $query  .=  "WHERE user_profile.name = :profile ";
         
-        $result = $wc->db->multipleRowsQuery($query, $profile);
+        $result = $wc->db->multipleRowsQuery($query, [ 'profile' => $profile ]);
 
         $profiles   = [];
         $policies   = [];

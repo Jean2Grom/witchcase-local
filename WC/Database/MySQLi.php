@@ -3,7 +3,7 @@ namespace WC\Database;
 
 use WC\WitchCase;
 
-class MySQLi
+class MySQLi implements DatabaseInterface
 {
     /** @var WitchCase */
     var $wc;
@@ -37,18 +37,16 @@ class MySQLi
         }
         else 
         {
-            $statementPreparation = $this->statementPreparation($query, $bindParams);
-            
-            $stmt = $this->mysqli->prepare( $statementPreparation['query'] );
+            $statementPreparation   = $this->statementPreparation( $query, $bindParams );
+            $stmt                   = $this->mysqli->prepare( $statementPreparation['query'] );
             
             $stmt->bind_param( 
                 self::getMysqliParamsType($statementPreparation['bindParams']), 
                 ...$statementPreparation['bindParams'] 
             );
+            
             $stmt->execute();
-
-            $result = $stmt->get_result();        
-
+            $result = $stmt->get_result();
             $stmt->close();
         }
         
@@ -63,8 +61,7 @@ class MySQLi
             $return = $result->fetch_assoc();
         }
         
-        $result->free();
-        
+        $result->free();        
         return $return;
     }
     
@@ -75,18 +72,16 @@ class MySQLi
         }
         else 
         {
-            $statementPreparation = $this->statementPreparation($query, $bindParams);
-            
-            $stmt = $this->mysqli->prepare( $statementPreparation['query'] );
+            $statementPreparation   = $this->statementPreparation( $query, $bindParams );            
+            $stmt                   = $this->mysqli->prepare( $statementPreparation['query'] );
             
             $stmt->bind_param( 
                 self::getMysqliParamsType($statementPreparation['bindParams']), 
                 ...$statementPreparation['bindParams'] 
             );
+            
             $stmt->execute();
-
-            $result = $stmt->get_result();        
-
+            $result = $stmt->get_result();
             $stmt->close();
         }
         
@@ -104,10 +99,8 @@ class MySQLi
         }
         
         $result->free();
-        
         return $rows;
-    }
-    
+    }    
 
     private function statementPreparation( string $query, array $bindParams=[] ) 
     {
@@ -164,14 +157,12 @@ class MySQLi
     {
         if( empty($bindParams) )
         {
-            $result = $this->mysqli->query( $query );
-            
+            $result = $this->mysqli->query( $query );            
             return $result? $this->mysqli->insert_id: false;
         }
         
-        $statementPreparation = $this->statementPreparation( $query, $multiple? $bindParams[0]: $bindParams );
-        
-        $stmt = $this->mysqli->prepare( $statementPreparation['query'] );
+        $statementPreparation   = $this->statementPreparation( $query, $multiple? $bindParams[0]: $bindParams );
+        $stmt                   = $this->mysqli->prepare( $statementPreparation['query'] );
         
         if( !$multiple )
         {
@@ -182,14 +173,14 @@ class MySQLi
             
             $execute    = $stmt->execute();
             $insertId   = $stmt->insert_id;
-             $stmt->close();
-             
+            $stmt->close();
+            
             return $execute? $insertId: false;
         }
         
-        $return = [];
-        $bindParamsValues = $statementPreparation['bindParamsOrder'];
-
+        $return             = [];
+        $bindParamsValues   = $statementPreparation['bindParamsOrder'];
+        
         $stmt->bind_param( 
             self::getMysqliParamsType($statementPreparation['bindParams']), 
             ...$bindParamsValues 
@@ -207,56 +198,67 @@ class MySQLi
             $return[] = $stmt->execute()? $stmt->insert_id: false;
         }
         
-        $stmt->close();
-        
+        $stmt->close();        
         return $return;
     }
     
-    function updateQuery( $query, $bindParams=false ){
-        return $this->query($query, $bindParams);
-    }
-    
-    function deleteQuery( $query, $bindParams=false ){
-        return $this->query($query, $bindParams);
-    }
-    
-    function alterQuery( $query, $bindParams=false ){
-        return $this->query($query, $bindParams);
-    }
-    
-    function createQuery( $query, $bindParams=false ){
-        return $this->query($query, $bindParams);
+    function query( string $query, array $bindParams=[], $multiple=false )
+    {
+        if( empty($bindParams) )
+        {
+            $result = $this->mysqli->query( $query );
+            return $result? $this->mysqli->affected_rows: false;
+        }
+        
+        $statementPreparation   = $this->statementPreparation( $query, $multiple? $bindParams[0]: $bindParams );
+        $stmt                   = $this->mysqli->prepare( $statementPreparation['query'] );
+        
+        if( !$multiple )
+        {
+            $stmt->bind_param( 
+                self::getMysqliParamsType($statementPreparation['bindParams']), 
+                ...$statementPreparation['bindParams'] 
+            );
+            
+            $execute = $stmt->execute();
+            $stmt->close();
+            
+            return $execute? $stmt->affected_rows: false;
+        }
+        
+        $affectedRows       = 0;
+        $bindParamsValues   = $statementPreparation['bindParamsOrder'];
+        
+        $stmt->bind_param( 
+            self::getMysqliParamsType($statementPreparation['bindParams']), 
+            ...$bindParamsValues 
+        );
+        
+        foreach( $bindParams as $bindParamsItem )
+        {
+            $i = 0;
+            foreach( $statementPreparation['bindParamsOrder'] as $key )
+            {
+                $bindParamsValues[$i] = $bindParamsItem[ $key ];
+                $i++;
+            }
+            
+            if( !$stmt->execute() )
+            {
+                $stmt->close();
+                return false;
+            }
+            
+            $affectedRows += $stmt->affected_rows;
+        }
+        
+        $stmt->close();        
+        return $affectedRows;
     }
     
     function escape_string( string $string ): string
     {
         return $this->mysqli->real_escape_string( $string );
-    }
-    
-    function begin(){
-        return $this->mysqli->query( "BEGIN" );
-    }
-    
-    function savePoint( $savePointName ){
-        return $this->mysqli->query( "SAVEPOINT ".$this->escape_string($savePointName) );
-    }
-    
-    function rollback( $savePointName = false )
-    {
-        if( $savePointName )
-        {
-            $result = $this->mysqli->query( "ROLLBACK TO ".$this->escape_string($savePointName) );
-            
-            if( $result ){
-                return $result;
-            }
-        }
-        
-        return $this->mysqli->query( "ROLLBACK" );
-    }
-    
-    function commit(){
-        return $this->mysqli->query( "COMMIT" );
     }
     
     function errno(){

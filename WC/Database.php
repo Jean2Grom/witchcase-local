@@ -10,25 +10,22 @@ class Database
     var $wc;
     var $ressource;
     
-    var $mysqli;
-    
     function __construct( WitchCase $wc )
     {
         $this->wc   = $wc;
-        $parameters = $this->wc->configuration->read('database');
+        $parameters = $this->wc->configuration->read( 'database' );
         
         if( $parameters['driver'] === "mysqli"){        
-            $this->ressource    =   new MySQLi($this->wc, $parameters);            
+            $this->ressource    =   new MySQLi( $this->wc, $parameters );            
         }
         else {
             $this->ressource    = new PDO( $this->wc, $parameters );
         }        
     }
     
-    
     function fetchQuery( string $query, array $bindParams=[] )
     {
-        return $this->ressource->fetchQuery($query, $bindParams);
+        return $this->ressource->fetchQuery( $query, $bindParams );
     }
     
     function multipleRowsQuery( string $query, array $bindParams=[] )
@@ -49,28 +46,32 @@ class Database
     
     function selectQuery( string $query, array $bindParams=[] )
     {
-        return $this->ressource->selectQuery($query, $bindParams);   
+        return $this->ressource->selectQuery( $query, $bindParams );   
     }
     
     function insertQuery( string $query, array $bindParams=[], $multiple=false )
     {
-        return $this->ressource->insertQuery($query, $bindParams, $multiple); 
+        return $this->ressource->insertQuery( $query, $bindParams, $multiple ); 
     }
     
-    function updateQuery( $query, $bindParams=false ){
-        return $this->mysqli->query($query, $bindParams);
+    function query( string $query, array $bindParams=[], $multiple=false ){
+        return $this->ressource->query( $query, $bindParams, $multiple );
     }
     
-    function deleteQuery( $query, $bindParams=false ){
-        return $this->mysqli->query($query, $bindParams);
+    function updateQuery( string $query, array $bindParams=[], $multiple=false ){
+        return $this->ressource->query( $query, $bindParams, $multiple );
     }
     
-    function alterQuery( $query, $bindParams=false ){
-        return $this->mysqli->query($query, $bindParams);
+    function deleteQuery( string $query, array $bindParams=[], $multiple=false ){
+        return $this->ressource->query( $query, $bindParams, $multiple );
     }
     
-    function createQuery( $query, $bindParams=false ){
-        return $this->mysqli->query($query, $bindParams);
+    function alterQuery( string $query, array $bindParams=[], $multiple=false ){
+        return $this->ressource->query( $query, $bindParams, $multiple );
+    }
+    
+    function createQuery( string $query, array $bindParams=[], $multiple=false ){
+        return $this->ressource->query( $query, $bindParams, $multiple );
     }
     
     function escape_string( string $string ): string
@@ -79,32 +80,32 @@ class Database
     }
     
     function begin(){
-        return $this->mysqli->query( "BEGIN" );
+        return $this->ressource->query( "BEGIN" );
     }
     
-    function savePoint( $savePointName ){
-        return $this->mysqli->query( "SAVEPOINT ".$this->escape_string($savePointName) );
+    function savePoint( string $savePointName ){
+        return $this->ressource->query( "SAVEPOINT :savePointName ", ['savePointName' => $savePointName] );
     }
     
-    function rollback( $savePointName = false )
+    function rollback( string $savePointName='' )
     {
-        if( $savePointName )
+        if( !empty($savePointName) )
         {
-            $result = $this->mysqli->query( "ROLLBACK TO ".$this->escape_string($savePointName) );
+            $result = $this->ressource->query( "ROLLBACK TO :savePointName ", ['savePointName' => $savePointName] );
             
             if( $result ){
                 return $result;
             }
         }
         
-        return $this->mysqli->query( "ROLLBACK" );
+        return $this->ressource->query( "ROLLBACK" );
     }
     
     function commit(){
-        return $this->mysqli->query( "COMMIT" );
+        return $this->ressource->query( "COMMIT" );
     }
     
     function errno(){
-        return $this->mysqli->errno;
+        return $this->ressource->errno();
     }
 }

@@ -3,7 +3,7 @@ namespace WC\Database;
 
 use WC\WitchCase;
 
-class PDO 
+class PDO implements DatabaseInterface
 {
     /** @var WitchCase */
     var $wc;
@@ -83,8 +83,7 @@ class PDO
     {
         if( empty($bindParams) )
         {
-            $result = $this->pdo->query( $query );
-            
+            $result = $this->pdo->query( $query );            
             return $result? $this->pdo->lastInsertId(): false;
         }
         
@@ -99,9 +98,9 @@ class PDO
             return $stmt->execute()? $this->pdo->lastInsertId(): false;
         }
         
-        $return = [];
-        $bindParamsKeys     = array_keys(array_values($bindParams)[0]);
-        $bindParamsValues   = array_flip($bindParamsKeys);
+        $return             = [];
+        $bindParamsKeys     = array_keys( array_values($bindParams)[0] );
+        $bindParamsValues   = array_flip( $bindParamsKeys );
         
         foreach( $bindParamsKeys as $key ){
             $stmt->bindParam( $key, $bindParamsValues[ $key ], self::getParamType(array_values($bindParams)[0][ $key ]) ); 
@@ -118,6 +117,49 @@ class PDO
         
         return $return;
     }
+    
+    function query( string $query, array $bindParams=[], $multiple=false )
+    {
+        if( empty($bindParams) )
+        {
+            $result = $this->pdo->query( $query );
+            return $result? $result->rowCount(): false;
+        }
+        
+        $stmt = $this->pdo->prepare($query);
+        
+        if( !$multiple )
+        {
+            foreach( $bindParams as $bindParamsKey => $bindParamsValue ){
+                $stmt->bindValue( $bindParamsKey, $bindParamsValue, self::getParamType($bindParamsValue) );
+            }
+            
+            return $stmt->execute()? $stmt->rowCount(): false;
+        }
+        
+        $affectedRows       = 0;
+        $bindParamsKeys     = array_keys( array_values($bindParams)[0] );
+        $bindParamsValues   = array_flip( $bindParamsKeys );
+        
+        foreach( $bindParamsKeys as $key ){
+            $stmt->bindParam( $key, $bindParamsValues[ $key ], self::getParamType(array_values($bindParams)[0][ $key ]) ); 
+        }
+        
+        foreach( $bindParams as $bindParamsItem )
+        {
+            foreach( $bindParamsKeys as $key ){
+                $bindParamsValues[ $key ] = $bindParamsItem[ $key ];
+            }
+            
+            if( !$stmt->execute() ){
+                return false;
+            }
+            
+            $affectedRows += $stmt->rowCount();
+        }
+        
+        return $affectedRows;
+    }    
     
     private static function getParamType($param) 
     {
@@ -136,5 +178,7 @@ class PDO
         return htmlspecialchars($string);
     }
     
-
+    function errno(){
+        return $this->pdo->errorCode();
+    }
 }
