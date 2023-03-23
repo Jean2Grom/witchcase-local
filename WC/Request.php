@@ -76,16 +76,14 @@ class Request
             return $this->website;
         }
         
-        $parsed_url     = parse_url( strtolower($this->uri ?? '/') );
-
         // Determinating which site is acceded comparing
         // Configuration and URI
+        $parsed_url     = parse_url( strtolower($this->uri ?? '/') );
         $access         = $parsed_url["host"].$parsed_url['path'];
-
         $compareAccess  = $this->compareAccess($access);
         
         // if no match and access has "www" for subomain, try whithout (considered default subdomain)
-        if( !$compareAccess['matchedSiteAccess'] && strcasecmp(substr($access, 0, 4), "www.") == 0 )
+        if( !$compareAccess['matchedSiteAccess'] && str_starts_with($access, "www.") )
         {
             $access         = substr($access, 4);
             $compareAccess  = $this->compareAccess( $access );
@@ -107,32 +105,20 @@ class Request
     
     private function compareAccess( $access )
     {
+        $haystack           = strtolower( $access );
         $siteName           = false;
         $matchedSiteAccess  = false;
         $matchDegree        = 0;
         foreach( $this->wc->configuration->getSiteAccessMap() as $siteAccess => $site )
         {
-            if( strcasecmp($access, $siteAccess) === 0
-                || (
-                    stripos($access, $siteAccess) === 0 
-                    && strlen($siteAccess) > $matchDegree 
-                    && strlen($access) > strlen($siteAccess) 
-                    && substr($access, strlen($siteAccess), 1) == '/'
-                )
+            $needle = strtolower( $siteAccess );
+            
+            if( $haystack === $needle
+                || (str_starts_with( $haystack, $needle.'/' ) && strlen( $siteAccess ) > $matchDegree)
             ){
                 $matchDegree        = strlen($siteAccess);
                 $siteName           = $site;
                 $matchedSiteAccess  = $siteAccess;
-                
-                $url_field          = substr($access, $matchDegree);
-                if( (strcmp(substr($url_field, -1), "/") == 0) 
-                    && (strcmp($url_field, "/") != 0)   
-                ){   
-                    $url_field = substr($url_field, 0, -1);
-                }
-                if( strlen($url_field) == 0 ){
-                    $url_field = "/";   
-                }
             }
         }
         

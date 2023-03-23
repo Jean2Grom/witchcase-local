@@ -1,6 +1,6 @@
 <header>
     <div class="header__logo">
-        <a href="<?=$this->website->baseUri?>">
+        <a href="<?=$this->website->getRootUrl()?>">
             <img    id="logo" 
                     src="<?=$this->getImageFile("logo.jpg"); ?>" 
                     alt="Witchcase" 

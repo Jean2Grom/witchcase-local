@@ -19,6 +19,7 @@ class Website
     var $baseUri;
     var $url;
     var $modulesList;
+    private $rootUrl;
     
     var $modules;
     var $attributes;
@@ -105,6 +106,8 @@ class Website
         
         $this->context = new Context( $this );
     }
+    
+    
     
     /**
      * Reccursive function for reading heritages configuration cascades
@@ -336,4 +339,18 @@ class Website
         return $contextsList;
     }
     
+    function setRootUrl( string $rootUrl )
+    {
+        $this->rootUrl = $rootUrl;
+        
+        return $this;
+    }
+    
+    function getRootUrl()
+    {
+        if( !$this->rootUrl ){
+            $this->rootUrl = ($this->baseUri)? $this->baseUri: '/';
+        }
+        return $this->rootUrl;
+    }    
 }

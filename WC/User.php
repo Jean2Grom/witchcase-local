@@ -28,56 +28,60 @@ class User
         // If previous page is login page
         if( $this->wc->request->param('login') === 'login' )
         {
-            $userName = $this->wc->request->param('username');
-            
-            $userConnexionData = UserDA::getUserLoginData( $this->wc, $userName );
+            $loginFailure       = false;
+            $userName           = $this->wc->request->param('username');
+            $userConnexionData  = UserDA::getUserLoginData( $this->wc, $userName );
             
             if( count($userConnexionData) == 0 )
             {
-                $this->loginMessages[] = "Unknon username";
+                $loginFailure           = true;
+                $this->loginMessages[]  = "Unknon username";
                 $this->wc->debug->dump('Login failed : unknown username');
             }
             elseif( count($userConnexionData) > 1 ) 
             {
-                $this->loginMessages[] = "Problem whith this username: multiple match ";
-                $this->loginMessages[] = "Please contact administrator";
+                $loginFailure           = true;
+                $this->loginMessages[]  = "Problem whith this username: multiple match ";
+                $this->loginMessages[]  = "Please contact administrator";
                 $this->wc->log->error('Login failed : multiple username match');
             }
-            else
+            
+            if( !$loginFailure )
             {
-                $connexionData = array_values($userConnexionData)[0];
-                
-                $hash = crypt( $this->wc->request->param('password'), $connexionData['pass_hash'] );
+                $connexionData  = array_values($userConnexionData)[0];                
+                $hash           = crypt( $this->wc->request->param('password'), $connexionData['pass_hash'] );
                 
                 if( $hash !== $connexionData['pass_hash'] )
                 {
+                    $loginFailure           = true;
                     $this->loginMessages[]  = "Wrong password, please try again";
                     $this->wc->debug->dump('Login failed : wrong password for login: '.$userName);
-                }
-                else
-                {
-                    $this->connexion        = true;
-                    $this->profiles         = $connexionData['profiles'];
-                    $this->id               = $connexionData['id'];
-                    $this->name             = $connexionData['name'];
-                    $this->connexionData    = $connexionData;
-                    
-                    foreach( $connexionData['profiles'] as $profileData ){
-                        foreach( $profileData['policies'] as $policyId => $policyData ){
-                            if( empty($this->policies[ $policyId ]) ){
-                                $this->policies[ $policyId ] = $policyData;
-                            }
+                }                
+            }
+            
+            if( !$loginFailure )
+            {
+                $this->connexion        = true;
+                $this->profiles         = $connexionData['profiles'];
+                $this->id               = $connexionData['id'];
+                $this->name             = $connexionData['name'];
+                $this->connexionData    = $connexionData;
+                
+                foreach( $connexionData['profiles'] as $profileData ){
+                    foreach( $profileData['policies'] as $policyId => $policyData ){
+                        if( empty($this->policies[ $policyId ]) ){
+                            $this->policies[ $policyId ] = $policyData;
                         }
                     }
-                    
-                    $_SESSION[$this->wc->website->name]['user']   =   [
-                        'connexionID'   => $this->id,
-                        'name'          => $this->name,
-                        'profiles'      => $this->profiles,
-                        'policies'      => $this->policies,
-                        'connexionData' => $this->connexionData,
-                    ];
                 }
+                
+                $_SESSION[$this->wc->website->name]['user']   =   [
+                    'connexionID'   => $this->id,
+                    'name'          => $this->name,
+                    'profiles'      => $this->profiles,
+                    'policies'      => $this->policies,
+                    'connexionData' => $this->connexionData,
+                ];
             }
         }
         
