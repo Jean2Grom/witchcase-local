@@ -15,6 +15,9 @@ class User
     var $connexionData  = false;
     var $loginMessages  = [];
     
+    /** @var Session */
+    var $session;
+    
     /** @var WitchCase */
     var $wc;
     
@@ -24,6 +27,7 @@ class User
         $this->connexion    = false;
         $this->profiles     = [];
         $this->policies     = [];
+        $this->session      = new Session($this->wc);
         
         // If previous page is login page
         if( $this->wc->request->param('login') === 'login' )
@@ -75,17 +79,20 @@ class User
                     }
                 }
                 
-                $_SESSION[$this->wc->website->name]['user']   =   [
-                    'connexionID'   => $this->id,
-                    'name'          => $this->name,
-                    'profiles'      => $this->profiles,
-                    'policies'      => $this->policies,
-                    'connexionData' => $this->connexionData,
-                ];
+                $this->session->write(
+                    'user', 
+                    [
+                        'connexionID'   => $this->id,
+                        'name'          => $this->name,
+                        'profiles'      => $this->profiles,
+                        'policies'      => $this->policies,
+                        'connexionData' => $this->connexionData,
+                    ]
+                );
             }
         }
         
-        
+        // Get last connexion 
         if( !$this->connexion && isset($_SESSION[$this->wc->website->name]['user']) )
         {
             $this->profiles         = $_SESSION[$this->wc->website->name]['user']['profiles'];
