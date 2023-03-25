@@ -112,7 +112,7 @@ class Content extends Target
     
     function archive()
     {
-        $userID         = $_SESSION[$this->wc->website->name]["user"]["connexionID"];
+        $userID         = $this->wc->user->id;
         $currentDate    = date("Y-m-d H:i:s");
         
         $query  =   "INSERT INTO `archive_".$this->wc->db->escape_string($this->structure)."` ";

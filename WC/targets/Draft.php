@@ -55,7 +55,7 @@ class Draft extends Target
     function createFromContent( $targetLocalisation )
     {
         $currentDate                = date("Y-m-d H:i:s");
-        $userID                     = $_SESSION[$this->wc->website->name]["user"]["connexionID"];
+        $userID                     = $this->wc->user->id;
         $content                    = $targetLocalisation->getTarget();
         
         $this->content_key          =  $content->id;
@@ -129,8 +129,8 @@ class Draft extends Target
         $this->wc->db->begin();
         
         $currentDate        = date("Y-m-d H:i:s");
-        $userID             = $_SESSION[$this->wc->website->name]["user"]["connexionID"];
-        $userName           = $_SESSION[$this->wc->website->name]['user']['signature'];
+        $userID             = $this->wc->user->id;
+        $userName           = $this->wc->user->name;
         
         // Creation and Saving of the new draft
         $this->content_key          =  0;
@@ -221,7 +221,7 @@ class Draft extends Target
     {
         $contentTable   = "content_".$this->structure;
         $currentDate    = date("Y-m-d H:i:s");
-        $userID         = $_SESSION[$this->wc->website->name]["user"]["connexionID"];
+        $userID         = $this->wc->user->id;
         
         if( !$userID )
         {
@@ -356,7 +356,7 @@ class Draft extends Target
         }
         
         // Update content
-        $userID = $_SESSION[$this->wc->website->name]["user"]["connexionID"];
+        $userID = $this->wc->user->id;
         
         if( !$userID )
         {
@@ -481,7 +481,7 @@ class Draft extends Target
     
     function archive( )
     {
-        $userID = $_SESSION[$this->wc->website->name]["user"]["connexionID"];
+        $userID = $this->wc->user->id;
         
         $currentDate = date("Y-m-d H:i:s");
         
