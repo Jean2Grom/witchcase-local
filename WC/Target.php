@@ -294,7 +294,7 @@ class Target
         {
             /*
             $currentDate    = date("Y-m-d H:i:s");
-            $userID         = $_SESSION[$this->wc->website->name]["user"]["connexionID"];
+            $userID         = $this->wc->user->id;
             
             $this->modificator          = $userID; 
             $this->modification_date    = new ExtendedDateTime($currentDate);

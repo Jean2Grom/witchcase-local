@@ -24,10 +24,13 @@ class User
     function __construct( WitchCase $wc )
     {
         $this->wc           = $wc;
+        $this->session      = new Session($this->wc);
+        
         $this->connexion    = false;
+        $this->id           = 0;
+        $this->name         = '';
         $this->profiles     = [];
         $this->policies     = [];
-        $this->session      = new Session($this->wc);
         
         // If previous page is login page
         if( $this->wc->request->param('login') === 'login' )
@@ -39,7 +42,7 @@ class User
             if( count($userConnexionData) == 0 )
             {
                 $loginFailure           = true;
-                $this->loginMessages[]  = "Unknon username";
+                $this->loginMessages[]  = "Unknown username";
                 $this->wc->debug->dump('Login failed : unknown username');
             }
             elseif( count($userConnexionData) > 1 ) 
@@ -93,13 +96,14 @@ class User
         }
         
         // Get last connexion 
-        if( !$this->connexion && isset($_SESSION[$this->wc->website->name]['user']) )
+        $sessionData = $this->session->read('user');
+        if( !$this->connexion && $sessionData )
         {
-            $this->profiles         = $_SESSION[$this->wc->website->name]['user']['profiles'];
-            $this->policies         = $_SESSION[$this->wc->website->name]['user']['policies'];
-            $this->id               = $_SESSION[$this->wc->website->name]['user']['connexionID'] ?? false;
-            $this->name             = $_SESSION[$this->wc->website->name]['user']['name'] ?? array_values($this->profiles)[0] ?? '';
-            $this->connexionData    = $_SESSION[$this->wc->website->name]['user']['connexionData'] ?? false;
+            $this->profiles         = $sessionData['profiles'];
+            $this->policies         = $sessionData['policies'];
+            $this->id               = $sessionData['connexionID'] ?? false;
+            $this->name             = $sessionData['name'] ?? array_values($this->profiles)[0] ?? '';
+            $this->connexionData    = $sessionData['connexionData'] ?? false;
             $this->connexion        = (bool) ($this->id);
         }
         elseif( !$this->connexion ) // No user log in, get default user (="public user") from configuration
@@ -112,18 +116,21 @@ class User
             $this->profiles = $getPublicProfileData['profiles'];
             $this->policies = $getPublicProfileData['policies'];
             
-            $_SESSION[$this->wc->website->name]['user'] = [
-                'name'          => $this->name,
-                'profiles'      => $this->profiles,
-                'policies'      => $this->policies,
-                'connexionID'   => false,
-                'connexionData' => false,
-            ];
+            $this->session->write(
+                'user', 
+                [
+                    'name'          => $this->name,
+                    'profiles'      => $this->profiles,
+                    'policies'      => $this->policies,
+                    'connexionID'   => false,
+                    'connexionData' => false,
+                ]
+            );            
         }
         
         if( empty($this->policies) )
         {
-            session_destroy();
+            $this->session->destroy();
             $this->loginMessages[] = "Problem whith this system: unable to log user";
             $this->loginMessages[] = "Please contact administrator";
             $this->wc->log->error('Login failed : accessing policies impossible', true);
@@ -136,7 +143,7 @@ class User
         
         if( count($userConnexionData) == 0 )
         {
-            $this->loginMessages[] = "Unknon username";
+            $this->loginMessages[] = "Unknown username";
             $this->wc->debug->dump('Login failed : unknown username');
             return false;
         }
@@ -165,83 +172,68 @@ class User
             }
         }
         
-        $_SESSION[$this->wc->website->name]['user']   =   [
-            'connexionID'   => $this->id,
-            'name'          => $this->name,
-            'profiles'      => $this->profiles,
-            'policies'      => $this->policies,
-            'connexionData' => $this->connexionData,
-        ];
+        $this->session->write(
+            'user', 
+            [
+                'connexionID'   => $this->id,
+                'name'          => $this->name,
+                'profiles'      => $this->profiles,
+                'policies'      => $this->policies,
+                'connexionData' => $this->connexionData,
+            ]
+        );
         
         return true;
     }
     
     function disconnect()
     {
-        session_destroy();
-        
+        $this->session->destroy();
         $this->connexion = false;
         
         return $this;
     }
     
-    function getAlerts()
+    function getAlerts(): array
     {
-        $alerts = [];
-        if( !empty($_SESSION[$this->wc->website->name]['alerts']) )
-        {
-            $alerts = $_SESSION[$this->wc->website->name]['alerts'];
-            $_SESSION[$this->wc->website->name]['alerts'] = [];
+        $alerts = $this->session->read('alerts');
+        $this->session->delete('alerts');
+        
+        if( !$alerts ){
+            return [];
         }
         
         return $alerts;
     }
     
-    function addAlerts( $newAlerts )
+    function addAlerts( array $newAlerts ): self
     {
-        $alerts = $this->getAlerts();
-        
         foreach( $newAlerts as $newAlertItem ){
-            $alerts[] = $newAlertItem;
+            $this->session->pushTo('alerts', $newAlertItem);
         }
-        
-        $_SESSION[$this->wc->website->name]['alerts'] = $alerts;
         
         return $this;
     }
     
-    function getSessionData( $varname )
-    {
-        return $_SESSION[$this->wc->website->name][ $varname ] ?? NULL;
+    function getSessionData( string $varname ){
+        return $this->session->read( $varname );
     }
     
-    function setSessionData( $varname, $varvalue )
+    function setSessionData( string $varname, mixed $varvalue )
     {
-        if( empty($_SESSION[ $this->wc->website->name ]) ){
-            $_SESSION[ $this->wc->website->name ] = [];
-        }
-        
-        $_SESSION[$this->wc->website->name][ $varname ] = $varvalue;
+        $this->session->write( $varname, $varvalue );
         
         return $this;
     }
     
-    function addToSessionData( $varname, $varvalue )
+    function addToSessionData( string $varname, mixed $varvalue )
     {
-        if( empty($_SESSION[ $this->wc->website->name ]) ){
-            $_SESSION[ $this->wc->website->name ] = [];
-        }
-        
-        if( empty($_SESSION[ $this->wc->website->name ][ $varname ]) ){
-            $_SESSION[ $this->wc->website->name ][ $varname ] = [];
-        }
-        
-        $_SESSION[$this->wc->website->name][ $varname ][] = $varvalue;
+        $this->session->pushTo( $varname, $varvalue );
         
         return $this;
     }
     
-    static function getUserWitchFromConnexionData( WitchCase $wc, $connexionData) 
+    static function getUserWitchFromConnexionData( WitchCase $wc, $connexionData ) 
     {
         $savedConnexionData     = $wc->user->connexionData ?? [];
         $savedConnexionValue    = $wc->user->connexion ?? false;

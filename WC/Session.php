@@ -24,6 +24,10 @@ class Session
         else {
             $this->namespace = $this->wc->website->name;
         }
+        
+        if( empty($_SESSION[ $this->namespace ]) ){
+            $_SESSION[ $this->namespace ] = [];
+        }
     }
     
     function write( string $name, mixed $value ): self
@@ -44,7 +48,7 @@ class Session
     
     function read( string $name ): mixed
     {
-        $value      = $_SESSION[ $this->namespace ][ $name ];
+        $value      = $_SESSION[ $this->namespace ][ $name ] ?? false;
         $objectHash = $_SESSION[ $this->namespace ][ 'wcObjectsHashArray' ][ $name ] ?? false;
         
         if( $objectHash && hash_hmac('sha256', $value, session_id()) === $objectHash ){
@@ -83,7 +87,7 @@ class Session
         return $this;
     }
     
-    function addTo( string $name, mixed $value ): self
+    function pushTo( string $name, mixed $value ): self
     {
         $array = $_SESSION[ $this->namespace ][ $name ] ?? [];
         
@@ -91,14 +95,22 @@ class Session
             $array = [ $array ];
         }
         
-        if( !is_array($value) || array_keys($array) === range(0, count($array) - 1) ){
-            $array[] = $value;
-        }
-        else {
-            $array = array_replace_recursive($array, $value);
-        }
+        $array[] = $value;
         
         $_SESSION[ $this->namespace ][ $name ] = $array;
+        
+        return $this;
+    }
+    
+    function mergeTo( string $name, array $value ): self
+    {
+        $array = $_SESSION[ $this->namespace ][ $name ] ?? [];
+        
+        if( !is_array($array) ){
+            $array = [ $array ];
+        }
+        
+        $_SESSION[ $this->namespace ][ $name ] = array_replace_recursive($array, $value);
         
         return $this;
     }
@@ -111,76 +123,16 @@ class Session
             $array = [ $array ];
         }
         
-        $flippedArray = array_flip($array);
-        if( isset($flippedArray[ $value ]) ){
-            unset($flippedArray[ $value ]);
+        $newArray = [];
+        foreach( $array as $arrayItem ){
+            if( $value !== $arrayItem ){
+                $newArray[] = $arrayItem;
+            }
         }
-        $newArray = array_flip($flippedArray);
-        
-        if( array_keys($array) === range(0, count($array) - 1) ){
-            $newArray = array_values($newArray);
-        }
+        unset($array);        
         
         $_SESSION[ $this->namespace ][ $name ] = $newArray;
         
         return $this;
-    }
-
-    /*
-    function getAlerts()
-    {
-        $alerts = [];
-        if( !empty($_SESSION[$this->wc->website->name]['alerts']) )
-        {
-            $alerts = $_SESSION[$this->wc->website->name]['alerts'];
-            $_SESSION[$this->wc->website->name]['alerts'] = [];
-        }
-        
-        return $alerts;
-    }
-    
-    function addAlerts( $newAlerts )
-    {
-        $alerts = $this->getAlerts();
-        
-        foreach( $newAlerts as $newAlertItem ){
-            $alerts[] = $newAlertItem;
-        }
-        
-        $_SESSION[$this->wc->website->name]['alerts'] = $alerts;
-        
-        return $this;
-    }
-    
-    function getSessionData( $varname )
-    {
-        return $_SESSION[$this->wc->website->name][ $varname ] ?? NULL;
-    }
-    
-    function setSessionData( $varname, $varvalue )
-    {
-        if( empty($_SESSION[ $this->wc->website->name ]) ){
-            $_SESSION[ $this->wc->website->name ] = [];
-        }
-        
-        $_SESSION[$this->wc->website->name][ $varname ] = $varvalue;
-        
-        return $this;
-    }
-    
-    function addToSessionData( $varname, $varvalue )
-    {
-        if( empty($_SESSION[ $this->wc->website->name ]) ){
-            $_SESSION[ $this->wc->website->name ] = [];
-        }
-        
-        if( empty($_SESSION[ $this->wc->website->name ][ $varname ]) ){
-            $_SESSION[ $this->wc->website->name ][ $varname ] = [];
-        }
-        
-        $_SESSION[$this->wc->website->name][ $varname ][] = $varvalue;
-        
-        return $this;
-    }*/
-    
+    }    
 }

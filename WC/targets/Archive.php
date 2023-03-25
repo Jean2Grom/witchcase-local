@@ -97,7 +97,7 @@ class Archive extends Target
         
         $contentData = $this->wc->db->fetchQuery($query);
         
-        $userID = $_SESSION[$this->wc->website->name]["user"]["connexionID"];
+        $userID = $this->wc->user->id;
         
         if( !$userID )
         {
