@@ -52,7 +52,7 @@ class WitchCase
             $this->request  = new Request( $this );
             $this->website  = $this->request->getWebsite();
             $this->user     = new User( $this );
-
+            
             $this->website->summonWitches();
         }
         catch (\Exception $e){

@@ -36,19 +36,13 @@ class Website
     
     function __construct( WitchCase $wc, string $name, string $siteAccess='' )
     {
-        $this->wc               = $wc;
-        $this->name             = $name;
+        $this->wc           = $wc;
+        $this->name         = $name;        
+        $siteHeritages      = $this->wc->configuration->getSiteHeritage( $this->name );        
+        $siteHeritages[]    = "global";
+        $siteConfiguration  = [];
         
-        $siteHeritages  = self::getSiteHeritage($this->wc->configuration, $this->name);
-        
-        $sectionsList   = [ "global" ];
-        if( !empty($siteHeritages) ){
-            $sectionsList = array_merge( $sectionsList, array_reverse($siteHeritages) );
-        }
-        $sectionsList[] = $this->name;
-        
-        $siteConfiguration = [];
-        foreach($sectionsList as $section ){
+        foreach( $siteHeritages as $section ){
             foreach( $this->wc->configuration->read($section) as $param => $value ){
                 if( !is_array($value) ){
                     $siteConfiguration[ $param ] = $value;
@@ -66,12 +60,11 @@ class Website
             $this->{$key} = $value;
         }
         
-        $this->siteHeritages = array_reverse($sectionsList);
-        $this->access        = $this->wc->configuration->read($this->name, "access");
-        $this->adminForSites = $this->wc->configuration->read($this->name, "adminForSites");
-        
-        $this->sitesRestrictions  = [ $this->name ];
-        $adminForSites      = !empty($this->adminForSites)? $this->adminForSites :[];
+        $this->siteHeritages        = $siteHeritages;
+        $this->access               = $this->wc->configuration->read($this->name, "access");
+        $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");        
+        $this->sitesRestrictions    = [ $this->name ];
+        $adminForSites              = !empty($this->adminForSites)? $this->adminForSites :[];
         
         foreach( $adminForSites as $adminisratedSite )
         {
@@ -96,7 +89,10 @@ class Website
         foreach( $this->modules ?? [] as $moduleName => $moduleConf ){
             foreach( $moduleConf['witches'] ?? [] as $moduleWitchName => $moduleWitchConf ){
                 if( empty($this->witches[ $moduleWitchName ]) ){
-                    $this->witches[ $moduleWitchName ] = array_replace_recursive( $moduleWitchConf, [ 'module' => $moduleName ] );
+                    $this->witches[ $moduleWitchName ] = array_replace_recursive( 
+                        $moduleWitchConf, 
+                        [ 'module' => $moduleName ] 
+                    );
                 }
             }
         }
@@ -108,33 +104,6 @@ class Website
     }
     
     
-    
-    /**
-     * Reccursive function for reading heritages configuration cascades
-     * 
-     * @param \WC\Configuration $configuration
-     * @param string $siteName : configuration name of site to ckeck
-     * @return array : ordered list of sites that are herited from
-     */
-    static function getSiteHeritage( Configuration $configuration, string $siteName )
-    {
-        $siteHeritages      = $configuration->read( $siteName, "siteHeritages" );
-        
-        if( !$siteHeritages ){
-            return [];
-        }
-        
-        $return = [];
-        foreach( $siteHeritages as $siteHeritagesItem )
-        {
-            $return[] = $siteHeritagesItem;
-            foreach( self::getSiteHeritage($configuration, $siteHeritagesItem) as  $subSiteHeritagesItem ){
-                $return[] = $subSiteHeritagesItem;
-            }
-        }
-        
-        return $return;
-    }
     
     /**
      * Determine and store the url relative to the website

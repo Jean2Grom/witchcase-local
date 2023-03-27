@@ -393,7 +393,7 @@ class Witch
         {
             $query  =   "SHOW COLUMNS FROM `witch` WHERE Field LIKE 'level_%'";
             $result =   $wc->db->selectQuery($query);
-            $depth  = count($result);
+            $depth  =   count($result);
             
             $wc->cache->create('system', 'depth', $depth);
         }

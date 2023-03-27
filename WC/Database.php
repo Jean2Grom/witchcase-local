@@ -108,4 +108,34 @@ class Database
     function errno(){
         return $this->ressource->errno();
     }
+    
+    function debugQuery( string $query, array $params )
+    {
+        $paramsKeys     = [];
+        $paramsValues   = [];
+        
+        foreach( $params as $key => $value )
+        {
+            if( str_starts_with( $key, ':' ) ){
+                $paramsKeys[] = $key;
+            }
+            else {
+                $paramsKeys[] = ':'.$key;
+            }
+            
+            $paramsValues[] = '"'.$value.'"';
+        }
+        
+        $caller = debug_backtrace()[1];
+        
+        return $this->wc->debug->dump( 
+            str_replace($paramsKeys, $paramsValues, $query), 
+            'DEBUG SQL QUERY', 
+            1, 
+            [
+                'file' => $caller['file'], 
+                'line' => $caller['line']
+            ] 
+        );
+    }
 }

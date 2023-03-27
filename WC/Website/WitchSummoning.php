@@ -106,32 +106,32 @@ class WitchSummoning
         $separator = "SELECT DISTINCT ";
         foreach( Witch::FIELDS as $field )
         {
-            $query      .=  $separator."w.".$field." ";
+            $query      .=  $separator."`w`.`".$field."` ";
             $separator  =   ", ";
         }
         for( $i=1; $i<=$this->website->depth; $i++ ){
-            $query      .=  $separator."w.level_".$i." ";
+            $query      .=  $separator."`w`.`level_".$i."` ";
         }
         if( $userConnexionJointure ){
-            $query  .= ", user_target_table.id AS user_target_fk ";
+            $query  .= ", `user_target_table`.`id` AS `user_target_fk` ";
         }
         
         $query  .= "FROM ";
         if( $userConnexionJointure ){
-            $query  .= $this->wc->user->connexionData["target_table"]." AS user_target_table, ";
+            $query  .= "`".$this->wc->user->connexionData["target_table"]."` AS `user_target_table`, ";
         }
         
         $refWitch = false;
         foreach( $this->configuration as $witchRef => $witchRefConf ){
             if( !empty($witchRefConf['module']) )
             {
-                $query  .= "witch AS ref_witch, ";
+                $query  .= "`witch` AS `ref_witch`, ";
                 $refWitch = true;
                 break;
             }
         }
         
-        $query  .= "witch AS w ";
+        $query  .= "`witch` AS `w` ";
         
         $leftJoin = [];
         foreach( $this->configuration as $witchRef => $witchRefConf ) 
@@ -149,7 +149,7 @@ class WitchSummoning
                 continue;
             }
             
-            $query  .= "LEFT JOIN witch AS ".$witchRef." ";
+            $query  .= "LEFT JOIN `witch` AS `".$witchRef."` ";
             $query  .=  "ON ( ";
             
             $separator = "";
@@ -172,77 +172,116 @@ class WitchSummoning
                 $query .= call_user_func_array([ $this, $functionName ], $params);
             }
             
-            $query  .=  ") ";
-            
+            $query  .=  ") ";            
         }
         
+        $parameters = [];
         $separator = "WHERE ( ";
         foreach( $this->configuration as $witchRef => $witchRefConf )
         {
             if( !empty($witchRefConf['url']) )
             {
-                $condition  =   "( %s.site = '".$this->wc->db->escape_string($this->website->name)."' ";
-                $condition  .=  "AND %s.url = '".$this->wc->db->escape_string($this->website->url)."' ) ";
+                $parameters[ 'website_name' ]   = $this->website->name;
+                $parameters[ 'website_url' ]    = $this->website->url;
+                
+                $condition  =   "( %s.`site` = :website_name ";
+                $condition  .=  "AND %s.`url` = :website_url ) ";
             }
             elseif( !empty($witchRefConf['id']) )
             {
-                $condition  =   " %s.id = ".$witchRefConf['id']." ";
-                if( !empty($witchRefConf['module']) ){
-                    $condition  =   "( ".$condition." AND ref_witch.invoke = '".$witchRefConf['module']."' ) ";
+                $parameterKey                   = $witchRef.'_id';
+                $parameters[ $parameterKey ]    = (int) $witchRefConf['id'];
+                
+                $condition  =   " %s.`id` = :".$parameterKey." ";
+                if( !empty($witchRefConf['module']) )
+                {
+                    $parameterKey                   = $witchRef.'_module';
+                    $parameters[ $parameterKey ]    = $witchRefConf['module'];
+                    
+                    $condition  =   "( ".$condition." AND `ref_witch`.`invoke` = :".$parameterKey." ) ";
                 }
             }
-            elseif( !empty($witchRefConf['get']) ){
-                $condition  =   " %s.id = ".filter_input(INPUT_GET, $witchRefConf['get'], FILTER_VALIDATE_INT)." ";
+            elseif( !empty($witchRefConf['get']) )
+            {
+                $parameterKey                   = $witchRef.'_get';
+                $parameters[ $parameterKey ]    = filter_input(INPUT_GET, $witchRefConf['get'], FILTER_VALIDATE_INT);
+                
+                $condition  =   " %s.`id` = :".$parameterKey." ";
             }
             elseif( !empty($witchRefConf['user']) )
             {
-                $condition  =   "( %s.target_table = '".$this->wc->user->connexionData["target_table"]."' ";
-                $condition  .=  "AND %s.target_fk = user_target_table.id ) ";
+                $parameterKey                   = $witchRef.'_user_table';
+                $parameters[ $parameterKey ]    = $this->wc->user->connexionData["target_table"];                
+                
+                $condition  =   "( %s.`target_table` = :".$parameterKey." ";
+                $condition  .=  "AND %s.`target_fk` = `user_target_table`.`id` ) ";
             }
             
             $query      .=  $separator;
             $separator  =   "OR ";
-            $query      .=  str_replace(' %s.', ' w.', $condition);
+            $query      .=  str_replace(' %s.', ' `w`.', $condition);
             if( $leftJoin[ $witchRef ] ){
-                $query      .=  " OR ".str_replace(' %s.', " ".$witchRef.".", $condition);
+                $query      .=  " OR ".str_replace(' %s.', " `".$witchRef."`.", $condition);
             }
         }
         $query .=  ") ";
         
-        if( $refWitch ){
-            $query .=  "AND ( ref_witch.site = '".$this->wc->db->escape_string($this->website->name)."' ";
-            $query .=  "AND ref_witch.url = '".$this->wc->db->escape_string($this->website->url)."' ) ";
+        if( $refWitch )
+        {
+            $parameters[ 'website_name' ]   = $this->website->name;
+            $parameters[ 'website_url' ]    = $this->website->url;
+            
+            $query .=  "AND ( `ref_witch`.`site` = :website_name ";
+            $query .=  "AND `ref_witch`.`url` = :website_url ) ";
         }
         
-        if( $this->sitesRestrictions ){
-            $query .=  "AND ( w.site IN ( '".implode("', '", $this->sitesRestrictions)."' ) OR w.site IS NULL ) ";
+        if( $this->sitesRestrictions )
+        {
+            $sitesRestrictionsParams = [];
+            foreach( $this->sitesRestrictions as $sitesRestrictionsKey => $sitesRestrictionsValue )
+            {
+                $parameterKey                   = 'site_restriction_'.$sitesRestrictionsKey;
+                $sitesRestrictionsParams[]      = $parameterKey;
+                $parameters[ $parameterKey ]    = $sitesRestrictionsValue;
+            }
+            
+            $query .=  "AND ( `w`.`site` IN ( :".implode(", :", $sitesRestrictionsParams)." ) OR `w`.`site` IS NULL ) ";
         }
         
-        if( $userConnexionJointure ){
-            $query  .= "AND user_target_table.`".$this->wc->user->connexionData["target_column"]."` = ".$this->wc->user->connexionData["id"]." ";
+        if( $userConnexionJointure )
+        {
+            $parameters[ 'user_id' ] = (int) $this->wc->user->id;
+            $query  .= "AND `user_target_table`.`".$this->wc->user->connexionData["target_column"]."` = :user_id ";
         }
         
-        return $this->wc->db->selectQuery($query);
+        return $this->wc->db->selectQuery($query, $parameters);
     }
     
     private function childrenJointure( $mother, $daughter, $depth=1 )
     {
-        $jointure = "( ".$mother.".id <> ".$daughter.".id ) ";
+        $m = function (int $level) use ($mother): string {
+            return "`".$mother."`.`level_".$level."`";
+        };
+        $d = function (int $level) use  ($daughter): string {
+            return "`".$daughter."`.`level_".$level."`";
+        };
+        
+        $jointure = "( `".$mother."`.`id` <> `".$daughter."`.`id` ) ";
         
         $jointure  .=      "AND ( ";
-        $jointure  .=          "( ".$mother.".level_1 IS NOT NULL AND ".$daughter.".level_1 = ".$mother.".level_1 ) ";
-        $jointure  .=          "OR ( ".$mother.".level_1 IS NULL AND ".$daughter.".level_1 IS NOT NULL ) ";
+        $jointure  .=          "( ".$m(1)." IS NOT NULL AND ".$d(1)." = ".$m(1)." ) ";
+        $jointure  .=          "OR ( ".$m(1)." IS NULL AND ".$d(1)." IS NOT NULL ) ";
         $jointure  .=      ") ";
         
         for( $i=2; $i<=$this->website->depth; $i++ )
         {
             $jointure  .=  "AND ( ";
-            $jointure  .=      "( ".$mother.".level_".$i." IS NOT NULL AND ".$daughter.".level_".$i." = ".$mother.".level_".$i." ) ";
-            $jointure  .=      "OR ( ".$mother.".level_".$i." IS NULL AND ".$mother.".level_".($i-1)." IS NOT NULL AND ".$daughter.".level_".$i." IS NOT NULL ) ";
-            $jointure  .=      "OR ( ".$mother.".level_".$i." IS NULL AND ".$mother.".level_".($i-1)." IS NULL ";
+            $jointure  .=      "( ".$m($i)." IS NOT NULL AND ".$d($i)." = ".$m($i)." ) ";
+            $jointure  .=      "OR ( ".$m($i)." IS NULL AND ".$m($i-1)." IS NOT NULL AND ".$d($i)." IS NOT NULL ) ";
+            $jointure  .=      "OR (  ".$m($i)." IS NULL AND ".$m($i-1)." IS NULL ";
             // Apply level
             if( $depth != '*' && ($depth + $i - 1) <= $this->website->depth ){
-                $jointure  .=       "AND ".$daughter.".level_".($depth + $i - 1)." IS NULL  ";
+                $jointure  .=       "AND ".$d($depth + $i - 1)." IS NULL ";
             }
             $jointure  .=      ") ";
             $jointure  .=  ") ";
@@ -258,39 +297,47 @@ class WitchSummoning
     
     private function sistersJointure( $witch, $sister, $depth=1 )
     {
-        $jointure = "( ".$witch.".id <> ".$sister.".id ) ";
+        $w = function (int $level) use ($witch): string {
+            return "`".$witch."`.`level_".$level."`";
+        };
+        $s = function (int $level) use  ($sister): string {
+            return "`".$sister."`.`level_".$level."`";
+        };
+        
+        $jointure = "( `".$witch."`.`id` <> `".$sister."`.`id` ) ";
         
         for( $i=1; $i<$this->website->depth; $i++ )
         {
             $jointure  .=  "AND ( ";
-            $jointure  .=      "( ".$witch.".level_".$i." IS NOT NULL AND ".$witch.".level_".($i+1)." IS NOT NULL AND ".$sister.".level_".$i." = ".$witch.".level_".$i." ) ";
-            $jointure  .=      "OR ( ".$witch.".level_".$i." IS NOT NULL AND ".$witch.".level_".($i+1)." IS NULL AND ".$sister.".level_".$i." IS NOT NULL ) ";
+            $jointure  .=      "( ".$w($i)." IS NOT NULL AND ".$w($i+1)." IS NOT NULL AND ".$s($i)." = ".$w($i)." ) ";
+            $jointure  .=      "OR ( ".$w($i)." IS NOT NULL AND ".$w($i+1)." IS NULL AND ".$s($i)." IS NOT NULL ) ";
             
             if( $i == 1 ){
-                $jointure  .=      "OR ( ".$witch.".level_".$i." IS NULL AND ".$sister.".level_".$i." IS NULL ) ";
+                $jointure  .=      "OR ( ".$w($i)." IS NULL AND ".$s($i)." IS NULL ) ";
             }
             elseif( $depth != '*' && ($i + 1 - $depth) > 0 )
             {
-                $jointure  .=      "OR ( ".$witch.".level_".$i." IS NULL AND ".$witch.".level_".($i + 1 - $depth)." IS NULL AND ".$sister.".level_".$i." IS NULL ) ";
-                $jointure  .=      "OR ( ".$witch.".level_".$i." IS NULL AND ".$witch.".level_".($i + 1 - $depth)." IS NOT NULL ) ";
+                $jointure  .=      "OR ( ".$w($i)." IS NULL AND ".$w($i + 1 - $depth)." IS NULL AND ".$s($i)." IS NULL ) ";
+                $jointure  .=      "OR ( ".$w($i)." IS NULL AND ".$w($i + 1 - $depth)." IS NOT NULL ) ";
                 
             }
             else {
-                $jointure  .=      "OR ( ".$witch.".level_".$i." IS NULL ) ";
+                $jointure  .=      "OR ( ".$w($i)." IS NULL ) ";
             }
             
             $jointure  .=  ") ";
         }
         
+        $maxDepth = (int) $this->website->depth;
         $jointure  .=      "AND ( ";
-        $jointure  .=          "( ".$witch.".level_".$this->website->depth." IS NOT NULL AND ".$sister.".level_".$this->website->depth." IS NOT NULL ) ";
-        if( $depth != '*' && ($this->website->depth + 1 - $depth) > 0 )
+        $jointure  .=          "( ".$w($maxDepth)." IS NOT NULL AND ".$s($maxDepth)." IS NOT NULL ) ";
+        if( $depth != '*' && ($maxDepth + 1 - $depth) > 0 )
         {
-            $jointure  .=          "OR ( ".$witch.".level_".$this->website->depth." IS NULL AND ".$witch.".level_".($this->website->depth + 1 - $depth)." IS NULL AND ".$sister.".level_".$this->website->depth." IS NULL ) ";
-            $jointure  .=          "OR ( ".$witch.".level_".$this->website->depth." IS NULL AND ".$witch.".level_".($this->website->depth + 1 - $depth)." IS NOT NULL ) ";
+            $jointure  .=          "OR ( ".$w($maxDepth)." IS NULL AND ".$w($maxDepth+ 1 - $depth)." IS NULL AND ".$s($maxDepth)." IS NULL ) ";
+            $jointure  .=          "OR ( ".$w($maxDepth)." IS NULL AND ".$w($maxDepth+ 1 - $depth)." IS NOT NULL ) ";
         }
         else {
-            $jointure  .=      "OR ( ".$witch.".level_".$this->website->depth." IS NULL ) ";
+            $jointure  .=      "OR ( ".$w($maxDepth)." IS NULL ) ";
         }
         $jointure  .=      ") ";
         

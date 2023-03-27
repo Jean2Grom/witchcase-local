@@ -52,7 +52,7 @@ class User
         $query  .=      "ON witch.id = policy.fk_witch ";
 
         $query  .=  "WHERE ( email= :login OR login= :login ) ";
-
+        
         $result = $wc->db->multipleRowsQuery($query, [ 'login' => $login ]);
         
         $userConnexionData = [];

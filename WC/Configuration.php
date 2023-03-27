@@ -362,8 +362,6 @@ class Configuration
         
         $modules    = $this->getModules( $site );
         $sections   = $this->configurationAreas( $site );
-$this->wc->debug->dump($modules);
-$this->wc->debug->dump($sections);
         
         foreach( $modules as $module )
         {
@@ -394,4 +392,31 @@ $this->wc->debug->dump($sections);
         
         return copy( $dirname.$iniSave, $this->filepath );
     }
+    
+    
+    /**
+     * Reccursive function for reading heritages configuration cascades
+     * 
+     * @param string $siteName : configuration name of site to ckeck
+     * @return array : ordered list of sites that are herited from
+     */
+    function getSiteHeritage( string $siteName )
+    {
+        $siteHeritages      = $this->read( $siteName, "siteHeritages" );
+        
+        if( !$siteHeritages ){
+            return [ $siteName ];
+        }
+        
+        $return = [ $siteName ];
+        foreach( $siteHeritages as $siteHeritagesItem )
+        {
+            $return[] = $siteHeritagesItem;                
+            foreach( $this->getSiteHeritage($siteHeritagesItem) as  $subSiteHeritagesItem ){
+                $return[] = $subSiteHeritagesItem;                
+            }
+        }
+        
+        return array_unique($return);
+    }    
 }
