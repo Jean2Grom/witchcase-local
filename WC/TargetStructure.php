@@ -13,6 +13,7 @@ class TargetStructure
     var $created;
     var $attributes;
     
+    var $exist;
     var $isArchive;
     
     /** @var WitchCase */
@@ -33,7 +34,7 @@ class TargetStructure
         
         if( empty($columns) )
         {
-            $query      =   "SHOW COLUMNS FROM `".$this->table."` WHERE Field LIKE '@_%'";
+            $query      =   "SHOW COLUMNS FROM `".$this->table."` WHERE `Field` LIKE '@_%'";            
             $result     =   $this->wc->db->selectQuery($query);
             
             if( $result === false && $this->wc->db->errno() != 1146 ){

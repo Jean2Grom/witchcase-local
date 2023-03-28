@@ -95,7 +95,7 @@ class WitchSummoning
         }
         
         $witches    = $this->initialWitchesInstanciate( $result );
-        
+                
         return $this->initialWitchesCraft( $witches );
     }
     
@@ -333,8 +333,8 @@ class WitchSummoning
         $jointure  .=          "( ".$w($maxDepth)." IS NOT NULL AND ".$s($maxDepth)." IS NOT NULL ) ";
         if( $depth != '*' && ($maxDepth + 1 - $depth) > 0 )
         {
-            $jointure  .=          "OR ( ".$w($maxDepth)." IS NULL AND ".$w($maxDepth+ 1 - $depth)." IS NULL AND ".$s($maxDepth)." IS NULL ) ";
-            $jointure  .=          "OR ( ".$w($maxDepth)." IS NULL AND ".$w($maxDepth+ 1 - $depth)." IS NOT NULL ) ";
+            $jointure  .=          "OR ( ".$w($maxDepth)." IS NULL AND ".$w($maxDepth + 1 - $depth)." IS NULL AND ".$s($maxDepth)." IS NULL ) ";
+            $jointure  .=          "OR ( ".$w($maxDepth)." IS NULL AND ".$w($maxDepth + 1 - $depth)." IS NOT NULL ) ";
         }
         else {
             $jointure  .=      "OR ( ".$w($maxDepth)." IS NULL ) ";

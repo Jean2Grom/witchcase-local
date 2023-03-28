@@ -109,7 +109,7 @@ class Database
         return $this->ressource->errno();
     }
     
-    function debugQuery( string $query, array $params )
+    function debugQuery( string $query, array $params=[] )
     {
         $paramsKeys     = [];
         $paramsValues   = [];
