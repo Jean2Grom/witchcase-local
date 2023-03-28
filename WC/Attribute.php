@@ -113,28 +113,19 @@ abstract class Attribute
         return true;
     }
     
-    static function getColumnName( $type, $name, $element )
+    static function getColumnName( string $type, string $name, string $element ): string
     {
-        return "@_".$type."#".$element."__".$name;
+        return $name."@".$type."#".$element;
     }
     
-    static function splitColumn( $columnName )
+    static function splitColumn( string $columnName )
     {
-        if( strcmp(substr($columnName, 0, 2), "@_") != 0 ){
-            return false;
-        }
+        $buffer         = explode( "@", trim($columnName) );
+        $attributeName  = $buffer[0];
         
-        $buffer         = explode("__", substr($columnName, 2));
-        $attributeType  = $buffer[0];
-        $attributeName  = $buffer[1];
-        
-        $attributeElement = false;
-        if( strstr($attributeType, "#") )
-        {
-            $buffer = explode("#", $attributeType);
-            $attributeType      = $buffer[0];
-            $attributeElement   = $buffer[1];
-        }
+        $buffer             = explode( "#", $buffer[1] );
+        $attributeType      = $buffer[0];
+        $attributeElement   = $buffer[1];
         
         return  [
             'name'      =>  $attributeName,

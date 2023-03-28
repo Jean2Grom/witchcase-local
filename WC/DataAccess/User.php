@@ -61,12 +61,10 @@ class User
             $userConnexionId = $row['connexion_id'];
             if( empty($userConnexionData[ $userConnexionId ]) )
             {
-                $targetColumn = '@_'.$row['connexion_target_attribute'];
-                if( !empty($row['connexion_target_attribute_var']) ){
-                    $targetColumn .= '#'.$row['connexion_target_attribute_var'];
-                }
-                $targetColumn .= '__'.$row['connexion_attribute_name'];
-
+                $targetColumn =     $row['connexion_attribute_name'];
+                $targetColumn .=    '@'.$row['connexion_target_attribute'];
+                $targetColumn .=    '#'.$row['connexion_target_attribute_var'];
+                
                 $userConnexionData[ $userConnexionId ] = [
                     'id'            => $userConnexionId,
                     'name'          => $row['connexion_name'],

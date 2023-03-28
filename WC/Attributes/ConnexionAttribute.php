@@ -30,7 +30,7 @@ class ConnexionAttribute extends Attribute
         $this->joinTables   =   [
             [
                 'table'     =>  "user_connexion",
-                'condition' =>  "`user_connexion`.`id` = `%target_table%`.`@_connexion#id__".$this->name."`",
+                'condition' =>  "`user_connexion`.`id` = `%target_table%`.`".$this->name."@connexion#id`",
             ],
             [
                 'table'     =>  "rel__user_connexion__user_profile",
