@@ -1,32 +1,31 @@
 <?php
-
 $this->module->addJsFile('externalTableAttributeEdit.js');
 ?>
 
 <div id="<?=$this->type.'__'.$this->name?>_container">
-    <? foreach( $values as $i => $value ) { ?>
+    <?php foreach( $values as $i => $value ): ?>
         <h2>cible du lien (url)</h2>
         <p>
             <input  type="text" 
-                    name="@_<?=$this->type.'#hrefs__'.$this->name?>[<?=$i?>]"
+                    name="<?=$this->name.'@'.$this->type.'#hrefs'?>[<?=$i?>]"
                     value="<?=$value['href']?>" />
         </p>
         <h2>texte du lien</h2>
         <p>
             <input  type="text" 
-                    name="@_<?=$this->type.'#texts__'.$this->name?>[<?=$i?>]"
+                    name="<?=$this->name.'@'.$this->type.'#texts'?>[<?=$i?>]"
                     value="<?=$value['text']?>" />
         </p>
         <p>
             <input  type="checkbox" 
-                    <? if($value['external']) { ?>
+                    <?php if($value['external']): ?>
                         checked
-                    <? } ?>
-                    name="@_<?=$this->type.'#externals__'.$this->name?>[<?=$i?>][]" 
+                    <?php endif; ?>
+                    name="<?=$this->name.'@'.$this->type.'#externals'?>[<?=$i?>][]" 
                     value="1" />
             Ouvrir dans une nouvelle fenêtre (ou onglet)
         </p>
-    <? } ?>
+    <?php endforeach; ?>
 </div>
 
 <input  type="button"
@@ -39,19 +38,19 @@ $this->module->addJsFile('externalTableAttributeEdit.js');
     <h2>cible du lien (url)</h2>
     <p>
         <input  type="text" 
-                name="@_<?=$this->type.'#hrefs__'.$this->name?>[<?=count($values)?>]"
+                name="<?=$this->name.'@'.$this->type.'#hrefs'?>[<?=count($values)?>]"
                 value="" />
     </p>
     <h2>texte du lien</h2>
     <p>
         <input  type="text" 
-                name="@_<?=$this->type.'#texts__'.$this->name?>[<?=count($values)?>]"
+                name="<?=$this->name.'@'.$this->type.'#texts'?>[<?=count($values)?>]"
                 value="" />
     </p>
     <p>
         <input  type="checkbox" 
                 checked
-                name="@_<?=$this->type.'#externals__'.$this->name?>[<?=count($values)?>][]" 
+                name="<?=$this->name.'@'.$this->type.'#externals'?>[<?=count($values)?>][]" 
                 value="1" />
         Ouvrir dans une nouvelle fenêtre (ou onglet)
     </p>

@@ -3,6 +3,7 @@ namespace WC;
 
 use WC\Targets\Content;
 use WC\DataTypes\ExtendedDateTime;
+use WC\Attribute;
 
 
 class TargetStructure 
@@ -60,19 +61,14 @@ class TargetStructure
         $this->attributes   = [];
         foreach( array_keys($columns) as $columnName )
         {
-            if( strcmp(substr($columnName, 0, 2), "@_") != 0 ){
+            $splitColumn = Attribute::splitColumn($columnName);
+            
+            $attributeName      = $splitColumn['name'];
+            $attributeType      = $splitColumn['type'];            
+            $attributeElement   = $splitColumn['element'];
+            
+            if( !$attributeType ){
                 continue;
-            }
-            
-            $attributeType  = substr( $columnName, 2, strpos($columnName, '__') - 2 );
-            $attributeName  = substr( $columnName, strpos($columnName, '__') + 2 );
-            
-            $attributeElement = false;
-            if( strstr($attributeType, "#") )
-            {
-                $buffer = explode("#", $attributeType);
-                $attributeType      = $buffer[0];
-                $attributeElement   = $buffer[1];
             }
             
             if( empty($this->attributes[ $attributeName ]) )

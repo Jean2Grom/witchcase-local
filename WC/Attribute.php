@@ -123,14 +123,17 @@ abstract class Attribute
         $buffer         = explode( "@", trim($columnName) );
         $attributeName  = $buffer[0];
         
-        $buffer             = explode( "#", $buffer[1] );
-        $attributeType      = $buffer[0];
-        $attributeElement   = $buffer[1];
+        if( isset($buffer[1]) )
+        {
+            $buffer             = explode( "#", $buffer[1] );
+            $attributeType      = $buffer[0];
+            $attributeElement   = $buffer[1];
+        }
         
         return  [
             'name'      =>  $attributeName,
-            'type'      =>  $attributeType,
-            'element'   =>  $attributeElement
+            'type'      =>  $attributeType ?? false,
+            'element'   =>  $attributeElement ?? false,
         ];
     }
     

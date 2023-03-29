@@ -23,9 +23,9 @@ class ImageAttribute extends Attribute
     
     function setValue($key, $value)
     {
-        if( $key == "file" && !empty($_FILES['@_'.$this->type.'#fileupload__'.$this->name]["tmp_name"]) )
+        if( $key == "file" && !empty($_FILES[ $this->name.'@'.$this->type.'#fileupload' ]["tmp_name"]) )
         {
-            $tmpFileInfos = $_FILES['@_'.$this->type.'#fileupload__'.$this->name];
+            $tmpFileInfos = $_FILES[ $this->name.'@'.$this->type.'#fileupload' ];
 
             $check = getimagesize($tmpFileInfos["tmp_name"]);
 
@@ -54,9 +54,9 @@ class ImageAttribute extends Attribute
     
     function set( $args )
     {
-        if( !empty($_FILES['@_'.$this->type.'#fileupload__'.$this->name]["tmp_name"]) )
+        if( !empty($_FILES[ $this->name.'@'.$this->type.'#fileupload' ][ "tmp_name" ]) )
         {
-            $tmpFileInfos = $_FILES['@_'.$this->type.'#fileupload__'.$this->name];
+            $tmpFileInfos = $_FILES[ $this->name.'@'.$this->type.'#fileupload' ];
             
             $check = getimagesize($tmpFileInfos["tmp_name"]);
 
@@ -79,7 +79,7 @@ class ImageAttribute extends Attribute
         }
         
         if( isset($args['storeButton']) 
-            && strcmp($args['storeButton'], '@_'.$this->type.'#filedelete__'.$this->name) == 0 
+            && strcmp( $args['storeButton'], $this->name.'@'.$this->type.'#filedelete' ) == 0 
         ){
             $this->values['file'] = "";
         }

@@ -1,8 +1,4 @@
-<?php
-
-?>
-
-<? if( $srcFile ) { ?>
+<?php if( $srcFile ): ?>
     <p>
         <h2>Fichier actuel</h2>
         <a href="<?=$srcFile?>" target="_blank">
@@ -17,20 +13,20 @@
                         border: none;
                         margin-left: 10px;
                         font-size: 0;"
-                value="@_<?=$this->type.'#filedelete__'.$this->name?>" />
+                value="<?=$this->name.'@'.$this->type.'#filedelete'?>" />
     </p>
-<? } ?>
+<?php endif; ?>
     
 <p>
     <h2>Sélectionner fichier</h2>
     
     <input  type="file" 
-            name="@_<?=$this->type.'#fileupload__'.$this->name?>" />
+            name="<?=$this->name.'@'.$this->type.'#fileupload'?>" />
 </p>
 
 <p>
     <h2>Texte du lien</h2>
     <input  type="text" 
-            name="@_<?=$this->type.'#text__'.$this->name?>"
+            name="<?=$this->name.'@'.$this->type.'#text'?>"
             value="<?=$this->values['text']?>" />
 </p>

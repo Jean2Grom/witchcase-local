@@ -507,11 +507,16 @@ class WitchSummoning
         $querySelectElements    = [];
         $queryTablesElements    = [];
         $queryWhereElements     = [];
+        $queryParameters        = [];
         foreach( $structures as $structureKey => $targetStructure )
         {
             $queryTablesElements[ $targetStructure->table ] = [];
             
-            $queryWhereElements[]   = "`".$targetStructure->table."`.`id` IN (".implode(', ', $targetsToCraft[ $structureKey ]).") ";
+            foreach( $targetsToCraft[ $structureKey ] as $paramKey => $paramValue ){
+                $queryParameters[ $structureKey.'_'.$paramKey ] = $paramValue;
+            }
+            
+            $queryWhereElements[]   = "`".$targetStructure->table."`.`id` IN ( :".implode(', :', array_keys($queryParameters)).") ";
             
             foreach( array_keys(Target::ELEMENTS) as $commonStructureField )
             {
@@ -571,9 +576,9 @@ class WitchSummoning
                 }
             }
             
-            $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements)." ";
+            $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements )." ";
             
-            $result = $this->wc->db->selectQuery($query);
+            $result = $this->wc->db->selectQuery($query, $queryParameters);
         }
         
         $craftedData = [];

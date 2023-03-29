@@ -11,7 +11,7 @@
                         height: 16px;
                         border: none;
                         font-size: 0;"
-                value="@_<?=$this->type.'#filedelete__'.$this->name?>" />
+                value="<?=$this->name.'@'.$this->type.'#filedelete'?>" />
     </div>
 <?php endif; ?>
     
@@ -20,18 +20,18 @@
     
     <input  type="file" 
             class="changeImage"
-            name="@_<?=$this->type.'#fileupload__'.$this->name?>" />
+            name="<?=$this->name.'@'.$this->type.'#fileupload'?>" />
     
     <input  type="hidden" 
-            name="@_<?=$this->type.'#file__'.$this->name?>" 
-            id="@_<?=$this->type.'#file__'.$this->name?>" 
+            name="<?=$this->name.'@'.$this->type.'#file'?>" 
+            id="<?=$this->name.'@'.$this->type.'#file'?>" 
             value="<?=$this->values['file']?>" />
 </p>
 
 <p>
     <h2>Légende de l'image</h2>
     <input  type="text" 
-            name="@_<?=$this->type.'#title__'.$this->name?>"
+            name="<?=$this->name.'@'.$this->type.'#title'?>"
             value="<?=$this->values['title']?>" />
 </p>
 

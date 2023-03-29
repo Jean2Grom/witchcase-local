@@ -5,42 +5,42 @@
 <h2>Nom</h2>
 <p>
     <input  type="text" 
-            name="@_<?=$this->type.'#name__'.$this->name?>"
+            name="<?=$this->name.'@'.$this->type.'#name'?>"
             value="<?=$this->values['name']?>" />
 </p>
 
 <h2>email</h2>
 <p>
     <input  type="email" 
-            name="@_<?=$this->type.'#email__'.$this->name?>"
+            name="<?=$this->name.'@'.$this->type.'#email'?>"
             value="<?=$this->values['email']?>" />
 </p>
 
 <h2>login</h2>
 <p>
     <input  type="text" 
-            name="@_<?=$this->type.'#login__'.$this->name?>"
+            name="<?=$this->name.'@'.$this->type.'#login'?>"
             value="<?=$this->values['login']?>" />
 </p>
 
 <h2>password</h2>
 <p>
     <input  type="password" 
-            name="@_<?=$this->type.'#password__'.$this->name?>"
+            name="<?=$this->name.'@'.$this->type.'#password'?>"
             value="" />
 </p>
 
 <h2>confirm password</h2>
 <p>
     <input  type="password" 
-            name="@_<?=$this->type.'#password_confirm__'.$this->name?>"
+            name="<?=$this->name.'@'.$this->type.'#password_confirm'?>"
             value="" />
 </p>
 
 <h2>Profile(s)</h2>
 <p>
     <select multiple
-            name="@_<?=$this->type.'#profiles__'.$this->name.'[]'?>">
+            name="<?=$this->name.'@'.$this->type.'#profiles[]'?>">
         <?php foreach( $sitesProfiles as $site => $siteProfileList ): ?>
             <optgroup label="<?=$site?>">
                 <?php foreach( $siteProfileList as $profile ): ?>

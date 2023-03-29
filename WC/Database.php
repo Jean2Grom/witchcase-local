@@ -126,11 +126,19 @@ class Database
             $paramsValues[] = '"'.$value.'"';
         }
         
-        $caller = debug_backtrace()[1];
+        $caller = debug_backtrace()[0];
         
         return $this->wc->debug->dump( 
             str_replace($paramsKeys, $paramsValues, $query), 
             'DEBUG SQL QUERY', 
+            1, 
+            [
+                'file' => $caller['file'], 
+                'line' => $caller['line']
+            ] 
+        ) && $this->wc->debug->dump( 
+            $params, 
+            'DEBUG SQL PARAMS',
             1, 
             [
                 'file' => $caller['file'], 
