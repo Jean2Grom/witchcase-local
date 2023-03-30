@@ -9,12 +9,5 @@ class IntegerAttribute extends Attribute
     const ELEMENTS          = [
         "value" => "INT(11) DEFAULT NULL",
     ];
-    const PARAMETERS        = [];
-    
-    function __construct( \WC\WitchCase $wc, $attributeName, $params=[] )
-    {
-        $this->name     = $attributeName;
-        
-        parent::__construct( $wc );
-    }
+    const PARAMETERS        = [];    
 }

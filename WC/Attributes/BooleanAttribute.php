@@ -2,6 +2,7 @@
 namespace WC\Attributes;
 
 use WC\Attribute;
+use WC\WitchCase;
 
 class BooleanAttribute extends Attribute 
 {
@@ -10,14 +11,7 @@ class BooleanAttribute extends Attribute
         "value" => "INT(1) DEFAULT NULL",
     ];
     const PARAMETERS        = [];
-    
-    function __construct( \WC\WitchCase $wc, $attributeName, $params=[] )
-    {
-        $this->name     = $attributeName;
         
-        parent::__construct( $wc );
-    }
-    
     function content()
     {
         if( is_null($this->values['value']) ){

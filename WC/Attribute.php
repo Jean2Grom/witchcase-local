@@ -22,9 +22,12 @@ abstract class Attribute
     /** WitchCase */
     var $wc;
     
-    function __construct( WitchCase $wc )
+    function __construct( WitchCase $wc, string $name, array $parameters=[] )
     {
         $this->wc                   = $wc;
+        $this->name                 = $name;
+        $this->parameters           = $parameters;
+        
         $instanciedAttributeClass   = (new \ReflectionClass($this))->getName();
         $this->type                 = $instanciedAttributeClass::ATTRIBUTE_TYPE;
         
@@ -137,5 +140,71 @@ abstract class Attribute
         ];
     }
     
+    function getJointure( string $fromTable ): array
+    {
+        $targetTable        = trim( $this->wc->db->escape_string($fromTable) );
+        $jointuresParams    = [ 'target_table' => $targetTable ];
+        foreach( $this->joinTables as $joinTableData ){
+            $jointuresParams[ $joinTableData['table'] ] = $joinTableData['table'].'|'.$targetTable.'@'.$this->name;
+        }
+        
+        $jointures          = [];
+        foreach( $this->joinTables as $joinTableData )
+        {
+            $jointureQueryPart  =   "LEFT JOIN ";
+            $jointureQueryPart  .=  "`".$joinTableData['table']."` AS `".$jointuresParams[ $joinTableData['table'] ]."` ";
+            $jointureQueryPart  .=  "ON ";
+            $jointureQueryPart  .=  str_replace(
+                                        array_map( fn($key): string => ':'.$key, array_keys($jointuresParams) ), 
+                                        array_map( fn($value): string => "`".$value."`", array_values($jointuresParams) ), 
+                                        $joinTableData['condition']
+                                    );
+            $jointureQueryPart  .=  " ";
+            
+            $jointures[] = $jointureQueryPart;
+        }
+        
+        return $jointures;
+    }
     
+    function getJoinFields( string $fromTable ): array
+    {
+        $targetTable        = trim( $this->wc->db->escape_string($fromTable) );
+        $jointuresParams    = [ 'target_table' => $targetTable ];
+        foreach( $this->joinTables as $joinTableData ){
+            $jointuresParams[ $joinTableData['table'] ] = $joinTableData['table'].'|'.$targetTable.'@'.$this->name;
+        }
+        
+        $joinFields = [];
+        foreach( $this->joinFields as $joinField )
+        {
+            $field =    str_replace(
+                            array_map( fn($key): string => ':'.$key, array_keys($jointuresParams) ), 
+                            array_map( fn($value): string => "`".$value."`", array_values($jointuresParams) ), 
+                            $joinField
+                        );
+            
+            $joinFields[] = str_replace("`|", "|", $field)." ";
+        }
+        
+        return $joinFields;
+    }
+    
+    function getSelectFields( string $fromTable ): array
+    {
+        $querySelectFields = [];
+        foreach( $this->tableColumns as $attributeElement => $attributeElementColumn )
+        {
+            $field  =   "`".$fromTable."`.`".$attributeElementColumn."` ";
+            $field  .=  "AS `".$fromTable."|".$this->name;
+            $field  .=  "#".$attributeElement."` ";
+
+            $querySelectFields[] = $field;
+        }
+        
+        array_push( $querySelectFields, ...$this->getJoinFields($fromTable) );
+        
+        return $querySelectFields;
+    }
+
 }

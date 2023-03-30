@@ -2,6 +2,7 @@
 namespace WC\Attributes;
 
 use WC\Attribute;
+use WC\WitchCase;
 
 class ImageAttribute extends Attribute 
 {
@@ -11,14 +12,14 @@ class ImageAttribute extends Attribute
         "title"     => "VARCHAR(511) DEFAULT NULL",
     ];
     const PARAMETERS        = [];
+ 
+    var $directory;
     
-    function __construct( $module, $attributeName, $params=[] )
+    function __construct( WitchCase $wc, string $attributeName, array $params=[] )
     {
-        $this->name         = $attributeName;
+        parent::__construct( $wc, $attributeName, $params );
         
-        parent::__construct( $module );
-        
-        $this->directory    = "files/".$this->type."/".$attributeName;
+        $this->directory    = "files/".$this->type."/".$this->name;
     }
     
     function setValue($key, $value)

@@ -527,36 +527,10 @@ class WitchSummoning
             
             foreach( $targetStructure->attributes as $attributeName => $attributeData )
             {
-                $attribute = new $attributeData['class']( $this->wc, $attributeName );
+                $attribute = new $attributeData['class']( $this->wc, $attributeName );                
                 
-                foreach( $attribute->tableColumns as $attributeElement => $attributeElementColumn )
-                {
-                    $field  =   "`".$targetStructure->table."`.`".$attributeElementColumn."` ";
-                    $field  .=  "AS `".$targetStructure->table."|".$attributeName;
-                    $field  .=  "__".$attributeElement."` ";
-                    
-                    $querySelectElements[] = $field;
-                }
-                
-                $leftJoinTableAliases = [];
-                foreach( $attribute->joinTables as $joinTableData )
-                {
-                    $leftJoinTableAlias         = $joinTableData['table'].'__'.$targetStructure->table.'__'.$attributeName;
-                    $leftJoinTableAliases[ '`'.$joinTableData['table'].'`' ] = '`'.$joinTableData['table'].'__'.$targetStructure->table.'__'.$attributeName.'`';
-                    
-                    $leftJoinTableCondition     = str_replace('%target_table%', $targetStructure->table, $joinTableData['condition']);
-                    $leftJoinTableCondition     = str_replace(array_keys($leftJoinTableAliases), array_values($leftJoinTableAliases), $leftJoinTableCondition);
-                    
-                    $queryTablesElements[ $targetStructure->table ][] = $joinTableData['table'].' AS '.$leftJoinTableAlias.' ON '.$leftJoinTableCondition;
-                }
-                
-                foreach( $attribute->joinFields as $joinFieldItem )
-                {
-                    $field = str_replace('%target_table%', $targetStructure->table, $joinFieldItem);
-                    $field = str_replace(array_keys($leftJoinTableAliases), array_values($leftJoinTableAliases), $field);
-                    
-                    $querySelectElements[] = $field;
-                }
+                array_push( $querySelectElements, ...$attribute->getSelectFields($targetStructure->table) );
+                $queryTablesElements[ $targetStructure->table ] = $attribute->getJointure( $targetStructure->table );
             }
         }
         
@@ -572,7 +546,7 @@ class WitchSummoning
                 $separator = ", ";
                 
                 foreach( $leftJoinArray as $leftJoin ){
-                    $query  .=  "LEFT JOIN ".$leftJoin." ";
+                    $query  .=  $leftJoin." ";
                 }
             }
             
@@ -587,7 +561,8 @@ class WitchSummoning
             {
                 $buffer         = explode('|', $rowField);
                 $table          = $buffer[0];
-                $subBuffer      = explode('__', $buffer[1]);
+                //$subBuffer      = explode('__', $buffer[1]);
+                $subBuffer      = explode('#', $buffer[1]);
                 $field          = $subBuffer[0];
                 $fieldElement   = $subBuffer[1] ?? false;
                 $currentId      = $row[ $table.'|id' ];
