@@ -1,12 +1,11 @@
 <?php
-
 $this->module->addJsFile('externalTableAttributeEdit.js');
 ?>
 
 <div id="<?=$this->type.'__'.$this->name?>_container">
-    <? foreach( $values as $i => $value ) { ?>
+    <?php foreach( $values as $i => $value ): ?>
     
-        <? if( $value['file'] ) { ?>
+        <?php if( $value['file'] ): ?>
             <p>
                 <h2>Fichier actuel</h2>
                 <a href="<?=$value['file']?>" target="_blank">
@@ -21,24 +20,24 @@ $this->module->addJsFile('externalTableAttributeEdit.js');
                                 border: none;
                                 margin-left: 10px;
                                 font-size: 0;"
-                        value="@_<?=$this->type.'#filedelete__'.$this->name?>[<?=$i?>]" />
+                        value="<?=$this->name.'@'.$this->type.'#filedelete'?>[<?=$i?>]" />
             </p>
-        <? } ?>
+        <?php endif; ?>
 
         <p>
             <h2>Sélectionner fichier</h2>
 
             <input  type="file" 
-                    name="@_<?=$this->type.'#fileuploads__'.$this->name?>[<?=$i?>]" />
+                    name="<?=$this->name.'@'.$this->type.'#fileuploads'?>[<?=$i?>]" />
         </p>
 
         <p>
             <h2>Texte du lien</h2>
             <input  type="text" 
-                    name="@_<?=$this->type.'#titles__'.$this->name?>[<?=$i?>]"
+                    name="<?=$this->name.'@'.$this->type.'#titles'?>[<?=$i?>]"
                     value="<?=$value['title']?>" />
         </p>
-    <? } ?>
+    <?php endforeach; ?>
 </div>
 
 <input type="button"
@@ -52,13 +51,13 @@ $this->module->addJsFile('externalTableAttributeEdit.js');
         <h2>Sélectionner fichier</h2>
 
         <input  type="file" 
-                name="@_<?=$this->type.'#fileuploads__'.$this->name?>[<?=count($values)?>]" />
+                name="<?=$this->name.'@'.$this->type.'#fileuploads'?>[<?=count($values)?>]" />
     </p>
     
     <p>
         <h2>Texte du lien</h2>
         <input  type="text" 
-                name="@_<?=$this->type.'#titles__'.$this->name?>[<?=count($values)?>]"
+                name="<?=$this->name.'@'.$this->type.'#titles'?>[<?=count($values)?>]"
                 value="" />
     </p>
     

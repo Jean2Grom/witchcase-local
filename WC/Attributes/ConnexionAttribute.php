@@ -1,8 +1,8 @@
 <?php
-
 namespace WC\Attributes;
 
 use WC\Attribute;
+use WC\WitchCase;
 
 class ConnexionAttribute extends Attribute 
 {
@@ -12,11 +12,9 @@ class ConnexionAttribute extends Attribute
     ];
     const PARAMETERS        = [];
     
-    function __construct( $module, $attributeName, $params=[] )
+    function __construct( WitchCase $wc, string $attributeName, array $params=[] )
     {
-        $this->name     =   $attributeName;
-        
-        parent::__construct( $module );
+        parent::__construct( $wc, $attributeName, $params );
         
         $this->values       =   [
             'id'                => null,
@@ -30,23 +28,23 @@ class ConnexionAttribute extends Attribute
         $this->joinTables   =   [
             [
                 'table'     =>  "user_connexion",
-                'condition' =>  "`user_connexion`.`id` = `%target_table%`.`@_connexion#id__".$this->name."`",
+                'condition' =>  ":user_connexion.`id` = :target_table.`".$this->name."@connexion#id`",
             ],
             [
                 'table'     =>  "rel__user_connexion__user_profile",
-                'condition' =>  "`rel__user_connexion__user_profile`.`fk_user_connexion` = `user_connexion`.`id`",
+                'condition' =>  ":rel__user_connexion__user_profile.`fk_user_connexion` = :user_connexion.`id`",
             ],
         ];
         
         $this->joinFields   =   [
-            'name'          =>  "`user_connexion`.`name` AS `%target_table%|".$this->name."__name`",
-            'login'         =>  "`user_connexion`.`login` AS `%target_table%|".$this->name."__login`",
-            'email'         =>  "`user_connexion`.`email` AS `%target_table%|".$this->name."__email`",
-            'pass_hash'     =>  "`user_connexion`.`pass_hash` AS `%target_table%|".$this->name."__pass_hash`",
-            'profile_id'    =>  "`rel__user_connexion__user_profile`.`fk_user_profile` AS `%target_table%|".$this->name."__profile_id`",
+            'name'          =>  ":user_connexion.`name` AS :target_table|".$this->name."#name`",
+            'login'         =>  ":user_connexion.`login` AS :target_table|".$this->name."#login`",
+            'email'         =>  ":user_connexion.`email` AS :target_table|".$this->name."#email`",
+            'pass_hash'     =>  ":user_connexion.`pass_hash` AS :target_table|".$this->name."#pass_hash`",
+            'profile_id'    =>  ":rel__user_connexion__user_profile.`fk_user_profile` AS :target_table|".$this->name."#profile_id`",
         ];
     }
-    
+        
     function set( $args )
     {
         foreach( $args as $key => $value ){
@@ -169,10 +167,10 @@ class ConnexionAttribute extends Attribute
     
     function save( $target ) 
     {
+        $query = "";
         if( empty($this->values['id']) )
         {
-            $query = "";
-            $query  .= "INSERT INTO `user_connexion` ";
+            $query .=   "INSERT INTO `user_connexion` ";
             $query .=   "( `name`, `email`, `login`, `pass_hash`, ";
             $query .=   "`target_table`, `target_attribute`, `target_attribute_var`, ";
             
@@ -202,7 +200,6 @@ class ConnexionAttribute extends Attribute
         }
         else
         {
-            $query = "";
             $query  .=  "UPDATE `user_connexion` ";
             $query  .=  "SET `name` = '".$this->wc->db->escape_string($this->values['name'])."' ";
             $query  .=  ", `email` = '".$this->wc->db->escape_string($this->values['email'])."' ";
@@ -254,13 +251,13 @@ class ConnexionAttribute extends Attribute
          * at least 22*6/8=16.5 bytes, so we generate 17. Then we get the first
          * 22 base64 characters
          */
-        $salt = substr( base64_encode(openssl_random_pseudo_bytes( 17 )), 0, 22 );
+        $randomBytes = substr( base64_encode(openssl_random_pseudo_bytes( 17 )), 0, 22 );
         /* As blowfish takes a salt with the alphabet ./A-Za-z0-9 we have to
          * replace any '+' in the base64 string with '.'. We don't have to do
          * anything about the '=', as this only occurs when the b64 string is
          * padded, which is always after the first 22 characters.
          */
-        $salt = str_replace( "+",".", $salt );
+        $salt = str_replace( "+", ".", $randomBytes );
         /* Next, create a string that will be passed to crypt, containing all
          * of the settings, separated by dollar signs
          */

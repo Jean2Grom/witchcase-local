@@ -2,6 +2,7 @@
 namespace WC\Attributes;
 
 use WC\Attribute;
+use WC\WitchCase;
 
 class LinkAttribute extends Attribute 
 {
@@ -14,11 +15,9 @@ class LinkAttribute extends Attribute
     const PARAMETERS        = [];
     
     
-    function __construct( $module, $attributeName, $params=[] )
+    function __construct( WitchCase $wc, string $attributeName, array $params=[] )
     {
-        $this->name     = $attributeName;
-        
-        parent::__construct( $module );
+        parent::__construct( $wc, $attributeName, $params );
         
         $this->values = [
             "href"      =>  "",

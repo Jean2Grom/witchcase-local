@@ -11,13 +11,6 @@ class DecimalAttribute extends Attribute
     ];
     const PARAMETERS        = [];
     
-    function __construct( \WC\WitchCase $wc, $attributeName, $params=[] )
-    {
-        $this->name     = $attributeName;
-        
-        parent::__construct( $wc );
-    }
-    
     function content()
     {
         if( $this->values['value'] ){

@@ -3,6 +3,7 @@ namespace WC;
 
 use WC\Targets\Content;
 use WC\DataTypes\ExtendedDateTime;
+use WC\Attribute;
 
 
 class TargetStructure 
@@ -34,7 +35,7 @@ class TargetStructure
         
         if( empty($columns) )
         {
-            $query      =   "SHOW COLUMNS FROM `".$this->table."` WHERE `Field` LIKE '@_%'";            
+            $query      =   "SHOW COLUMNS FROM `".$this->table."` WHERE `Field` LIKE '%@%'";            
             $result     =   $this->wc->db->selectQuery($query);
             
             if( $result === false && $this->wc->db->errno() != 1146 ){
@@ -60,19 +61,14 @@ class TargetStructure
         $this->attributes   = [];
         foreach( array_keys($columns) as $columnName )
         {
-            if( strcmp(substr($columnName, 0, 2), "@_") != 0 ){
+            $splitColumn = Attribute::splitColumn($columnName);
+            
+            $attributeName      = $splitColumn['name'];
+            $attributeType      = $splitColumn['type'];            
+            $attributeElement   = $splitColumn['element'];
+            
+            if( !$attributeType ){
                 continue;
-            }
-            
-            $attributeType  = substr( $columnName, 2, strpos($columnName, '__') - 2 );
-            $attributeName  = substr( $columnName, strpos($columnName, '__') + 2 );
-            
-            $attributeElement = false;
-            if( strstr($attributeType, "#") )
-            {
-                $buffer = explode("#", $attributeType);
-                $attributeType      = $buffer[0];
-                $attributeElement   = $buffer[1];
             }
             
             if( empty($this->attributes[ $attributeName ]) )
@@ -345,41 +341,14 @@ class TargetStructure
         {
             $attribute = new $attributeData['class']( $this->wc, $attributeName );
             
+            array_push( $querySelectElements, ...$attribute->getSelectFields($this->table) );
+            $queryTablesElements[ $this->table ] = $attribute->getJointure( $this->table );
+            
             if( $searchedAttributeName == $attributeName ){
                 $queryWhereElements[]   = $attribute->searchCondition( $this->table, $search );
             }
-            
-            foreach( $attribute->tableColumns as $attributeElement => $attributeElementColumn )
-            {
-                $field  =   "`".$this->table."`.`".$attributeElementColumn."` ";
-                $field  .=  "AS `".$this->table."|".$attributeName;
-                $field  .=  "__".$attributeElement."` ";
-
-                $querySelectElements[] = $field;
-            }
-
-            $leftJoinTableAliases = [];
-            foreach( $attribute->joinTables as $joinTableData )
-            {
-                $leftJoinTableAlias         = $joinTableData['table'].'__'.$this->table.'__'.$attributeName;
-                $leftJoinTableAliases[ '`'.$joinTableData['table'].'`' ] = '`'.$joinTableData['table'].'__'.$this->table.'__'.$attributeName.'`';
-
-                $leftJoinTableCondition     = str_replace('%target_table%', $this->table, $joinTableData['condition']);
-                $leftJoinTableCondition     = str_replace(array_keys($leftJoinTableAliases), array_values($leftJoinTableAliases), $leftJoinTableCondition);
-
-                $queryTablesElements[ $this->table ][] = $joinTableData['table'].' AS '.$leftJoinTableAlias.' ON '.$leftJoinTableCondition;
-            }
-
-            foreach( $attribute->joinFields as $joinFieldItem )
-            {
-                $field = str_replace('%target_table%', $this->table, $joinFieldItem);
-                $field = str_replace(array_keys($leftJoinTableAliases), array_values($leftJoinTableAliases), $field);
-
-                $querySelectElements[] = $field;
-            }
         }
         
-        $result = [];
         $query = "";
         $query  .=  "SELECT ".implode( ', ', $querySelectElements)." ";
         $separator = "FROM ";
@@ -387,12 +356,12 @@ class TargetStructure
         {
             $query  .=  $separator." `".$fromTable."` ";
             $separator = ", ";
-
+            
             foreach( $leftJoinArray as $leftJoin ){
                 $query  .=  "LEFT JOIN ".$leftJoin." ";
             }
         }
-
+        
         $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements)." ";
 
         $result = $this->wc->db->selectQuery($query);
@@ -403,7 +372,7 @@ class TargetStructure
             {
                 $buffer         = explode('|', $rowField);
                 $table          = $buffer[0];
-                $subBuffer      = explode('__', $buffer[1]);
+                $subBuffer      = explode('#', $buffer[1]);
                 $field          = $subBuffer[0];
                 $fieldElement   = $subBuffer[1] ?? false;
                 $currentId      = $row[ $table.'|id' ];

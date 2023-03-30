@@ -2,6 +2,7 @@
 namespace WC\Attributes;
 
 use WC\Attribute;
+use WC\WitchCase;
 
 class TextAttribute extends Attribute 
 {
@@ -10,13 +11,6 @@ class TextAttribute extends Attribute
         "value"    => "TEXT DEFAULT NULL",
     ];
     const PARAMETERS        = [];
-    
-    function __construct( $module, $attributeName, $params=[] )
-    {
-        $this->name     = $attributeName;
-        
-        parent::__construct( $module );
-    }
     
     function content()
     {

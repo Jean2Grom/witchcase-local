@@ -1,12 +1,11 @@
 <?php
-
 $this->module->addJsFile('externalTableAttributeEdit.js');
 ?>
 
 <div id="<?=$this->type.'__'.$this->name?>_container">
-    <? foreach( $values as $i => $value ) { ?>
+    <?php foreach( $values as $i => $value ): ?>
     
-        <? if( $value['file'] ) { ?>
+        <?php if( $value['file'] ): ?>
             <p>
                 <h2>Fichier image actuel</h2>
 
@@ -20,31 +19,31 @@ $this->module->addJsFile('externalTableAttributeEdit.js');
                                 height: 16px;
                                 border: none;
                                 font-size: 0;"
-                        value="@_<?=$this->type.'#filedelete__'.$this->name?>[<?=$i?>]" />
+                        value="<?=$this->name.'@'.$this->type.'#filedelete'?>[<?=$i?>]" />
             </p>
-        <? } ?>
+        <?php endif; ?>
 
         <p>
             <h2>Sélectionner fichier image</h2>
 
             <input  type="file" 
-                    name="@_<?=$this->type.'#fileuploads__'.$this->name?>[<?=$i?>]" />
+                    name="<?=$this->name.'@'.$this->type.'#fileuploads'?>[<?=$i?>]" />
         </p>
 
         <p>
             <h2>Légende de l'image</h2>
             <input  type="text" 
-                    name="@_<?=$this->type.'#titles__'.$this->name?>[<?=$i?>]"
+                    name="<?=$this->name.'@'.$this->type.'#titles'?>[<?=$i?>]"
                     value="<?=$value['title']?>" />
         </p>
 
         <p>
             <h2>cible du lien (url)</h2>
             <input  type="text" 
-                    name="@_<?=$this->type.'#links__'.$this->name?>[<?=$i?>]"
+                    name="<?=$this->name.'@'.$this->type.'#links'?>[<?=$i?>]"
                     value="<?=$value['link']?>" />
         </p>
-    <? } ?>
+    <?php endforeach; ?>
 </div>
 
 <input  type="button"
@@ -58,20 +57,20 @@ $this->module->addJsFile('externalTableAttributeEdit.js');
         <h2>Sélectionner fichier image</h2>
 
         <input  type="file" 
-                name="@_<?=$this->type.'#fileuploads__'.$this->name?>[<?=count($values)?>]" />
+                name="<?=$this->name.'@'.$this->type.'#fileuploads'?>[<?=count($values)?>]" />
     </p>
     
     <p>
         <h2>Légende de l'image</h2>
         <input  type="text" 
-                name="@_<?=$this->type.'#titles__'.$this->name?>[<?=count($values)?>]"
+                name="<?=$this->name.'@'.$this->type.'#titles'?>[<?=count($values)?>]"
                 value="" />
     </p>
 
     <p>
         <h2>cible du lien (url)</h2>
         <input  type="text" 
-                name="@_<?=$this->type.'#links__'.$this->name?>[<?=count($values)?>]"
+                name="<?=$this->name.'@'.$this->type.'#links'?>[<?=count($values)?>]"
                 value="" />
     </p>
     

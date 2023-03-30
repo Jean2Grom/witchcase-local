@@ -2,6 +2,7 @@
 namespace WC\Attributes;
 
 use WC\Attribute;
+use WC\WitchCase;
 
 class FileAttribute extends Attribute 
 {
@@ -13,13 +14,11 @@ class FileAttribute extends Attribute
     const PARAMETERS        = [];
     
     
-    function __construct( $module, $attributeName, $params=[] )
+    function __construct( WitchCase $wc, string $attributeName, array $params=[] )
     {
-        parent::__construct( $module );
+        parent::__construct( $wc, $attributeName, $params );
         
-        $this->type         = "file";
-        $this->name         = $attributeName;
-        $this->directory    = "files/".$this->type."/".$attributeName;
+        $this->directory    = "files/".$this->type."/".$this->name;
         
         $this->dbFields     =   [
             "file"  =>  "`@_".$this->type."#file__".$this->name."` varchar(511) DEFAULT NULL",

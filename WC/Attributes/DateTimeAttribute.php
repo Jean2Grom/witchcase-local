@@ -10,14 +10,7 @@ class DateTimeAttribute extends Attribute
         "value"    => "DATETIME DEFAULT NULL",
     ];
     const PARAMETERS        = [];
-    
-    function __construct( $module, $attributeName, $params=[] )
-    {
-        $this->name     = $attributeName;
         
-        parent::__construct( $module );
-    }
-    
     function content()
     {
         if( $this->values['value'] 

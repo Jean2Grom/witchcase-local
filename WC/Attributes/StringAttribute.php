@@ -2,6 +2,7 @@
 namespace WC\Attributes;
 
 use WC\Attribute;
+//use WC\WitchCase;
 
 class StringAttribute extends Attribute 
 {
@@ -19,12 +20,10 @@ class StringAttribute extends Attribute
     ];
     
     
-    function __construct( \WC\WitchCase $wc, $attributeName, $params=[] )
-    {
-        $this->name     = $attributeName;
-        
-        parent::__construct( $wc );
-    }
+//    function __construct( WitchCase $wc, string $attributeName, array $params=[] )
+//    {
+//        parent::__construct( $wc, $attributeName, $params );
+//    }
     
     function content()
     {
