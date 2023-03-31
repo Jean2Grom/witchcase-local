@@ -22,6 +22,7 @@ class WitchSummoning
     ];
     
     var $configuration;
+    var $getParams;
     var $website;
     var $sitesRestrictions;
     
@@ -32,6 +33,7 @@ class WitchSummoning
     {
         $this->wc                   = $wc;
         $this->configuration        = $summoningConfiguration;
+        $this->getParams            = [];
         $this->website              = $website;
         $this->sitesRestrictions    = $this->website->sitesRestrictions;
         foreach( $this->configuration as $refWitchName => $refWitchSummoning )
@@ -41,8 +43,15 @@ class WitchSummoning
                 $unset = true;
             }
             
-            if( !empty($refWitchSummoning['get']) && !filter_input(INPUT_GET, $refWitchSummoning['get'], FILTER_VALIDATE_INT) ){
-                $unset = true;
+            if( !empty($refWitchSummoning['get']) )
+            {
+                $paramValue = $this->wc->request->param($refWitchSummoning['get'], 'get');
+                if( $paramValue ){
+                    $this->getParams[ $refWitchSummoning['get'] ] = $paramValue;
+                }
+                else {
+                    $unset = true;
+                }
             }
             
             if( $unset )
@@ -95,7 +104,7 @@ class WitchSummoning
         }
         
         $witches    = $this->initialWitchesInstanciate( $result );
-                
+        
         return $this->initialWitchesCraft( $witches );
     }
     
@@ -204,7 +213,7 @@ class WitchSummoning
             elseif( !empty($witchRefConf['get']) )
             {
                 $parameterKey                   = $witchRef.'_get';
-                $parameters[ $parameterKey ]    = filter_input(INPUT_GET, $witchRefConf['get'], FILTER_VALIDATE_INT);
+                $parameters[ $parameterKey ]    = $this->getParams[ $witchRefConf['get'] ];
                 
                 $condition  =   " %s.`id` = :".$parameterKey." ";
             }
@@ -374,7 +383,7 @@ class WitchSummoning
             }
             elseif( !empty($witchRefConf['get']) ){
                 $conditions[ $witchRef ] = [ 
-                    'id'    => filter_input(INPUT_GET, $witchRefConf['get'], FILTER_VALIDATE_INT), 
+                    'id'    => $this->getParams[ $witchRefConf['get'] ], 
                 ];
             }
             elseif( !empty($witchRefConf['user']) && !empty($result[0]['user_target_fk']) ){

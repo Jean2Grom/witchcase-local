@@ -58,9 +58,9 @@ class Request
         }
     }
     
-    function param( string $name )
+    function param( string $name, mixed $method=false )
     {
-        if( $this->method == 'POST' ){
+        if( (!$method && $this->method == 'POST') || (strtolower( $method ) == 'post') ){
             $paramType = INPUT_POST;
         }
         else {
