@@ -1,7 +1,7 @@
 <?php
 namespace WC;
 
-use WC\Website\WitchSummoning;
+use WC\DataAccess\WitchSummoning;
 
 /**
  * Description of Website
@@ -15,7 +15,6 @@ class Website
     var $access;
     var $adminForSites;
     var $sitesRestrictions;
-    var $witchSummoningObj;
     var $baseUri;
     var $url;
     var $modulesList;

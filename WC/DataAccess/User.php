@@ -1,11 +1,8 @@
 <?php
-
 namespace WC\DataAccess;
 
 use WC\WitchCase;
 use WC\Witch;
-use WC\Website\WitchSummoning;
-
 
 class User
 {    

@@ -1,7 +1,7 @@
 <?php
 namespace WC;
 
-use WC\Website\WitchSummoning;
+use WC\DataAccess\WitchSummoning;
 
 /**
  * Description of Witch
