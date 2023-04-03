@@ -125,10 +125,10 @@ class WitchCrafting
             
             foreach( $targetStructure->attributes as $attributeName => $attributeData )
             {
-                $attribute = new $attributeData['class']( $this->wc, $attributeName );                
+                $attribute = new $attributeData['class']( $this->wc, $attributeName );
                 
                 array_push( $querySelectElements, ...$attribute->getSelectFields($targetStructure->table) );
-                $queryTablesElements[ $targetStructure->table ] = $attribute->getJointure( $targetStructure->table );
+                array_push( $queryTablesElements[ $targetStructure->table ], ...$attribute->getJointure($targetStructure->table) );
             }
         }
         
