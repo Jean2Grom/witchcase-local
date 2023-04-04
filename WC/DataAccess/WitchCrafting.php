@@ -6,6 +6,7 @@ use WC\Website;
 use WC\Module;
 use WC\Target;
 use WC\TargetStructure;
+use WC\Attribute;
 
 /**
  * Description of WitchCrafting
@@ -93,6 +94,10 @@ class WitchCrafting
             }
         }
         
+        /*
+         * 
+        columns counter implementation ?
+         * 
         foreach( $targetsToCraft as $table => $ids ){
             $targetsToCraft[ $table ]= array_unique($ids);
         }
@@ -152,16 +157,30 @@ class WitchCrafting
             
             $result = $this->wc->db->selectQuery($query, $queryParameters);
         }
+         * 
+         */
         
+//        $structures = [];
+//        $result     = [];
+//        foreach( $targetsToCraft as $table => $ids )
+//        {
+//            array_push( $result, ...$this->craftQuery($table, array_unique($ids)) );
+//            $structures[ $table ] = new TargetStructure( $this->wc, $table );
+//        }
+
+        /*
+         * 
         $craftedData = [];
         foreach( $result as $row ){
             foreach( $row as $rowField => $rowFieldValue )
             {
-                $buffer         = explode('|', $rowField);
-                $table          = $buffer[0];
-                $subBuffer      = explode('#', $buffer[1]);
-                $field          = $subBuffer[0];
-                $fieldElement   = $subBuffer[1] ?? false;
+                //$this->wc->dump( Attribute::splitSelectField($rowField) );
+                $splitSelectField = Attribute::splitSelectField( $rowField );
+                
+                $table          = $splitSelectField['table'];
+                $field          = $splitSelectField['field'];
+                $fieldElement   = $splitSelectField['element'];
+                
                 $currentId      = $row[ $table.'|id' ];
 
                 if( empty($craftedData[ $table ]) ){
@@ -197,6 +216,16 @@ class WitchCrafting
                 }
             }
         }
+        */
+        
+        $craftedData     = [];
+        foreach( $targetsToCraft as $table => $ids )
+        {
+            $craftedData[ $table ]  = $this->craftQuery( $table, array_unique($ids) );
+            $structures[ $table ]   = new TargetStructure( $this->wc, $table );
+        }
+        
+        $this->wc->dump($craftedData);
         
         // SETTINGS CRAFTS (Targets)
         foreach( $this->configuration as $refWitch => $witchConf ){
@@ -398,6 +427,102 @@ class WitchCrafting
         }
         
         return true;
+    }
+    
+    function craftQuery( string $table, array $ids )
+    {
+        if( empty($table) || empty($ids) ){
+            return [];
+        }
+        
+        $structure = new TargetStructure( $this->wc, $table );
+        
+        $querySelectElements    = [];
+        $queryTablesElements    = [];
+        $queryWhereElements     = [];
+        $queryParameters        = [];
+        
+        foreach( $ids as $paramKey => $paramValue ){
+            $queryParameters[ $table.'_'.$paramKey ] = $paramValue;
+        }
+
+        $queryWhereElements[]   = "`".$structure->table."`.`id` IN ( :".implode(', :', array_keys($queryParameters)).") ";
+
+        foreach( array_keys(Target::ELEMENTS) as $commonStructureField )
+        {
+            $field  =   "`".$structure->table."`.`".$commonStructureField."` ";
+            $field  .=  "AS `".$structure->table."|".$commonStructureField."` ";
+            $querySelectElements[] = $field;
+        }
+
+        foreach( $structure->attributes as $attributeName => $attributeData )
+        {
+            $attribute = new $attributeData['class']( $this->wc, $attributeName );
+
+            array_push( $querySelectElements, ...$attribute->getSelectFields($structure->table) );
+            array_push( $queryTablesElements, ...$attribute->getJointure($structure->table) );
+        }
+        
+        $query = "";
+        $query  .=  "SELECT ".implode( ', ', $querySelectElements)." ";
+        $query  .=  "FROM "." `".$table."` ";
+
+        foreach( $queryTablesElements as $leftJoin ){
+            $query  .=  $leftJoin." ";
+        }
+
+        $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements )." ";
+        
+        $result = $this->wc->db->selectQuery( $query, $queryParameters );
+        
+        $craftedData = [];
+        foreach( $result as $row ){
+            foreach( $row as $rowField => $rowFieldValue )
+            {
+                $splitSelectField = Attribute::splitSelectField( $rowField );
+                
+                $table          = $splitSelectField['table'];
+                $field          = $splitSelectField['field'];
+                $fieldElement   = $splitSelectField['element'];
+                
+                $currentId      = $row[ $table.'|id' ];
+
+                if( empty($craftedData[ $table ]) ){
+                    $craftedData[ $table ] = [];
+                }
+                if( empty($craftedData[ $table ][ $currentId ]) ){
+                    $craftedData[ $table ][ $currentId ] = [];
+                }
+                if( empty($craftedData[ $table ][ $currentId ][ $field ]) ){
+                    $craftedData[ $table ][ $currentId ][ $field ] = [];
+                }
+                
+                if( empty($fieldElement) ){
+                    $craftedData[ $table ][ $currentId ][ $field ] = $rowFieldValue;
+                }
+                elseif( empty($craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ]) ){
+                    $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ] = $rowFieldValue;
+                }
+                elseif( !is_array($craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ]) )
+                {
+                    $prevValue = $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ];
+
+                    if( $prevValue != $rowFieldValue ){
+                        $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ] = [
+                            $prevValue,
+                            $rowFieldValue,
+                        ];
+                    }
+                }
+                else {
+                    $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ][] = $rowFieldValue;
+                }
+            }
+        }
+        
+//        $this->wc->dump($craftedData);
+        
+        return $craftedData;
     }
     
 }

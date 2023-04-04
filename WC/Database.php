@@ -104,11 +104,7 @@ class Database
     function commit(){
         return $this->ressource->query( "COMMIT" );
     }
-    
-    function errno(){
-        return $this->ressource->errno();
-    }
-    
+        
     function debugQuery( string $query, array $params=[] )
     {
         $paramsKeys     = [];

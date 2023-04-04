@@ -1,9 +1,12 @@
 <?php
 namespace WC;
 
+use WC\DataAccess\TargetStructure as TargetStructureDA;
+
 use WC\Targets\Content;
 use WC\DataTypes\ExtendedDateTime;
 use WC\Attribute;
+
 
 
 class TargetStructure 
@@ -28,35 +31,8 @@ class TargetStructure
         $this->type     = substr( $this->table, 0, strpos($this->table, '_') );
         $this->name     = substr( $this->table, strpos($this->table, '_') + 1 );    
         
-        $cache          = $this->wc->cache->get('system', $this->table);
-        if( $cache ){
-            include $cache;
-        }
-        
-        if( empty($columns) )
-        {
-            $query      =   "SHOW COLUMNS FROM `".$this->table."` WHERE `Field` LIKE '%@%'";            
-            $result     =   $this->wc->db->selectQuery($query);
-            
-            if( $result === false && $this->wc->db->errno() != 1146 ){
-                $this->wc->log->error("Can't access to information_schema of: ".$this->table." in database", true);
-            }
-            
-            $columns  = [];
-            if( !$result  ){
-                $this->exist = false;
-            }
-            else 
-            {
-                $this->exist = true;
-                
-                foreach( $result as $columnItem ){
-                    $columns[ $columnItem["Field"] ] = $columnItem;
-                }
-                
-                $this->wc->cache->create('system', $this->table, $columns, 'columns');
-            }
-        }
+        $columns        = TargetStructureDA::readStructure($this->wc, $this->table);        
+        $this->exist    = !empty($columns);
         
         $this->attributes   = [];
         foreach( array_keys($columns) as $columnName )

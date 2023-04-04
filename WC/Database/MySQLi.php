@@ -259,9 +259,5 @@ class MySQLi implements DatabaseInterface
     function escape_string( string $string ): string
     {
         return $this->mysqli->real_escape_string( $string );
-    }
-    
-    function errno(){
-        return $this->mysqli->errno;
-    }
+    }    
 }

@@ -206,5 +206,26 @@ abstract class Attribute
         
         return $querySelectFields;
     }
+    
+    static function splitSelectField( string $fieldName )
+    {
+        $buffer         = explode('|', $fieldName);
+        $table          = $buffer[0];
+        
+        if( isset($buffer[ 1 ]) )
+        {
+            $subBuffer      = explode('#', $buffer[1]);
+            $field          = $subBuffer[0];
+            $fieldElement   = $subBuffer[1] ?? false;
+        }
+        
+        return  [
+            'table'     =>  $table,
+            'field'     =>  $field,
+            'element'   =>  $fieldElement,
+        ];
+    }
+    
+    
 
 }
