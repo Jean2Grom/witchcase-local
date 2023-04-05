@@ -3,11 +3,14 @@ namespace WC;
 
 class Cache 
 {    
-    const CACHEDIR          = "cache";
+    const DEFAULT_DIRECTORY     = "cache";
+    const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
+    const DEFAULT_DURATION      = 86400;    // 24h
     
-    var $createFolderRights = "755";    // read/execute for all, write limited to self
-    var $defaultDuration    = 86400;    // 24h
-    var $folders            = [];
+    var string $dir;
+    var $createFolderRights;
+    var int $defaultDuration;
+    var $folders = [];
     
     /** @var WitchCase */
     var $wc;
@@ -16,10 +19,11 @@ class Cache
     {
         $this->wc = $wc;
         
-        $this->createFolderRights   = $this->wc->configuration->read( 'system', 'createFolderRights' ) ?? $this->createFolderRights;
-        $this->defaultDuration      = $this->wc->configuration->read( 'cache', 'duration' ) ?? $this->defaultDuration;
+        $this->createFolderRights   = $this->wc->configuration->read('system','createFolderRights') ?? self::DEFAULT_DIR_RIGHTS;
+        $this->dir                  = $this->wc->configuration->read('cache','directory') ?? self::DEFAULT_DIRECTORY;
+        $this->defaultDuration      = $this->wc->configuration->read('cache','duration') ?? self::DEFAULT_DURATION;
         
-        foreach( $this->wc->configuration->read( 'cache', 'folders' ) as $cacheConf => $cacheData )
+        foreach( $this->wc->configuration->read('cache','folders') as $cacheConf => $cacheData )
         {
             $this->folders[ $cacheConf ] = [
                 'directory' =>  $cacheData['directory'] ?? $cacheConf,
@@ -30,7 +34,7 @@ class Cache
     
     function get( $folder, $filebasename )
     {
-        $cacheFolder = self::CACHEDIR.'/';
+        $cacheFolder = $this->dir.'/';
         
         if( !isset($folder, $this->folders) )
         {
@@ -75,7 +79,7 @@ class Cache
     
     function delete( $folder, $filebasename )
     {
-        $cacheFolder = self::CACHEDIR.'/';
+        $cacheFolder = $this->dir.'/';
         
         if( !isset($folder, $this->folders) )
         {
@@ -105,7 +109,7 @@ class Cache
     
     function create( $folder, $filebasename, $value, $varname=false )
     {
-        $cacheFolder = self::CACHEDIR.'/';
+        $cacheFolder = $this->dir.'/';
         
         if( !isset($folder, $this->folders) )
         {
