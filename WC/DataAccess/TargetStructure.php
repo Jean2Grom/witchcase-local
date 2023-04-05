@@ -5,9 +5,11 @@ use WC\WitchCase;
 
 class TargetStructure 
 {
+    const CACHE_FOLDER = "structure";
+    
     static function readStructure( WitchCase $wc, string $table ) 
     {
-        $cache          = $wc->cache->get( 'system', $table );
+        $cache          = $wc->cache->get( self::CACHE_FOLDER, $table );
         
         if( $cache ){
             include $cache;
@@ -28,7 +30,7 @@ class TargetStructure
                 $columns[ $columnItem["Field"] ] = $columnItem;
             }
             
-            $wc->cache->create('system', $table, $columns, 'columns');            
+            $wc->cache->create( self::CACHE_FOLDER, $table, $columns, 'columns' );
         }
         
         return $columns;

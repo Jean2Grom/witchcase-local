@@ -65,7 +65,7 @@ class Configuration
         }
     }
     
-    function read( $section, $variable=false)
+    function read( string $section, string $variable=null)
     {
         if( $variable && !empty($this->configuration[ $section ][ $variable ]) ){
             return $this->configuration[ $section ][ $variable ];
@@ -80,7 +80,7 @@ class Configuration
             return $this->sites[ $section ];
         }
         
-        return false;
+        return null;
     }
     
     function getHeritedVariable( $variable, $site )
