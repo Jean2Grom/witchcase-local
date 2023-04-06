@@ -9,7 +9,8 @@ class TargetStructure
     
     static function readStructure( WitchCase $wc, string $table ) 
     {
-        $cache          = $wc->cache->get( self::CACHE_FOLDER, $table );
+        $columns    = null;    
+        $cache      = $wc->cache->get( self::CACHE_FOLDER, $table );
         
         if( $cache ){
             include $cache;
@@ -17,8 +18,7 @@ class TargetStructure
         
         if( empty($columns) )
         {
-            $query      =   "SHOW COLUMNS FROM `".$wc->db->escape_string($table)."` WHERE `Field` LIKE '%@%' ";
-
+            $query  =   "SHOW COLUMNS FROM `".$wc->db->escape_string($table)."` WHERE `Field` LIKE '%@%' ";
             $result = $wc->db->selectQuery($query);
             
             if( !$result ){

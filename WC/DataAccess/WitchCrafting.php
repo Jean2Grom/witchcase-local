@@ -93,186 +93,38 @@ class WitchCrafting
                 }
             }
         }
-        
-        /*
-         * 
-        columns counter implementation ?
-         * 
-        foreach( $targetsToCraft as $table => $ids ){
-            $targetsToCraft[ $table ]= array_unique($ids);
-        }
-        
-        $structures = [];
-        foreach( array_keys($targetsToCraft) as $table ){
-            $structures[ $table ] = new TargetStructure( $this->wc, $table );
-        }
-        
-        $querySelectElements    = [];
-        $queryTablesElements    = [];
-        $queryWhereElements     = [];
-        $queryParameters        = [];
-        foreach( $structures as $structureKey => $targetStructure )
-        {
-            $queryTablesElements[ $targetStructure->table ] = [];
-            
-            foreach( $targetsToCraft[ $structureKey ] as $paramKey => $paramValue ){
-                $queryParameters[ $structureKey.'_'.$paramKey ] = $paramValue;
-            }
-            
-            $queryWhereElements[]   = "`".$targetStructure->table."`.`id` IN ( :".implode(', :', array_keys($queryParameters)).") ";
-            
-            foreach( array_keys(Target::ELEMENTS) as $commonStructureField )
-            {
-                $field  =   "`".$targetStructure->table."`.`".$commonStructureField."` ";
-                $field  .=  "AS `".$targetStructure->table."|".$commonStructureField."` ";
-                $querySelectElements[] = $field;
-            }
-            
-            foreach( $targetStructure->attributes as $attributeName => $attributeData )
-            {
-                $attribute = new $attributeData['class']( $this->wc, $attributeName );
                 
-                array_push( $querySelectElements, ...$attribute->getSelectFields($targetStructure->table) );
-                array_push( $queryTablesElements[ $targetStructure->table ], ...$attribute->getJointure($targetStructure->table) );
-            }
-        }
-        
-        $result = [];
-        if( !empty($targetsToCraft) )
-        {
-            $query = "";
-            $query  .=  "SELECT ".implode( ', ', $querySelectElements)." ";
-            $separator = "FROM ";
-            foreach( $queryTablesElements as $fromTable => $leftJoinArray )
-            {
-                $query  .=  $separator." `".$fromTable."` ";
-                $separator = ", ";
-                
-                foreach( $leftJoinArray as $leftJoin ){
-                    $query  .=  $leftJoin." ";
-                }
-            }
-            
-            $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements )." ";
-            
-            $result = $this->wc->db->selectQuery($query, $queryParameters);
-        }
-         * 
-         */
-        
-//        $structures = [];
-//        $result     = [];
-//        foreach( $targetsToCraft as $table => $ids )
-//        {
-//            array_push( $result, ...$this->craftQuery($table, array_unique($ids)) );
-//            $structures[ $table ] = new TargetStructure( $this->wc, $table );
-//        }
-
-        /*
-         * 
-        $craftedData = [];
-        foreach( $result as $row ){
-            foreach( $row as $rowField => $rowFieldValue )
-            {
-                //$this->wc->dump( Attribute::splitSelectField($rowField) );
-                $splitSelectField = Attribute::splitSelectField( $rowField );
-                
-                $table          = $splitSelectField['table'];
-                $field          = $splitSelectField['field'];
-                $fieldElement   = $splitSelectField['element'];
-                
-                $currentId      = $row[ $table.'|id' ];
-
-                if( empty($craftedData[ $table ]) ){
-                    $craftedData[ $table ] = [];
-                }
-                if( empty($craftedData[ $table ][ $currentId ]) ){
-                    $craftedData[ $table ][ $currentId ] = [];
-                }
-                if( empty($craftedData[ $table ][ $currentId ][ $field ]) ){
-                    $craftedData[ $table ][ $currentId ][ $field ] = [];
-                }
-                
-                if( empty($fieldElement) ){
-                    $craftedData[ $table ][ $currentId ][ $field ] = $rowFieldValue;
-                }
-                elseif( empty($craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ]) ){
-                    $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ] = $rowFieldValue;
-                }
-                elseif( !is_array($craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ]) )
-                {
-                    $prevValue = $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ];
-
-                    if( $prevValue != $rowFieldValue ){
-                        $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ] = [
-                            $prevValue,
-                            $rowFieldValue,
-                        ];
-                    }
-                }
-                //elseif( !in_array($rowFieldValue, $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ]) ){
-                else {
-                    $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ][] = $rowFieldValue;
-                }
-            }
-        }
-        */
-        
         $craftedData     = [];
         foreach( $targetsToCraft as $table => $ids )
         {
-            $craftedData[ $table ]  = $this->craftQuery( $table, array_unique($ids) );
-            $structures[ $table ]   = new TargetStructure( $this->wc, $table );
-        }
-        
-        $this->wc->dump($craftedData);
-        
-        // SETTINGS CRAFTS (Targets)
-        foreach( $this->configuration as $refWitch => $witchConf ){
-            if( !empty($witches[ $refWitch ]) )
-            {
-                if( !isset($witchConf['craft']) || !empty($witchConf['craft']) )
-                {
-                    $data       = $craftedData[ $witches[ $refWitch ]->target_table ][ $witches[ $refWitch ]->target_fk ] ?? null;
-                    $structure  = $structures[ $witches[ $refWitch ]->target_table ] ?? null;
-                    
-                    if( !empty($data) && !empty($structure) ){
-                        $witches[ $refWitch ]->craft( $data, $structure );
-                    }
+            $craftedData[ $table ]  = [];
+            $idList                 = [];
+            
+            $cachedData = [];
+            $cache      = $this->wc->cache->get( 'craft', $table );
+            
+            if( $cache ){
+                include $cache;
+            }
+            
+            foreach( array_unique($ids) as $id ){
+                if( isset( $cachedData[ $id ]) ){
+                    $craftedData[ $table ][ $id ] = $cachedData[ $id ];
                 }
-                
-                if( !empty($witchConf['parents']['craft']) ){
-                    $this->setParentsCraftData( 
-                        $witches[ $refWitch ], 
-                        $witchConf['parents']['craft'], 
-                        $craftedData, 
-                        $structures 
-                    );
-                }
-                
-                if( !empty($witchConf['sisters']['craft']) && !empty($witches[ $refWitch ]->sisters) ){
-                    foreach( $witches[ $refWitch ]->sisters as $sisterId => $sisterWitch ){
-                        $this->setChildrenCraftData( 
-                            $sisterWitch, 
-                            $witchConf['sisters']['craft'], 
-                            $craftedData, 
-                            $structures 
-                        );
-                    }
-                }
-                
-                if( !empty($witchConf['children']['craft']) ){
-                    $this->setChildrenCraftData( 
-                        $witches[ $refWitch ], 
-                        $witchConf['children']['craft'], 
-                        $craftedData, 
-                        $structures 
-                    );
+                else {
+                    $idList[] = $id;
                 }
             }
+            
+            if( !empty($idList) )
+            {
+                $craftedData[ $table ]  = array_replace($craftedData[ $table ], $this->craftQuery( $table, $idList ));
+                $this->wc->cache->create( 'craft', $table, array_replace($cachedData, $craftedData[ $table ]), 'cachedData' );
+            }
+            $cachedData = null;
         }
-
-        return $witches;
+        
+        return $craftedData;
     }
 
     // RECURSIVE READ CRAFT DATA FUNCTIONS
@@ -356,78 +208,6 @@ class WitchCrafting
         return $targetsToCraft;
     }
     
-
-    // RECURSIVE CRAFT FUNCTIONS
-    private function setChildrenCraftData( $witch, $craftLevel, $craftedData, $structures )
-    {
-        $targetsToCraft = [];
-        if( !empty($witch->daughters) ){
-            foreach( $witch->daughters as $daughterWitch )
-            {
-                $table  = $daughterWitch->target_table;
-                $fk     = (int) $daughterWitch->target_fk;
-                
-                if( !empty($table) && !empty($fk) 
-                        && !empty($craftedData[ $table ][ $fk ])
-                        && !empty($structures[ $table ])
-                ){
-                    $daughterWitch->craft( 
-                        $craftedData[ $table ][ $fk ],
-                        $structures[ $table ]
-                    );
-                }
-                
-                if( $craftLevel == "*" ){
-                    $craftSubLevel = $craftLevel;
-                }
-                else 
-                {
-                    $craftSubLevel = $craftLevel - 1;
-                    if( $craftSubLevel == 0 ){
-                        continue;
-                    }
-                }
-                
-                $this->setChildrenCraftData( $daughterWitch, $craftSubLevel, $craftedData, $structures );
-            }
-        }
-        
-        return $targetsToCraft;
-    }
-    
-    private function setParentsCraftData( $witch, $craftLevel, $craftedData, $structures )
-    {
-        if( !empty($witch->mother) )
-        {
-            $motherWitch    = $witch->mother;
-            
-            $table          = $motherWitch->target_table;
-            $fk             = (int) $motherWitch->target_fk;
-            
-            if( !empty($table) && !empty($fk) 
-                    && !empty($craftedData[ $table ][ $fk ])
-                    && !empty($structures[ $table ])
-            ){
-                $motherWitch->craft( 
-                    $craftedData[ $table ][ $fk ],
-                    $structures[ $table ]
-                );
-            }
-
-            if( $craftLevel == "*" ){
-                $craftSubLevel = $craftLevel;
-            }
-            else {
-                $craftSubLevel = $craftLevel - 1;
-            }
-
-            if( $craftSubLevel == "*" || $craftSubLevel > 0 ){
-                $this->setParentsCraftData( $motherWitch, $craftSubLevel, $craftedData, $structures );
-            }
-        }
-        
-        return true;
-    }
     
     function craftQuery( string $table, array $ids )
     {
@@ -520,9 +300,7 @@ class WitchCrafting
             }
         }
         
-//        $this->wc->dump($craftedData);
-        
-        return $craftedData;
+        return $craftedData[ $table ];
     }
     
 }

@@ -36,9 +36,8 @@ class Cache
     {
         $cacheFolder = $this->dir.'/';
         
-        if( !isset($folder, $this->folders) )
+        if( !isset($this->folders[ $folder ]) )
         {
-            $this->wc->log->debug("Trying to access unmanaged cache folder : ".$folder);
             $cacheFolder    .=  $folder;
             $cacheDuration  =   $this->defaultDuration;
         }
@@ -81,7 +80,7 @@ class Cache
     {
         $cacheFolder = $this->dir.'/';
         
-        if( !isset($folder, $this->folders) )
+        if( !isset($this->folders[ $folder ]) )
         {
             $this->wc->log->debug("Trying to access unmanaged cache folder : ".$folder);
             $cacheFolder    .=  $folder;
@@ -111,9 +110,8 @@ class Cache
     {
         $cacheFolder = $this->dir.'/';
         
-        if( !isset($folder, $this->folders) )
+        if( !isset($this->folders[ $folder ]) )
         {
-            $this->wc->log->debug("Trying to access unmanaged cache folder : ".$folder);
             $cacheFolder    .=  $folder;
             $cacheDuration  =   $this->defaultDuration;
         }

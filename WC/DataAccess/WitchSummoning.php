@@ -78,7 +78,7 @@ class WitchSummoning
         }
     }
     
-    function summon( bool $craft=true )
+    function summon()
     {
         $userConnexionJointure = false;
         foreach( $this->configuration as $refWitchName => $refWitchSummoning ){
@@ -100,17 +100,7 @@ class WitchSummoning
             return false;
         }
         
-        $witches    = $this->initialWitchesInstanciate( $result );
-        
-        if( $craft )
-        {
-            $witchCrafting = new WitchCrafting( $this->wc, $this->configuration, $this->website );
-            $witchCrafting->craft( $witches );
-        }
-        
-        return $witches;
-        
-        //return $this->initialWitchesCraft( $witches );
+        return $this->initialWitchesInstanciate( $result );
     }
     
     private function initialWitchesRequest( $userConnexionJointure=false )
