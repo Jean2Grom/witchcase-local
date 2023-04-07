@@ -9,12 +9,7 @@ class TargetStructure
     
     static function readStructure( WitchCase $wc, string $table ) 
     {
-        $columns    = null;    
-        $cache      = $wc->cache->get( self::CACHE_FOLDER, $table );
-        
-        if( $cache ){
-            include $cache;
-        }
+        $columns = $wc->cache->read( self::CACHE_FOLDER, $table );
         
         if( empty($columns) )
         {
@@ -30,7 +25,7 @@ class TargetStructure
                 $columns[ $columnItem["Field"] ] = $columnItem;
             }
             
-            $wc->cache->create( self::CACHE_FOLDER, $table, $columns, 'columns' );
+            $wc->cache->create( self::CACHE_FOLDER, $table, $columns );
         }
         
         return $columns;

@@ -32,7 +32,19 @@ class Cache
         }
     }
     
-    function get( $folder, $filebasename )
+    function read( string $folder, string $filebasename ): mixed
+    {
+        $cached     = null;    
+        $cacheFile  = $this->get( $folder, $filebasename );
+        
+        if( $cacheFile ){
+            include $cacheFile;
+        }
+        
+        return $cached;
+    }    
+    
+    function get( string $folder, string $filebasename ): mixed
     {
         $cacheFolder = $this->dir.'/';
         
@@ -76,13 +88,12 @@ class Cache
         }
     }
     
-    function delete( $folder, $filebasename )
+    function delete( string $folder, string $filebasename ): bool
     {
         $cacheFolder = $this->dir.'/';
         
         if( !isset($this->folders[ $folder ]) )
         {
-            $this->wc->log->debug("Trying to access unmanaged cache folder : ".$folder);
             $cacheFolder    .=  $folder;
             $cacheDuration  =   $this->defaultDuration;
         }
@@ -93,7 +104,7 @@ class Cache
         }
         
         if( !is_dir($cacheFolder) ){
-            $this->wc->log->error("Trying to delete uncreated folder : ".$folder);
+            $this->wc->log->error("Trying to delete ressource under uncreated folder : ".$folder);
             return false;
         }
         
@@ -106,7 +117,7 @@ class Cache
         return true;
     }
     
-    function create( $folder, $filebasename, $value, $varname=false )
+    function create( string $folder, string $filebasename, mixed $value ): mixed
     {
         $cacheFolder = $this->dir.'/';
         
@@ -127,11 +138,7 @@ class Cache
             $this->wc->log->error("Can't create cache folder : ".$folder);
             return false;
         }
-        
-        if( $varname == false ){
-            $varname = $filebasename;
-        }
-        
+                
         // Writing cache policies files (based on profile)
         $filename = $cacheFolder."/".$filebasename.".php";
         
@@ -141,7 +148,7 @@ class Cache
         
         $cacheFileFP = fopen( $filename, 'a');
         fwrite($cacheFileFP, "<?php\n");
-        fwrite($cacheFileFP, "$".$varname." = ");
+        fwrite($cacheFileFP, "$"."cached = ");
         
         ob_start();
         var_export($value);

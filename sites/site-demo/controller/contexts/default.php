@@ -8,23 +8,18 @@ $rootContent        = false;
 if( $this->localisation->id == $this->configuration->read($this->localisation->site, 'rootID') )
 {
     $rootLocalisation   = $this->localisation;
-    $rootContent        = $this->target;
+    $rootContent        = $this->target();
 }
 
 //menuPart
-$cache  = $this->cache->get($folder, 'menu');
+$menu = $this->wc->cache->read( $folder, 'menu' );
 
-if( $cache 
-    && !$rootLocalisation
-){
-    include $cache;
-}
-else
+if( empty($menu) )
 {
     if( !$rootLocalisation ){
         $rootLocalisation = new Localisation( $this->configuration, $this->db, $this->configuration->read($this->localisation->site, 'rootID') );
     }
-    
+        
     $menu = [];
     foreach(  $rootLocalisation->children() as $child )
     {
@@ -39,17 +34,19 @@ else
 
 
 // context data
-$cache  = $this->cache->get($folder, 'contextData');
+$contextData = $this->wc->cache->read( $folder, 'contextData' ) ?? [];
 if( $cache 
     && !$rootContent
 ){
     include $cache;
 }
-else
+if( empty($contextData) )
 {
     if( !$rootContent )
     {
-        $rootLocalisation   = new Localisation( $this->configuration, $this->db, $this->configuration->read($this->localisation->site, 'rootID'));
+        if( !$rootLocalisation ){
+            $rootLocalisation = new Localisation( $this->configuration, $this->db, $this->configuration->read($this->localisation->site, 'rootID') );
+        }
         $rootContent        = $rootLocalisation->getTarget();
     }
     
@@ -64,7 +61,5 @@ else
     
     $this->cache->create($folder, 'contextData', $contextData );    
 }
-
-
 
 include $context->getDesignFile();

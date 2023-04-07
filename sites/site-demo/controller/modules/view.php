@@ -1,12 +1,12 @@
 <?php
 
-$backgroundImage    = $this->target->attributes['background-image']->content()['file'];
-$headline           = $this->target->attributes['headline']->content();
-$headlineBody       = $this->target->attributes['body']->content();
+$backgroundImage    = $this->target()->attributes['background-image']->content()['file'];
+$headline           = $this->target()->attributes['headline']->content();
+$headlineBody       = $this->target()->attributes['body']->content();
 
-if( !empty($this->target->attributes["contents"]) )
+if( !empty($this->target()->attributes["contents"]) )
 {
-    $contents = $this->target->attributes["contents"]->content();
+    $contents = $this->target()->attributes["contents"]->content();
     
     $downloads  = [];
     $images     = [];

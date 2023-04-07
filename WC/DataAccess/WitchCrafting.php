@@ -100,12 +100,7 @@ class WitchCrafting
             $craftedData[ $table ]  = [];
             $idList                 = [];
             
-            $cachedData = [];
-            $cache      = $this->wc->cache->get( 'craft', $table );
-            
-            if( $cache ){
-                include $cache;
-            }
+            $cachedData = $this->wc->cache->read( 'craft', $table ) ?? [];
             
             foreach( array_unique($ids) as $id ){
                 if( isset( $cachedData[ $id ]) ){
@@ -119,7 +114,7 @@ class WitchCrafting
             if( !empty($idList) )
             {
                 $craftedData[ $table ]  = array_replace($craftedData[ $table ], $this->craftQuery( $table, $idList ));
-                $this->wc->cache->create( 'craft', $table, array_replace($cachedData, $craftedData[ $table ]), 'cachedData' );
+                $this->wc->cache->create( 'craft', $table, array_replace($cachedData, $craftedData[ $table ]) );
             }
             $cachedData = null;
         }

@@ -221,13 +221,12 @@
         <h3>
             Contenu
         </h3>
-        
-        <?php if( empty($targetWitch->target) && empty($structuresList) ): ?>
+        <?php if( empty($targetWitch->target()) && empty($structuresList) ): ?>
             <p>
                 Pas de contenu
             </p>
             
-        <?php elseif( empty($targetWitch->target) ): ?>
+        <?php elseif( empty($targetWitch->target()) ): ?>
             <select name="witch-structure" id="witch-structure">
                 <option value="">
                     Pas de contenu
@@ -246,12 +245,12 @@
             
         <?php else: ?>
             <h4>
-                <?=$targetWitch->target->name ?>
+                <?=$targetWitch->target()->name ?>
                 <span class="content-structure-type">
-                    [<?=$targetWitch->target->structure->name ?>]
+                    [<?=$targetWitch->target()->structure->name ?>]
                 </span>
             </h4>
-            <?php foreach( $targetWitch->target->attributes as $attribute ): ?>
+            <?php foreach( $targetWitch->target()->attributes as $attribute ): ?>
                 <fieldset>
                     <legend><?=$attribute->name?> [<?=$attribute->type?>]</legend>
                         <?php $attribute->display() ?>
