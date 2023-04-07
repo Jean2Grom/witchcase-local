@@ -1,14 +1,16 @@
 <?php
-
 namespace WC;
 
-class Cache {
+class Cache 
+{    
+    const DEFAULT_DIRECTORY     = "cache";
+    const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
+    const DEFAULT_DURATION      = 86400;    // 24h
     
-    const CACHEDIR          = 'cache';
-    
-    var $createFolderRights = "755";
-    var $folders            = [];
-    var $cacheDurations     = [];
+    var string $dir;
+    var $createFolderRights;
+    var int $defaultDuration;
+    var $folders = [];
     
     /** @var WitchCase */
     var $wc;
@@ -17,57 +19,63 @@ class Cache {
     {
         $this->wc = $wc;
         
-        foreach( $this->wc->configuration->read( 'caches' ) as $cacheConf => $cacheData )
-        {
-            $this->folders[ $cacheConf ]                    = $cacheData['folder'];
-            $this->cacheDurations[ $cacheData['folder'] ]   = $cacheData['duration'];
-        }
+        $this->createFolderRights   = $this->wc->configuration->read('system','createFolderRights') ?? self::DEFAULT_DIR_RIGHTS;
+        $this->dir                  = $this->wc->configuration->read('cache','directory') ?? self::DEFAULT_DIRECTORY;
+        $this->defaultDuration      = $this->wc->configuration->read('cache','duration') ?? self::DEFAULT_DURATION;
         
-        $this->createFolderRights   = $this->wc->configuration->read( 'system', 'createFolderRights' );
+        foreach( $this->wc->configuration->read('cache','folders') as $cacheConf => $cacheData )
+        {
+            $this->folders[ $cacheConf ] = [
+                'directory' =>  $cacheData['directory'] ?? $cacheConf,
+                'duration'  =>  $cacheData['duration'] ?? $this->defaultDuration,
+            ];
+        }
     }
     
-    function get( $folder, $filebasename )
+    function read( string $folder, string $filebasename ): mixed
     {
-        if( strstr($folder, "/") !== false ){   
-            $cacheFolder = dirname($folder);
-        }
-        else{
-            $cacheFolder = $folder; 
+        $cached     = null;    
+        $cacheFile  = $this->get( $folder, $filebasename );
+        
+        if( $cacheFile ){
+            include $cacheFile;
         }
         
-        if( !in_array($cacheFolder, $this->folders) )
+        return $cached;
+    }    
+    
+    function get( string $folder, string $filebasename ): mixed
+    {
+        $cacheFolder = $this->dir.'/';
+        
+        if( !isset($this->folders[ $folder ]) )
         {
-            $this->wc->log->error("Trying to access unmanaged cache folder : ".$folder);
-            return false;
+            $cacheFolder    .=  $folder;
+            $cacheDuration  =   $this->defaultDuration;
+        }
+        else 
+        {
+            $cacheFolder    .=  $this->folders[ $folder ]['directory'];
+            $cacheDuration  =   $this->folders[ $folder ]['duration'];
         }
         
-        if( !is_dir(self::CACHEDIR.'/'.$folder) 
-            && !mkdir( self::CACHEDIR.'/'.$folder,  octdec($this->createFolderRights), true )
+        if( !is_dir($cacheFolder) 
+            && !mkdir($cacheFolder,  octdec( $this->createFolderRights ), true)
         ){
             $this->wc->log->error("Can't create cache folder : ".$folder);
             return false;
         }
         
-        $filename = self::CACHEDIR.'/'.$folder.'/'.$filebasename.".php";
+        $filename = $cacheFolder.'/'.$filebasename.".php";
         
         if( file_exists($filename) )
         {
-            $unlink = false;
-            if( $this->cacheDurations[ $cacheFolder ] != '*' )
-            {
-                $limit = (int) $this->cacheDurations[ $cacheFolder ];
-                
-                if( (time() - filemtime($filename)) > $limit ){
-                    $unlink = true;
-                }
-            }
-            
-            if( $unlink ){   
-                unlink($filename);  
-            }
-            else {
+            if( $cacheDuration == '*' 
+                || (time() - filemtime($filename)) < (int) $cacheDuration ){
                 return $filename;
             }
+            
+            unlink($filename);  
         }
         
         $method = 'create'.ucfirst($folder).'File';
@@ -80,22 +88,27 @@ class Cache {
         }
     }
     
-    function delete( $folder, $filebasename )
+    function delete( string $folder, string $filebasename ): bool
     {
-        if( strstr($folder, "/") !== false ){
-            $cacheFolder = dirname($folder);
+        $cacheFolder = $this->dir.'/';
+        
+        if( !isset($this->folders[ $folder ]) )
+        {
+            $cacheFolder    .=  $folder;
+            $cacheDuration  =   $this->defaultDuration;
         }
-        else {
-            $cacheFolder = $folder;
+        else 
+        {
+            $cacheFolder    .=  $this->folders[ $folder ]['directory'];
+            $cacheDuration  =   $this->folders[ $folder ]['duration'];
         }
         
-        if( !in_array($cacheFolder, $this->folders) )
-        {
-            $this->wc->log->error("Trying to delete unmanaged cache folder : ".$folder);
+        if( !is_dir($cacheFolder) ){
+            $this->wc->log->error("Trying to delete ressource under uncreated folder : ".$folder);
             return false;
         }
         
-        $filename = self::CACHEDIR.'/'.$folder.'/'.$filebasename.".php";
+        $filename = $cacheFolder.'/'.$filebasename.".php";
         
         if( file_exists($filename) ){
             unlink($filename);
@@ -104,27 +117,30 @@ class Cache {
         return true;
     }
     
-    function create( $folder, $filebasename, $value, $varname=false )
+    function create( string $folder, string $filebasename, mixed $value ): mixed
     {
-        if( strstr($folder, "/") !== false ){
-            $cacheFolder = dirname($folder);
+        $cacheFolder = $this->dir.'/';
+        
+        if( !isset($this->folders[ $folder ]) )
+        {
+            $cacheFolder    .=  $folder;
+            $cacheDuration  =   $this->defaultDuration;
         }
-        else {
-            $cacheFolder = $folder;
+        else 
+        {
+            $cacheFolder    .=  $this->folders[ $folder ]['directory'];
+            $cacheDuration  =   $this->folders[ $folder ]['duration'];
         }
         
-        if( !in_array($cacheFolder, $this->folders) )
-        {
-            $this->wc->log->error("Trying to delete unmanaged cache folder : ".$folder);
+        if( !is_dir($cacheFolder) 
+            && !mkdir($cacheFolder,  octdec( $this->createFolderRights ), true)
+        ){
+            $this->wc->log->error("Can't create cache folder : ".$folder);
             return false;
         }
-        
-        if( $varname == false ){
-            $varname = $filebasename;
-        }
-        
+                
         // Writing cache policies files (based on profile)
-        $filename = self::CACHEDIR."/".$folder."/".$filebasename.".php";
+        $filename = $cacheFolder."/".$filebasename.".php";
         
         if( file_exists($filename) ){
             unlink($filename);
@@ -132,7 +148,7 @@ class Cache {
         
         $cacheFileFP = fopen( $filename, 'a');
         fwrite($cacheFileFP, "<?php\n");
-        fwrite($cacheFileFP, "$".$varname." = ");
+        fwrite($cacheFileFP, "$"."cached = ");
         
         ob_start();
         var_export($value);

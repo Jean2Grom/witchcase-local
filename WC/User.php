@@ -1,8 +1,6 @@
 <?php
-
 namespace WC;
 
-use WC\Website\WitchSummoning;
 use WC\DataAccess\User as UserDA;
 
 class User 
@@ -231,29 +229,5 @@ class User
         $this->session->pushTo( $varname, $varvalue );
         
         return $this;
-    }
-    
-    static function getUserWitchFromConnexionData( WitchCase $wc, $connexionData ) 
-    {
-        $savedConnexionData     = $wc->user->connexionData ?? [];
-        $savedConnexionValue    = $wc->user->connexion ?? false;
-        
-        $wc->user->connexionData    = $connexionData;
-        $wc->user->connexion        = 1;
-        
-        $configuration = [
-            'target' => [
-                'user'  => true,
-                'craft' => true,
-            ]
-        ];
-        
-        $witchSummoning = new WitchSummoning( $wc, $configuration, $wc->website );
-        $witches        = $witchSummoning->summon();
-        
-        $wc->user->connexionData    = $savedConnexionData;
-        $wc->user->connexion        = $savedConnexionValue;
-        
-        return $witches['target'] ?? false;
-    }
+    }    
 }

@@ -3,7 +3,10 @@ namespace WC;
 
 class Configuration 
 {
-    const WC_ENV_VAR_PREFIX = 'WC_';
+    const WC_ENV_VAR_PREFIX = 'WC_';    
+    const DEFAULT_DIRECTORY = "configuration";
+    const CONFIG_FILE       = 'configuration.json';
+    const SITES_FILE        = 'sites.json';
     
     var $filepath           = "configuration/configuration.ini";
     var $sections           = [];
@@ -11,7 +14,7 @@ class Configuration
     var $heritedVariables   = [];
     
     
-    var $path           = "configuration";
+    var string $dir;
     var $configuration  = [];
     var $sites          = [];
     
@@ -22,28 +25,31 @@ class Configuration
     var $wc;
     
     /**
-     * @param \WC\WitchCase $wc : container
-     * @param strong $configurationDirPath : path to configuration files directory
+     * @param WitchCase $wc : container
+     * @param string $configurationDirectory : path to configuration files directory
      * @param boolean $mandatory : if set to true, die process if configuration files not found
      */
-    function __construct( WitchCase $wc, $configurationDirPath=false, $mandatory=true )
+    function __construct( WitchCase $wc, string $configurationDirectory=null, bool $mandatory=true )
     {
         $this->wc = $wc;
         
-        if( $configurationDirPath ){   
-            $this->path = $configurationDirPath;
+        if( $configurationDirectory ){   
+            $this->dir = $configurationDirectory;
+        }
+        else {
+            $this->dir = self::DEFAULT_DIRECTORY;
         }
         
         if( $mandatory
-            &&  ( !file_exists($this->path.'/configuration.json') 
-                || !file_exists($this->path.'/sites.json')  )
+            &&  ( !file_exists($this->dir.'/'.self::CONFIG_FILE) 
+                || !file_exists($this->dir.'/'.self::SITES_FILE)  )
         ){
             die("Configuration files unreachable");
         }
         
-        $rawConfiguration   = file_get_contents($this->path.'/configuration.json');
-        $rawSites           = file_get_contents($this->path.'/sites.json');
-                
+        $rawConfiguration   = file_get_contents( $this->dir.'/'.self::CONFIG_FILE );
+        $rawSites           = file_get_contents( $this->dir.'/'.self::SITES_FILE );
+        
         $wcEnvVars = [];
         foreach( getenv() as $envVarName => $envVarValue ){
             if( str_starts_with($envVarName, self::WC_ENV_VAR_PREFIX) ){
@@ -65,7 +71,7 @@ class Configuration
         }
     }
     
-    function read( $section, $variable=false)
+    function read( string $section, string $variable=null)
     {
         if( $variable && !empty($this->configuration[ $section ][ $variable ]) ){
             return $this->configuration[ $section ][ $variable ];
@@ -80,7 +86,7 @@ class Configuration
             return $this->sites[ $section ];
         }
         
-        return false;
+        return null;
     }
     
     function getHeritedVariable( $variable, $site )

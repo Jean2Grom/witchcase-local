@@ -1,7 +1,9 @@
 <?php
 namespace WC;
 
-use WC\Website\WitchSummoning;
+use WC\DataAccess\WitchSummoning;
+use WC\DataAccess\WitchCrafting;
+
 
 /**
  * Description of Website
@@ -15,7 +17,6 @@ class Website
     var $access;
     var $adminForSites;
     var $sitesRestrictions;
-    var $witchSummoningObj;
     var $baseUri;
     var $url;
     var $modulesList;
@@ -25,10 +26,12 @@ class Website
     var $attributes;
     var $status;
     var $witches;
+    var $craftedData;
     var $extensions;
     var $siteHeritages;
     var $depth;
     var $witchSummoning;    
+    var $witchCrafting;
     var $context;    
     
     /** @var WitchCase */
@@ -98,6 +101,7 @@ class Website
         }
         
         $this->witchSummoning   = new WitchSummoning( $this->wc, $this->witches, $this ); 
+        $this->witchCrafting    = new WitchCrafting( $this->wc, $this->witchSummoning->configuration, $this );
         unset($this->witches);
         
         $this->context = new Context( $this );
@@ -130,7 +134,8 @@ class Website
     
     function summonWitches()
     {
-        $this->witches  = $this->witchSummoning->summon();
+        $this->witches      = $this->witchSummoning->summon();
+        $this->craftedData  = $this->witchCrafting->craft( $this->witches );
         
         return $this;
     }

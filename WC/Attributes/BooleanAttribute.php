@@ -2,7 +2,6 @@
 namespace WC\Attributes;
 
 use WC\Attribute;
-use WC\WitchCase;
 
 class BooleanAttribute extends Attribute 
 {

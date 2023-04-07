@@ -176,9 +176,5 @@ class PDO implements DatabaseInterface
     function escape_string( string $string ): string
     {
         return htmlspecialchars($string);
-    }
-    
-    function errno(){
-        return $this->pdo->errorCode();
-    }
+    }    
 }

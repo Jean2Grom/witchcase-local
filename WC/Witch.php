@@ -1,7 +1,8 @@
 <?php
 namespace WC;
 
-use WC\Website\WitchSummoning;
+use WC\DataAccess\WitchSummoning;
+use WC\DataAccess\WitchCrafting;
 
 /**
  * Description of Witch
@@ -36,6 +37,7 @@ class Witch
     var $accessDeniedFor    = false;
     var $module             = false;
     var $modules            = [];
+    var $target;
     
     var $mother;
     var $sisters            = [];
@@ -297,7 +299,7 @@ class Witch
     }
     
     function hasTarget(){
-        return( !empty($this->target_table) && !empty($this->target_fk) );
+        return !empty($this->properties[ 'target_table' ]) && !empty($this->properties[ 'target_fk' ]);
     }
     
     function invoke( $assignedModuleName=false, $fromUnassigned=false )
@@ -349,49 +351,63 @@ class Witch
         return $result;
     }
     
-    
-    function craft( array $data=null, TargetStructure $structure=null )
+    function target()
     {
-        if( empty($data) )
-        {
-            // Don't have to get or cannot get target
-            if( !empty($this->target) || !$this->hasTarget() ){
-                return $this;
-            }
-            
-            if( empty($structure) ){
-                $structure = new TargetStructure( $this->wc, $this->target_table );
-            }
-            
-            // TODO GET DATA
-            // $this->target = new Target( $this->wc, $structure, $data );
+        if( $this->target ){
+            return $this->target;
         }
-        else 
-        {
-            // Can't resolve structure
-            if( empty($structure) && empty($this->target_table) ){
-                return $this;
-            }
-            elseif( empty($structure) ){
-                $structure = new TargetStructure( $this->wc, $this->target_table );
-            }
-            
-            $this->target = new Target( $this->wc, $structure, $data );
+        
+        if( !$this->hasTarget() ){
+            return false;
         }
+        
+        $data = $this->wc->website->craftedData[ $this->target_table ][ $this->target_fk ] ?? null;
+        
+        if( !$data ){
+            return false;
+        }
+        
+        $this->craft( $data );
+        
+        return $this->target;        
+    }
+    
+    function craft( array $data=null, TargetStructure $structure=null ): self
+    {
+        if( (!$data || !$structure) && !$this->hasTarget() ){
+            return $this;
+        }
+        
+        if( !$structure ){
+            $structure = new TargetStructure( $this->wc, $this->target_table );
+        }
+        
+        if( !$data )
+        {
+            $witchCrafting = new WitchCrafting( 
+                $this->wc, 
+                [ "target" => [ 
+                    'id'    => $this->id, 
+                    'craft' => true,
+                ]]
+            );
+            
+            $craftedData    = $witchCrafting->craft([ "target" => $this ]);
+            $data           = $craftedData[ $this->target_table ][ $this->target_fk ];
+        }
+        
+        $this->target = new Target( $this->wc, $structure, $data );
         
         return $this;
     }
     
     static function getDepth( WitchCase $wc )
     {
-        $cache = $wc->cache->get('system', 'depth');
-        if( $cache ){
-            include $cache;
-        }
+        $depth = $wc->cache->read( 'system', 'depth' );
         
         if( empty($depth) )
         {
-            $query  =   "SHOW COLUMNS FROM `witch` WHERE Field LIKE 'level_%'";
+            $query  =   "SHOW COLUMNS FROM `witch` WHERE `Field` LIKE 'level_%'";
             $result =   $wc->db->selectQuery($query);
             $depth  =   count($result);
             
