@@ -49,7 +49,7 @@ class TargetStructure
             
             if( empty($this->attributes[ $attributeName ]) )
             {
-                $className = "WC\\Attributes\\".ucfirst($attributeType).'Attribute';
+                $className = "WC\\Attribute\\".ucfirst($attributeType).'Attribute';
                 
                 if( !class_exists($className) )
                 {

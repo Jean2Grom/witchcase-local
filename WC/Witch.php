@@ -3,6 +3,7 @@ namespace WC;
 
 use WC\DataAccess\WitchSummoning;
 use WC\DataAccess\WitchCrafting;
+use WC\DataAccess\Witch as WitchDA;
 
 /**
  * Description of Witch
@@ -65,13 +66,10 @@ class Witch
     
     static function createFromId( WitchCase $wc, int $id )
     {
-        if( !empty($id) )
-        {
-            $query = "";
-            $query  .=  "SELECT * FROM witch ";
-            $query  .=  "WHERE id = ".( (integer) $id );
-            
-            $data = $wc->db->fetchQuery($query);
+        $data = WitchDA::readFromId($wc, $id);
+        
+        if( empty($data) ){
+            return false;
         }
         
         return self::createFromData( $wc, $data );
@@ -98,8 +96,6 @@ class Witch
         $witch->position    = [];
         
         $i = 1;
-        //while( isset($witch->{'level_'.$i}) )
-        //while( isset($witch->properties['level_'.$i]) )
         while( isset($data['level_'.$i]) )
         {
             $witch->position[$i] = (int) $witch->{'level_'.$i};
@@ -107,7 +103,6 @@ class Witch
         }
         $witch->depth       = $i - 1; 
         
-        //if( !empty($witch->url) )
         if( !empty($data['url']) )
         {
             $witch->uri = "";
@@ -401,22 +396,6 @@ class Witch
         return $this;
     }
     
-    static function getDepth( WitchCase $wc )
-    {
-        $depth = $wc->cache->read( 'system', 'depth' );
-        
-        if( empty($depth) )
-        {
-            $query  =   "SHOW COLUMNS FROM `witch` WHERE `Field` LIKE 'level_%'";
-            $result =   $wc->db->selectQuery($query);
-            $depth  =   count($result);
-            
-            $wc->cache->create('system', 'depth', $depth);
-        }
-        
-        return (int) $depth;
-    }
-    
     function isAllowed( Module $module=null, User $user=null )
     {
         if( empty($module) && empty($this->invoke) ){
@@ -498,23 +477,13 @@ class Witch
     {
         foreach( $params as $field => $value ){
             if( !in_array($field, self::FIELDS) ){
-                unset( $params[ $field ] );
+                unset($params[ $field ]);
             }
         }
         
-        $name = $params['name'] ?? "";
-        $name = trim($name);
-        if( !empty($name) ){
-            $params['name'] = $name;
-        }
-        elseif( isset($params['name']) ) {
-            unset($params['name']);
-        }
-        
-        $site   = $params['site'] ?? "";
-        $site   = trim($site);
-        $url    = $params['url'] ?? "";
-        $url    = trim($url);
+        $name   = trim($params['name'] ?? "");
+        $site   = trim($params['site'] ?? "");
+        $url    = trim($params['url'] ?? "");
         
         if( !empty($site) && empty($url) )
         {
@@ -551,27 +520,18 @@ class Witch
             return false;
         }
         
-        $query = "";
-        $query  .=  "UPDATE `witch` ";
         
-        $separator = "SET ";
-        foreach( $params as $field => $value )
-        {
-            if( $value == 'NULL' ){
-                $query      .=  $separator.$this->wc->db->escape_string($field)."= NULL ";
-            }
-            else {
-                $query      .=  $separator.$this->wc->db->escape_string($field)."='".$this->wc->db->escape_string($value)."' ";
-            }
-            $separator  =  ", ";
+        if( !empty($name) ){
+            $params['name'] = $name;
+        }
+        elseif( isset($params['name']) ) {
+            unset($params['name']);
         }
         
-        $query  .=  "WHERE id='".$this->id."' ";
-        
-        if( $this->wc->db->updateQuery($query) )
+        if( WitchDA::update($this->wc, $params, ['id' => $this->id]) )
         {
             foreach( $params as $field => $value ){
-                $this->{$field} = $value;
+                $this->properties[$field] = $value;
             }
             
             if( isset($params['status']) )
@@ -579,6 +539,7 @@ class Witch
                 $this->statusLevel = $this->status;
                 $this->status      = $this->wc->configuration->read('global', "status")[ $this->status ];
             }
+$this->wc->dump( $this->wc->configuration->read('global', "status"));
             
             return true;
         }
@@ -931,7 +892,7 @@ class Witch
         return false;
     }
     
-    function isParent( self $potentialDescendant )
+    function isParent( self $potentialDescendant ): bool
     {
         $potentialDescendantPasition = $potentialDescendant->position;
         foreach( $this->position as $level => $levelPosition ){

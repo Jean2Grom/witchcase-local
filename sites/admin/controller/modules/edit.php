@@ -45,7 +45,7 @@ switch( $action )
     case 'save-witch':
         $return = $return ?? false;
         
-        $name   = filter_input( INPUT_POST, 'witch-name', FILTER_SANITIZE_STRING );
+        $name   = filter_input( INPUT_POST, 'witch-name' );
         
         if( empty($name) )
         {
@@ -56,7 +56,7 @@ switch( $action )
             break;
         }
         
-        $site           = trim( filter_input(INPUT_POST,    'witch-site', FILTER_SANITIZE_STRING) );
+        $site           = $this->wc->request->param('witch-site');
         if( !empty($site) && !in_array($site, $sites) )
         {
             $site       = "";
@@ -66,15 +66,15 @@ switch( $action )
             ];
         }
         
-        $data           = trim( filter_input(INPUT_POST,    'witch-data', FILTER_SANITIZE_STRING) );
-        $priority       = filter_input( INPUT_POST,         'witch-priority', FILTER_VALIDATE_INT );
-        $invoke         = trim( filter_input(INPUT_POST,    'witch-invoke', FILTER_SANITIZE_STRING) );
-        $context        = trim( filter_input(INPUT_POST,    'witch-context', FILTER_SANITIZE_STRING) );
-        $status         = filter_input( INPUT_POST,         'witch-status', FILTER_VALIDATE_INT );
+        $data           = $this->wc->request->param('witch-data');
+        $priority       = $this->wc->request->param('witch-priority', 'POST', FILTER_VALIDATE_INT );
+        $invoke         = $this->wc->request->param('witch-invoke');
+        $context        = $this->wc->request->param('witch-context');
+        $status         = $this->wc->request->param('witch-status', 'POST', FILTER_VALIDATE_INT );
         
-        $autoUrl        = filter_has_var(INPUT_POST,        'witch-automatic-url');
-        $customUrl      = trim( filter_input(INPUT_POST,    'witch-custom-url', FILTER_SANITIZE_STRING) );
-        $customRootUrl  = filter_has_var(INPUT_POST,        'witch-custom-url-from-root');
+        $autoUrl        = $this->wc->request->param('witch-automatic-url');
+        $customUrl      = $this->wc->request->param('witch-custom-url');
+        $customRootUrl  = $this->wc->request->param('witch-custom-url-from-root');
         
         $witchNewData   = [
             'name'      =>  $name,

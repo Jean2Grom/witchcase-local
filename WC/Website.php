@@ -59,6 +59,7 @@ class Website
             }
         }
         
+        //$this->wc->dump($siteConfiguration);
         foreach( $siteConfiguration as $key => $value ){
             $this->{$key} = $value;
         }
@@ -87,7 +88,7 @@ class Website
         $this->currentAccess    = $siteAccess;
         $firstSlashPosition     = strpos($this->currentAccess, '/');
         $this->baseUri          = ($firstSlashPosition !== false)? substr( $this->currentAccess, $firstSlashPosition ): '';
-        $this->depth            = Witch::getDepth( $this->wc );
+        $this->depth            = WitchSummoning::getDepth( $this->wc );
         
         foreach( $this->modules ?? [] as $moduleName => $moduleConf ){
             foreach( $moduleConf['witches'] ?? [] as $moduleWitchName => $moduleWitchConf ){
@@ -165,6 +166,8 @@ class Website
     
     function display()
     {
+        $this->wc->dump( Witch::createFromId( $this->wc, 24) );
+        
         //$context = $this->context->setExecFile('default');
         
         $this->context->setExecFile('default')->display();

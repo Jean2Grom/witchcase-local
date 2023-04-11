@@ -1,14 +1,13 @@
 <?php
-namespace WC\Attributes;
+namespace WC\Attribute;
 
 use WC\Attribute;
-use WC\WitchCase;
 
-class TextAttribute extends Attribute 
+class DecimalAttribute extends Attribute 
 {
-    const ATTRIBUTE_TYPE    = "text";
+    const ATTRIBUTE_TYPE    = "decimal";
     const ELEMENTS          = [
-        "value"    => "TEXT DEFAULT NULL",
+        "value" => "DECIMAL(10,2) DEFAULT NULL",
     ];
     const PARAMETERS        = [];
     

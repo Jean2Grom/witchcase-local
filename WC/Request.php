@@ -58,7 +58,7 @@ class Request
         }
     }
     
-    function param( string $name, mixed $method=false )
+    function param( string $name, mixed $method=false, int $filter=FILTER_DEFAULT )
     {
         if( (!$method && $this->method == 'POST') || (strtolower( $method ) == 'post') ){
             $paramType = INPUT_POST;
@@ -67,7 +67,7 @@ class Request
             $paramType = INPUT_GET;
         }
         
-        return filter_input($paramType, $name) ?? false;
+        return filter_input($paramType, $name, $filter, FILTER_NULL_ON_FAILURE);
     }
     
     function getWebsite()

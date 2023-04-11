@@ -45,7 +45,7 @@ if( strcmp($action, "publishStructure") == 0 )
     );
     
     $attributesList                  = [];
-    $attributeNameSpaceClassPrefix  = "WC\\Attributes\\";
+    $attributeNameSpaceClassPrefix  = "WC\\Attribute\\";
     $attributeNameSpaceClassSuffix  = "Attribute";
     foreach( get_declared_classes() as $className ){
         if( substr($className, 0, strlen($attributeNameSpaceClassPrefix) ) == $attributeNameSpaceClassPrefix 
@@ -143,7 +143,7 @@ if( strcmp($action, "editStructure") == 0 )
     $structureName = filter_input( INPUT_GET, 'edit' );
     
     $attributesList                  = [];
-    $attributeNameSpaceClassPrefix  = "WC\\Attributes\\";
+    $attributeNameSpaceClassPrefix  = "WC\\Attribute\\";
     $attributeNameSpaceClassSuffix  = "Attribute";
     foreach( get_declared_classes() as $className ){
         if( substr($className, 0, strlen($attributeNameSpaceClassPrefix) ) == $attributeNameSpaceClassPrefix 

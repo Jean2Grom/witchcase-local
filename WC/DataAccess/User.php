@@ -8,6 +8,10 @@ class User
 {    
     static function getUserLoginData( WitchCase $wc, string $login )
     {
+        if( empty($login) ){
+            return [];
+        }
+        
         $query = "";
         $query  .=  "SELECT user_connexion.id AS connexion_id ";
         $query  .=  ", user_connexion.name AS connexion_name ";

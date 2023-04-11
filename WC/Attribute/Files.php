@@ -1,8 +1,7 @@
 <?php
+namespace WC\Attribute;
 
-namespace WC\Attributes;
-
-use WC\Attributes\ExternalTableAttribute;
+use WC\Attribute\ExternalTableAttribute;
 use WC\Module;
 
 class Files extends ExternalTableAttribute {

@@ -431,4 +431,21 @@ class WitchSummoning
         
         return $witches;
     }
+    
+    
+    static function getDepth( WitchCase $wc ): int
+    {
+        $depth = $wc->cache->read( 'system', 'depth' );
+        
+        if( empty($depth) )
+        {
+            $query  =   "SHOW COLUMNS FROM `witch` WHERE `Field` LIKE 'level_%'";
+            $result =   $wc->db->selectQuery($query);
+            $depth  =   count($result);
+            
+            $wc->cache->create('system', 'depth', $depth);
+        }
+        
+        return (int) $depth;
+    }    
 }

@@ -28,7 +28,7 @@ if( !$targetWitch )
     exit();
 }
 
-$target      = $targetWitch->target ?? false;
+$target      = $targetWitch->target() ?? false;
 if( !$target )
 {
     $alerts[] = [
