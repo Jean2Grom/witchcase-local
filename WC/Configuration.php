@@ -89,6 +89,28 @@ class Configuration
         return null;
     }
     
+    function readSiteVar( string $variable, Website $website=null )
+    {
+        if( !$website ){
+            $website = $this->wc->website;
+        }
+        
+        $return = null;
+        foreach( array_reverse($website->siteHeritages) as $section )
+        {
+            $value = $this->read($section, $variable);
+            
+            if( is_array($value) ){
+                $return = array_replace_recursive($return ?? [], $value);
+            }
+            elseif( !is_null($value) ){
+                $return = $value;
+            }
+        }
+        
+        return $return;
+    }
+    
     function getHeritedVariable( $variable, $site )
     {
         if( isset($this->heritedVariables[ $variable ][ $site ]) ){
@@ -406,7 +428,7 @@ class Configuration
      * @param string $siteName : configuration name of site to ckeck
      * @return array : ordered list of sites that are herited from
      */
-    function getSiteHeritage( string $siteName )
+    function getSiteHeritage( string $siteName ): array
     {
         $siteHeritages      = $this->read( $siteName, "siteHeritages" );
         

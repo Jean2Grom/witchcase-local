@@ -537,9 +537,8 @@ class Witch
             if( isset($params['status']) )
             {
                 $this->statusLevel = $this->status;
-                $this->status      = $this->wc->configuration->read('global', "status")[ $this->status ];
+                $this->status      = $this->wc->website->get("status")[ $this->status ];
             }
-$this->wc->dump( $this->wc->configuration->read('global', "status"));
             
             return true;
         }
@@ -594,20 +593,17 @@ $this->wc->dump( $this->wc->configuration->read('global', "status"));
     
     function createDaughter( $params )
     {
-        $name = $params['name'] ?? "";
-        $name = trim($name);
+        $name = trim($params['name'] ?? "");
         if( empty($name) ){
             return false;
         }
-        
+        $site   = trim($params['site'] ?? "");
+        $url    = trim($params['url'] ?? "");
+
         if( $this->depth == $this->wc->website->depth ){
             $this->addLevel();
         }
         
-        $site   = $params['site'] ?? "";
-        $site   = trim($site);
-        $url    = $params['url'] ?? "";
-        $url    = trim($url);
         if( !empty($site) && empty($url) )
         {
             if( $this->site == $site ){
@@ -631,6 +627,11 @@ $this->wc->dump( $this->wc->configuration->read('global', "status"));
         elseif( !empty($site) && !empty($url) ){
             $url    =   self::urlCleanupString($url);
         }
+        
+        
+$this->wc->debug($name);
+throw new \Exception('jean5');
+
         
         if( !empty($url) ){
             $url = $this->checkUrl( $site, $url );
@@ -683,21 +684,15 @@ $this->wc->dump( $this->wc->configuration->read('global', "status"));
     
     function addLevel()
     {
-        $newLevelDepth = $this->depth + 1;
+        WitchDA::increasePlateformDepth($this->wc);        
+        $this->wc->cache->delete( 'system', 'depth' );
         
-        $query  =   "ALTER TABLE `witch` ";
-        $query  .=  "ADD `level_".$newLevelDepth."` INT(11) UNSIGNED NULL DEFAULT NULL ";
-        $query  .=  ", ADD KEY `IDX_level_".$newLevelDepth."` (`level_".$newLevelDepth."`) ";
-
-        $result = $this->wc->db->alterQuery($query);
-        
-        if( !$result ){
+        $depth = WitchSummoning::getDepth( $this->wc );
+        if( $depth == $this->wc->website->depth ){
             return false;
         }
         
-        $this->wc->website->depth = $newLevelDepth;
-        
-        $this->wc->cache->delete( 'system', 'depth' );
+        $this->wc->website->depth = $depth;
         
         return true;
     }

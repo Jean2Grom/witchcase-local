@@ -37,63 +37,42 @@ class Website
     /** @var WitchCase */
     var $wc;
     
-    function __construct( WitchCase $wc, string $name, string $siteAccess='' )
+    function __construct( WitchCase $wc, string $name, string $siteAccess=null )
     {
-        $this->wc           = $wc;
-        $this->name         = $name;        
-        $siteHeritages      = $this->wc->configuration->getSiteHeritage( $this->name );        
-        $siteHeritages[]    = "global";
-        $siteConfiguration  = [];
+        $this->wc               = $wc;
+        $this->name             = $name;
         
-        foreach( $siteHeritages as $section ){
-            foreach( $this->wc->configuration->read($section) as $param => $value ){
-                if( !is_array($value) ){
-                    $siteConfiguration[ $param ] = $value;
-                    continue;
-                }
-                else 
-                {
-                    $previousValue                  = $siteConfiguration[ $param ] ?? [];
-                    $siteConfiguration[ $param ]    = array_replace_recursive($previousValue, $value);
-                }
-            }
-        }
-        
-        //$this->wc->dump($siteConfiguration);
-        foreach( $siteConfiguration as $key => $value ){
-            $this->{$key} = $value;
-        }
-        
-        $this->siteHeritages        = $siteHeritages;
         $this->access               = $this->wc->configuration->read($this->name, "access");
-        $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");        
-        $this->sitesRestrictions    = [ $this->name ];
-        $adminForSites              = !empty($this->adminForSites)? $this->adminForSites :[];
+        $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");
         
-        foreach( $adminForSites as $adminisratedSite )
+        $this->siteHeritages        = $this->wc->configuration->getSiteHeritage( $this->name );
+        $this->siteHeritages[]      = "global";
+        
+        $this->modules              = $this->wc->configuration->readSiteVar('modules', $this) ?? [];
+        $witchesConf                = $this->wc->configuration->readSiteVar('witches', $this) ?? [];
+        
+        $this->sitesRestrictions    = [ $this->name ];
+        foreach( $this->adminForSites ?? [] as $adminisratedSite )
         {
             if( $adminisratedSite == '*' )
             {
                 $this->sitesRestrictions = false;
                 break;
             }
-
+            
             $this->sitesRestrictions[] = $adminisratedSite;
-        }
+        }        
         
-        if( empty($siteAccess) ){
-            $siteAccess = array_values($this->access)[0];
-        }
-        
-        $this->currentAccess    = $siteAccess;
+        $this->currentAccess    = $siteAccess ?? array_values($this->access)[0];
         $firstSlashPosition     = strpos($this->currentAccess, '/');
         $this->baseUri          = ($firstSlashPosition !== false)? substr( $this->currentAccess, $firstSlashPosition ): '';
         $this->depth            = WitchSummoning::getDepth( $this->wc );
         
-        foreach( $this->modules ?? [] as $moduleName => $moduleConf ){
+        foreach( $this->modules as $moduleName => $moduleConf ){
             foreach( $moduleConf['witches'] ?? [] as $moduleWitchName => $moduleWitchConf ){
-                if( empty($this->witches[ $moduleWitchName ]) ){
-                    $this->witches[ $moduleWitchName ] = array_replace_recursive( 
+                if( empty($witchesConf[ $moduleWitchName ]) )
+                {
+                    $witchesConf[ $moduleWitchName ] = array_replace_recursive( 
                         $moduleWitchConf, 
                         [ 'module' => $moduleName ] 
                     );
@@ -101,14 +80,14 @@ class Website
             }
         }
         
-        $this->witchSummoning   = new WitchSummoning( $this->wc, $this->witches, $this ); 
-        $this->witchCrafting    = new WitchCrafting( $this->wc, $this->witchSummoning->configuration, $this );
-        unset($this->witches);
-        
-        $this->context = new Context( $this );
+        $this->witchSummoning   = new WitchSummoning( $this->wc, $witchesConf, $this ); 
+        $this->witchCrafting    = new WitchCrafting( $this->wc, $this->witchSummoning->configuration, $this );        
+        $this->context          = new Context( $this );
     }
     
-    
+    function get(string $name): mixed {
+        return $this->wc->configuration->readSiteVar($name, $this);
+    }
     
     /**
      * Determine and store the url relative to the website
@@ -166,8 +145,6 @@ class Website
     
     function display()
     {
-        $this->wc->dump( Witch::createFromId( $this->wc, 24) );
-        
         //$context = $this->context->setExecFile('default');
         
         $this->context->setExecFile('default')->display();

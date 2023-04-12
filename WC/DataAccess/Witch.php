@@ -46,51 +46,6 @@ class Witch
         return $wc->db->updateQuery( $query, array_replace($params, $conditions) );
     }
     
-    static function urlCleanupString( $urlRaw )
-    {
-        $url    = "";
-        $buffer = explode('/', $urlRaw);
-        foreach( $buffer as $bufferElement )
-        {
-            $urlPart = self::cleanupString( $bufferElement );
-            if( !empty($bufferElement) ){
-                $url .= "/".$urlPart;
-            }
-        }
-        
-        if( empty($url) ){
-            $url = '/';
-        }
-        
-        return $url;
-    }
-
-
-    static function cleanupString( $string )
-    {
-        $characters =   array(
-                'À' => 'a', 'Á' => 'a', 'Â' => 'a', 'Ä' => 'a', 'à' => 'a', 
-                'á' => 'a', 'â' => 'a', 'ä' => 'a', '@' => 'a',
-                'È' => 'e', 'É' => 'e', 'Ê' => 'e', 'Ë' => 'e', 'è' => 'e', 
-                'é' => 'e', 'ê' => 'e', 'ë' => 'e', '€' => 'e',
-                'Ì' => 'i', 'Í' => 'i', 'Î' => 'i', 'Ï' => 'i', 'ì' => 'i', 
-                'í' => 'i', 'î' => 'i', 'ï' => 'i',
-                'Ò' => 'o', 'Ó' => 'o', 'Ô' => 'o', 'Ö' => 'o', 'ò' => 'o', 
-                'ó' => 'o', 'ô' => 'o', 'ö' => 'o',
-                'Ù' => 'u', 'Ú' => 'u', 'Û' => 'u', 'Ü' => 'u', 'ù' => 'u', 
-                'ú' => 'u', 'û' => 'u', 'ü' => 'u', 'µ' => 'u',
-                'Œ' => 'oe', 'œ' => 'oe',
-                '$' => 's'  );
-        
-        $string = strtr($string, $characters);
-        $string = preg_replace('#[^A-Za-z0-9]+#', '-', $string);
-        $string = trim($string, '-');
-        $string = strtolower($string);
-        
-        return $string;
-    }
-    
-    
     function createDaughter( $params )
     {
         $name = $params['name'] ?? "";
@@ -180,25 +135,18 @@ class Witch
         return $this->wc->db->insertQuery($query);
     }
     
-    function addLevel()
+    static function increasePlateformDepth( WitchCase $wc )
     {
-        $newLevelDepth = $this->depth + 1;
+        $wc->cache->delete( 'system', 'depth' );
+        $newLevelDepth = WitchSummoning::getDepth($wc) + 1;
         
         $query  =   "ALTER TABLE `witch` ";
         $query  .=  "ADD `level_".$newLevelDepth."` INT(11) UNSIGNED NULL DEFAULT NULL ";
         $query  .=  ", ADD KEY `IDX_level_".$newLevelDepth."` (`level_".$newLevelDepth."`) ";
-
-        $result = $this->wc->db->alterQuery($query);
         
-        if( !$result ){
-            return false;
-        }
+        $wc->db->debugQuery($query);
         
-        $this->wc->website->depth = $newLevelDepth;
-        
-        $this->wc->cache->delete( 'system', 'depth' );
-        
-        return true;
+        return $wc->db->alterQuery($query);        
     }
     
     private function getNewDaughterIndex()

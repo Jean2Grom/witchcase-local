@@ -142,7 +142,7 @@
                     <optgroup   disabled="disabled" style="display: none;"
                                 class="<?=$site ?>_selected" 
                                 label="<?=$website->name ?>">
-                        <?php foreach( $website->status as $statusKey => $statusLabel ): ?>
+                        <?php foreach( $website->get('status') as $statusKey => $statusLabel ): ?>
                             <option value="<?=$statusKey ?>"><?=$statusLabel ?></option>
                         <?php endforeach; ?>
                     </optgroup>

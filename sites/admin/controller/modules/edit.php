@@ -7,13 +7,9 @@ $possibleActionsList = [
     'save-witch-and-return',
 ];
 
-$action = false;
-if( filter_has_var(INPUT_POST, "action") ){
-    foreach( $possibleActionsList as $possibleAction ){
-        if(filter_input(INPUT_POST, "action") == $possibleAction ){
-            $action = $possibleAction;
-        }
-    }
+$action = $this->wc->request->param('action');
+if( !in_array($action, $possibleActionsList) ){
+    $action = false;
 }
 
 $sites  = [];
@@ -45,8 +41,7 @@ switch( $action )
     case 'save-witch':
         $return = $return ?? false;
         
-        $name   = filter_input( INPUT_POST, 'witch-name' );
-        
+        $name   = trim( $this->wc->request->param('witch-name') );
         if( empty($name) )
         {
             $alerts[] = [
@@ -56,7 +51,7 @@ switch( $action )
             break;
         }
         
-        $site           = $this->wc->request->param('witch-site');
+        $site           = trim( $this->wc->request->param('witch-site') );
         if( !empty($site) && !in_array($site, $sites) )
         {
             $site       = "";
@@ -66,15 +61,15 @@ switch( $action )
             ];
         }
         
-        $data           = $this->wc->request->param('witch-data');
+        $data           = trim( $this->wc->request->param('witch-data') );
         $priority       = $this->wc->request->param('witch-priority', 'POST', FILTER_VALIDATE_INT );
-        $invoke         = $this->wc->request->param('witch-invoke');
-        $context        = $this->wc->request->param('witch-context');
+        $invoke         = trim( $this->wc->request->param('witch-invoke') );
+        $context        = trim( $this->wc->request->param('witch-context') );
         $status         = $this->wc->request->param('witch-status', 'POST', FILTER_VALIDATE_INT );
         
-        $autoUrl        = $this->wc->request->param('witch-automatic-url');
-        $customUrl      = $this->wc->request->param('witch-custom-url');
-        $customRootUrl  = $this->wc->request->param('witch-custom-url-from-root');
+        $autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL);
+        $customUrl      = trim( $this->wc->request->param('witch-custom-url') );
+        $customRootUrl  = $this->wc->request->param('witch-custom-url-from-root', 'POST', FILTER_VALIDATE_BOOL);
         
         $witchNewData   = [
             'name'      =>  $name,
