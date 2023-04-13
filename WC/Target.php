@@ -1,6 +1,7 @@
 <?php
-
 namespace WC;
+
+use WC\DataAccess\Target as TargetDA;
 
 use WC\WitchCase;
 use WC\DataTypes\ExtendedDateTime;
@@ -65,6 +66,31 @@ class Target
         $this->structure    = $structure;
     }
     
+    
+    function countWitches()
+    {
+        $table = $this->structure->table;
+        
+        return TargetDA::countWitches($this->wc, $table, $this->id);
+    }
+    
+    function delete()
+    {
+        foreach( $this->attributes as $attribute ){
+            $attribute->delete();
+        }
+        
+        $table  = $this->structure->table;
+        $id     = $this->id;
+        
+        if( TargetDA::delete($this->wc, $table, $id) && isset($this->wc->website->craftedData[ $table ][ $id ]) ){
+            unset($this->wc->website->craftedData[ $table ][ $id ]);
+        }
+        
+        return true;
+    }
+
+
     function save()
     {
         foreach( $this->attributes as $attribute ){

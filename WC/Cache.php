@@ -121,15 +121,11 @@ class Cache
     {
         $cacheFolder = $this->dir.'/';
         
-        if( !isset($this->folders[ $folder ]) )
-        {
+        if( !isset($this->folders[ $folder ]) ){
             $cacheFolder    .=  $folder;
-            $cacheDuration  =   $this->defaultDuration;
         }
-        else 
-        {
+        else {
             $cacheFolder    .=  $this->folders[ $folder ]['directory'];
-            $cacheDuration  =   $this->folders[ $folder ]['duration'];
         }
         
         if( !is_dir($cacheFolder) 

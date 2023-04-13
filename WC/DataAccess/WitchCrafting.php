@@ -221,7 +221,7 @@ class WitchCrafting
             $queryParameters[ $table.'_'.$paramKey ] = $paramValue;
         }
 
-        $queryWhereElements[]   = "`".$structure->table."`.`id` IN ( :".implode(', :', array_keys($queryParameters)).") ";
+        $queryWhereElements[]   = "`".$structure->table."`.`id` IN ( :".implode(', :', array_keys($queryParameters))." ) ";
 
         foreach( array_keys(Target::ELEMENTS) as $commonStructureField )
         {

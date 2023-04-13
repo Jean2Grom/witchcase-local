@@ -103,6 +103,10 @@ class Witch
         }
         $witch->depth       = $i - 1; 
         
+        if( $witch->depth == 0 ){
+            $witch->mother = false;
+        }
+        
         if( !empty($data['url']) )
         {
             $witch->uri = "";
@@ -566,7 +570,7 @@ class Witch
     }
 
 
-    static function cleanupString( $string )
+    static function cleanupString( string $string ): string
     {
         $characters =   array(
                 'À' => 'a', 'Á' => 'a', 'Â' => 'a', 'Ä' => 'a', 'à' => 'a', 
@@ -582,24 +586,23 @@ class Witch
                 'Œ' => 'oe', 'œ' => 'oe',
                 '$' => 's'  );
         
-        $string = strtr($string, $characters);
-        $string = preg_replace('#[^A-Za-z0-9]+#', '-', $string);
-        $string = trim($string, '-');
-        $string = strtolower($string);
+        $string0    = strtr($string, $characters);
+        $string1    = preg_replace('#[^A-Za-z0-9]+#', '-', $string0);
+        $string2    = trim($string1, '-');
         
-        return $string;
+        return strtolower($string2);
     }
     
     
-    function createDaughter( $params )
+    function createDaughter( array $params )
     {
-        $name = trim($params['name'] ?? "");
+        $name   = trim($params['name'] ?? "");
         if( empty($name) ){
             return false;
         }
         $site   = trim($params['site'] ?? "");
         $url    = trim($params['url'] ?? "");
-
+        
         if( $this->depth == $this->wc->website->depth ){
             $this->addLevel();
         }
@@ -627,59 +630,23 @@ class Witch
         elseif( !empty($site) && !empty($url) ){
             $url    =   self::urlCleanupString($url);
         }
-        
-        
-$this->wc->debug($name);
-throw new \Exception('jean5');
-
-        
+                
         if( !empty($url) ){
             $url = $this->checkUrl( $site, $url );
         }
-        
+                
         $newDaughterPosition                        = $this->position;
-        $newDaughterPosition[ ($this->depth + 1) ]  = $this->getNewDaughterIndex();
+        $newDaughterPosition[ ($this->depth + 1) ]  = WitchDA::getNewDaughterIndex($this->wc, $this->position);
         
-        $excludedAutofields = [
-            'id',
-            'name',
-            'site',
-            'url',
-            'datetime',
-        ];
+        $params['name'] = $name;
+        $params['site'] = !empty($site)? $site: null;
+        $params['url']  = !empty($url)? $url: null;
         
-        $query  =   "INSERT INTO `witch` ";
-        
-        $query  .=  "( `name`, `site`, `url` ";
-        $fields = [];
-        foreach( self::FIELDS as $fieldItem )
-        {
-            if( in_array($fieldItem, $excludedAutofields) || !in_array($fieldItem, array_keys( $params )) ){
-                continue;
-            }
-            $query  .=  ", `".$fieldItem."` ";
-            
-            $fields[] = $fieldItem;
-        }
         foreach( $newDaughterPosition as $level => $levelPosition ){
-            $query  .=  ", `level_".$level."` "; 
+            $params[ "level_".$level ] = $levelPosition;
         }
-        $query  .=  " ) ";
         
-        $query  .=  "VALUES ( '".$this->wc->db->escape_string($name)."' ";
-        //$query  .=  ", '".$this->wc->db->escape_string($site)."' ";
-        $query  .=  ", ".(empty($site)? "NULL": "'".$this->wc->db->escape_string($site)."'")." ";
-        //$query  .=  ", '".$url."' ";
-        $query  .=  ", ".(empty($url)? "NULL": "'".$url."'")." ";
-        foreach( $fields as $fieldItem ){
-            $query  .=  ", '".$this->wc->db->escape_string($params[ $fieldItem ])."' ";
-        }
-        foreach( $newDaughterPosition as $level => $levelPosition ){
-            $query  .=  ", '".$levelPosition."'";
-        }
-        $query  .=  " ) ";
-        
-        return $this->wc->db->insertQuery($query);
+        return WitchDA::create($this->wc, $params);
     }
     
     function addLevel()
@@ -696,71 +663,47 @@ throw new \Exception('jean5');
         
         return true;
     }
-    
-    private function getNewDaughterIndex()
+        
+    function getMothers( bool $toRoot=true, array $sitesRestriction=null )
     {
-        $depth = $this->depth + 1;
-        
-        $query  =   "SELECT MAX(`level_".$depth."`) AS maxIndex FROM `witch` ";
-        
-        $linkingCondition = "WHERE ";
-        foreach($this->position as $level => $levelPosition )
-        {
-            $query  .=  $linkingCondition."`level_".$level."` = '".$levelPosition."' ";
-            $linkingCondition = "AND ";
-        }
-        
-        $result = $this->wc->db->fetchQuery($query);
-        
-        if( !$result ){
-            return false;
-        }
-        
-        $max = (int) $result["maxIndex"];
-        
-        return $max + 1;
-    }
-    
-    function findPreviousUrlForSite( $site )
-    {
-        $url    = "";
-        // TODO function getMother()
-        $mother = $this->mother;
-        while( !empty($mother) )
-        {
-            if( $mother->site == $site ){
-                $url = $mother->url;
-                break;
-            }
-            
-            $mother = $mother->mother;
-        }
-        
-        if( !empty($url) ){
-            return $url;
+        $depth = 1;
+        if( $toRoot ){
+            $depth = '*';
         }
         
         $configuration = [
-            'urlSearch' => [
+            'getMothers' => [
                 'id'    => $this->id,
                 'craft' => false,
                 'parents' => [
-                    'depth' => '*',
+                    'depth' => $depth,
                     'craft' => false,
                 ]
             ]
         ];
         
-        $witchSummoning = new WitchSummoning( $this->wc, $configuration, $this->wc->website );
-        $witchSummoning->sitesRestrictions = [ $site, $this->site ];
+        $witchSummoning                     = new WitchSummoning( $this->wc, $configuration, $this->wc->website );
+        $witchSummoning->sitesRestrictions  = $sitesRestriction ?? $this->wc->website->sitesRestrictions;
         
         $witches = $witchSummoning->summon();
         
-        if( empty($witches['urlSearch']) ){
-            return "";
+        if( empty($witches['getMothers']) ){
+            return false;
         }
         
-        $mother = $witches['urlSearch']->mother;
+        $this->setMother( $witches['getMothers'] );
+        
+        return true;
+    }
+    
+    function findPreviousUrlForSite( string $site )
+    {
+        if( is_null($this->mother) ){
+            $this->getMothers(true, [ $site, $this->site ]);
+        }
+        
+        $url    = "";
+        $mother = $this->mother;
         while( !empty($mother) )
         {
             if( $mother->site == $site ){
@@ -773,22 +716,10 @@ throw new \Exception('jean5');
         
         return $url;
     }
-
-    function checkUrl( $site, $url )
+    
+    function checkUrl( string $site, string $url )
     {
-        $regexp = '^'. $url.'-[0-9]+$';
-        
-        $query = "";
-        $query  .=  "SELECT url ";
-        $query  .=  "FROM `witch` ";
-        $query  .=  "WHERE site = '".$this->wc->db->escape_string($site)."' ";
-        $query  .=  "AND id <> ".$this->id." ";
-        $query  .=  "AND ( ";
-        $query  .=      "url = '".$url."' ";
-        $query  .=      "OR url REGEXP '".$regexp."' ";
-        $query  .=  ") ";
-        
-        $result = $this->wc->db->selectQuery($query);
+        $result = WitchDA::getUrlData($this->wc, $site, $url, (int) $this->id);
         
         if( empty($result) ){
             return $url;
@@ -804,7 +735,7 @@ throw new \Exception('jean5');
             
             if( !empty($match) )
             {
-                $indice = substr($row['url'], (1 + strrpos($row['url'], '-') ) );
+                $indice = (int) substr($row['url'], (1 + strrpos($row['url'], '-') ) );
                 
                 if( $indice > $lastIndice )
                 {
@@ -856,35 +787,13 @@ throw new \Exception('jean5');
             return false;
         }
         
-        $targetTable    = $this->target_table;
-        $targetId       = $this->target_fk;
-        
-        $query = "";
-        $query  .=  "SELECT count(`id`) AS qtt ";
-        $query  .=  "FROM `witch` ";
-        $query  .=  "WHERE `witch`.`target_table` = '".$targetTable."' ";
-        $query  .=  "AND `witch`.`target_fk` = ".$targetId." ";
-        
-        $result = $this->wc->db->fetchQuery($query);
-        
-        $singleContent = ($result['qtt'] == 1);
-        
-        if( !$this->edit(['target_table' => 'NULL', 'target_fk' => 'NULL']) ){
-            return false;
+        if( $this->target()->countWitches() == 1 ){
+            $this->target()->delete();
         }
         
-        $this->target = NULL;
+        $this->target = null;
         
-        if( $singleContent )
-        {
-            $query = "";
-            $query  .=  "DELETE FROM `".$targetTable."` ";
-            $query  .=  "WHERE `id` = ".$targetId." ";
-            
-            return $this->wc->db->deleteQuery($query);
-        }
-        
-        return false;
+        return $this->edit(['target_table' => null, 'target_fk' => null]);
     }
     
     function isParent( self $potentialDescendant ): bool

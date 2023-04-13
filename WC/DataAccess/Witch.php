@@ -46,93 +46,35 @@ class Witch
         return $wc->db->updateQuery( $query, array_replace($params, $conditions) );
     }
     
-    function createDaughter( $params )
+    static function create( WitchCase $wc, array $params )
     {
-        $name = $params['name'] ?? "";
-        $name = trim($name);
-        if( empty($name) ){
-            return false;
+        if( isset($params['id']) ){
+            unset($params['id']);
+        }
+        if( isset($params['datetime']) ){
+            unset($params['datetime']);
         }
         
-        if( $this->depth == $this->wc->website->depth ){
-            $this->addLevel();
-        }
+        $query = "";
+        $query  .=  "INSERT INTO `witch` ";
         
-        $site   = $params['site'] ?? "";
-        $site   = trim($site);
-        $url    = $params['url'] ?? "";
-        $url    = trim($url);
-        if( !empty($site) && empty($url) )
+        $separator = "( ";
+        foreach( array_keys($params) as $field )
         {
-            if( $this->site == $site ){
-                $url    =   $this->url;
-            }
-            else {
-                $url    =   $this->findPreviousUrlForSite( $site );
-            }
-            
-            if( empty($url) ){
-                $url = "/";
-            }
-            else
-            {
-                if( substr($url, -1) != '/' ){
-                    $url .= '/';
-                }
-                $url    .=  self::cleanupString($name);
-            }
+            $query  .=  $separator."`".$field."` ";
+            $separator = ", ";
         }
-        elseif( !empty($site) && !empty($url) ){
-            $url    =   self::urlCleanupString($url);
-        }
+        $query  .=  ") VALUES ";
         
-        if( !empty($url) ){
-            $url = $this->checkUrl( $site, $url );
-        }
-        
-        $newDaughterPosition                        = $this->position;
-        $newDaughterPosition[ ($this->depth + 1) ]  = $this->getNewDaughterIndex();
-        
-        $excludedAutofields = [
-            'id',
-            'name',
-            'site',
-            'url',
-            'datetime',
-        ];
-        
-        $query  =   "INSERT INTO `witch` ";
-        
-        $query  .=  "( `name`, `site`, `url` ";
-        $fields = [];
-        foreach( self::FIELDS as $fieldItem )
+        $separator = "( ";
+        foreach( array_keys($params) as $field )
         {
-            if( in_array($fieldItem, $excludedAutofields) || !in_array($fieldItem, array_keys( $params )) ){
-                continue;
-            }
-            $query  .=  ", `".$fieldItem."` ";
-            
-            $fields[] = $fieldItem;
+            $query  .=  $separator.":".$field." ";
+            $separator = ", ";
         }
-        foreach( $newDaughterPosition as $level => $levelPosition ){
-            $query  .=  ", `level_".$level."` "; 
-        }
-        $query  .=  " ) ";
+        $query  .=  ") ";
         
-        $query  .=  "VALUES ( '".$this->wc->db->escape_string($name)."' ";
-        //$query  .=  ", '".$this->wc->db->escape_string($site)."' ";
-        $query  .=  ", ".(empty($site)? "NULL": "'".$this->wc->db->escape_string($site)."'")." ";
-        //$query  .=  ", '".$url."' ";
-        $query  .=  ", ".(empty($url)? "NULL": "'".$url."'")." ";
-        foreach( $fields as $fieldItem ){
-            $query  .=  ", '".$this->wc->db->escape_string($params[ $fieldItem ])."' ";
-        }
-        foreach( $newDaughterPosition as $level => $levelPosition ){
-            $query  .=  ", '".$levelPosition."'";
-        }
-        $query  .=  " ) ";
-        
-        return $this->wc->db->insertQuery($query);
+        return $wc->db->insertQuery($query, $params);
     }
     
     static function increasePlateformDepth( WitchCase $wc )
@@ -149,20 +91,24 @@ class Witch
         return $wc->db->alterQuery($query);        
     }
     
-    private function getNewDaughterIndex()
+    static function getNewDaughterIndex( WitchCase $wc, array $position=[] )
     {
-        $depth = $this->depth + 1;
+        $depth = count($position) + 1;
         
-        $query  =   "SELECT MAX(`level_".$depth."`) AS maxIndex FROM `witch` ";
+        $params = [];
+        $query  = "SELECT MAX(`level_".$depth."`) AS `maxIndex` FROM `witch` ";
         
         $linkingCondition = "WHERE ";
-        foreach($this->position as $level => $levelPosition )
+        foreach($position as $level => $levelPosition )
         {
-            $query  .=  $linkingCondition."`level_".$level."` = '".$levelPosition."' ";
-            $linkingCondition = "AND ";
+            $field              =   "level_".$level;
+            $query              .=  $linkingCondition."`".$field."` = :".$field." ";
+            $params[ $field ]   =   $levelPosition;
+            $linkingCondition   =   "AND ";
         }
         
-        $result = $this->wc->db->fetchQuery($query);
+        $wc->db->debugQuery($query, $params);
+        $result = $wc->db->fetchQuery($query, $params);
         
         if( !$result ){
             return false;
@@ -173,51 +119,29 @@ class Witch
         return $max + 1;
     }
     
-    function checkUrl( $site, $url )
+    static function getUrlData(  WitchCase $wc, string $site, string $url, int $excludedId=null )
     {
-        $regexp = '^'. $url.'-[0-9]+$';
+        $params = [ 
+            'site'      => $site,
+            'url'       => $url,
+            'regexp'    => '^'. $url.'-[0-9]+$',
+        ];
         
         $query = "";
-        $query  .=  "SELECT url ";
+        $query  .=  "SELECT `url` ";
         $query  .=  "FROM `witch` ";
-        $query  .=  "WHERE site = '".$this->wc->db->escape_string($site)."' ";
-        $query  .=  "AND id <> ".$this->id." ";
+        $query  .=  "WHERE `site` = :site ";
+        if( $excludedId )
+        {
+            $query  .=  "AND `id` <> :excludedId ";
+            $params['excludedId'] = $excludedId;
+        }
         $query  .=  "AND ( ";
-        $query  .=      "url = '".$url."' ";
-        $query  .=      "OR url REGEXP '".$regexp."' ";
+        $query  .=      "`url` = :url ";
+        $query  .=      "OR `url` REGEXP :regexp ";
         $query  .=  ") ";
         
-        $result = $this->wc->db->selectQuery($query);
-        
-        if( empty($result) ){
-            return $url;
-        }
-        
-        $regex = '/^'. str_replace('/', '\/', $url).'(?:-\d+)?$/';
-        
-        $lastIndice = 0;
-        foreach( $result as $row )
-        {
-            $match = [];
-            preg_match($regex, $row['url'], $match);
-            
-            if( !empty($match) )
-            {
-                $indice = substr($row['url'], (1 + strrpos($row['url'], '-') ) );
-                
-                if( $indice > $lastIndice )
-                {
-                    $lastIndice = $indice;
-                    $url        = substr($row['url'], 0, strrpos($row['url'], '-') ).'-'.($indice + 1);
-                }
-            }
-        }
-        
-        if( $lastIndice == 0 ){
-            $url .= '-2';
-        }
-        
-        return $url;
+        return $wc->db->selectQuery($query, $params);
     }
     
     function delete()
@@ -247,43 +171,6 @@ class Witch
         $query  .=  "WHERE id IN ( ". implode(", ", $witchesToDeleteIds)." ) ";
         
         return $this->wc->db->deleteQuery($query);
-    }
-    
-    function deleteContent()
-    {
-        if( !$this->hasTarget() ){
-            return false;
-        }
-        
-        $targetTable    = $this->target_table;
-        $targetId       = $this->target_fk;
-        
-        $query = "";
-        $query  .=  "SELECT count(`id`) AS qtt ";
-        $query  .=  "FROM `witch` ";
-        $query  .=  "WHERE `witch`.`target_table` = '".$targetTable."' ";
-        $query  .=  "AND `witch`.`target_fk` = ".$targetId." ";
-        
-        $result = $this->wc->db->fetchQuery($query);
-        
-        $singleContent = ($result['qtt'] == 1);
-        
-        if( !$this->edit(['target_table' => 'NULL', 'target_fk' => 'NULL']) ){
-            return false;
-        }
-        
-        $this->target = NULL;
-        
-        if( $singleContent )
-        {
-            $query = "";
-            $query  .=  "DELETE FROM `".$targetTable."` ";
-            $query  .=  "WHERE `id` = ".$targetId." ";
-            
-            return $this->wc->db->deleteQuery($query);
-        }
-        
-        return false;
     }
     
 }
