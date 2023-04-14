@@ -1,7 +1,6 @@
 <?php
 namespace WC;
 
-use WC\DataAccess\WitchSummoning;
 use WC\DataAccess\WitchCrafting;
 use WC\DataAccess\Witch as WitchDA;
 
@@ -75,7 +74,7 @@ class Witch
         return self::createFromData( $wc, $data );
     }
     
-    static function createFromData(  WitchCase $wc, array $data )
+    static function createFromData(  WitchCase $wc, array $data ): self
     {
         $witch = new self( $wc );
         
@@ -119,7 +118,7 @@ class Witch
         return $witch;
     }
     
-    function setMother( self $mother )
+    function setMother( self $mother ): self
     {
         $this->unsetMother();
         
@@ -131,7 +130,7 @@ class Witch
         return $this;
     }
     
-    function unsetMother()
+    function unsetMother(): self
     {
         if( !empty($this->mother) && !empty($this->mother->daughters[ $this->id ]) ){
             unset($this->mother->daughters[ $this->id ]);
@@ -142,7 +141,7 @@ class Witch
         return $this;
     }
     
-    function addSister( self $sister )
+    function addSister( self $sister ): self
     {
         if( empty($this->sisters) ){
             $this->sisters = [];
@@ -155,7 +154,7 @@ class Witch
         return $this;
     }
     
-    function removeSister( self $sister )
+    function removeSister( self $sister ): self
     {
         if( !empty($this->sisters[ $sister->id ]) ){
             unset($this->sisters[ $sister->id ]);
@@ -168,7 +167,7 @@ class Witch
         return $this;
     }
     
-    function listSistersIds()
+    function listSistersIds(): array
     {
         $list = [];
         if( !empty($this->sisters) ){
@@ -178,7 +177,7 @@ class Witch
         return $list;
     }
     
-    function reorderWitches( $witchesList )
+    function reorderWitches( array $witchesList ): array
     {
         $orderedWitchesIds = [];
         foreach( $witchesList as $witchItem ) 
@@ -203,42 +202,7 @@ class Witch
         return $orderedWitches;
     }
     
-    function fetchDaughters()
-    {
-        $configuration = [
-            'self' => [
-                'id'    => $this->id,
-                'craft' => false,
-                'children' => [
-                    'depth' => '1',
-                    'craft' => false,
-                ]
-            ]
-        ];
-        
-        $witchSummoning = new WitchSummoning( $this->wc, $configuration, $this->wc->website );
-        $witches        = $witchSummoning->summon();
-        
-        $daughtersIdList = [];
-        foreach( $witches['self']->daughters as $witch )
-        {
-            $daughtersIdList[] = $witch->id;
-            
-            if( empty($this->daughters[ $witch->id ]) && $this->isMotherOf($witch) ){
-                $this->addDaughter($witch);
-            }
-        }
-        
-        foreach( array_keys($this->daughters) as $daughterId ){
-            if( !in_array($daughterId, $daughtersIdList) ){
-                $this->removeDaughter( $daughterId );
-            }
-        }
-        
-        return $this->daughters;
-    }
-    
-    function addDaughter( self $daughter )
+    function addDaughter( self $daughter ): self
     {
         $this->daughters[ $daughter->id ]   = $daughter;
         $daughter->mother                   = $this;
@@ -246,7 +210,7 @@ class Witch
         return $this->reorderDaughters();
     }
     
-    function reorderDaughters()
+    function reorderDaughters(): self
     {
         $daughters                  = $this->daughters;
         $this->daughters            = $this->reorderWitches( $daughters );
@@ -254,7 +218,7 @@ class Witch
         return $this;
     }
     
-    function removeDaughter( self $daughter )
+    function removeDaughter( self $daughter ): self
     {
         if( !empty($this->daughters[ $daughter->id ]) ){
             unset($this->daughters[ $daughter->id ]);
@@ -267,7 +231,7 @@ class Witch
         return $this;
     }
     
-    function listDaughtersIds()
+    function listDaughtersIds(): array
     {
         $list = [];
         if( !empty($this->daughters) ){
@@ -278,14 +242,13 @@ class Witch
     }
     
     
-    function isMotherOf( self $potentialDaughter )
+    function isMotherOf( self $potentialDaughter ): bool
     {
         if( $potentialDaughter->depth != $this->depth + 1 ){
             return false;
         }
         
-        $isDaughter = true;
-        
+        $isDaughter = true;        
         for( $i=1; $i<=$this->depth; $i++ ){
             if( $this->{'level_'.$i} != $potentialDaughter->{'level_'.$i} )
             {
@@ -400,7 +363,7 @@ class Witch
         return $this;
     }
     
-    function isAllowed( Module $module=null, User $user=null )
+    function isAllowed( Module $module=null, User $user=null ): bool
     {
         if( empty($module) && empty($this->invoke) ){
             return false;
@@ -477,7 +440,7 @@ class Witch
         return $permission;
     }
     
-    function edit( array $params )
+    function edit( array $params ): bool
     {
         foreach( $params as $field => $value ){
             if( !in_array($field, self::FIELDS) ){
@@ -550,7 +513,7 @@ class Witch
         return false;
     }
     
-    static function urlCleanupString( $urlRaw )
+    static function urlCleanupString( string $urlRaw ): string
     {
         $url    = "";
         $buffer = explode('/', $urlRaw);
@@ -594,7 +557,7 @@ class Witch
     }
     
     
-    function createDaughter( array $params )
+    function createDaughter( array $params ): bool
     {
         $name   = trim($params['name'] ?? "");
         if( empty($name) ){
@@ -649,12 +612,9 @@ class Witch
         return WitchDA::create($this->wc, $params);
     }
     
-    function addLevel()
+    function addLevel(): bool
     {
-        WitchDA::increasePlateformDepth($this->wc);        
-        $this->wc->cache->delete( 'system', 'depth' );
-        
-        $depth = WitchSummoning::getDepth( $this->wc );
+        $depth = WitchDA::increasePlateformDepth($this->wc);
         if( $depth == $this->wc->website->depth ){
             return false;
         }
@@ -664,48 +624,18 @@ class Witch
         return true;
     }
         
-    function getMothers( bool $toRoot=true, array $sitesRestriction=null )
+    function findPreviousUrlForSite( string $site ): string
     {
-        $depth = 1;
-        if( $toRoot ){
-            $depth = '*';
-        }
-        
-        $configuration = [
-            'getMothers' => [
-                'id'    => $this->id,
-                'craft' => false,
-                'parents' => [
-                    'depth' => $depth,
-                    'craft' => false,
-                ]
-            ]
-        ];
-        
-        $witchSummoning                     = new WitchSummoning( $this->wc, $configuration, $this->wc->website );
-        $witchSummoning->sitesRestrictions  = $sitesRestriction ?? $this->wc->website->sitesRestrictions;
-        
-        $witches = $witchSummoning->summon();
-        
-        if( empty($witches['getMothers']) ){
-            return false;
-        }
-        
-        $this->setMother( $witches['getMothers'] );
-        
-        return true;
-    }
-    
-    function findPreviousUrlForSite( string $site )
-    {
-        if( is_null($this->mother) ){
-            $this->getMothers(true, [ $site, $this->site ]);
-        }
-        
         $url    = "";
         $mother = $this->mother;
-        while( !empty($mother) )
+        while( $mother !== false && $mother->depth > 0 )
         {
+            if( is_null($mother) )
+            {
+                $this->setMother( WitchDA::fetchAncestors($this->wc, $this->id, true, [ $site, $this->site ]) );
+                $mother = $this->mother ?? false;
+            }
+            
             if( $mother->site == $site ){
                 $url = $mother->url;
                 break;
@@ -713,11 +643,11 @@ class Witch
             
             $mother = $mother->mother;
         }
-        
+                
         return $url;
     }
     
-    function checkUrl( string $site, string $url )
+    function checkUrl( string $site, string $url ): string
     {
         $result = WitchDA::getUrlData($this->wc, $site, $url, (int) $this->id);
         
@@ -752,36 +682,34 @@ class Witch
         return $url;
     }
     
-    function delete()
+    function delete( bool $fetchDescendants=true ): bool
     {
-        $query = "";
-        $query  .=  "SELECT * ";
-        $query  .=  "FROM `witch` ";
-        
-        $separator = "WHERE ";
-        foreach( $this->position as $level => $coord )
-        {
-            $query  .=  $separator."`level_".$level."` = ".$coord." ";
-            $separator = "AND ";
+        if( $this->mother === false || $this->depth == 0 ){
+            return false;
         }
         
-        $result = $this->wc->db->selectQuery($query);
-        
-        $witchesToDeleteIds = [];
-        foreach( $result as $row )
-        {
-            ( self::createFromData($this->wc, $row) )->deleteContent();
-            $witchesToDeleteIds[] = $row['id'];
+        if( $fetchDescendants ){
+            foreach( WitchDA::fetchDescendants($this->wc, $this->id, true, false) as $daughter ){
+                $this->addDaughter( $daughter );
+            }
         }
         
-        $query = "";
-        $query  .=  "DELETE FROM `witch` ";
-        $query  .=  "WHERE id IN ( ". implode(", ", $witchesToDeleteIds)." ) ";
+        $deleteIds = array_keys($this->daughters);
+        foreach( $this->daughters as $daughter ){
+            if( !$daughter->delete(false) ){
+                return false;
+            }
+        }
         
-        return $this->wc->db->deleteQuery($query);
-    }
+        $this->deleteContent();
+        if( $fetchDescendants ){
+            $deleteIds[] = $this->id;
+        }
+        
+        return WitchDA::delete($this->wc, $deleteIds);
+    }    
     
-    function deleteContent()
+    function deleteContent(): bool
     {
         if( !$this->hasTarget() ){
             return false;

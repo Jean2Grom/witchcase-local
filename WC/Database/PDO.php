@@ -35,8 +35,29 @@ class PDO implements DatabaseInterface
         $this->pdo = null;
     }
     
-    function fetchQuery( string $query, array $bindParams=[] )
+    function cleanupParamKeys( string $queryRaw, array $bindParamsRaw=[] )
     {
+        $query      = $queryRaw;
+        $bindParams = [];
+        foreach( $bindParamsRaw as $keyRaw => $value )
+        {
+            $key                = str_replace( '-', '__', $keyRaw );
+            $query              = str_replace( ':'.$keyRaw, ':'.$key, $query );
+            $bindParams[ $key ] = $value;
+        }
+        
+        return [
+            'query'         => $query,
+            'bindParams'    => $bindParams,
+        ];
+    }
+    
+    function fetchQuery( string $queryRaw, array $bindParamsRaw=[] )
+    {
+        $cleanupParamKeys   = $this->cleanupParamKeys($queryRaw, $bindParamsRaw);
+        $query              = $cleanupParamKeys['query'];
+        $bindParams         = $cleanupParamKeys['bindParams'];        
+        
         if( empty($bindParams) ){
             $stmt = $this->pdo->query( $query );
         }
@@ -60,8 +81,12 @@ class PDO implements DatabaseInterface
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
     
-    function selectQuery( string $query, array $bindParams=[] )
+    function selectQuery( string $queryRaw, array $bindParamsRaw=[] )
     {
+        $cleanupParamKeys   = $this->cleanupParamKeys($queryRaw, $bindParamsRaw);
+        $query              = $cleanupParamKeys['query'];
+        $bindParams         = $cleanupParamKeys['bindParams'];
+        
         if( empty($bindParams) ){
             $stmt = $this->pdo->query( $query );
         }
@@ -79,8 +104,12 @@ class PDO implements DatabaseInterface
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
     
-    function insertQuery( string $query, array $bindParams=[], $multiple=false )
+    function insertQuery( string $queryRaw, array $bindParamsRaw=[], $multiple=false )
     {
+        $cleanupParamKeys   = $this->cleanupParamKeys($queryRaw, $bindParamsRaw);
+        $query              = $cleanupParamKeys['query'];
+        $bindParams         = $cleanupParamKeys['bindParams'];        
+        
         if( empty($bindParams) )
         {
             $result = $this->pdo->query( $query );            
@@ -118,8 +147,12 @@ class PDO implements DatabaseInterface
         return $return;
     }
     
-    function query( string $query, array $bindParams=[], $multiple=false )
+    function query( string $queryRaw, array $bindParamsRaw=[], $multiple=false )
     {
+        $cleanupParamKeys   = $this->cleanupParamKeys($queryRaw, $bindParamsRaw);
+        $query              = $cleanupParamKeys['query'];
+        $bindParams         = $cleanupParamKeys['bindParams'];
+        
         if( empty($bindParams) )
         {
             $result = $this->pdo->query( $query );

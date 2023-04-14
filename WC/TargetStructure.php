@@ -185,7 +185,7 @@ class TargetStructure
         
         foreach( array_reverse($witchesByDepth) as $witchesArray ){
             foreach( $witchesArray as $witch ){
-                if( empty($witch->fetchDaughters()) ){
+                if( empty(WitchDA::fetchDescendants($this->wc, $witch->id, false, false)) ){
                     $witch->delete();
                 }
                 else {

@@ -77,7 +77,7 @@ class Witch
         return $wc->db->insertQuery($query, $params);
     }
     
-    static function increasePlateformDepth( WitchCase $wc )
+    static function increasePlateformDepth( WitchCase $wc ): int
     {
         $wc->cache->delete( 'system', 'depth' );
         $newLevelDepth = WitchSummoning::getDepth($wc) + 1;
@@ -86,9 +86,10 @@ class Witch
         $query  .=  "ADD `level_".$newLevelDepth."` INT(11) UNSIGNED NULL DEFAULT NULL ";
         $query  .=  ", ADD KEY `IDX_level_".$newLevelDepth."` (`level_".$newLevelDepth."`) ";
         
-        $wc->db->debugQuery($query);
+        $wc->db->alterQuery($query);
+        $wc->cache->delete( 'system', 'depth' );
         
-        return $wc->db->alterQuery($query);        
+        return WitchSummoning::getDepth($wc);
     }
     
     static function getNewDaughterIndex( WitchCase $wc, array $position=[] )
@@ -107,7 +108,6 @@ class Witch
             $linkingCondition   =   "AND ";
         }
         
-        $wc->db->debugQuery($query, $params);
         $result = $wc->db->fetchQuery($query, $params);
         
         if( !$result ){
@@ -144,33 +144,82 @@ class Witch
         return $wc->db->selectQuery($query, $params);
     }
     
-    function delete()
+    static function fetchAncestors( WitchCase $wc, int $witchId, bool $toRoot=true, mixed $sitesRestriction=null )
     {
-        $query = "";
-        $query  .=  "SELECT * ";
-        $query  .=  "FROM `witch` ";
-        
-        $separator = "WHERE ";
-        foreach( $this->position as $level => $coord )
-        {
-            $query  .=  $separator."`level_".$level."` = ".$coord." ";
-            $separator = "AND ";
+        $depth = 1;
+        if( $toRoot ){
+            $depth = '*';
         }
         
-        $result = $this->wc->db->selectQuery($query);
+        $configuration = [
+            'fetchAncestors' => [
+                'id'    => $witchId,
+                'craft' => false,
+                'parents' => [
+                    'depth' => $depth,
+                    'craft' => false,
+                ]
+            ]
+        ];
         
-        $witchesToDeleteIds = [];
-        foreach( $result as $row )
-        {
-            ( self::createFromData($this->wc, $row) )->deleteContent();
-            $witchesToDeleteIds[] = $row['id'];
+        $witchSummoning = new WitchSummoning( $wc, $configuration, $wc->website );
+        if( $sitesRestriction ){
+            $witchSummoning->sitesRestrictions  = $sitesRestriction;
+        }        
+        $witches = $witchSummoning->summon();
+        
+        if( empty($witches['fetchAncestors']) ){
+            return false;
+        }
+        
+        return $witches['fetchAncestors'];
+    }
+    
+    static function fetchDescendants(  WitchCase $wc, int $witchId, bool $completeSubtree=true, mixed $sitesRestriction=null ): array
+    {
+        $depth = 1;
+        if( $completeSubtree ){
+            $depth = '*';
+        }
+                
+        $configuration = [
+            'fetchDescendants' => [
+                'id'    => $witchId,
+                'craft' => false,
+                'children' => [
+                    'depth' => $depth,
+                    'craft' => false,
+                ]
+            ]
+        ];
+        
+        $witchSummoning = new WitchSummoning( $wc, $configuration, $wc->website );
+        if( $sitesRestriction ){
+            $witchSummoning->sitesRestrictions  = $sitesRestriction;
+        }        
+        $witches = $witchSummoning->summon();
+        
+        return $witches['fetchDescendants']->daughters ?? [];
+    }
+    
+    static function delete( WitchCase $wc, array $witchesToDeleteIds ): bool
+    {
+        if( empty($witchesToDeleteIds) ){
+            return true;
+        }
+        
+        $params = [];
+        foreach( $witchesToDeleteIds as $i => $id ){
+            $params[ 'id'.$i ] = $id;
         }
         
         $query = "";
         $query  .=  "DELETE FROM `witch` ";
-        $query  .=  "WHERE id IN ( ". implode(", ", $witchesToDeleteIds)." ) ";
+        $query  .=  "WHERE `id` IN ( ";
+        $query  .=  ":".implode(", :", array_keys($params));
+        $query  .=  " ) ";
         
-        return $this->wc->db->deleteQuery($query);
+        return $wc->db->deleteQuery($query, $params);
     }
     
 }
