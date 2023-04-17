@@ -1,7 +1,7 @@
 <?php
-if( filter_has_var(INPUT_POST, "login") 
-        && $this->wc->user->connexion   ){
-    header('location : '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess);
+if( $this->wc->request->param("login") == "login" && $this->wc->user->connexion )
+{
+    header('Location: '.$this->wc->website->getFullUrl());
     exit();
 }
 

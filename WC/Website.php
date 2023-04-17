@@ -18,7 +18,7 @@ class Website
     var $adminForSites;
     var $sitesRestrictions;
     var $baseUri;
-    var $url;
+    var $urlPath;
     var $modulesList;
     private $rootUrl;
     
@@ -96,7 +96,7 @@ class Website
      * @param string $forSiteAccess : string to force siteAccess if needed
      * @return $this
      */
-    function urlSetup( string $access, string $forSiteAccess='' )
+    function urlPathSetup( string $access, string $forSiteAccess='' )
     {
         if( empty($forSiteAccess) ){
             $forSiteAccess = $this->currentAccess;
@@ -106,7 +106,7 @@ class Website
             $access = strstr($access, '?', true);
         }
         
-        $this->url = Witch::urlCleanupString( substr( $access, strlen($forSiteAccess) ) );
+        $this->urlPath = Witch::urlCleanupString( substr( $access, strlen($forSiteAccess) ) );
         
         return $this;
     }
@@ -306,5 +306,22 @@ class Website
             $this->rootUrl = ($this->baseUri)? $this->baseUri: '/';
         }
         return $this->rootUrl;
+    }
+    
+    function getFullUrl( string $urlPath='', Request $request=null )
+    {
+        if( !$request ){
+            $request = $this->wc->request;
+        }
+        
+        $fullUrl    =   $request->protocole.'://';
+        $fullUrl    .=  $request->host;
+        $fullUrl    .=  $this->baseUri;
+        if( !empty($urlPath) && !str_starts_with($urlPath, '/') ){
+            $fullUrl .= '/';
+        }
+        $fullUrl    .=  $urlPath;
+        
+        return $fullUrl;
     }    
 }

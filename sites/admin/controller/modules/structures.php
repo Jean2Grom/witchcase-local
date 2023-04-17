@@ -127,7 +127,7 @@ if( strcmp($action, "createStructure") == 0 )
                 $queryString .= "&base=".$structureCopyPost;
             }
             
-            header('Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess.$this->witch->url.$queryString );
+            header( 'Location: '.$this->wc->website->getFullUrl($this->witch->url.$queryString) );
             exit;
         }
     }

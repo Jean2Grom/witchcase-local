@@ -30,7 +30,7 @@ if( !$targetWitch )
     ];
     
     $this->wc->user->addAlerts($alerts);
-    header( 'Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess );
+    header( 'Location: '.$this->wc->website->getFullUrl() );
     exit();
 }
 
@@ -116,7 +116,7 @@ switch( $action )
             {
                 $this->wc->user->addAlerts($alerts);
                 
-                header( 'Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess.'/view?id='.$targetWitch->id );
+                header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
                 exit();
             }
         }

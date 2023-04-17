@@ -139,7 +139,7 @@ switch( $action )
         }
         elseif( !empty($structure) && !empty($targetId) )
         {
-            header('Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess.'/edit-content?id='.$newWitchId );
+            header('Location: '.$this->wc->website->getFullUrl('edit-content?id='.$newWitchId) );
             exit();
         }
         else
@@ -151,7 +151,7 @@ switch( $action )
             
             $this->wc->user->addAlerts($alerts);
             
-            header('Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess.'/view?id='.$newWitchId );
+            header('Location: '.$this->wc->website->getFullUrl('view?id='.$newWitchId)  );
             exit();
         }
     break;

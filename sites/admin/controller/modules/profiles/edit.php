@@ -179,7 +179,7 @@ switch( $action )
             {
                 $this->wc->user->addAlerts($alerts);
 
-                header('Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess.'/profiles' );
+                header('Location: '.$this->wc->website->getFullUrl('profiles') );
                 exit();
             }
             
