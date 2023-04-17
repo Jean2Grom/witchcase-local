@@ -7,13 +7,9 @@ $possibleActionsList = [
     'save-witch-and-return',
 ];
 
-$action = false;
-if( filter_has_var(INPUT_POST, "action") ){
-    foreach( $possibleActionsList as $possibleAction ){
-        if(filter_input(INPUT_POST, "action") == $possibleAction ){
-            $action = $possibleAction;
-        }
-    }
+$action = $this->wc->request->param('action');
+if( !in_array($action, $possibleActionsList) ){
+    $action = false;
 }
 
 $sites  = [];
@@ -34,7 +30,7 @@ if( !$targetWitch )
     ];
     
     $this->wc->user->addAlerts($alerts);
-    header( 'Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess );
+    header( 'Location: '.$this->wc->website->getFullUrl() );
     exit();
 }
 
@@ -45,8 +41,7 @@ switch( $action )
     case 'save-witch':
         $return = $return ?? false;
         
-        $name   = filter_input( INPUT_POST, 'witch-name', FILTER_SANITIZE_STRING );
-        
+        $name   = trim( $this->wc->request->param('witch-name') );
         if( empty($name) )
         {
             $alerts[] = [
@@ -56,7 +51,7 @@ switch( $action )
             break;
         }
         
-        $site           = trim( filter_input(INPUT_POST,    'witch-site', FILTER_SANITIZE_STRING) );
+        $site           = trim( $this->wc->request->param('witch-site') );
         if( !empty($site) && !in_array($site, $sites) )
         {
             $site       = "";
@@ -66,15 +61,15 @@ switch( $action )
             ];
         }
         
-        $data           = trim( filter_input(INPUT_POST,    'witch-data', FILTER_SANITIZE_STRING) );
-        $priority       = filter_input( INPUT_POST,         'witch-priority', FILTER_VALIDATE_INT );
-        $invoke         = trim( filter_input(INPUT_POST,    'witch-invoke', FILTER_SANITIZE_STRING) );
-        $context        = trim( filter_input(INPUT_POST,    'witch-context', FILTER_SANITIZE_STRING) );
-        $status         = filter_input( INPUT_POST,         'witch-status', FILTER_VALIDATE_INT );
+        $data           = trim( $this->wc->request->param('witch-data') );
+        $priority       = $this->wc->request->param('witch-priority', 'POST', FILTER_VALIDATE_INT );
+        $invoke         = trim( $this->wc->request->param('witch-invoke') );
+        $context        = trim( $this->wc->request->param('witch-context') );
+        $status         = $this->wc->request->param('witch-status', 'POST', FILTER_VALIDATE_INT );
         
-        $autoUrl        = filter_has_var(INPUT_POST,        'witch-automatic-url');
-        $customUrl      = trim( filter_input(INPUT_POST,    'witch-custom-url', FILTER_SANITIZE_STRING) );
-        $customRootUrl  = filter_has_var(INPUT_POST,        'witch-custom-url-from-root');
+        $autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL);
+        $customUrl      = trim( $this->wc->request->param('witch-custom-url') );
+        $customRootUrl  = $this->wc->request->param('witch-custom-url-from-root', 'POST', FILTER_VALIDATE_BOOL);
         
         $witchNewData   = [
             'name'      =>  $name,
@@ -121,7 +116,7 @@ switch( $action )
             {
                 $this->wc->user->addAlerts($alerts);
                 
-                header( 'Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess.'/view?id='.$targetWitch->id );
+                header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
                 exit();
             }
         }

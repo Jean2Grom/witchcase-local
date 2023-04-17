@@ -168,7 +168,7 @@ switch( $action )
         }
         else
         {
-            header('Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess.'/edit-content?id='.$targetWitch->id );
+            header( 'Location: '.$this->wc->website->getFullUrl('edit-content?id='.$targetWitch->id) );
             exit();
         }
     break;

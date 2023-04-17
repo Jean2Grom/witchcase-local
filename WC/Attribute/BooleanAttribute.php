@@ -1,5 +1,5 @@
 <?php
-namespace WC\Attributes;
+namespace WC\Attribute;
 
 use WC\Attribute;
 

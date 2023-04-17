@@ -220,10 +220,11 @@ class MySQLi implements DatabaseInterface
                 ...$statementPreparation['bindParams'] 
             );
             
-            $execute = $stmt->execute();
+            $execute        = $stmt->execute();
+            $affectedRows   = $stmt->affected_rows;
             $stmt->close();
             
-            return $execute? $stmt->affected_rows: false;
+            return $execute? $affectedRows: false;
         }
         
         $affectedRows       = 0;

@@ -1,8 +1,8 @@
 <?php
 namespace WC;
 
-use WC\DataAccess\WitchSummoning;
 use WC\DataAccess\WitchCrafting;
+use WC\DataAccess\Witch as WitchDA;
 
 /**
  * Description of Witch
@@ -65,19 +65,16 @@ class Witch
     
     static function createFromId( WitchCase $wc, int $id )
     {
-        if( !empty($id) )
-        {
-            $query = "";
-            $query  .=  "SELECT * FROM witch ";
-            $query  .=  "WHERE id = ".( (integer) $id );
-            
-            $data = $wc->db->fetchQuery($query);
+        $data = WitchDA::readFromId($wc, $id);
+        
+        if( empty($data) ){
+            return false;
         }
         
         return self::createFromData( $wc, $data );
     }
     
-    static function createFromData(  WitchCase $wc, array $data )
+    static function createFromData(  WitchCase $wc, array $data ): self
     {
         $witch = new self( $wc );
         
@@ -98,8 +95,6 @@ class Witch
         $witch->position    = [];
         
         $i = 1;
-        //while( isset($witch->{'level_'.$i}) )
-        //while( isset($witch->properties['level_'.$i]) )
         while( isset($data['level_'.$i]) )
         {
             $witch->position[$i] = (int) $witch->{'level_'.$i};
@@ -107,7 +102,10 @@ class Witch
         }
         $witch->depth       = $i - 1; 
         
-        //if( !empty($witch->url) )
+        if( $witch->depth == 0 ){
+            $witch->mother = false;
+        }
+        
         if( !empty($data['url']) )
         {
             $witch->uri = "";
@@ -120,7 +118,7 @@ class Witch
         return $witch;
     }
     
-    function setMother( self $mother )
+    function setMother( self $mother ): self
     {
         $this->unsetMother();
         
@@ -132,7 +130,7 @@ class Witch
         return $this;
     }
     
-    function unsetMother()
+    function unsetMother(): self
     {
         if( !empty($this->mother) && !empty($this->mother->daughters[ $this->id ]) ){
             unset($this->mother->daughters[ $this->id ]);
@@ -143,7 +141,7 @@ class Witch
         return $this;
     }
     
-    function addSister( self $sister )
+    function addSister( self $sister ): self
     {
         if( empty($this->sisters) ){
             $this->sisters = [];
@@ -156,7 +154,7 @@ class Witch
         return $this;
     }
     
-    function removeSister( self $sister )
+    function removeSister( self $sister ): self
     {
         if( !empty($this->sisters[ $sister->id ]) ){
             unset($this->sisters[ $sister->id ]);
@@ -169,7 +167,7 @@ class Witch
         return $this;
     }
     
-    function listSistersIds()
+    function listSistersIds(): array
     {
         $list = [];
         if( !empty($this->sisters) ){
@@ -179,7 +177,7 @@ class Witch
         return $list;
     }
     
-    function reorderWitches( $witchesList )
+    function reorderWitches( array $witchesList ): array
     {
         $orderedWitchesIds = [];
         foreach( $witchesList as $witchItem ) 
@@ -204,42 +202,7 @@ class Witch
         return $orderedWitches;
     }
     
-    function fetchDaughters()
-    {
-        $configuration = [
-            'self' => [
-                'id'    => $this->id,
-                'craft' => false,
-                'children' => [
-                    'depth' => '1',
-                    'craft' => false,
-                ]
-            ]
-        ];
-        
-        $witchSummoning = new WitchSummoning( $this->wc, $configuration, $this->wc->website );
-        $witches        = $witchSummoning->summon();
-        
-        $daughtersIdList = [];
-        foreach( $witches['self']->daughters as $witch )
-        {
-            $daughtersIdList[] = $witch->id;
-            
-            if( empty($this->daughters[ $witch->id ]) && $this->isMotherOf($witch) ){
-                $this->addDaughter($witch);
-            }
-        }
-        
-        foreach( array_keys($this->daughters) as $daughterId ){
-            if( !in_array($daughterId, $daughtersIdList) ){
-                $this->removeDaughter( $daughterId );
-            }
-        }
-        
-        return $this->daughters;
-    }
-    
-    function addDaughter( self $daughter )
+    function addDaughter( self $daughter ): self
     {
         $this->daughters[ $daughter->id ]   = $daughter;
         $daughter->mother                   = $this;
@@ -247,7 +210,7 @@ class Witch
         return $this->reorderDaughters();
     }
     
-    function reorderDaughters()
+    function reorderDaughters(): self
     {
         $daughters                  = $this->daughters;
         $this->daughters            = $this->reorderWitches( $daughters );
@@ -255,7 +218,7 @@ class Witch
         return $this;
     }
     
-    function removeDaughter( self $daughter )
+    function removeDaughter( self $daughter ): self
     {
         if( !empty($this->daughters[ $daughter->id ]) ){
             unset($this->daughters[ $daughter->id ]);
@@ -268,7 +231,7 @@ class Witch
         return $this;
     }
     
-    function listDaughtersIds()
+    function listDaughtersIds(): array
     {
         $list = [];
         if( !empty($this->daughters) ){
@@ -279,14 +242,13 @@ class Witch
     }
     
     
-    function isMotherOf( self $potentialDaughter )
+    function isMotherOf( self $potentialDaughter ): bool
     {
         if( $potentialDaughter->depth != $this->depth + 1 ){
             return false;
         }
         
-        $isDaughter = true;
-        
+        $isDaughter = true;        
         for( $i=1; $i<=$this->depth; $i++ ){
             if( $this->{'level_'.$i} != $potentialDaughter->{'level_'.$i} )
             {
@@ -401,23 +363,7 @@ class Witch
         return $this;
     }
     
-    static function getDepth( WitchCase $wc )
-    {
-        $depth = $wc->cache->read( 'system', 'depth' );
-        
-        if( empty($depth) )
-        {
-            $query  =   "SHOW COLUMNS FROM `witch` WHERE `Field` LIKE 'level_%'";
-            $result =   $wc->db->selectQuery($query);
-            $depth  =   count($result);
-            
-            $wc->cache->create('system', 'depth', $depth);
-        }
-        
-        return (int) $depth;
-    }
-    
-    function isAllowed( Module $module=null, User $user=null )
+    function isAllowed( Module $module=null, User $user=null ): bool
     {
         if( empty($module) && empty($this->invoke) ){
             return false;
@@ -494,27 +440,17 @@ class Witch
         return $permission;
     }
     
-    function edit( array $params )
+    function edit( array $params ): bool
     {
         foreach( $params as $field => $value ){
             if( !in_array($field, self::FIELDS) ){
-                unset( $params[ $field ] );
+                unset($params[ $field ]);
             }
         }
         
-        $name = $params['name'] ?? "";
-        $name = trim($name);
-        if( !empty($name) ){
-            $params['name'] = $name;
-        }
-        elseif( isset($params['name']) ) {
-            unset($params['name']);
-        }
-        
-        $site   = $params['site'] ?? "";
-        $site   = trim($site);
-        $url    = $params['url'] ?? "";
-        $url    = trim($url);
+        $name   = trim($params['name'] ?? "");
+        $site   = trim($params['site'] ?? "");
+        $url    = trim($params['url'] ?? "");
         
         if( !empty($site) && empty($url) )
         {
@@ -551,33 +487,24 @@ class Witch
             return false;
         }
         
-        $query = "";
-        $query  .=  "UPDATE `witch` ";
         
-        $separator = "SET ";
-        foreach( $params as $field => $value )
-        {
-            if( $value == 'NULL' ){
-                $query      .=  $separator.$this->wc->db->escape_string($field)."= NULL ";
-            }
-            else {
-                $query      .=  $separator.$this->wc->db->escape_string($field)."='".$this->wc->db->escape_string($value)."' ";
-            }
-            $separator  =  ", ";
+        if( !empty($name) ){
+            $params['name'] = $name;
+        }
+        elseif( isset($params['name']) ) {
+            unset($params['name']);
         }
         
-        $query  .=  "WHERE id='".$this->id."' ";
-        
-        if( $this->wc->db->updateQuery($query) )
+        if( WitchDA::update($this->wc, $params, ['id' => $this->id]) )
         {
             foreach( $params as $field => $value ){
-                $this->{$field} = $value;
+                $this->properties[$field] = $value;
             }
             
             if( isset($params['status']) )
             {
                 $this->statusLevel = $this->status;
-                $this->status      = $this->wc->configuration->read('global', "status")[ $this->status ];
+                $this->status      = $this->wc->website->get("status")[ $this->status ];
             }
             
             return true;
@@ -586,7 +513,7 @@ class Witch
         return false;
     }
     
-    static function urlCleanupString( $urlRaw )
+    static function urlCleanupString( string $urlRaw ): string
     {
         $url    = "";
         $buffer = explode('/', $urlRaw);
@@ -606,7 +533,7 @@ class Witch
     }
 
 
-    static function cleanupString( $string )
+    static function cleanupString( string $string ): string
     {
         $characters =   array(
                 'À' => 'a', 'Á' => 'a', 'Â' => 'a', 'Ä' => 'a', 'à' => 'a', 
@@ -622,31 +549,27 @@ class Witch
                 'Œ' => 'oe', 'œ' => 'oe',
                 '$' => 's'  );
         
-        $string = strtr($string, $characters);
-        $string = preg_replace('#[^A-Za-z0-9]+#', '-', $string);
-        $string = trim($string, '-');
-        $string = strtolower($string);
+        $string0    = strtr($string, $characters);
+        $string1    = preg_replace('#[^A-Za-z0-9]+#', '-', $string0);
+        $string2    = trim($string1, '-');
         
-        return $string;
+        return strtolower($string2);
     }
     
     
-    function createDaughter( $params )
+    function createDaughter( array $params ): bool
     {
-        $name = $params['name'] ?? "";
-        $name = trim($name);
+        $name   = trim($params['name'] ?? "");
         if( empty($name) ){
             return false;
         }
+        $site   = trim($params['site'] ?? "");
+        $url    = trim($params['url'] ?? "");
         
         if( $this->depth == $this->wc->website->depth ){
             $this->addLevel();
         }
         
-        $site   = $params['site'] ?? "";
-        $site   = trim($site);
-        $url    = $params['url'] ?? "";
-        $url    = trim($url);
         if( !empty($site) && empty($url) )
         {
             if( $this->site == $site ){
@@ -670,108 +593,49 @@ class Witch
         elseif( !empty($site) && !empty($url) ){
             $url    =   self::urlCleanupString($url);
         }
-        
+                
         if( !empty($url) ){
             $url = $this->checkUrl( $site, $url );
         }
-        
+                
         $newDaughterPosition                        = $this->position;
-        $newDaughterPosition[ ($this->depth + 1) ]  = $this->getNewDaughterIndex();
+        $newDaughterPosition[ ($this->depth + 1) ]  = WitchDA::getNewDaughterIndex($this->wc, $this->position);
         
-        $excludedAutofields = [
-            'id',
-            'name',
-            'site',
-            'url',
-            'datetime',
-        ];
+        $params['name'] = $name;
+        $params['site'] = !empty($site)? $site: null;
+        $params['url']  = !empty($url)? $url: null;
         
-        $query  =   "INSERT INTO `witch` ";
-        
-        $query  .=  "( `name`, `site`, `url` ";
-        $fields = [];
-        foreach( self::FIELDS as $fieldItem )
-        {
-            if( in_array($fieldItem, $excludedAutofields) || !in_array($fieldItem, array_keys( $params )) ){
-                continue;
-            }
-            $query  .=  ", `".$fieldItem."` ";
-            
-            $fields[] = $fieldItem;
-        }
         foreach( $newDaughterPosition as $level => $levelPosition ){
-            $query  .=  ", `level_".$level."` "; 
+            $params[ "level_".$level ] = $levelPosition;
         }
-        $query  .=  " ) ";
         
-        $query  .=  "VALUES ( '".$this->wc->db->escape_string($name)."' ";
-        //$query  .=  ", '".$this->wc->db->escape_string($site)."' ";
-        $query  .=  ", ".(empty($site)? "NULL": "'".$this->wc->db->escape_string($site)."'")." ";
-        //$query  .=  ", '".$url."' ";
-        $query  .=  ", ".(empty($url)? "NULL": "'".$url."'")." ";
-        foreach( $fields as $fieldItem ){
-            $query  .=  ", '".$this->wc->db->escape_string($params[ $fieldItem ])."' ";
-        }
-        foreach( $newDaughterPosition as $level => $levelPosition ){
-            $query  .=  ", '".$levelPosition."'";
-        }
-        $query  .=  " ) ";
-        
-        return $this->wc->db->insertQuery($query);
+        return WitchDA::create($this->wc, $params);
     }
     
-    function addLevel()
+    function addLevel(): bool
     {
-        $newLevelDepth = $this->depth + 1;
-        
-        $query  =   "ALTER TABLE `witch` ";
-        $query  .=  "ADD `level_".$newLevelDepth."` INT(11) UNSIGNED NULL DEFAULT NULL ";
-        $query  .=  ", ADD KEY `IDX_level_".$newLevelDepth."` (`level_".$newLevelDepth."`) ";
-
-        $result = $this->wc->db->alterQuery($query);
-        
-        if( !$result ){
+        $depth = WitchDA::increasePlateformDepth($this->wc);
+        if( $depth == $this->wc->website->depth ){
             return false;
         }
         
-        $this->wc->website->depth = $newLevelDepth;
-        
-        $this->wc->cache->delete( 'system', 'depth' );
+        $this->wc->website->depth = $depth;
         
         return true;
     }
-    
-    private function getNewDaughterIndex()
-    {
-        $depth = $this->depth + 1;
         
-        $query  =   "SELECT MAX(`level_".$depth."`) AS maxIndex FROM `witch` ";
-        
-        $linkingCondition = "WHERE ";
-        foreach($this->position as $level => $levelPosition )
-        {
-            $query  .=  $linkingCondition."`level_".$level."` = '".$levelPosition."' ";
-            $linkingCondition = "AND ";
-        }
-        
-        $result = $this->wc->db->fetchQuery($query);
-        
-        if( !$result ){
-            return false;
-        }
-        
-        $max = (int) $result["maxIndex"];
-        
-        return $max + 1;
-    }
-    
-    function findPreviousUrlForSite( $site )
+    function findPreviousUrlForSite( string $site ): string
     {
         $url    = "";
-        // TODO function getMother()
         $mother = $this->mother;
-        while( !empty($mother) )
+        while( $mother !== false && $mother->depth > 0 )
         {
+            if( is_null($mother) )
+            {
+                $this->setMother( WitchDA::fetchAncestors($this->wc, $this->id, true, [ $site, $this->site ]) );
+                $mother = $this->mother ?? false;
+            }
+            
             if( $mother->site == $site ){
                 $url = $mother->url;
                 break;
@@ -779,60 +643,13 @@ class Witch
             
             $mother = $mother->mother;
         }
-        
-        if( !empty($url) ){
-            return $url;
-        }
-        
-        $configuration = [
-            'urlSearch' => [
-                'id'    => $this->id,
-                'craft' => false,
-                'parents' => [
-                    'depth' => '*',
-                    'craft' => false,
-                ]
-            ]
-        ];
-        
-        $witchSummoning = new WitchSummoning( $this->wc, $configuration, $this->wc->website );
-        $witchSummoning->sitesRestrictions = [ $site, $this->site ];
-        
-        $witches = $witchSummoning->summon();
-        
-        if( empty($witches['urlSearch']) ){
-            return "";
-        }
-        
-        $mother = $witches['urlSearch']->mother;
-        while( !empty($mother) )
-        {
-            if( $mother->site == $site ){
-                $url = $mother->url;
-                break;
-            }
-            
-            $mother = $mother->mother;
-        }
-        
+                
         return $url;
     }
-
-    function checkUrl( $site, $url )
+    
+    function checkUrl( string $site, string $url ): string
     {
-        $regexp = '^'. $url.'-[0-9]+$';
-        
-        $query = "";
-        $query  .=  "SELECT url ";
-        $query  .=  "FROM `witch` ";
-        $query  .=  "WHERE site = '".$this->wc->db->escape_string($site)."' ";
-        $query  .=  "AND id <> ".$this->id." ";
-        $query  .=  "AND ( ";
-        $query  .=      "url = '".$url."' ";
-        $query  .=      "OR url REGEXP '".$regexp."' ";
-        $query  .=  ") ";
-        
-        $result = $this->wc->db->selectQuery($query);
+        $result = WitchDA::getUrlData($this->wc, $site, $url, (int) $this->id);
         
         if( empty($result) ){
             return $url;
@@ -848,7 +665,7 @@ class Witch
             
             if( !empty($match) )
             {
-                $indice = substr($row['url'], (1 + strrpos($row['url'], '-') ) );
+                $indice = (int) substr($row['url'], (1 + strrpos($row['url'], '-') ) );
                 
                 if( $indice > $lastIndice )
                 {
@@ -865,73 +682,49 @@ class Witch
         return $url;
     }
     
-    function delete()
+    function delete( bool $fetchDescendants=true ): bool
     {
-        $query = "";
-        $query  .=  "SELECT * ";
-        $query  .=  "FROM `witch` ";
-        
-        $separator = "WHERE ";
-        foreach( $this->position as $level => $coord )
-        {
-            $query  .=  $separator."`level_".$level."` = ".$coord." ";
-            $separator = "AND ";
+        if( $this->mother === false || $this->depth == 0 ){
+            return false;
         }
         
-        $result = $this->wc->db->selectQuery($query);
-        
-        $witchesToDeleteIds = [];
-        foreach( $result as $row )
-        {
-            ( self::createFromData($this->wc, $row) )->deleteContent();
-            $witchesToDeleteIds[] = $row['id'];
+        if( $fetchDescendants ){
+            foreach( WitchDA::fetchDescendants($this->wc, $this->id, true, false) as $daughter ){
+                $this->addDaughter( $daughter );
+            }
         }
         
-        $query = "";
-        $query  .=  "DELETE FROM `witch` ";
-        $query  .=  "WHERE id IN ( ". implode(", ", $witchesToDeleteIds)." ) ";
+        $deleteIds = array_keys($this->daughters);
+        foreach( $this->daughters as $daughter ){
+            if( !$daughter->delete(false) ){
+                return false;
+            }
+        }
         
-        return $this->wc->db->deleteQuery($query);
-    }
+        $this->deleteContent();
+        if( $fetchDescendants ){
+            $deleteIds[] = $this->id;
+        }
+        
+        return WitchDA::delete($this->wc, $deleteIds);
+    }    
     
-    function deleteContent()
+    function deleteContent(): bool
     {
         if( !$this->hasTarget() ){
             return false;
         }
         
-        $targetTable    = $this->target_table;
-        $targetId       = $this->target_fk;
-        
-        $query = "";
-        $query  .=  "SELECT count(`id`) AS qtt ";
-        $query  .=  "FROM `witch` ";
-        $query  .=  "WHERE `witch`.`target_table` = '".$targetTable."' ";
-        $query  .=  "AND `witch`.`target_fk` = ".$targetId." ";
-        
-        $result = $this->wc->db->fetchQuery($query);
-        
-        $singleContent = ($result['qtt'] == 1);
-        
-        if( !$this->edit(['target_table' => 'NULL', 'target_fk' => 'NULL']) ){
-            return false;
+        if( $this->target()->countWitches() == 1 ){
+            $this->target()->delete();
         }
         
-        $this->target = NULL;
+        $this->target = null;
         
-        if( $singleContent )
-        {
-            $query = "";
-            $query  .=  "DELETE FROM `".$targetTable."` ";
-            $query  .=  "WHERE `id` = ".$targetId." ";
-            
-            return $this->wc->db->deleteQuery($query);
-        }
-        
-        return false;
+        return $this->edit(['target_table' => null, 'target_fk' => null]);
     }
     
-    function isParent( self $potentialDescendant )
+    function isParent( self $potentialDescendant ): bool
     {
         $potentialDescendantPasition = $potentialDescendant->position;
         foreach( $this->position as $level => $levelPosition ){

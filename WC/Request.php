@@ -12,7 +12,7 @@ class Request
     var $host;
     var $port;
     var $uri;
-    var $url;
+    var $path;
     var $queryString;
     var $requesterIpAddress;
     
@@ -40,7 +40,7 @@ class Request
                                         ?? $_SERVER["SERVER_PORT"];
         $this->uri                  = filter_input(INPUT_SERVER, "SCRIPT_URI", FILTER_DEFAULT, FILTER_NULL_ON_FAILURE)
                                         ?? $_SERVER["SCRIPT_URI"];
-        $this->url                  = filter_input(INPUT_SERVER, "SCRIPT_URL")
+        $this->path                 = filter_input(INPUT_SERVER, "SCRIPT_URL")
                                         ?? $_SERVER["PATH_INFO"] ?? "/";
         $this->queryString          = filter_input(INPUT_SERVER, "QUERY_STRING")
                                         ?? $_SERVER["QUERY_STRING"] ?? "";
@@ -54,11 +54,11 @@ class Request
         }
         
         if( !$this->uri ){
-           $this->uri =  $this->protocole."://".$this->host.$this->url;
+           $this->uri =  $this->protocole."://".$this->host.$this->path;
         }
     }
     
-    function param( string $name, mixed $method=false )
+    function param( string $name, mixed $method=false, int $filter=FILTER_DEFAULT )
     {
         if( (!$method && $this->method == 'POST') || (strtolower( $method ) == 'post') ){
             $paramType = INPUT_POST;
@@ -67,7 +67,7 @@ class Request
             $paramType = INPUT_GET;
         }
         
-        return filter_input($paramType, $name) ?? false;
+        return filter_input($paramType, $name, $filter, FILTER_NULL_ON_FAILURE);
     }
     
     function getWebsite()
@@ -100,7 +100,16 @@ class Request
         
         $this->website = new Website( $this->wc, $compareAccess['siteName']  , $compareAccess['matchedSiteAccess'] );
         
-        return $this->website->urlSetup($access);
+        return $this->website->urlPathSetup($access);
+    }
+    
+    function getFullUrl( string $urlPath='', Website $website=null )
+    {
+        if( !$website ){
+            $website = $this->website;
+        }
+        
+        return $this->website->getFullUrl($urlPath, $this);
     }
     
     private function compareAccess( $access )

@@ -7,13 +7,9 @@ $possibleActionsList = [
     'create-new-witch',
 ];
 
-$action = false;
-if( filter_has_var(INPUT_POST, "action") ){
-    foreach( $possibleActionsList as $possibleAction ){
-        if(filter_input(INPUT_POST, "action") == $possibleAction ){
-            $action = $possibleAction;
-        }
-    }
+$action = $this->wc->request->param('action');
+if( !in_array($action, $possibleActionsList) ){
+    $action = false;
 }
 
 $sites  = [];
@@ -48,8 +44,7 @@ switch( $action )
             break;
         }
         
-        $name = filter_input( INPUT_POST, 'new-witch-name', FILTER_SANITIZE_STRING );
-        
+        $name = $this->wc->request->param('new-witch-name');
         if( empty($name) )
         {
             $alerts[] = [
@@ -59,7 +54,7 @@ switch( $action )
             break;
         }
         
-        $site           = trim( filter_input(INPUT_POST,    'new-witch-site', FILTER_SANITIZE_STRING) );
+        $site           = trim( $this->wc->request->param('new-witch-site') );
         if( !empty($site) && !in_array($site, $sites) )
         {
             $site       = "";
@@ -69,18 +64,17 @@ switch( $action )
             ];
         }
         
-        $data           = trim( filter_input(INPUT_POST,    'new-witch-data', FILTER_SANITIZE_STRING) );
-        $priority       = filter_input( INPUT_POST,         'new-witch-priority', FILTER_VALIDATE_INT );
-        $invoke         = trim( filter_input(INPUT_POST,    'new-witch-invoke', FILTER_SANITIZE_STRING) );
-        $context        = trim( filter_input(INPUT_POST,    'new-witch-context', FILTER_SANITIZE_STRING) );
-        $status         = filter_input( INPUT_POST,         'new-witch-status', FILTER_VALIDATE_INT );
+        $data           = trim( $this->wc->request->param('new-witch-data') );
+        $priority       = $this->wc->request->param('new-witch-priority', 'POST', FILTER_VALIDATE_INT );
+        $invoke         = trim( $this->wc->request->param('new-witch-invoke') );
+        $context        = trim( $this->wc->request->param('new-witch-context') );
+        $status         = $this->wc->request->param('new-witch-status', 'POST', FILTER_VALIDATE_INT );
         
-        $autoUrl        = filter_has_var(INPUT_POST,        'new-witch-automatic-url');
-        $customUrl      = trim( filter_input(INPUT_POST,    'new-witch-custom-url', FILTER_SANITIZE_STRING) );
-        $customRootUrl  = filter_has_var(INPUT_POST,        'new-witch-custom-url-from-root');
+        $autoUrl        = $this->wc->request->param('new-witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL);
+        $customUrl      = trim( $this->wc->request->param('new-witch-custom-url') );        
+        $customRootUrl  = $this->wc->request->param('new-witch-custom-url-from-root', 'POST', FILTER_VALIDATE_BOOL);       
         
-        $structure      = trim( filter_input(INPUT_POST,    'new-witch-structure', FILTER_SANITIZE_STRING) );
-        
+        $structure      = trim( $this->wc->request->param('new-witch-structure') );       
         if( !empty($structure) )
         {
             $isValidStructure = false;
@@ -145,7 +139,7 @@ switch( $action )
         }
         elseif( !empty($structure) && !empty($targetId) )
         {
-            header('Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess.'/edit-content?id='.$newWitchId );
+            header('Location: '.$this->wc->website->getFullUrl('edit-content?id='.$newWitchId) );
             exit();
         }
         else
@@ -157,7 +151,7 @@ switch( $action )
             
             $this->wc->user->addAlerts($alerts);
             
-            header('Location: '.$this->wc->request->protocole.'://'.$this->wc->website->currentAccess.'/view?id='.$newWitchId );
+            header('Location: '.$this->wc->website->getFullUrl('view?id='.$newWitchId)  );
             exit();
         }
     break;

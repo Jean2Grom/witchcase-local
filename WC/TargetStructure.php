@@ -49,7 +49,7 @@ class TargetStructure
             
             if( empty($this->attributes[ $attributeName ]) )
             {
-                $className = "WC\\Attributes\\".ucfirst($attributeType).'Attribute';
+                $className = "WC\\Attribute\\".ucfirst($attributeType).'Attribute';
                 
                 if( !class_exists($className) )
                 {
@@ -185,7 +185,7 @@ class TargetStructure
         
         foreach( array_reverse($witchesByDepth) as $witchesArray ){
             foreach( $witchesArray as $witch ){
-                if( empty($witch->fetchDaughters()) ){
+                if( empty(WitchDA::fetchDescendants($this->wc, $witch->id, false, false)) ){
                     $witch->delete();
                 }
                 else {

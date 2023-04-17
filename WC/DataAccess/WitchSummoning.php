@@ -186,7 +186,7 @@ class WitchSummoning
             if( !empty($witchRefConf['url']) )
             {
                 $parameters[ 'website_name' ]   = $this->website->name;
-                $parameters[ 'website_url' ]    = $this->website->url;
+                $parameters[ 'website_url' ]    = $this->website->urlPath;
                 
                 $condition  =   "( %s.`site` = :website_name ";
                 $condition  .=  "AND %s.`url` = :website_url ) ";
@@ -233,7 +233,7 @@ class WitchSummoning
         if( $refWitch )
         {
             $parameters[ 'website_name' ]   = $this->website->name;
-            $parameters[ 'website_url' ]    = $this->website->url;
+            $parameters[ 'website_url' ]    = $this->website->urlPath;
             
             $query .=  "AND ( `ref_witch`.`site` = :website_name ";
             $query .=  "AND `ref_witch`.`url` = :website_url ) ";
@@ -366,7 +366,7 @@ class WitchSummoning
             {
                 $conditions[ $witchRef ] = [ 
                     'site'  => $this->website->name, 
-                    'url'   => $this->website->url, 
+                    'url'   => $this->website->urlPath, 
                 ];
                 
                 $urlRefWiches[] = $witchRef;
@@ -431,4 +431,21 @@ class WitchSummoning
         
         return $witches;
     }
+    
+    
+    static function getDepth( WitchCase $wc ): int
+    {
+        $depth = $wc->cache->read( 'system', 'depth' );
+        
+        if( empty($depth) )
+        {
+            $query  =   "SHOW COLUMNS FROM `witch` WHERE `Field` LIKE 'level_%'";
+            $result =   $wc->db->selectQuery($query);
+            $depth  =   count($result);
+            
+            $wc->cache->create('system', 'depth', $depth);
+        }
+        
+        return (int) $depth;
+    }    
 }
