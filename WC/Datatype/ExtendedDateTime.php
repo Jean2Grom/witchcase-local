@@ -1,6 +1,5 @@
 <?php
-
-namespace WC\DataTypes;
+namespace WC\Datatype;
 
 
 class ExtendedDateTime extends \DateTime 

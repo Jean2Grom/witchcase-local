@@ -1,9 +1,9 @@
 <?php
 
-use WC\Localisation;
+//use WC\Localisation;
 
 if( $this->values['fk_localisation'] > 0){   
-    $localisationTarget = new Localisation($this->module->wc, $this->values['fk_localisation']);
+    //$localisationTarget = new Localisation($this->module->wc, $this->values['fk_localisation']);
 }
 else {
     $localisationTarget = false;

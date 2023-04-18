@@ -14,9 +14,10 @@ class TargetStructure
         if( empty($columns) )
         {
             $query  =   "SHOW COLUMNS FROM `".$wc->db->escape_string($table)."` WHERE `Field` LIKE '%@%' ";
+            $wc->db->debugQuery($query);
             $result = $wc->db->selectQuery($query);
             
-            if( !$result ){
+            if( $result === false ){
                 return false;
             }
             

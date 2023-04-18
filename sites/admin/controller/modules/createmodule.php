@@ -1,4 +1,5 @@
 <?php
+use WC\Witch;
 
 $messages = [];
 
@@ -13,7 +14,7 @@ if( strcmp($action, "create") == 0 )
     $name = filter_input(INPUT_POST, "name");
     $site = filter_input(INPUT_POST, "site");
     
-    $cleanName = Localisation::cleanupString($name);
+    $cleanName = Witch::cleanupString($name);
     
     if( !$name )
     {

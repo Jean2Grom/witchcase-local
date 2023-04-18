@@ -4,8 +4,8 @@ namespace WC;
 use WC\DataAccess\Target as TargetDA;
 
 use WC\WitchCase;
-use WC\DataTypes\ExtendedDateTime;
-use WC\DataTypes\Signature;
+use WC\Datatype\ExtendedDateTime;
+use WC\Datatype\Signature;
 use WC\Attribute;
 
 class Target 

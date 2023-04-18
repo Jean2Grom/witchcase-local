@@ -1,26 +1,24 @@
 <?php
 use WC\TargetStructure;
+use WC\Witch;
 
-use WC\Structure;
-use WC\DataTypes\ExtendedDateTime;
-
-if( filter_has_var(INPUT_POST, "publishStructure") ){
+if( $this->wc->request->param("publishStructure") ){
     $action = "publishStructure";
 }
-elseif( filter_has_var(INPUT_POST, "deleteStructures") ){
+elseif( $this->wc->request->param("deleteStructures") ){
     $action = "deleteStructures";
 }
-elseif( filter_has_var(INPUT_GET, "view") ){
+elseif( $this->wc->request->param("view", 'get') ){
     $action = "viewStructure";
 }
-elseif( filter_has_var(INPUT_POST, "createStructure") 
-        || strcmp( filter_input(INPUT_POST, 'currentAction'), "creatingStructure" ) == 0
+elseif( $this->wc->request->param("createStructure") 
+        || $this->wc->request->param("currentAction") === "creatingStructure"
 ){
     $action = "createStructure";
 }
-elseif( filter_has_var(INPUT_GET, "edit") 
-        ||  filter_has_var(INPUT_POST, "deleteAttribute")
-        ||  filter_has_var(INPUT_POST, "addAttribute")
+elseif( $this->wc->request->param("edit", 'get')
+        ||  $this->wc->request->param("deleteAttribute")
+        ||  $this->wc->request->param("addAttribute")
 ){
     $action = "editStructure";
 }
@@ -28,6 +26,7 @@ else {
     $action = "listStructures";
 }
 
+$this->wc->dump($action);
 
 $messages = [];
 $baseUri  = $this->witch->uri;
@@ -91,10 +90,12 @@ if( strcmp($action, "publishStructure") == 0 )
 
 if( strcmp($action, "createStructure") == 0 )
 {
-    if( strcmp(filter_input(INPUT_POST, "currentAction"), "creatingStructure") == 0 )
+    $structuresData = TargetStructure::listStructures( $this->wc );    
+    
+    if( $this->wc->request->param("currentAction") === "creatingStructure" )
     {
         $nextStep = true;
-        $namePost = filter_input(INPUT_POST, "name");
+        $namePost = $this->wc->request->param("name");
         
         if( !$namePost )
         {
@@ -104,11 +105,9 @@ if( strcmp($action, "createStructure") == 0 )
         
         if( $nextStep )
         {
+            $name   = Witch::cleanupString( $namePost );
             
-            $name       = WC\Witch::cleanupString( $namePost );
-            $structure  = new TargetStructure( $this->wc,  'content_'.$name );
-            
-            if( $structure->exist )
+            if( in_array($name, array_keys($structuresData)) )
             {
                 $nextStep = false;
                 $messages[] = "Le nom que vous avez saisi est déjà utilisé, veuillez en saisir un autre.";
@@ -117,7 +116,8 @@ if( strcmp($action, "createStructure") == 0 )
         
         if( $nextStep )
         {
-            $structure->create();
+            //$structure->create();
+            TargetStructure::create($this->wc, $name);
             
             $queryString = "?edit=".$name;
             
@@ -131,8 +131,6 @@ if( strcmp($action, "createStructure") == 0 )
             exit;
         }
     }
-    
-    $structuresData = Structure::listStructures( $this->wc, true );
     
     $this->setContext('standard');
     include $this->getDesignFile('structures/create.php');
@@ -275,121 +273,17 @@ if( strcmp($action, "deleteStructures") == 0 )
 
 if( strcmp($action, "listStructures") == 0 )
 {
-    $baseUriOrder           =   $baseUri;
-    $baseUriArchives        =   $baseUri;
-    $getSeparatorOrder      =   '?';
-    $getSeparatorArchives   =   '?';
-    $newSeparator           =   '&';
-    $orderfield             =   filter_input(INPUT_GET, 'orderfield');
-    $order                  =   filter_input(INPUT_GET, 'order');
-    $displayArchives        =   filter_input(INPUT_GET, "archives");
-
-    // Archive display links and settings
-    $archives = false;
-    if( strcmp($displayArchives, 'yes') == 0 )
+    
+    $structures = TargetStructure::listStructures( $this->wc );
+    $count      = count($structures);
+    
+    foreach( $structures as $key => $value )
     {
-        $archives    = true;
-        $archiveHref =  [   "name" => "Cacher archives", 
-                            "href" => $baseUriArchives.$getSeparatorArchives."archives=no"
-                        ];  
-    }
-    else
-    {
-        $archiveHref =  [   "name" => "Voir archives", 
-                            "href" =>   $baseUriArchives.$getSeparatorArchives."archives=yes"
-                        ];
-    }
-
-
-    $ordersArray =  [
-                        'name'      => 'asc',
-                        'created'   => 'asc',
-                    ];
-
-    if( $orderfield && isset($ordersArray[$orderfield]) 
-        && $order && in_array($order, ['asc', 'desc'])
-    ){
-        $fieldset = "orderfield=".$orderfield."&order=".$order;
-
-        $baseUriArchives        .= $getSeparatorArchives.$fieldset;
-        $getSeparatorArchives   =  $newSeparator;
-    }
-
-    if( $displayArchives && in_array($displayArchives, ['yes', 'no']) )
-    {
-        $fieldset = "archives=".$displayArchives;
-
-        $baseUriOrder      .= $getSeparatorOrder.$fieldset;
-        $getSeparatorOrder  = $newSeparator;
-    }
-
-    // Ordering links and settings
-    $orders = [];
-    if( $orderfield && $order )
-    {
-        // For direct SQL ordering (if not set "priority asc" will be applied)
-        if( in_array($orderfield, ['name', 'created']) 
-            && in_array($order, ['asc', 'desc']) 
-        ){
-            $orders[$orderfield] = $order; 
-        }
-
-        // For selected Ordering link to be desc
-        if( isset($ordersArray[$orderfield]) 
-            && strcmp($order, 'asc') == 0
-        ){
-            $ordersArray[$orderfield] = 'desc';
-        }
-    }
-
-    $baseUriOrder .= $getSeparatorOrder.'orderfield=';
-    $headers =  [
-                    'Nom'                   => $baseUriOrder.'name&order='.$ordersArray['name'], 
-                    'Archive'               => false, 
-                    'Quantité Brouillons'   => false,
-                    'Quantité Contenus'     => false,
-                    'Quantité Archives'     => false,
-                    'Création'              => $baseUriOrder.'created&order='.$ordersArray['created'], 
-                    'Modifier'              => false, 
-                ];
-
-    if( !$archives ){
-        unset($headers['Archive']);
-    }
-
-    $structuresListData = Structure::listStructures( $this->wc, $archives, $orders);
-    $count              = count($structuresListData);
-
-    $structures = [];
-    foreach( $structuresListData as $valueArray )
-    {
-        $structure          = $valueArray['name'];
-        $creationDateTime   = new ExtendedDateTime($valueArray['created']);
-        $countArray         = Structure::countElements( $this->wc, $structure );
-
-        $displayValues  =   [   "name"          => $structure, 
-                                "viewHref"      => $baseUri."?view=".$structure, 
-                                "draftCount"    => $countArray['draft'], 
-                                "contentCount"  => $countArray['content'], 
-                                "archiveCount"  => $countArray['archive'], 
-                                "modifyHref"    => $baseUri."?edit=".$structure, 
-                                "creation"      => $creationDateTime
-                            ];
-
-        if( $archives )
-        {
-            if( $valueArray['is_archive'] )
-            {
-                $isArchive = 'oui';
-                $displayValues["modifyHref"] = false;
-            }
-            else
-            {   $isArchive = 'non'; }
-
-            $displayValues["isArchive"] = $isArchive;
-        }
-
-        $structures[]   =   $displayValues;
+        $structure          = $value['name'];
+        $creationDateTime   = new \DateTime($value['created']);
+        
+        $structures[ $key ]['viewHref']  =   $baseUri."?view=".$value['name'];
+        $structures[ $key ]['creation']  =   new \DateTime($value['created']);
 
     }
 

@@ -1,8 +1,8 @@
 <?php
+namespace WC\Datatype;
 
-namespace WC\DataTypes;
-
-class Signature {
+class Signature 
+{
     
     function __construct( $name, $id, $value )
     {

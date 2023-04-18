@@ -3,8 +3,8 @@ namespace WC;
 
 use WC\DataAccess\TargetStructure as TargetStructureDA;
 
-use WC\Targets\Content;
-use WC\DataTypes\ExtendedDateTime;
+use WC\Target\Content;
+use WC\Datatype\ExtendedDateTime;
 use WC\Attribute;
 
 
@@ -94,9 +94,9 @@ class TargetStructure
         return $this->created;
     }
     
-    function create()
+    static function create( WitchCase $wc, string $name )
     {
-        $query  =   "CREATE TABLE `content_".$this->wc->db->escape_string($this->name)."` ( ";
+        $query  =   "CREATE TABLE `content_".$wc->db->escape_string($name)."` ( ";
         
         foreach( Target::$dbFields as $dbField ){
             $query  .=  $dbField.", ";
@@ -108,9 +108,9 @@ class TargetStructure
         
         $query  .=  Target::$primaryDbField;
         
-        $query  .=  ") ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 ";
+        $query  .=  ") ";
         
-        if( !$this->wc->db->createQuery($query) ){
+        if( !$wc->db->createQuery($query) ){
             return false;
         }
         

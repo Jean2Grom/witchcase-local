@@ -1,11 +1,10 @@
 <?php
-namespace WC\Targets;
+namespace WC\Target;
 
 use WC\WitchCase;
-use WC\Localisation;
 use WC\Target;
-use WC\DataTypes\Signature;
-use WC\DataTypes\ExtendedDateTime;
+use WC\Datatype\Signature;
+use WC\Datatype\ExtendedDateTime;
 
 class Content extends Target 
 {
@@ -73,8 +72,8 @@ class Content extends Target
         if( !$archiveID )
         {   return false;   }
         
-        if( !Localisation::changeTarget( $this->table, $this->id, $archiveTable, $archiveID ) )
-        {   return false;   }
+//        if( !Localisation::changeTarget( $this->table, $this->id, $archiveTable, $archiveID ) )
+//        {   return false;   }
         
         $draftTable = "draft_".$this->structure;
         

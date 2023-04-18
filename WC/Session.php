@@ -1,7 +1,5 @@
 <?php
-
 namespace WC;
-
 
 class Session 
 {
