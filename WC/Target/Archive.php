@@ -72,7 +72,7 @@ class Archive extends Target
             
             return true;
         }
-        elseif( //Localisation::deleteFromTarget($this->table, $this->id) )
+        //elseif( Localisation::deleteFromTarget($this->table, $this->id) )
         elseif( true )
         {
             $query  =   "DELETE FROM `".$this->wc->db->escape_string($this->table)."` ";

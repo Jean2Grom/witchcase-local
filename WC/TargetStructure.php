@@ -14,29 +14,33 @@ class TargetStructure
     var $table;
     var $type;
     var $name;
-    var $created;
     var $attributes;
+    var $fields;
     
+    var $lastModified;
     var $exist;
-    var $isArchive;
     
     /** @var WitchCase */
     var $wc;
     
-    function __construct( WitchCase $wc, $structureTableName )
+    function __construct( WitchCase $wc, string $structureTableName )
     {
         $this->wc       = $wc;
-        $this->table    = $structureTableName;
-        
+        $this->table    = $structureTableName;        
         $this->type     = substr( $this->table, 0, strpos($this->table, '_') );
         $this->name     = substr( $this->table, strpos($this->table, '_') + 1 );    
+        $columns        = TargetStructureDA::readTableStructure($this->wc, $this->table);
         
-        $columns        = TargetStructureDA::readStructure($this->wc, $this->table);        
-        $this->exist    = !empty($columns);
-        
+        $this->fields       = [];
         $this->attributes   = [];
         foreach( array_keys($columns) as $columnName )
         {
+            if( strpos($columnName, '@') === false )
+            {
+                $this->fields[] = $columnName;
+                continue;
+            }
+            
             $splitColumn = Attribute::splitColumn($columnName);
             
             $attributeName      = $splitColumn['name'];
@@ -70,51 +74,29 @@ class TargetStructure
                 $this->attributes[ $attributeName ]['elements'][ $attributeElement ]    = $columnName;
             }
         }
-        
-        //$this->columns      = $columns;
-        
-        $this->created      = false;
-        $this->isArchive    = false;
     }
     
-    function createTime()
+    function getLastModificationTime()
     {
-        if( $this->created ){
-            return $this->created;
+        if( $this->lastModified ){
+            return $this->lastModified;
         }
         
-        $query  =   "SELECT table_name, create_time  ";
-        $query  .=  "FROM information_schema.tables ";
-        $query  .=  "WHERE table_type = 'BASE TABLE' ";
-        $query  .=  "AND table_name LIKE 'archive_".$this->name."' ";
+        $time = TargetStructureDA::readTableCreateTime( $this->wc, $this->table );
         
-        $data           = $this->wc->db->fetchQuery($query);
-        $this->created  = new ExtendedDateTime($data['create_time']);
+        if( $time ){
+            $this->lastModified  = new ExtendedDateTime($time);
+        }
         
-        return $this->created;
+        return $this->lastModified;
     }
     
-    static function create( WitchCase $wc, string $name )
+    static function create( WitchCase $wc, string $structureName )
     {
-        $query  =   "CREATE TABLE `content_".$wc->db->escape_string($name)."` ( ";
+        $table      = "content_".$structureName;
+        $dbFields   = array_merge( Target::$dbFields, Content::$dbFields, [Target::$primaryDbField] );
         
-        foreach( Target::$dbFields as $dbField ){
-            $query  .=  $dbField.", ";
-        }
-        
-        foreach( Content::$dbFields as $dbField ){
-            $query  .=  $dbField.", ";
-        }
-        
-        $query  .=  Target::$primaryDbField;
-        
-        $query  .=  ") ";
-        
-        if( !$wc->db->createQuery($query) ){
-            return false;
-        }
-        
-        return true;
+        return TargetStructureDA::createTargetStructureTable( $wc, $table, $dbFields );
     }
     
     function update( $attributes )

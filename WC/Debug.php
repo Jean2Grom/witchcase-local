@@ -312,4 +312,9 @@ class Debug
             echo "</pre></div>";
         }
     }
+    
+    function throwException( string $msg ):void
+    {
+        throw new \Exception( $msg );
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 use WC\TargetStructure;
 use WC\Witch;
+use WC\Attribute;
 
 if( $this->wc->request->param("publishStructure") ){
     $action = "publishStructure";
@@ -31,29 +32,13 @@ $this->wc->dump($action);
 $messages = [];
 $baseUri  = $this->witch->uri;
 
-if( strcmp($action, "publishStructure") == 0 )
+if( $action === "publishStructure" )
 {
-    $structureName      = filter_input( INPUT_GET, 'edit' );
-    $structure          = new TargetStructure( $this->wc,  'content_'.$structureName );
-    
-    $attributesPost =   filter_input(   
-        INPUT_POST,
-        "attributes",
-        FILTER_DEFAULT,
-        FILTER_REQUIRE_ARRAY
-    );
-    
-    $attributesList                  = [];
-    $attributeNameSpaceClassPrefix  = "WC\\Attribute\\";
-    $attributeNameSpaceClassSuffix  = "Attribute";
-    foreach( get_declared_classes() as $className ){
-        if( substr($className, 0, strlen($attributeNameSpaceClassPrefix) ) == $attributeNameSpaceClassPrefix 
-                && substr($className, -strlen($attributeNameSpaceClassSuffix) ) == $attributeNameSpaceClassSuffix 
-                && defined($className.'::ATTRIBUTE_TYPE')   ){
-            $attributesList[ $className::ATTRIBUTE_TYPE ] =  $className;
-        }
-    }
-    
+    $structureName      = $this->wc->request->param("edit", 'get');
+    $structure          = new TargetStructure( $this->wc,  'content_'.$structureName );    
+    $attributesPost     =   $this->wc->request->param("attributes", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+    $attributesList     = Attribute::list();
+        
     $attributes = [];
     foreach( $attributesPost as $attributesPostData )
     {
@@ -65,7 +50,7 @@ if( strcmp($action, "publishStructure") == 0 )
             $parameters = $attributesPostData['parameters'];
         }
         
-        $attributeName  = WC\Witch::cleanupString($attributesPostData['name']);
+        $attributeName  = Witch::cleanupString($attributesPostData['name']);
         
         $attribute      = new $attributeClass(
                                 $this->wc,
@@ -116,12 +101,11 @@ if( strcmp($action, "createStructure") == 0 )
         
         if( $nextStep )
         {
-            //$structure->create();
             TargetStructure::create($this->wc, $name);
             
             $queryString = "?edit=".$name;
             
-            $structureCopyPost = filter_input(INPUT_POST, "structureCopy");
+            $structureCopyPost = $this->wc->request->param("structureCopy");
             
             if( $structureCopyPost ){
                 $queryString .= "&base=".$structureCopyPost;
@@ -136,20 +120,12 @@ if( strcmp($action, "createStructure") == 0 )
     include $this->getDesignFile('structures/create.php');
 }
 
-if( strcmp($action, "editStructure") == 0 )
+if( $action === "editStructure" )
 {
-    $structureName = filter_input( INPUT_GET, 'edit' );
+    $structureName = $this->wc->request->param("edit", 'get');
     
-    $attributesList                  = [];
-    $attributeNameSpaceClassPrefix  = "WC\\Attribute\\";
-    $attributeNameSpaceClassSuffix  = "Attribute";
-    foreach( get_declared_classes() as $className ){
-        if( substr($className, 0, strlen($attributeNameSpaceClassPrefix) ) == $attributeNameSpaceClassPrefix 
-                && substr($className, -strlen($attributeNameSpaceClassSuffix) ) == $attributeNameSpaceClassSuffix 
-                && defined($className.'::ATTRIBUTE_TYPE')   ){
-            $attributesList[ $className::ATTRIBUTE_TYPE ] =  $className;
-        }
-    }
+    // TODO Conf reading ?
+    $attributesList = Attribute::list();
     
     $attributes = [];
     if( !filter_has_var(INPUT_POST, "currentAction") 
@@ -226,20 +202,12 @@ if( strcmp($action, "editStructure") == 0 )
 
 if( strcmp($action, "viewStructure") == 0 )
 {
-    $structureName      = filter_input(INPUT_GET, 'view');
+    $structureName      = $this->wc->request->param('view');
     $structure          = new TargetStructure( $this->wc, 'content_'.$structureName );
     
-    $creationDateTime   = $structure->createTime();
-    if( $structure->isArchive )
-    {
-        $attributes         = $structure->archivedAttributes;
-        $archivedAttributes = [];
-    }
-    else
-    {
-        $attributes         = $structure->attributes;
-        $archivedAttributes = [];
-    }
+    $creationDateTime   = $structure->getLastModificationTime();
+    $attributes         = $structure->attributes;
+    $archivedAttributes = [];
     
     $modificationHref   = $baseUri."?edit=".$structure->name;
     
