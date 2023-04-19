@@ -66,4 +66,31 @@ class TargetStructure
         
         return $wc->db->createQuery($query);
     }
+    
+    static function updateTargetStructureTable( WitchCase $wc, string $table, array $addColumns=[], array $removeColumns=[] )
+    { 
+        if( empty($table) || (empty( $addColumns ) && empty( $removeColumns )) ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "ALTER TABLE `".$wc->db->escape_string($table)."` ";
+        
+        $separator = "";
+        foreach( $removeColumns as $column )
+        {
+            $query      .=  $separator." DROP `".$column."` ";
+            $separator  =   ", ";
+        }
+        foreach( $addColumns as $column )
+        {
+            $query      .=  $separator." ADD ".$column." ";
+            $separator  =   ", ";
+        }
+        
+        $wc->db->alterQuery($query);
+        $wc->cache->delete( self::CACHE_FOLDER, $table );
+        
+        return true;
+    }
 }

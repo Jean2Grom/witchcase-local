@@ -119,29 +119,7 @@ class TargetStructure
             }
         }
         
-        $separator = "";
-        $query = "";
-        $query      .= "ALTER TABLE `content_".$this->wc->db->escape_string($this->name)."` ";
-        foreach( $removeColumns as $column )
-        {
-            $query      .=  $separator."DROP `".$column."` ";
-            $separator  =   ", ";
-        }
-        foreach( $addColumns as $column )
-        {
-            $query      .=  $separator."ADD ".$column." ";
-            $separator  =   ", ";
-        }
-        
-        $this->wc->cache->delete( 'system', $this->table );
-
-        if( !$this->wc->db->alterQuery($query) ){
-            return false;
-        }
-        
-        
-        
-        return true;
+        return TargetStructureDA::updateTargetStructureTable( $this->wc, $this->table, $addColumns, $removeColumns );
     }
     
     function delete()
