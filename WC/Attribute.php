@@ -249,5 +249,19 @@ abstract class Attribute
         
         return $attributesList;        
     }
-
+    
+    function searchCondition( string $targetTable, mixed $value )
+    {
+        if( $this->tableColumns['value'] )
+        {
+            $key = md5($targetTable.$this->tableColumns[ 'value' ].$value);
+            return  [
+                'query'     => "`".$this->wc->db->escape_string($targetTable)."`.`".$this->tableColumns[ 'value' ]."` = :".$key." ",
+                'params'    => [ $key => $value ],
+            ];
+        }
+        
+        return false;
+    }
+    
 }

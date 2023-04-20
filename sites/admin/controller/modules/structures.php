@@ -27,8 +27,6 @@ else {
     $action = "listStructures";
 }
 
-$this->wc->dump($action);
-
 $messages = [];
 $baseUri  = $this->witch->uri;
 
@@ -216,23 +214,19 @@ if( strcmp($action, "viewStructure") == 0 )
     include $this->getDesignFile('structures/view.php');
 }
 
-if( strcmp($action, "deleteStructures") == 0 )
+if( $action === "deleteStructures" )
 {
-    $structuresPost =   filter_input(   INPUT_POST,
-                                        "structures",
-                                        FILTER_SANITIZE_STRING,
-                                        FILTER_REQUIRE_ARRAY
-                        );
+    $structureName = $this->wc->request->param("structure");
     
-    if( $structuresPost ){
-        foreach( $structuresPost as $structureName )
-        {
-            $structure = new TargetStructure( $this->wc,  'content_'.$structureName );
-            
-            if( !$structure->delete() )
-            {   $messages[] = "Deletion of ".$structureName." failed";  }
-            else
-            {   $messages[] = "Structure ".$structureName." successfully deleted";  }
+    if( $structureName )
+    {            
+        $structure = new TargetStructure( $this->wc,  'content_'.$structureName );
+        
+        if( !$structure->delete() ){
+            $messages[] = "Deletion of ".$structureName." failed";
+        }
+        else {
+            $messages[] = "Structure ".$structureName." successfully deleted";              
         }
     }
     
@@ -241,8 +235,7 @@ if( strcmp($action, "deleteStructures") == 0 )
 
 if( strcmp($action, "listStructures") == 0 )
 {
-    
-    $structures = TargetStructure::listStructures( $this->wc );
+    $structures = TargetStructure::listStructures( $this->wc, true );
     $count      = count($structures);
     
     foreach( $structures as $key => $value )
@@ -252,9 +245,8 @@ if( strcmp($action, "listStructures") == 0 )
         
         $structures[ $key ]['viewHref']  =   $baseUri."?view=".$value['name'];
         $structures[ $key ]['creation']  =   new \DateTime($value['created']);
-
     }
-
+    
     $this->setContext('standard');
 
     include $this->getDesignFile();

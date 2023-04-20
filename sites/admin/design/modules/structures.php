@@ -18,20 +18,31 @@
             font-size: 1.1em;
             margin-top: 5px;
         }
+            .structures-content__list table {
+                border-collapse: collapse;
+                margin-bottom: 10px;
+            }
             .structures-content__list table th {
                 min-width: 100px;
+                background-color: #ddd;
+                padding: 5px 10px;
+            }
+            .structures-content__list table tbody tr:hover {
                 background-color: #eee;
             }
             .structures-content__list table td {
-                padding: 1px 10px;
+                padding: 4px 10px;
+                text-align: center;
+            }
+            .structures-content__list table td:first-child {
+                text-align: left;
+            }
+            .structures-content__list table tr td:last-child {
+                text-align: right;
             }
             .structures-content__list table input {
                 width: 60px;
             }
-        .structures-content__list__actions {
-            margin: 20px 0px 10px 0;
-            text-align: right;
-        }
     #witch__add-content {
         margin-top: 15px;
     }
@@ -65,8 +76,8 @@
                 <thead>
                     <tr>
                         <th>Nom</th>
+                        <th>Contents</th>
                         <th>Création</th>
-                        <th>&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,12 +94,10 @@
                                 </td>
                             <?php endif; */ ?>
                             <td>
-                                <?=$structure['creation']->format( 'H:i:s d/m/Y' )?>
+                                <?=$structure['count']['content']?>
                             </td>
                             <td>
-                                <a href="<?=$structure['viewHref']?>">
-                                    Voir
-                                </a>
+                                <?=$structure['creation']->format( 'H:i:s d/m/Y' )?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

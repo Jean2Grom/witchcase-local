@@ -1,7 +1,7 @@
 <?php
 
 use WC\Witch;
-//require_once 'system/classes/Structure.php';
+use WC\TargetStructure;
 
 $messages = [];
 
@@ -174,7 +174,7 @@ foreach( $modulesVar as $moduleName => $variables ){
     ];
 }
 
-$structureList = Structure::listStructures();
+$structureList = TargetStructure::listStructures();
 
 $structures = [];
 foreach( $structureList as $structureItem )

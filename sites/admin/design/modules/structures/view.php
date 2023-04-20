@@ -30,6 +30,17 @@
 
 <br/>
 <div id="action-controls">
+    <form   method="post"
+            style="width: auto; float: left; margin-right: 5px;"
+            action="<?=$baseUri?>">
+        <input  type="hidden"
+                name="structure"
+                value="<?=$structure->name?>" />
+        <input  type="submit"
+                name="deleteStructures"
+                value="Supprimer Structure" />
+    </form>
+    
     <a href="<?=$baseUri?>">
         <input  type="button" 
                 title="Revenir à la liste des structures" 

@@ -124,12 +124,7 @@ class TargetStructure
     
     function delete()
     {
-        $query = "";
-        $query  .= "SELECT * ";
-        $query  .= "FROM `witch` ";
-        $query  .= "WHERE `target_table` LIKE \"content_".$this->wc->db->escape_string($this->name)."\" ";
-        
-        $datas = $this->wc->db->selectQuery($query);
+        $datas =  TargetStructureDA::getWitchDataFromTargetStructureTables($this->wc, [ $this->table ]);
         
         $witchesByDepth = [];
         foreach( $datas as $witchData )
@@ -154,207 +149,24 @@ class TargetStructure
             }
         }
         
-        $this->wc->cache->delete( 'system', $this->table );
-        
-        $query = "DROP TABLE `content_".$this->wc->db->escape_string($this->name)."` ";
-        if( !$this->wc->db->deleteQuery($query) ){
-            return false;
-        }
-        
-        return true;
+        return TargetStructureDA::deleteTargetStructureTable( $this->wc, $this->table );
     }
     
-    function createTarget( $name=false )
-    {
-        $userId = $this->wc->user->id;
-        if( !$userId ){
-            $userId = 'NULL';
-        }
-        $query  =   "INSERT INTO `".$this->table."` ";
-        $query  .=  "( `creator`";
-        if( $name ){
-            $query  .=  ", `name` ";
-        }
-        $query  .=  ", `modificator` ) ";
-        $query  .=  "VALUES ( ".$userId." ";
-        if( $name ){
-            $query  .=  ', "'.$this->wc->db->escape_string($name).'" ';
-        }
-        $query  .=  ", ".$userId." ) ";
-        
-        return $this->wc->db->insertQuery($query);
-        
+    function createTarget( string $name=null ){
+        return TargetStructureDA::createTarget($this->wc, $this->table, $name);
     }
     
-    static function listStructures( WitchCase $wc )
+    static function listStructures( WitchCase $wc, bool $countElements=false )
     {
-        $query = "";
-        $query  .=  "SELECT table_name AS tn ";
-        $query  .=  ", create_time AS ct ";
-        $query  .=  "FROM information_schema.tables ";
-        $query  .=  "WHERE table_type = 'BASE TABLE' ";
-        $query  .=  "AND table_name LIKE 'content_%' ";
-        $query  .=  "ORDER BY table_name ASC ";
+        $structures = TargetStructureDA::listStructures($wc);
         
-        $result =   $wc->db->multipleRowsQuery($query);
-        
-        $structures     = [];
-        foreach( $result as $item )
-        {
-            $tableName  = $item['tn'];
-            
-            if( !str_starts_with($tableName, "content_") ){
-                continue;
-            } 
-            
-            $structureName = substr($tableName, strlen("content_"));
-            
-            $structures[ $structureName ] = [ 
-                'name'      => $structureName, 
-                'table'     => $tableName, 
-                'created'   => $item['ct'],
-            ];
+        if( $countElements ){
+            foreach( $structures as $structureName => $structureData ){
+                $structures[ $structureName ]['count'] = TargetStructureDA::countElements( $wc, $structureData['name'] );
+            }
         }
         
         return $structures;
     }
     
-    static function count( WitchCase $wc, $archives=false )
-    {
-        $query  =   "SELECT count(*)  ";
-        $query  .=  "FROM information_schema.tables ";
-        $query  .=  "WHERE table_type = 'BASE TABLE' ";
-        
-        if( !$archives ){
-            $query  .=  "AND table_name LIKE 'content_%' ";
-        }
-        else {
-            $query  .=  "AND table_name LIKE 'archive_%' ";
-        }
-        
-        $data = $wc->db->fetchQuery($query);
-        
-        return $data['count(*)'];
-    }
-    
-    static function countElements( WitchCase $wc, $structure )
-    {
-        $count = [];
-        foreach( ['draft', 'content', 'archive'] as $type ) 
-        {
-            $query  =   "SELECT COUNT(*) ";
-            $query  .=  "FROM `".$type."_".$structure."` ";
-            
-            $countData  = $wc->db->fetchQuery($query);
-            
-            if( $countData !== false ){
-                $count[$type] = $countData['COUNT(*)'];
-            }
-            else {
-                $count[$type] = "Not available";
-            }
-        }
-        
-        return $count;
-    }
-    
-    function searchBy( $searchedAttributeName, $search )
-    {
-        
-        $querySelectElements    = [];
-        $queryTablesElements    = [];
-        $queryWhereElements     = [];
-        
-        $queryTablesElements[ $this->table ] = [];
-        foreach( array_keys(Target::ELEMENTS) as $commonStructureField )
-        {
-            $field  =   "`".$this->table."`.`".$commonStructureField."` ";
-            $field  .=  "AS `".$this->table."|".$commonStructureField."` ";
-            $querySelectElements[] = $field;
-        }
-
-        foreach( $this->attributes as $attributeName => $attributeData )
-        {
-            $attribute = new $attributeData['class']( $this->wc, $attributeName );
-            
-            array_push( $querySelectElements, ...$attribute->getSelectFields($this->table) );
-            $queryTablesElements[ $this->table ] = $attribute->getJointure( $this->table );
-            
-            if( $searchedAttributeName == $attributeName ){
-                $queryWhereElements[]   = $attribute->searchCondition( $this->table, $search );
-            }
-        }
-        
-        $query = "";
-        $query  .=  "SELECT ".implode( ', ', $querySelectElements)." ";
-        $separator = "FROM ";
-        foreach( $queryTablesElements as $fromTable => $leftJoinArray )
-        {
-            $query  .=  $separator." `".$fromTable."` ";
-            $separator = ", ";
-            
-            foreach( $leftJoinArray as $leftJoin ){
-                $query  .=  "LEFT JOIN ".$leftJoin." ";
-            }
-        }
-        
-        $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements)." ";
-
-        $result = $this->wc->db->selectQuery($query);
-        
-        $craftedData = [];
-        foreach( $result as $row ){
-            foreach( $row as $rowField => $rowFieldValue )
-            {
-                $buffer         = explode('|', $rowField);
-                $table          = $buffer[0];
-                $subBuffer      = explode('#', $buffer[1]);
-                $field          = $subBuffer[0];
-                $fieldElement   = $subBuffer[1] ?? false;
-                $currentId      = $row[ $table.'|id' ];
-
-                if( empty($craftedData[ $table ]) ){
-                    $craftedData[ $table ] = [];
-                }
-                if( empty($craftedData[ $table ][ $currentId ]) ){
-                    $craftedData[ $table ][ $currentId ] = [];
-                }
-                if( empty($craftedData[ $table ][ $currentId ][ $field ]) ){
-                    $craftedData[ $table ][ $currentId ][ $field ] = [];
-                }
-                
-                if( empty($fieldElement) ){
-                    $craftedData[ $table ][ $currentId ][ $field ] = $rowFieldValue;
-                }
-                elseif( empty($craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ]) ){
-                    $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ] = $rowFieldValue;
-                }
-                elseif( !is_array($craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ]) )
-                {
-                    $prevValue = $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ];
-
-                    if( $prevValue != $rowFieldValue ){
-                        $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ] = [
-                            $prevValue,
-                            $rowFieldValue,
-                        ];
-                    }
-                }
-                //elseif( !in_array($rowFieldValue, $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ]) ){
-                else {
-                    $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ][] = $rowFieldValue;
-                }
-            }
-        }
-        
-        $structureTargetData = $craftedData[ $this->table ] ?? [];
-        
-        $returnedTargets = [];
-        foreach( $structureTargetData as $targetId => $targetCraftedData ){
-            $returnedTargets[ $targetId ] = new Target( $this->wc, $this, $targetCraftedData );
-        }
-        
-        return $returnedTargets;
-        
-    }
 }
