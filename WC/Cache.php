@@ -154,6 +154,8 @@ class Cache
         fwrite($cacheFileFP, $buffer);
         fwrite($cacheFileFP, ";\n");
         
+        fclose($cacheFileFP);
+
         return $filename;
     }    
 }

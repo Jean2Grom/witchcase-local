@@ -4,8 +4,8 @@ namespace WC;
 use WC\DataAccess\Target as TargetDA;
 
 use WC\WitchCase;
-use WC\DataTypes\ExtendedDateTime;
-use WC\DataTypes\Signature;
+use WC\Datatype\ExtendedDateTime;
+use WC\Datatype\Signature;
 use WC\Attribute;
 
 class Target 
@@ -90,177 +90,25 @@ class Target
         return true;
     }
 
-
     function save()
     {
         foreach( $this->attributes as $attribute ){
             $attribute->save( $this );
         }
         
-        $query = "";
-        $query  .=  "UPDATE `".$this->wc->db->escape_string($this->structure->table)."` ";
-        $query  .=  "SET `name` = '".$this->wc->db->escape_string($this->name)."' ";
-        if( !empty($this->wc->user->id) ){
-            $query  .=  ", `modificator` = ".$this->wc->user->id." ";
-        }
+        $fields = [ 'name' => $this->name ];
         
         foreach( $this->attributes as $attribute ){
-            foreach( $attribute->tableColumns as $key => $tableColumn  )
-            {
-                $value  =   $this->wc->db->escape_string($attribute->values[ $key ]);
-                $query  .=  ", `".$tableColumn."` = '".$value."'";
+            foreach( $attribute->tableColumns as $key => $tableColumn  ){
+                $fields[ $tableColumn ] = $attribute->values[ $key ];
             }
         }
         
-        $query  .=  " WHERE `id` = ".$this->id." ";
+        $conditions = [ 'id' => $this->id ];
         
-        return $this->wc->db->updateQuery($query);
+        return TargetDA::update($this->wc, $this->structure->table, $fields, $conditions);
     }
     
-    
-    function fetchTarget( $id, $datatypes )
-    {
-        $multipleResults = false;
-        
-        $query  =   "SELECT target.*";
-        foreach( $datatypes['Signature'] as $column ){
-            $query  .=  ", ".$column.".name AS ".$column."__signature";
-        }
-        
-        foreach( $this->attributes as $attribute ){
-            foreach( $attribute->joinFields as $field ){
-                $query  .=  ", ".$field['field']." AS `".$field['alias']."`";
-            }
-        }
-        
-        $query  .=  " ";
-        
-        $query  .=  "FROM `".$this->wc->db->escape_string($this->table)."` AS target";
-        
-        foreach( $this->attributes as $attribute ){
-            foreach( $attribute->leftJoin as $leftJoin )
-            {
-                $multipleResults = true;
-                
-                $query  .=  " LEFT JOIN `".$leftJoin['table']."` ";
-                $query  .=  "AS `".$leftJoin['alias']."` ";
-                $query  .=  "ON ".$leftJoin['condition'];
-            }
-        }
-        
-        foreach( $datatypes['Signature'] as $column ){
-            $query  .=  ", `user_connexion` AS ".$column;
-        }
-        
-        foreach( $this->attributes as $attribute ){
-            foreach( $attribute->joinTables as $table ){
-                $query  .=  ", `".$table['table']."` AS `".$table['alias']."`";
-            }
-        }
-        
-        $query  .=  " ";
-        
-        $query  .=  "WHERE target.id = '".$this->wc->db->escape_string($id)."' ";
-        foreach( $datatypes['Signature'] as $column ){
-            $query  .=  "AND ".$column.".id = target.".$column." ";
-        }
-        
-        foreach( $this->attributes as $attribute ){
-            foreach( $attribute->joinConditions as $condition ){
-                $query  .=  "AND ".$condition." ";
-            }
-        }
-        
-        $groupByArray = [];
-        foreach( $this->attributes as $attribute ){
-            foreach( $attribute->groupBy as $groupBy ){
-                $groupByArray[] =  $groupBy;
-            }
-        }
-        
-        if( count($groupByArray) > 0 ){
-            $query .= " GROUP BY ".implode(", ", $groupByArray);
-        }
-        
-        if( $multipleResults )
-        {
-            $result     = $this->wc->db->multipleRowsQuery($query);
-            
-            if( empty($result) )
-            {
-                $this->wc->debug->dump($query, "Query doesn't get any results");
-                return false;
-            }
-            
-            $targetData = $result[0];
-            
-            foreach( $targetData as $resultColumn => $unused )
-            {
-                $columnData = Attribute::splitColumn($resultColumn);
-                
-                if( !$columnData ){
-                    continue;
-                }
-                
-                foreach( $this->attributes as $attribute )
-                {
-                    if( count($attribute->leftJoin) > 0 )
-                    {
-                        if( strcmp($attribute->type, $columnData['type']) == 0
-                            && strcmp($attribute->name, $columnData['name']) == 0
-                            && !in_array($resultColumn, $attribute->tableColumns) 
-                        ){
-                            $groupByArray = [];
-                            foreach( $attribute->groupBy as $groupByColumn ){
-                                $groupByArray[trim($groupByColumn, '`')] = [];
-                            }
-                            
-                            $data = [];
-                            foreach( $result as $resultItem )
-                            {
-                                $getData = true;
-                                foreach( $attribute->groupBy as $groupByColumn )
-                                {
-                                    $groupByColumn = trim($groupByColumn, '`');
-                                    if( in_array($resultItem[$groupByColumn], $groupByArray[$groupByColumn]) )
-                                    {
-                                        $getData = false;
-                                        break;
-                                    }
-                                    else {
-                                        $groupByArray[$groupByColumn][] = $resultItem[$groupByColumn];
-                                    }
-                                }
-                                
-                                if( $getData ){
-                                    $data[] = $resultItem[$resultColumn];
-                                }
-                            }
-                            
-                            $targetData[$resultColumn] = $data;
-                        }
-                    }   
-                }
-            }
-        }
-        else
-        {
-            $targetData = $this->wc->db->fetchQuery($query);
-            
-            if( !is_array($targetData) )
-            {
-                $this->wc->debug->dump($query, "Query doesn't get any results");
-                return false;
-            }
-        }
-        
-        if( $targetData ){
-            return $this->set($targetData);
-        }
-        else {
-            return false;
-        }
-    }
     
     protected function setTarget( $args, $datatypes )
     {
@@ -305,57 +153,7 @@ class Target
         
         return true;
     }
-    
-    function edit( $args )
-    {
-        foreach( $this->attributes as $attribute )
-        {
-            $attribute->set( $args );
-            $attribute->save( $this );
-        }
         
-        $query  =   "UPDATE `".$this->wc->db->escape_string($this->table)."` SET ";
-        
-        if( strcmp($this->type, 'archive')  != 0 )
-        {
-            /*
-            $currentDate    = date("Y-m-d H:i:s");
-            $userID         = $this->wc->user->id;
-            
-            $this->modificator          = $userID; 
-            $this->modification_date    = new ExtendedDateTime($currentDate);
-            
-            $query  .=  "`modificator` = '".$userID."', ";
-            $query  .=  "`modification_date` = '".$this->modification_date->sqlFormat()."', ";
-             * 
-             */
-        }
-        
-        $first = true;
-        foreach( $this->attributes as $attribute ){
-            foreach( $attribute->tableColumns as $key => $tableColumn  ){
-                if( strcmp($attribute->values[$key], "__last_value__") != 0 )
-                {
-                    $value  =   $this->wc->db->escape_string($attribute->values[$key]);
-
-                    if( $first ){
-                        $first = false;
-                    }
-                    else {
-                        $query  .=  ", ";
-                    }
-                    
-                    $query  .=  "`".$tableColumn."` = '".$value."'";
-                }
-            }
-        }
-        
-        $query  .=  " WHERE `id` = '".$this->wc->db->escape_string($this->id)."' ";
-        
-        return $this->wc->db->updateQuery($query);
-    }
-    
-    
     function formatContext( $contextString )
     {
         if( !$contextString ){

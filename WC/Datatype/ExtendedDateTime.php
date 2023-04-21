@@ -1,10 +1,12 @@
 <?php
-
-namespace WC\DataTypes;
+namespace WC\Datatype;
 
 
 class ExtendedDateTime extends \DateTime 
 {
+    var $frenchFormatDate;
+    var $frenchFormatDateTime;
+    
     function sqlFormat()
     {
         return $this->format('Y-m-d H:i:s');

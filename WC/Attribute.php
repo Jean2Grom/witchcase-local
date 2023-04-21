@@ -3,6 +3,7 @@ namespace WC;
 
 abstract class Attribute 
 {
+    const ATTRIBUTE_TYPE                = null;
     const CONTROLLER_SUBFOLDER          = "controller/attributes";
     const DESIGN_SUBFOLDER              = "design/attributes";
 
@@ -226,6 +227,41 @@ abstract class Attribute
         ];
     }
     
+    static function list( array $extendDirs=[] )
+    {
+        $dirs = array_unique(array_merge($extendDirs, [__DIR__.'/Attribute']));
+        
+        $attributesList                 = [];
+        $attributeNameSpaceClassPrefix  = __CLASS__."\\";
+        $attributeNameSpaceClassSuffix  = "Attribute";
+        
+        foreach( $dirs as $dir ){
+            foreach( scandir($dir) as $file ){
+                if( substr($file, -(strlen($attributeNameSpaceClassSuffix)+4), -4 ) == $attributeNameSpaceClassSuffix )
+                {
+                    $className = substr($attributeNameSpaceClassPrefix.$file, 0, -4);
+                    if( !empty($className::ATTRIBUTE_TYPE) ){
+                        $attributesList[ $className::ATTRIBUTE_TYPE ] =  $className;            
+                    }
+                }
+            }
+        }
+        
+        return $attributesList;        
+    }
     
-
+    function searchCondition( string $targetTable, mixed $value )
+    {
+        if( $this->tableColumns['value'] )
+        {
+            $key = md5($targetTable.$this->tableColumns[ 'value' ].$value);
+            return  [
+                'query'     => "`".$this->wc->db->escape_string($targetTable)."`.`".$this->tableColumns[ 'value' ]."` = :".$key." ",
+                'params'    => [ $key => $value ],
+            ];
+        }
+        
+        return false;
+    }
+    
 }

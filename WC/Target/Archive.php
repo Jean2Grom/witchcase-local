@@ -1,12 +1,10 @@
 <?php
-
-namespace WC\Targets;
+namespace WC\Target;
 
 use WC\WitchCase;
-use WC\Localisation;
 use WC\Target;
-use WC\DataTypes\Signature;
-use WC\DataTypes\ExtendedDateTime;
+use WC\Datatype\Signature;
+use WC\Datatype\ExtendedDateTime;
 
 
 class Archive extends Target 
@@ -43,10 +41,6 @@ class Archive extends Target
         parent::__construct( $wc, "archive_".$structure );
     }
     
-    function fetch( $id )
-    {
-        return $this->fetchTarget( $id, self::$datatypes );
-    }
     
     function set( $args )
     {
@@ -74,7 +68,8 @@ class Archive extends Target
             
             return true;
         }
-        elseif( Localisation::deleteFromTarget($this->table, $this->id) )
+        //elseif( Localisation::deleteFromTarget($this->table, $this->id) )
+        elseif( true )
         {
             $query  =   "DELETE FROM `".$this->wc->db->escape_string($this->table)."` ";
             $query  .=  "WHERE content_key = '".$this->wc->db->escape_string($this->content_key)."' ";

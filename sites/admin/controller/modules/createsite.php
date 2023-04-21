@@ -1,7 +1,7 @@
 <?php
 
-
-require_once 'system/classes/Structure.php';
+use WC\Witch;
+use WC\TargetStructure;
 
 $messages = [];
 
@@ -11,7 +11,7 @@ if( filter_has_var(INPUT_POST, "createButton") )
 {
     $valid          = true;
     $siteNamePost   = filter_input(INPUT_POST, "name");
-    $siteName       = Localisation::cleanupString($siteNamePost);
+    $siteName       = Witch::cleanupString($siteNamePost);
     
     if( !$siteName )
     {
@@ -125,16 +125,17 @@ if( filter_has_var(INPUT_POST, "createButton") )
             }
             else
             {
-                $result =   Location::create(   $parentsID, 
-                                                $homeNamePost, 
-                                                $modulePost, 
-                                                '', 
-                                                NULL, 
-                                                $description, 
-                                                '/'
-                            );
                 
-                $destination = new Localisation($result);
+//                $result =   Location::create(   $parentsID, 
+//                                                $homeNamePost, 
+//                                                $modulePost, 
+//                                                '', 
+//                                                NULL, 
+//                                                $description, 
+//                                                '/'
+//                            );
+                
+                //$destination = new Localisation($result);
                 
                 $redirectionURI = "http://".$localisation->siteAccess.$destination->url;
             }
@@ -173,7 +174,7 @@ foreach( $modulesVar as $moduleName => $variables ){
     ];
 }
 
-$structureList = Structure::listStructures();
+$structureList = TargetStructure::listStructures();
 
 $structures = [];
 foreach( $structureList as $structureItem )

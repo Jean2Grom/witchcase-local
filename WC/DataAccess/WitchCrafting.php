@@ -14,7 +14,9 @@ use WC\Attribute;
  * @author teletravail
  */
 class WitchCrafting 
-{    
+{
+    const CACHE_FOLDER = "craft";
+    
     var $configuration;
     var $website;
     
@@ -93,14 +95,14 @@ class WitchCrafting
                 }
             }
         }
-                
+        
         $craftedData     = [];
         foreach( $targetsToCraft as $table => $ids )
         {
             $craftedData[ $table ]  = [];
             $idList                 = [];
             
-            $cachedData = $this->wc->cache->read( 'craft', $table ) ?? [];
+            $cachedData = $this->wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
             
             foreach( array_unique($ids) as $id ){
                 if( isset( $cachedData[ $id ]) ){
@@ -114,7 +116,7 @@ class WitchCrafting
             if( !empty($idList) )
             {
                 $craftedData[ $table ]  = array_replace($craftedData[ $table ], $this->craftQuery( $table, $idList ));
-                $this->wc->cache->create( 'craft', $table, array_replace($cachedData, $craftedData[ $table ]) );
+                $this->wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData[ $table ]) );
             }
             $cachedData = null;
         }
@@ -215,13 +217,13 @@ class WitchCrafting
         $querySelectElements    = [];
         $queryTablesElements    = [];
         $queryWhereElements     = [];
-        $queryParameters        = [];
+        $params                 = [];
         
         foreach( $ids as $paramKey => $paramValue ){
-            $queryParameters[ $table.'_'.$paramKey ] = $paramValue;
+            $params[ $table.'_'.$paramKey ] = $paramValue;
         }
 
-        $queryWhereElements[]   = "`".$structure->table."`.`id` IN ( :".implode(', :', array_keys($queryParameters))." ) ";
+        $queryWhereElements[]   = "`".$structure->table."`.`id` IN ( :".implode(', :', array_keys($params))." ) ";
 
         foreach( array_keys(Target::ELEMENTS) as $commonStructureField )
         {
@@ -248,10 +250,94 @@ class WitchCrafting
 
         $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements )." ";
         
-        $result = $this->wc->db->selectQuery( $query, $queryParameters );
+        $result         = $this->wc->db->selectQuery( $query, $params );        
+        $craftedData    = self::formatCraftData($result);
         
+        return $craftedData[ $table ];
+    }
+    
+    
+    static function targetSearchByQuery( WitchCase $wc, string $table, array $criterias, bool $excludeCriterias=true )
+    {
+        if( empty($table) || empty($criterias) ){
+            return [];
+        }
+        
+        $structure = new TargetStructure( $wc, $table );
+        
+        $querySelectElements    = [];
+        $queryTablesElements    = [];
+        $queryWhereElements     = [];
+        $params                 = [];
+        
+        $queryTablesElements[ $table ] = [];
+        foreach( array_keys(Target::ELEMENTS) as $commonStructureField )
+        {
+            $field  =   "`".$table."`.`".$commonStructureField."` ";
+            $field  .=  "AS `".$table."|".$commonStructureField."` ";
+            $querySelectElements[] = $field;
+        }
+
+        foreach( $structure->attributes as $attributeName => $attributeData )
+        {
+            $attribute = new $attributeData['class']( $wc, $attributeName );
+            
+            array_push( $querySelectElements, ...$attribute->getSelectFields($table) );
+            $queryTablesElements[ $table ] = array_merge($queryTablesElements[ $table ] ?? [], $attribute->getJointure( $table ) );
+            
+            foreach( $criterias as $criteriaKey => $criteriaValue ){
+                if( $criteriaKey === $attributeName || $criteriaKey === '*' )
+                {
+                    $searchCondition        = $attribute->searchCondition( $table, $criteriaValue );
+                    
+                    if( $searchCondition ){
+                        $queryWhereElements[]   = $searchCondition['query'];
+                        $params                 = array_replace( $params, $searchCondition['params'] );                        
+                    }
+                }
+            }
+        }
+        
+        $query = "";
+        $query  .=  "SELECT ".implode( ', ', $querySelectElements)." ";
+        $separator = "FROM ";
+        foreach( $queryTablesElements as $fromTable => $leftJoinArray )
+        {
+            $query  .=  $separator." `".$fromTable."` ";
+            $separator = ", ";
+            
+            foreach( $leftJoinArray as $leftJoin ){
+                $query  .=  $leftJoin;
+            }
+        }
+        
+        if( $excludeCriterias ){
+            $glue = 'AND ';
+        }
+        else {
+            $glue = 'OR ';
+        }
+        
+        $query  .=  "WHERE ".implode( $glue, $queryWhereElements )." ";
+
+        $result         = $wc->db->selectQuery($query, $params);
+        $craftedData    = self::formatCraftData($result);
+        
+        $cachedData = $wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
+        $wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData[ $table ]) );        
+        
+        $returnedTargets = [];
+        foreach( $craftedData[ $table ] ?? [] as $targetId => $targetCraftedData ){
+            $returnedTargets[ $targetId ] = new Target( $wc, $structure, $targetCraftedData );
+        }
+        
+        return $returnedTargets;
+    }
+    
+    private static function formatCraftData( array $sqlRawCraftDataResults ): array
+    {
         $craftedData = [];
-        foreach( $result as $row ){
+        foreach( $sqlRawCraftDataResults as $row ){
             foreach( $row as $rowField => $rowFieldValue )
             {
                 $splitSelectField = Attribute::splitSelectField( $rowField );
@@ -293,9 +379,8 @@ class WitchCrafting
                     $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ][] = $rowFieldValue;
                 }
             }
-        }
+        } 
         
-        return $craftedData[ $table ];
+        return $craftedData;
     }
-    
 }

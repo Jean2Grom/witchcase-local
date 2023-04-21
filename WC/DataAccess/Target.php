@@ -7,6 +7,10 @@ class Target
 {
     static function countWitches( WitchCase $wc, string $table, int $id )
     {
+        if( empty($table) || empty($id) ){
+            return false;
+        }
+        
         $params = [
             'target_table'  => $table,
             'target_fk'     => $id,
@@ -23,17 +27,67 @@ class Target
     
     static function delete( WitchCase $wc, string $table, int $id )
     {
-        $cachedData = $wc->cache->read( 'craft', $table ) ?? [];
-        if( isset($cachedData[ $id ]) ){
-            unset($cachedData[ $id ]);
+        if( empty($table) || empty($id) ){
+            return false;
         }
         
-        $wc->cache->create( 'craft', $table, $cachedData );
-                
+        $cachedData = $wc->cache->read( WitchCrafting::CACHE_FOLDER, $table ) ?? [];
+        if( isset($cachedData[ $id ]) ){
+            $wc->cache->delete( WitchCrafting::CACHE_FOLDER, $table );
+        }
+        
         $query = "";
         $query  .=  "DELETE FROM `".$wc->db->escape_string($table)."` ";
         $query  .=  "WHERE `id` = :id ";
         
         return $wc->db->deleteQuery($query, [ 'id' => $id ]);
     }
+    
+    static function update( WitchCase $wc, string $table, array $fields, array $conditions )
+    {
+        if( empty($table) || empty($fields) || empty($conditions) ){
+            return false;
+        }
+
+        $userId = $wc->user->id;
+        if( $userId )
+        {
+            $fields["creator"]      = $fields["creator"] ?? $userId;
+            $fields["modificator"]  = $fields["modificator"] ?? $userId;            
+        }
+        
+        $params = []; 
+        $query  = "";
+        $query  .=  "UPDATE `".$wc->db->escape_string($table)."` ";
+        
+        $separator = "SET ";
+        foreach( $fields as $field => $value )
+        {
+            $key            = md5($field.$value);
+            $params[ $key ] = $value;
+            $query  .=  $separator."`".$field."` = :".$key." ";
+            $separator = ", ";
+        }
+        
+        $separator = "WHERE ";
+        foreach( $conditions as $field => $value )
+        {
+            $key            = md5($field.$value);
+            $params[ $key ] = $value;
+            
+            $query  .=  $separator."`".$field."` = :".$key." ";
+            $separator = "AND ";            
+        }
+        
+        if( isset($conditions['id']) )
+        {
+            $cachedData = $wc->cache->read( WitchCrafting::CACHE_FOLDER, $table ) ?? [];
+            if( isset($cachedData[ $conditions['id'] ]) ){
+                $wc->cache->delete( WitchCrafting::CACHE_FOLDER, $table );
+            }
+        }
+        
+        return $wc->db->updateQuery($query, $params);
+    }
+    
 }

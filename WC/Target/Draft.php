@@ -1,12 +1,10 @@
 <?php
-
-namespace WC\Targets;
+namespace WC\Target;
 
 use WC\WitchCase;
-use WC\Localisation;
 use WC\Target;
-use WC\DataTypes\Signature;
-use WC\DataTypes\ExtendedDateTime;
+use WC\Datatype\Signature;
+use WC\Datatype\ExtendedDateTime;
 
 class Draft extends Target 
 {    
@@ -42,10 +40,6 @@ class Draft extends Target
         parent::__construct($wc, "draft_".$structure);
     }
     
-    function fetch( $id )
-    {
-        return $this->fetchTarget( $id, self::$datatypes );
-    }
     
     function set( $args )
     {
@@ -173,15 +167,15 @@ class Draft extends Target
         foreach( $this->attributes as $attribute )
         {   $attribute->create($this);  }
         
-        $samesiteNewLocationId =    Location::create(   $parentsID, 
-                                                        $name, 
-                                                        $module, 
-                                                        $this->table, 
-                                                        $this->id, 
-                                                        $description, 
-                                                        $customUrl, 
-                                                        $newSite
-                                    );
+//        $samesiteNewLocationId =    Location::create(   $parentsID, 
+//                                                        $name, 
+//                                                        $module, 
+//                                                        $this->table, 
+//                                                        $this->id, 
+//                                                        $description, 
+//                                                        $customUrl, 
+//                                                        $newSite
+//                                    );
         
         $this->wc->db->commit();
         
@@ -440,7 +434,8 @@ class Draft extends Target
     {
         if( !$this->content_key )
         {
-            if( Localisation::deleteFromTarget($this->table, $this->id) === false ){
+            //if( Localisation::deleteFromTarget($this->table, $this->id) === false ){
+            if( false ){
                 return false;
             }
             else
@@ -469,7 +464,8 @@ class Draft extends Target
             if( !$archiveID )
             {   return false;   }
             
-            if( !Localisation::changeTarget( $this->table, $this->id, $archiveTable, $archiveID ) )
+            //if( !Localisation::changeTarget( $this->table, $this->id, $archiveTable, $archiveID ) )
+            if( false )
             {   return false;   }
             
             $query  =   "DELETE FROM `".$this->table."` ";

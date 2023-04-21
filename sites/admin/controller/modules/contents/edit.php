@@ -5,13 +5,9 @@ $possibleActionsList = [
     'save-content-and-return',
 ];
 
-$action = false;
-if( filter_has_var(INPUT_POST, "action") ){
-    foreach( $possibleActionsList as $possibleAction ){
-        if(filter_input(INPUT_POST, "action") == $possibleAction ){
-            $action = $possibleAction;
-        }
-    }
+$action = $this->wc->request->param('action');
+if( !in_array($action, $possibleActionsList) ){
+    $action = false;
 }
 
 $alerts         = $this->wc->user->getAlerts();
@@ -57,14 +53,15 @@ switch( $action )
         
         $save =true;
         foreach( $target->attributes as $attribute ){
-            foreach( $attribute->tableColumns as $attributeElement => $tableColumnName ){
-                if( filter_has_var(INPUT_POST, $tableColumnName) ){
-                    if( !$attribute->setValue( $attributeElement, filter_input(INPUT_POST, $tableColumnName) ) )
-                    {
-                        $alerts = array_merge($alerts, $this->wc->user->getAlerts());
-                        $save = false;
-                        break;
-                    }
+            foreach( $attribute->tableColumns as $attributeElement => $tableColumnName )
+            {
+                $value =  $this->wc->request->param($tableColumnName);
+                
+                if( $value && !$attribute->setValue($attributeElement, $value) )
+                {
+                    $alerts = array_merge($alerts, $this->wc->user->getAlerts());
+                    $save   = false;
+                    break;
                 }
             }
         }

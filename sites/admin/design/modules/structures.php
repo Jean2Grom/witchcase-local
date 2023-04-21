@@ -1,108 +1,113 @@
 <?php
-
-$this->addCssFile('structures.css');
+    $this->addCssFile('structures.css');
 ?>
-
-<h1>Structures des données</h1>
-
-<div class="errorMessages">
-    <?php foreach( $messages as $message ): ?>
-        <p><?=$message?></p>
-    <?php endforeach; ?>
-</div>
-
-<p>
-    Les données sont stockées sous la forme de structures qui sont éditables ici.
-</p>
-
-<div class="respiration">
-    <form method="POST" name="structures">
-        <div id="navHeader">
-        <h2><?=$count?> Structures</h2>
-        </div>
-        <?php if( $archiveHref ): ?>
-            <a id="structures-navHeader-a" 
-                href="<?=$archiveHref["href"]?>">
-                <?=$archiveHref["name"]?>
-            </a>
-        <?php endif; ?>
+<style>
+    .rotate-90 {
+        transform: rotate(90deg);
+    }
         
-        <table id="structures-navHeader-table">
-            <thead>
-                <tr>
-                    <th>&nbsp;
+    .structures-content__list {
+        float: left;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        margin: 15px 15px 5px 0;
+        padding: 10px;
+        box-shadow: 5px 5px 5px #ccc;
+    }
+        .structures-content__list h2 {
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+            .structures-content__list table {
+                border-collapse: collapse;
+                margin-bottom: 10px;
+            }
+            .structures-content__list table th {
+                min-width: 100px;
+                background-color: #ddd;
+                padding: 5px 10px;
+            }
+            .structures-content__list table tbody tr:hover {
+                background-color: #eee;
+            }
+            .structures-content__list table td {
+                padding: 4px 10px;
+                text-align: center;
+            }
+            .structures-content__list table td:first-child {
+                text-align: left;
+            }
+            .structures-content__list table tr td:last-child {
+                text-align: right;
+            }
+            .structures-content__list table input {
+                width: 60px;
+            }
+    #witch__add-content {
+        margin-top: 15px;
+    }
+</style>
+<div class="view-content">
+    <h1>Structures des données</h1>
 
-                    </th>
-                    <?php foreach( $headers as $header => $href ): ?>
-                        <th>
-                            <?php if( $href ): ?>
-                                    <?=$header?>
-                                <a href="<?=$href?>">
-                                    <div class="triangle"></div>
-                                </a>
-                            <?php else: ?>
-                                <?=$header?>
-                            <?php endif; ?>
-                        </th>
-                    <?php endforeach; ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach( $structures as $structure ): ?>
+    <div class="errorMessages">
+        <?php foreach( $messages as $message ): ?>
+            <p><?=$message?></p>
+        <?php endforeach; ?>
+    </div>
+
+    <p>
+        Les données sont stockées sous la forme de structures qui sont éditables ici.
+    </p>
+
+    <div class="structures-content__list">
+        <form method="POST" name="structures">
+            <div id="navHeader">
+            <h2><?=$count?> Structures</h2>
+            </div>
+            <?php /* if( $archiveHref ): ?>
+                <a id="structures-navHeader-a" 
+                    href="<?=$archiveHref["href"]?>">
+                    <?=$archiveHref["name"]?>
+                </a>
+            <?php endif; */?>
+
+            <table id="structures-navHeader-table">
+                <thead>
                     <tr>
-                        <td>
-                                <input  type="checkbox" 
-                                        name="structures[]" 
-                                        <?php if( !$structure['modifyHref'] ): ?>
-                                            disabled="disabled"
-                                        <?php endif; ?>
-                                        value="<?=$structure['name']?>" />
-                        </td>
-                        <td>
-                            <a href="<?=$structure['viewHref']?>">
-                                <?=$structure['name']?>
-                            </a>
-                        </td>
-                        <?php  if($archives): ?>
-                            <td align="center">
-                                <?=$structure['isArchive']?>
-                            </td>
-                        <?php endif; ?>
-                        <td align="center">
-                            <?=$structure['draftCount']?>
-                        </td>
-                        <td align="center">
-                            <?=$structure['contentCount']?>
-                        </td>
-                        <td align="center">
-                            <?=$structure['archiveCount']?>
-                        </td>
-                        <td>
-                            <?=$structure['creation']->frenchFormat(true)?>
-                        </td>
-                        <?php if( $structure['modifyHref'] ):?>
-                            <td>
-                                <a href="<?=$structure['modifyHref']?>">
-                                    Modifier
-                                </a>
-                            </td>
-                        <?php else: ?>
+                        <th>Nom</th>
+                        <th>Contents</th>
+                        <th>Création</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach( $structures as $structure ): ?>
+                        <tr>
                             <td>
                                 <a href="<?=$structure['viewHref']?>">
-                                    Voir
+                                    <?=$structure['name']?>
                                 </a>
                             </td>
-                        <?php endif; ?>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                            <?php /* if($archives): ?>
+                                <td align="center">
+                                    <?=$structure['isArchive']?>
+                                </td>
+                            <?php endif; */ ?>
+                            <td>
+                                <?=$structure['count']['content']?>
+                            </td>
+                            <td>
+                                <?=$structure['creation']->format( 'H:i:s d/m/Y' )?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
 
-        <input  type="submit"
-                name="createStructure"
-                value="Créer Structure" />
-        <input  type="submit"
-                name="deleteStructures"
-                value="Supprimer Structures" />
-    </form>
+            <input  type="submit"
+                    name="createStructure"
+                    value="Créer Structure" />
+        </form>
+    </div>
+    <div class="clear"></div>
 </div>

@@ -8,6 +8,10 @@ class Police
     var $position;
     var $position_rules;
     var $custom_limitation;
+    var $status;
+    var $positionName;
+    var $positionId;
+    var $statusLabel;
     
     /** @var Profile */
     var $profile;
@@ -35,6 +39,9 @@ class Police
         $police->positionId        = $data['positionId'];
         $police->statusLabel       = $data['statusLabel'] ?? '*';
         
+        
+        $profile->wc->dump($profile);
+        $profile->wc->dump($police);
         return $police;
     }
 
@@ -93,7 +100,7 @@ class Police
                 }
             }
             
-            $this->localisation = Localisation::getFromPosition( $this->wc, $localisationPosition );
+            //$this->localisation = Localisation::getFromPosition( $this->wc, $localisationPosition );
         }
         
         $return =   array(

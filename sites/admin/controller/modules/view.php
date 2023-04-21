@@ -9,13 +9,9 @@ $possibleActionsList = [
     'witch-add-content',
 ];
 
-$action = false;
-if( filter_has_var(INPUT_POST, "action") ){
-    foreach( $possibleActionsList as $possibleAction ){
-        if(filter_input(INPUT_POST, "action") == $possibleAction ){
-            $action = $possibleAction;
-        }
-    }
+$action = $this->wc->request->param('action');
+if( !in_array($action, $possibleActionsList) ){
+    $action = false;
 }
 
 $targetWitch = $this->wc->website->witches["target"] ?? false;
