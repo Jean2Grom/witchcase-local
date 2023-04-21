@@ -169,6 +169,10 @@ class TargetStructure
     
     static function countElements( WitchCase $wc, string $structure )
     {
+        if( empty($structure) ){
+            return false;
+        }
+        
         $typesArray = [
             //'draft', 
             'content', 
@@ -189,6 +193,10 @@ class TargetStructure
     
     static function createTarget( WitchCase $wc, string $table, string $name=null )
     {
+        if( empty($table) ){
+            return false;
+        }
+                
         $userId = $wc->user->id;
         $params = [];
         if( $userId )

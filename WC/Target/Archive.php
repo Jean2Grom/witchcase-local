@@ -41,10 +41,6 @@ class Archive extends Target
         parent::__construct( $wc, "archive_".$structure );
     }
     
-    function fetch( $id )
-    {
-        return $this->fetchTarget( $id, self::$datatypes );
-    }
     
     function set( $args )
     {

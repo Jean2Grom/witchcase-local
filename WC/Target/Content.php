@@ -35,10 +35,6 @@ class Content extends Target
         parent::__construct( $wc, "content_".$structure );
     }
     
-    function fetch( $id )
-    {
-        return $this->fetchTarget( $id, self::$datatypes );
-    }
     
     function set( $args )
     {

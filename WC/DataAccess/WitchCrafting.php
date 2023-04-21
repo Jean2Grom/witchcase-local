@@ -14,7 +14,9 @@ use WC\Attribute;
  * @author teletravail
  */
 class WitchCrafting 
-{    
+{
+    const CACHE_FOLDER = "craft";
+    
     var $configuration;
     var $website;
     
@@ -93,14 +95,14 @@ class WitchCrafting
                 }
             }
         }
-                
+        
         $craftedData     = [];
         foreach( $targetsToCraft as $table => $ids )
         {
             $craftedData[ $table ]  = [];
             $idList                 = [];
             
-            $cachedData = $this->wc->cache->read( 'craft', $table ) ?? [];
+            $cachedData = $this->wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
             
             foreach( array_unique($ids) as $id ){
                 if( isset( $cachedData[ $id ]) ){
@@ -114,7 +116,7 @@ class WitchCrafting
             if( !empty($idList) )
             {
                 $craftedData[ $table ]  = array_replace($craftedData[ $table ], $this->craftQuery( $table, $idList ));
-                $this->wc->cache->create( 'craft', $table, array_replace($cachedData, $craftedData[ $table ]) );
+                $this->wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData[ $table ]) );
             }
             $cachedData = null;
         }
@@ -320,6 +322,9 @@ class WitchCrafting
 
         $result         = $wc->db->selectQuery($query, $params);
         $craftedData    = self::formatCraftData($result);
+        
+        $cachedData = $wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
+        $wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData[ $table ]) );        
         
         $returnedTargets = [];
         foreach( $craftedData[ $table ] ?? [] as $targetId => $targetCraftedData ){

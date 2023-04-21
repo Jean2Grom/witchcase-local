@@ -40,10 +40,6 @@ class Draft extends Target
         parent::__construct($wc, "draft_".$structure);
     }
     
-    function fetch( $id )
-    {
-        return $this->fetchTarget( $id, self::$datatypes );
-    }
     
     function set( $args )
     {
