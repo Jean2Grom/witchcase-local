@@ -71,7 +71,12 @@ class Database
     }
     
     function createQuery( string $query, array $bindParams=[], $multiple=false ){
-        return $this->ressource->query( $query, $bindParams, $multiple );
+        try {
+            return $this->ressource->query( $query, $bindParams, $multiple );
+        }
+        catch( \Exception $e ){
+            return false;
+        }
     }
     
     function escape_string( string $string ): string
@@ -80,7 +85,7 @@ class Database
     }
     
     function begin(){
-        return $this->ressource->query( "BEGIN" );
+        return $this->ressource->query( "START TRANSACTION" );
     }
     
     function savePoint( string $savePointName ){

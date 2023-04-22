@@ -2,42 +2,60 @@
 namespace WC;
 
 use WC\DataAccess\TargetStructure as TargetStructureDA;
+use WC\DataAccess\Witch as WitchDA;
 
-use WC\Target\Content;
 use WC\Datatype\ExtendedDateTime;
 use WC\Attribute;
-
-
 
 class TargetStructure 
 {
     var $table;
     var $type;
     var $name;
-    var $attributes;
-    var $fields;
-    
+    var $attributes;    
     var $lastModified;
     var $exist;
     
     /** @var WitchCase */
     var $wc;
     
-    function __construct( WitchCase $wc, string $structureTableName )
+    function __construct( WitchCase $wc, string $structureOrTableName )
     {
-        $this->wc       = $wc;
-        $this->table    = $structureTableName;        
-        $this->type     = substr( $this->table, 0, strpos($this->table, '_') );
-        $this->name     = substr( $this->table, strpos($this->table, '_') + 1 );    
-        $columns        = TargetStructureDA::readTableStructure($this->wc, $this->table);
+        $this->wc = $wc;
         
-        $this->fields       = [];
-        $this->attributes   = [];
+        foreach( Target::TYPES as $type ){
+            if( str_starts_with($structureOrTableName, $type.'__') )
+            {
+                $this->table    = $structureOrTableName;
+                $this->type     = $type;
+                $this->name     = substr( $structureOrTableName, strlen($type.'__') );                
+                break;
+            }
+        }
+        
+        if( !$this->table )
+        {
+            $this->name     = $structureOrTableName;
+            $this->type     = Target::TYPES[0];
+            $this->table    = $this->type.'__'.$this->name;
+        }
+    }
+                
+    function attributes( string $requiredType=null, bool $forceReading=false )
+    {
+        $type = $requiredType ?? $this->type;
+        
+        if( isset($this->attributes[ $type ]) && !$forceReading ){
+            return  $this->attributes[ $type ];
+        }
+        
+        $table      = $type.'__'.$this->name;        
+        $columns    = TargetStructureDA::readTableStructure($this->wc, $table);
+        
+        $attributes   = [];
         foreach( array_keys($columns) as $columnName )
         {
-            if( strpos($columnName, '@') === false )
-            {
-                $this->fields[] = $columnName;
+            if( strpos($columnName, '@') === false ){
                 continue;
             }
             
@@ -51,7 +69,7 @@ class TargetStructure
                 continue;
             }
             
-            if( empty($this->attributes[ $attributeName ]) )
+            if( empty($attributes[ $attributeName ]) )
             {
                 $className = "WC\\Attribute\\".ucfirst($attributeType).'Attribute';
                 
@@ -61,19 +79,23 @@ class TargetStructure
                     continue;
                 }
                 
-                $this->attributes[ $attributeName ] = [
+                $attributes[ $attributeName ] = [
                     'class'     => $className,
                     'elements'  => [],
                 ];
             }
             
             if( empty($attributeElement) ){
-                $this->attributes[ $attributeName ]['elements'][ $attributeType ]       = $columnName;
+                $attributes[ $attributeName ]['elements'][ $attributeType ]       = $columnName;
             }
             else {
-                $this->attributes[ $attributeName ]['elements'][ $attributeElement ]    = $columnName;
+                $attributes[ $attributeName ]['elements'][ $attributeElement ]    = $columnName;
             }
         }
+        
+        $this->attributes[ $type ] = $attributes;
+        
+        return  $this->attributes[ $type ];
     }
     
     function getLastModificationTime()
@@ -93,38 +115,83 @@ class TargetStructure
     
     static function create( WitchCase $wc, string $structureName )
     {
-        $table      = "content_".$structureName;
-        $dbFields   = array_merge( Target::$dbFields, Content::$dbFields, [Target::$primaryDbField] );
+        foreach( Target::TYPES as $type )
+        {
+            $table      = $type.'__'.$structureName;
+            $className  = "WC\\Target\\". ucfirst($type);
+            $dbFields   = array_merge( Target::$dbFields, $className::$dbFields, [Target::$primaryDbField] );
+            
+            if( TargetStructureDA::createTargetStructureTable( $wc, $table, $dbFields ) === false ){
+                return false;
+            }
+        }
         
-        return TargetStructureDA::createTargetStructureTable( $wc, $table, $dbFields );
+        return true;
     }
     
     function update( $attributes )
     {
-        $removeColumns = [];
-        foreach( array_keys($this->attributes) as $attributeName ){
-            if( !isset($attributes[ $attributeName ]) ){
-                foreach( $this->attributes[ $attributeName ]['elements'] as $column ){
-                    $removeColumns[] = $column;
+        $returnStatus = true;
+        foreach( Target::TYPES as $type )
+        {
+            $removeColumns = [];
+            $changeColumns = [];
+            foreach( array_keys($this->attributes( $type )) as $attributeName ){
+                if( !isset($attributes[ $attributeName ]) ){
+                    if( $type !== 'archive' ){
+                        foreach( $this->attributes( $type )[ $attributeName ]['elements'] as $column ){
+                            $removeColumns[] = $column;
+                        }
+                    }
+                    else {
+                        $attributeClass = $this->attributes( $type )[ $attributeName ]["class"];
+                        $chgAttribute   = new $attributeClass(
+                            $this->wc,
+                            $attributeName,
+                            $this->attributes( $type )[ $attributeName ]['parameters'] ?? []
+                        );
+
+                        foreach( $chgAttribute->dbFields as $key => $columnDef )
+                        {
+                            $columnName = $chgAttribute->tableColumns[ $key ];
+                            $pos = strpos($columnDef, '@');
+                            $changeColumns[ $columnName ] = substr($columnDef, 0, $pos).'__archive'. substr($columnDef, $pos);
+                        }
+                    }
                 }
             }
-        }
-        
-        $addColumns = [];
-        foreach( array_keys($attributes) as $attributeName ){
-            if( !isset($this->attributes[ $attributeName ]) ){
-                foreach( $attributes[ $attributeName ]->dbFields as $column ){
-                    $addColumns[] = $column;
+            
+            $addColumns = [];
+            foreach( array_keys($attributes) as $attributeName ){
+                if( !isset($this->attributes( $type )[ $attributeName ]) ){
+                    foreach( $attributes[ $attributeName ]->dbFields as $column ){
+                        $addColumns[] = $column;
+                    }
                 }
             }
+                        
+            $result = TargetStructureDA::updateTargetStructureTable( 
+                $this->wc, 
+                $type.'__'.$this->name, 
+                $addColumns, 
+                $removeColumns, 
+                $changeColumns 
+            );
+            
+            $returnStatus = $returnStatus && $result;
         }
         
-        return TargetStructureDA::updateTargetStructureTable( $this->wc, $this->table, $addColumns, $removeColumns );
+        return $returnStatus;
     }
     
     function delete()
     {
-        $datas =  TargetStructureDA::getWitchDataFromTargetStructureTables($this->wc, [ $this->table ]);
+        $tables = [];
+        foreach( Target::TYPES as $type ){
+            $tables[] = $table = $type.'__'.$this->name;
+        }
+        
+        $datas =  TargetStructureDA::getWitchDataFromTargetStructureTables($this->wc, $tables);
         
         $witchesByDepth = [];
         foreach( $datas as $witchData )
@@ -149,7 +216,12 @@ class TargetStructure
             }
         }
         
-        return TargetStructureDA::deleteTargetStructureTable( $this->wc, $this->table );
+        $returnStatus = true;
+        foreach( $tables as $table ){
+            $returnStatus = $returnStatus && TargetStructureDA::deleteTargetStructureTable( $this->wc, $table );
+        }
+        
+        return $returnStatus;
     }
     
     function createTarget( string $name=null ){

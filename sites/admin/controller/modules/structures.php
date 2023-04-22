@@ -2,6 +2,7 @@
 use WC\TargetStructure;
 use WC\Witch;
 use WC\Attribute;
+use WC\Datatype\ExtendedDateTime;
 
 if( $this->wc->request->param("publishStructure") ){
     $action = "publishStructure";
@@ -33,10 +34,10 @@ $baseUri  = $this->witch->uri;
 if( $action === "publishStructure" )
 {
     $structureName      = $this->wc->request->param("edit", 'get');
-    $structure          = new TargetStructure( $this->wc,  'content_'.$structureName );    
-    $attributesPost     =   $this->wc->request->param("attributes", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+    $structure          = new TargetStructure( $this->wc,  $structureName );    
+    $attributesPost     = $this->wc->request->param("attributes", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
     $attributesList     = Attribute::list();
-        
+    
     $attributes = [];
     foreach( $attributesPost as $attributesPostData )
     {
@@ -58,7 +59,7 @@ if( $action === "publishStructure" )
         
         $attributes[ $attributeName ] = $attribute;
     }
-    
+        
     if( !$structure->update($attributes) )
     {
         $messages[] = "Publication failed, please try again";
@@ -120,52 +121,34 @@ if( strcmp($action, "createStructure") == 0 )
 
 if( $action === "editStructure" )
 {
-    $structureName = $this->wc->request->param("edit", 'get');
+    $structureName  = $this->wc->request->param("edit", 'get');
     
     // TODO Conf reading ?
     $attributesList = Attribute::list();
     
     $attributes = [];
-    if( !filter_has_var(INPUT_POST, "currentAction") 
-        || strcmp( filter_input(INPUT_POST, "currentAction"), "editingStructure" ) != 0
-    ){
-        if( filter_has_var(INPUT_GET, "base") ){
-            $structure = new TargetStructure( $this->wc, 'content_'.filter_input(INPUT_GET, "base") );
+    if( $this->wc->request->param("currentAction") !== "editingStructure" )
+    {
+        $baseStructure = $this->wc->request->param("base", 'get');
+        
+        if( $baseStructure ){
+            $structure = new TargetStructure( $this->wc, $baseStructure );
         }
         else {
-            $structure  = new TargetStructure( $this->wc, 'content_'.$structureName );
+            $structure  = new TargetStructure( $this->wc, $structureName );
         }
         
-        foreach( $structure->attributes as $attributeName => $attributeData ){
+        foreach( $structure->attributes() as $attributeName => $attributeData ){
             $attributes[ $attributeName ] = $attributeData;
         }
     }
     else
     {
-        $deleteAttributePost    =   filter_input(   
-            INPUT_POST,
-            "deleteAttribute",
-            FILTER_DEFAULT,
-            FILTER_REQUIRE_ARRAY
-        );
-        
-        if( !$deleteAttributePost ){
-            $deleteAttributePost = [];
-        }
-        
-        $attributesPost =   filter_input(   
-            INPUT_POST,
-            "attributes",
-            FILTER_DEFAULT,
-            FILTER_REQUIRE_ARRAY
-        );
-        
-        if( !$attributesPost ){
-            $attributesPost = [];
-        }
+        $deleteAttributePost    =   $this->wc->request->param("deleteAttribute", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $attributesPost         =   $this->wc->request->param("attributes", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
         
         foreach( $attributesPost as $indice => $attributePostData ){
-            if( !isset($deleteAttributePost[$indice]) )
+            if( !isset($deleteAttributePost[ $indice ]) )
             {
                 $attributeType  = $attributePostData['type'];
                 $attributeClass = $attributesList[ $attributeType ];
@@ -181,9 +164,9 @@ if( $action === "editStructure" )
             }
         }
         
-        if( filter_has_var(INPUT_POST, "addAttribute") )
+        if( $this->wc->request->param("addAttribute") )
         {
-            $attributeType  = filter_input(INPUT_POST, "addAttributType");
+            $attributeType  = $this->wc->request->param("addAttributType");
             $attributeClass = $attributesList[ $attributeType ];
             
             $attributes[ "Nouvel Attribut ".$attributeType ] = [ 'class' => $attributeClass ];
@@ -198,13 +181,13 @@ if( $action === "editStructure" )
 
 }
 
-if( strcmp($action, "viewStructure") == 0 )
+if( $action === "viewStructure" )
 {
     $structureName      = $this->wc->request->param('view');
-    $structure          = new TargetStructure( $this->wc, 'content_'.$structureName );
+    $structure          = new TargetStructure( $this->wc, $structureName );
     
     $creationDateTime   = $structure->getLastModificationTime();
-    $attributes         = $structure->attributes;
+    $attributes         = $structure->attributes();
     $archivedAttributes = [];
     
     $modificationHref   = $baseUri."?edit=".$structure->name;
@@ -220,7 +203,7 @@ if( $action === "deleteStructures" )
     
     if( $structureName )
     {            
-        $structure = new TargetStructure( $this->wc,  'content_'.$structureName );
+        $structure = new TargetStructure( $this->wc,  $structureName );
         
         if( !$structure->delete() ){
             $messages[] = "Deletion of ".$structureName." failed";
@@ -233,18 +216,15 @@ if( $action === "deleteStructures" )
     $action = "listStructures";
 }
 
-if( strcmp($action, "listStructures") == 0 )
+if( $action === "listStructures" )
 {
     $structures = TargetStructure::listStructures( $this->wc, true );
     $count      = count($structures);
     
     foreach( $structures as $key => $value )
     {
-        $structure          = $value['name'];
-        $creationDateTime   = new \DateTime($value['created']);
-        
         $structures[ $key ]['viewHref']  =   $baseUri."?view=".$value['name'];
-        $structures[ $key ]['creation']  =   new \DateTime($value['created']);
+        $structures[ $key ]['creation']  =   new ExtendedDateTime($value['created']);
     }
     
     $this->setContext('standard');

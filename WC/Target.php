@@ -10,12 +10,18 @@ use WC\Attribute;
 
 class Target 
 {
-    const ELEMENTS          = [
+    const TYPES         = [ 
+        'content', 
+        'draft', 
+        'archive',
+    ];
+    
+    const ELEMENTS      = [
         "id"        => "INT(11) UNSIGNED NOT NULL AUTO_INCREMENT",
         "name"      => "VARCHAR(255) DEFAULT NULL",
     ];
     
-    static $dbFields    =   [
+    static $dbFields    = [
         "`id` int(11) unsigned NOT NULL AUTO_INCREMENT",
         "`name` varchar(255) DEFAULT NULL",
         "`creator` int(11) DEFAULT NULL",
@@ -51,7 +57,7 @@ class Target
                 }
             }
             
-            foreach( $structure->attributes as $attributeName => $attributeData )
+            foreach( $structure->attributes() as $attributeName => $attributeData )
             {
                 $className = $attributeData["class"];
                 $attribute = new $className( $this->wc, $attributeName );

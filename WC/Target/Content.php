@@ -9,7 +9,7 @@ use WC\Datatype\ExtendedDateTime;
 class Content extends Target 
 {
     static $dbFields    =   [
-        //"`publication_date` datetime DEFAULT NULL",
+        "`publication_date` datetime DEFAULT CURRENT_TIMESTAMP",
     ];
     
     static $datatypes   =   array(
@@ -32,7 +32,7 @@ class Content extends Target
         $this->modificator          =   new Signature('', '', '');
         $this->modification_date    =   new ExtendedDateTime("0000-00-00 00:00:00");
         
-        parent::__construct( $wc, "content_".$structure );
+        parent::__construct( $wc, "content__".$structure );
     }
     
     
@@ -173,13 +173,13 @@ class Content extends Target
     static function searchUserContentsData( WitchCase $wc, $structureName, $userID, $offset=false, $limit=false )
     {
         $query  =   "SELECT content.*, loc.* ";
-        $query  .=  "FROM `content_".$structureName."` AS content, ";
+        $query  .=  "FROM `content__".$structureName."` AS content, ";
         $query  .=  "`localisation` AS loc ";
         
         $query  .=  "WHERE ( content.creator=".$userID." ";
         $query  .=      "OR content.modificator=".$userID." ) ";
         $query  .=  "AND loc.site='".$wc->website->name."' ";
-        $query  .=  "AND loc.target_table='content_".$structureName."' ";
+        $query  .=  "AND loc.target_table='content__".$structureName."' ";
         $query  .=  "AND loc.target_fk=content.id ";
         
         $query  .=  "ORDER BY content.modification_date DESC ";

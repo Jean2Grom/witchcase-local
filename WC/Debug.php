@@ -317,4 +317,9 @@ class Debug
     {
         throw new \Exception( $msg );
     }
+    
+    function die( string $msg ):void
+    {
+        $this->throwException($msg);
+    }
 }

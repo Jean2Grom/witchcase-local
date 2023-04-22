@@ -223,21 +223,21 @@ class WitchCrafting
             $params[ $table.'_'.$paramKey ] = $paramValue;
         }
 
-        $queryWhereElements[]   = "`".$structure->table."`.`id` IN ( :".implode(', :', array_keys($params))." ) ";
+        $queryWhereElements[]   = "`".$table."`.`id` IN ( :".implode(', :', array_keys($params))." ) ";
 
         foreach( array_keys(Target::ELEMENTS) as $commonStructureField )
         {
-            $field  =   "`".$structure->table."`.`".$commonStructureField."` ";
-            $field  .=  "AS `".$structure->table."|".$commonStructureField."` ";
+            $field  =   "`".$table."`.`".$commonStructureField."` ";
+            $field  .=  "AS `".$table."|".$commonStructureField."` ";
             $querySelectElements[] = $field;
         }
 
-        foreach( $structure->attributes as $attributeName => $attributeData )
+        foreach( $structure->attributes() as $attributeName => $attributeData )
         {
             $attribute = new $attributeData['class']( $this->wc, $attributeName );
 
-            array_push( $querySelectElements, ...$attribute->getSelectFields($structure->table) );
-            array_push( $queryTablesElements, ...$attribute->getJointure($structure->table) );
+            array_push( $querySelectElements, ...$attribute->getSelectFields($table) );
+            array_push( $queryTablesElements, ...$attribute->getJointure($table) );
         }
         
         $query = "";
@@ -251,7 +251,7 @@ class WitchCrafting
         $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements )." ";
         
         $result         = $this->wc->db->selectQuery( $query, $params );        
-        $craftedData    = self::formatCraftData($result);
+        $craftedData    = self::formatCraftData( $result );
         
         return $craftedData[ $table ];
     }
@@ -278,7 +278,7 @@ class WitchCrafting
             $querySelectElements[] = $field;
         }
 
-        foreach( $structure->attributes as $attributeName => $attributeData )
+        foreach( $structure->attributes() as $attributeName => $attributeData )
         {
             $attribute = new $attributeData['class']( $wc, $attributeName );
             

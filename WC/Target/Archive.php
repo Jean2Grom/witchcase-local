@@ -9,14 +9,10 @@ use WC\Datatype\ExtendedDateTime;
 
 class Archive extends Target 
 {
-    
-    static $dbFields    =   array(
-                                "`content_key` int(11) DEFAULT NULL",
-                                "`last_modificator` int(11) DEFAULT NULL",
-                                "`last_modification_date` datetime DEFAULT NULL",
-                                "`archiver` int(11) DEFAULT NULL",
-                                "`archive_date` datetime DEFAULT NULL",
-                            );
+    static $dbFields    =   [
+        //"`content_key` int(11) DEFAULT NULLXXX",
+        "`content_key` int(11) DEFAULT NULL",
+    ];
     
     static $datatypes            =   array(
                                             'Signature'         =>  array(

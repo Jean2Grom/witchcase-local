@@ -7,14 +7,10 @@ use WC\Datatype\Signature;
 use WC\Datatype\ExtendedDateTime;
 
 class Draft extends Target 
-{    
-    static $dbFields    =   array(
-                                "`content_key` int(11) DEFAULT NULL",
-                                "`creator` int(11) DEFAULT NULL",
-                                "`creation_date` datetime DEFAULT NULL",
-                                "`modificator` int(11) DEFAULT NULL",
-                                "`modification_date` datetime DEFAULT NULL",
-                            );
+{
+    static $dbFields    =   [
+        "`content_key` int(11) DEFAULT NULL",
+    ];
     
     static $datatypes   =   array(
                                 'Signature'         =>  array(
@@ -213,7 +209,7 @@ class Draft extends Target
     
     private function publishNew()
     {
-        $contentTable   = "content_".$this->structure;
+        $contentTable   = "content__".$this->structure;
         $currentDate    = date("Y-m-d H:i:s");
         $userID         = $this->wc->user->id;
         
@@ -358,7 +354,7 @@ class Draft extends Target
             return false;
         }
         
-        $query  =   "UPDATE `".$this->wc->db->escape_string("content_".$this->structure)."` ";
+        $query  =   "UPDATE `".$this->wc->db->escape_string("content__".$this->structure)."` ";
         $query  .=  "SET `modificator` = '".$userID."', ";
         if( isset($args['name']) )
         {   $query  .=  "`name` = '".$this->wc->db->escape_string($this->name)."', "; }
@@ -544,7 +540,7 @@ class Draft extends Target
         
         $query  .=  "`draft_".$structure."` AS draft ";
         
-        $query  .=  "INNER JOIN `content_".$structure."` AS content ";
+        $query  .=  "INNER JOIN `content__".$structure."` AS content ";
         $query  .=  "ON ( draft.content_key = content.id ";
         $query  .=  "AND draft.creation_date > content.modification_date ) ";
         $query  .=  "INNER JOIN `localisation` ";
@@ -595,7 +591,7 @@ class Draft extends Target
         $query  .=      "( loc.target_table='draft_".$structureName."'  ";
         $query  .=          "AND loc.target_fk=draft.id ) ";
         $query  .=      "OR ( loc.target_fk=draft.content_key ";
-        $query  .=          "AND loc.target_table='content_".$structureName."' ) ";
+        $query  .=          "AND loc.target_table='content__".$structureName."' ) ";
         $query  .=  ") ";
         
         $query  .=  "ORDER BY draft.modification_date DESC ";
