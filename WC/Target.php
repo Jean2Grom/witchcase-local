@@ -72,6 +72,12 @@ class Target
         $this->structure    = $structure;
     }
     
+    static function factory( WitchCase $wc, TargetStructure $structure, array $data=null )
+    {
+        $className  = "WC\\Target\\". ucfirst($structure->type);
+        
+        return new $className( $wc, $structure, $data );
+    }
     
     function countWitches()
     {

@@ -8,34 +8,13 @@ use WC\Datatype\ExtendedDateTime;
 
 class Draft extends Target 
 {
-    static $dbFields    =   [
+    const TYPE = 'draft';
+    
+    static $dbFields = [
         "`content_key` int(11) DEFAULT NULL",
-    ];
+    ];   
     
-    static $datatypes   =   array(
-                                'Signature'         =>  array(
-                                                            'creator', 
-                                                            'modificator'
-                                                        ),
-                                'ExtendedDateTime'  =>  array(
-                                                            'creation_date', 
-                                                            'modification_date'
-                                                        )
-                            );
-    
-    function __construct( WitchCase $wc, $structure )
-    {
-        $this->type                 =   'draft';
-        $this->structure            =   $structure;
-        $this->content_key          =   0;
-        $this->creator              =   new Signature('', '', '');
-        $this->creation_date        =   new ExtendedDateTime("0000-00-00 00:00:00");
-        $this->modificator          =   new Signature('', '', '');
-        $this->modification_date    =   new ExtendedDateTime("0000-00-00 00:00:00");
-        
-        parent::__construct($wc, "draft_".$structure);
-    }
-    
+    var $content_key = false;
     
     function set( $args )
     {

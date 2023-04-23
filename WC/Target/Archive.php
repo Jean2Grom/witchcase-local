@@ -3,16 +3,17 @@ namespace WC\Target;
 
 use WC\WitchCase;
 use WC\Target;
-use WC\Datatype\Signature;
-use WC\Datatype\ExtendedDateTime;
 
 
 class Archive extends Target 
 {
+    const TYPE          = 'archive';
+
     static $dbFields    =   [
-        //"`content_key` int(11) DEFAULT NULLXXX",
         "`content_key` int(11) DEFAULT NULL",
     ];
+    
+    var $content_key = false;
     
     static $datatypes            =   array(
                                             'Signature'         =>  array(
@@ -24,19 +25,6 @@ class Archive extends Target
                                                                         'archive_date'
                                                                     )
                                         );
-    function __construct(  WitchCase $wc, $structure)
-    {
-        $this->type                     =   'archive';
-        $this->structure                =   $structure;
-        $this->content_key              =   0;
-        $this->last_modificator         =   new Signature('', '', '');
-        $this->last_modification_date   =   new ExtendedDateTime("0000-00-00 00:00:00");
-        $this->archiver                 =   new Signature('', '', '');
-        $this->archive_date             =   new ExtendedDateTime("0000-00-00 00:00:00");
-        
-        parent::__construct( $wc, "archive_".$structure );
-    }
-    
     
     function set( $args )
     {

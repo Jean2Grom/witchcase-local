@@ -3,38 +3,12 @@ namespace WC\Target;
 
 use WC\WitchCase;
 use WC\Target;
-use WC\Datatype\Signature;
-use WC\Datatype\ExtendedDateTime;
 
 class Content extends Target 
 {
-    static $dbFields    =   [
-        "`publication_date` datetime DEFAULT CURRENT_TIMESTAMP",
-    ];
+    const TYPE          = 'content';
     
-    static $datatypes   =   array(
-                                'Signature'         =>  array(
-                                                            'creator', 
-                                                            'modificator'
-                                                        ),
-                                'ExtendedDateTime'  =>  array(
-                                                            'publication_date', 
-                                                            'modification_date'
-                                                        )
-                            );
-    
-    function __construct( WitchCase $wc, $structure )
-    {
-        $this->type                 =   'content';
-        $this->structure            =   $structure;
-        $this->creator              =   new Signature('', '', '');
-        $this->publication_date     =   new ExtendedDateTime("0000-00-00 00:00:00");
-        $this->modificator          =   new Signature('', '', '');
-        $this->modification_date    =   new ExtendedDateTime("0000-00-00 00:00:00");
-        
-        parent::__construct( $wc, "content__".$structure );
-    }
-    
+    static $dbFields    =   [];
     
     function set( $args )
     {

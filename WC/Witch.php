@@ -358,7 +358,7 @@ class Witch
             $data           = $craftedData[ $this->target_table ][ $this->target_fk ];
         }
         
-        $this->target = new Target( $this->wc, $structure, $data );
+        $this->target = Target::factory( $this->wc, $structure, $data );
         
         return $this;
     }

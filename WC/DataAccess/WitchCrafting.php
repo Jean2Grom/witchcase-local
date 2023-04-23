@@ -328,7 +328,7 @@ class WitchCrafting
         
         $returnedTargets = [];
         foreach( $craftedData[ $table ] ?? [] as $targetId => $targetCraftedData ){
-            $returnedTargets[ $targetId ] = new Target( $wc, $structure, $targetCraftedData );
+            $returnedTargets[ $targetId ] =  Target::factory( $wc, $structure, $targetCraftedData );
         }
         
         return $returnedTargets;
