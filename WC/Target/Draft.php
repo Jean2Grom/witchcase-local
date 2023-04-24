@@ -405,50 +405,6 @@ class Draft extends Target
         return true;
     }
     
-    function delete()
-    {
-        if( !$this->content_key )
-        {
-            //if( Localisation::deleteFromTarget($this->table, $this->id) === false ){
-            if( false ){
-                return false;
-            }
-            else
-            {
-                $query  =   "DELETE FROM `".$this->wc->db->escape_string($this->table)."` ";
-                $query  .=  "WHERE `id` = '".$this->wc->db->escape_string($this->id)."' ";
-                
-                if( !$this->wc->db->deleteQuery($query) )
-                {
-                    $message = "Localisation deleted but not draft ".$this->table." of ID ".$this->id;
-                    $this->wc->log->error($message);
-                    return $message;
-                }
-                
-                foreach( $this->attributes as $attribute )
-                {   $attribute->delete();   }
-                
-                return true;
-            }
-        }
-        else
-        {
-            $archiveTable   = "archive_".$this->structure;
-            $archiveID      = $this->archive();
-            
-            if( !$archiveID )
-            {   return false;   }
-            
-            //if( !Localisation::changeTarget( $this->table, $this->id, $archiveTable, $archiveID ) )
-            if( false )
-            {   return false;   }
-            
-            $query  =   "DELETE FROM `".$this->table."` ";
-            $query  .=  "WHERE id='".$this->id."' ";
-            
-            return $this->wc->db->deleteQuery( $query );
-        }
-    }
     
     function archive( )
     {

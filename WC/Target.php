@@ -79,11 +79,24 @@ class Target
         return new $className( $wc, $structure, $data );
     }
     
+    function attribute( $attributeName )
+    {
+        return $this->attributes[$attributeName];
+    }
+    
     function countWitches()
     {
         $table = $this->structure->table;
         
         return TargetDA::countWitches($this->wc, $table, $this->id);
+    }
+    
+    function getWitches()
+    {
+        $table = $this->structure->table;
+        
+        // TODO
+        return ;//TargetDA::Witches($this->wc, $table, $this->id);
     }
     
     function delete()

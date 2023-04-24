@@ -29,45 +29,7 @@ class Archive extends Target
     function set( $args )
     {
         return $this->setTarget( $args, self::$datatypes );
-    }
-    
-    function delete()
-    {
-        $contentTable = "content_".$this->structure;
-        $query = "SELECT * FROM `".$contentTable."` WHERE id = '".$this->content_key."' ";
-        
-        $result = $this->wc->db->fetchQuery($query);
-        
-        if( $result )
-        {
-            $query  =   "DELETE FROM `".$this->wc->db->escape_string($this->table)."` ";
-            $query  .=  "WHERE `id` = '".$this->wc->db->escape_string($this->id)."' ";
-            
-            if( !$this->wc->db->deleteQuery($query) )
-            {
-                $message = "Deletion archive ".$this->table." of ID ".$this->id." failed";
-                $this->wc->log->error($message);
-                return false;
-            }
-            
-            return true;
-        }
-        //elseif( Localisation::deleteFromTarget($this->table, $this->id) )
-        elseif( true )
-        {
-            $query  =   "DELETE FROM `".$this->wc->db->escape_string($this->table)."` ";
-            $query  .=  "WHERE content_key = '".$this->wc->db->escape_string($this->content_key)."' ";
-            
-            if( !$this->wc->db->deleteQuery($query) )
-            {
-                $message = "Localisation deleted but not archives ".$this->table." of content key ".$this->content_key;
-                $this->wc->log->error($message);
-                return false;
-            }
-            
-            return true;
-        }
-    }
+    }    
     
     function restore()
     {

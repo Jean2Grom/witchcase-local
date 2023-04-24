@@ -15,10 +15,6 @@ class Content extends Target
         return $this->setTarget( $args, self::$datatypes );
     }
     
-    function attribute( $attributeName )
-    {
-        return $this->attributes[$attributeName];
-    }
     
     function countActiveDrafts()
     {
@@ -36,8 +32,8 @@ class Content extends Target
     
     function delete()
     {
-        $archiveTable   = "archive_".$this->structure;
-        $archiveID      = $this->archive();
+        $this->archive();
+        
         
         if( !$archiveID )
         {   return false;   }
