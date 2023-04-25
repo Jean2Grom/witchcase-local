@@ -24,7 +24,7 @@ class Target
         
         return $wc->db->countQuery($query, $params);
     }
-    
+        
     static function delete( WitchCase $wc, string $table, int $id )
     {
         if( empty($table) || empty($id) ){

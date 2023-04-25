@@ -3,6 +3,7 @@ namespace WC\DataAccess;
 
 use WC\WitchCase;
 use WC\Website;
+use WC\Witch;
 use WC\Module;
 use WC\Target;
 use WC\TargetStructure;
@@ -30,7 +31,7 @@ class WitchCrafting
         $this->website              = $website ?? $this->wc->website;
     }
 
-    function craft( $witches )
+    function readCraftData( array $witches )
     {
         $targetsToCraft = [];
         foreach( $this->configuration as $refWitch => $witchConf ){
@@ -79,7 +80,7 @@ class WitchCrafting
                 }
                 
                 if( !empty($witchConf['sisters']['craft']) && !empty($witches[ $refWitch ]->sisters) ){
-                    foreach( $witches[ $refWitch ]->sisters as $sisterId => $sisterWitch ){
+                    foreach( $witches[ $refWitch ]->sisters as $sisterWitch ){
                         $targetsToCraft = array_merge_recursive( 
                             $targetsToCraft, 
                             $this->getChildrenCraftData( $sisterWitch, $witchConf['sisters']['craft'] )
@@ -115,7 +116,7 @@ class WitchCrafting
             
             if( !empty($idList) )
             {
-                $craftedData[ $table ]  = array_replace($craftedData[ $table ], $this->craftQuery( $table, $idList ));
+                $craftedData[ $table ]  = array_replace($craftedData[ $table ], self::craftQueryFromIds( $this->wc, $table, $idList ));
                 $this->wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData[ $table ]) );
             }
             $cachedData = null;
@@ -125,7 +126,7 @@ class WitchCrafting
     }
 
     // RECURSIVE READ CRAFT DATA FUNCTIONS
-    private function getChildrenCraftData( $witch, $craftLevel )
+    private function getChildrenCraftData( Witch $witch, int $craftLevel )
     {
         $targetsToCraft = [];
         if( !empty($witch->daughters) ){
@@ -166,7 +167,7 @@ class WitchCrafting
         return $targetsToCraft;
     }
     
-    private function getParentsCraftData( $witch, $craftLevel )
+    private function getParentsCraftData( Witch $witch, int $craftLevel )
     {
         $targetsToCraft = [];
         if( !empty($witch->mother) )
@@ -205,14 +206,13 @@ class WitchCrafting
         return $targetsToCraft;
     }
     
-    
-    function craftQuery( string $table, array $ids )
+    static function craftQueryFromIds( WitchCase $wc, string $table, array $ids )
     {
         if( empty($table) || empty($ids) ){
             return [];
         }
         
-        $structure = new TargetStructure( $this->wc, $table );
+        $structure = new TargetStructure( $wc, $table );
         
         $querySelectElements    = [];
         $queryTablesElements    = [];
@@ -234,7 +234,7 @@ class WitchCrafting
 
         foreach( $structure->attributes() as $attributeName => $attributeData )
         {
-            $attribute = new $attributeData['class']( $this->wc, $attributeName );
+            $attribute = new $attributeData['class']( $wc, $attributeName );
 
             array_push( $querySelectElements, ...$attribute->getSelectFields($table) );
             array_push( $queryTablesElements, ...$attribute->getJointure($table) );
@@ -250,20 +250,20 @@ class WitchCrafting
 
         $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements )." ";
         
-        $result         = $this->wc->db->selectQuery( $query, $params );        
+        $result         = $wc->db->selectQuery( $query, $params );        
         $craftedData    = self::formatCraftData( $result );
         
         return $craftedData[ $table ];
     }
     
     
-    static function targetSearchByQuery( WitchCase $wc, string $table, array $criterias, bool $excludeCriterias=true )
+    static function craftQueryFromAttributeSearch( WitchCase $wc, TargetStructure $structure, array $criterias, bool $excludeCriterias=true )
     {
-        if( empty($table) || empty($criterias) ){
+        if( empty($criterias) ){
             return [];
         }
         
-        $structure = new TargetStructure( $wc, $table );
+        $table = $structure->table;
         
         $querySelectElements    = [];
         $queryTablesElements    = [];
@@ -324,14 +324,9 @@ class WitchCrafting
         $craftedData    = self::formatCraftData($result);
         
         $cachedData = $wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
-        $wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData[ $table ]) );        
+        $wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData[ $table ] ?? []) );        
         
-        $returnedTargets = [];
-        foreach( $craftedData[ $table ] ?? [] as $targetId => $targetCraftedData ){
-            $returnedTargets[ $targetId ] =  Target::factory( $wc, $structure, $targetCraftedData );
-        }
-        
-        return $returnedTargets;
+        return $craftedData[ $table ] ?? [];
     }
     
     private static function formatCraftData( array $sqlRawCraftDataResults ): array

@@ -62,6 +62,14 @@ class Debug
      */
     var $refMicroTime;
     
+    /**
+     * Bytes value of implementation of class
+     * Update it for exec memory usage analysis
+     * 
+     * @var int
+     */
+    var $refMemoryUsage;
+    
     /** 
      * container
      * @var WitchCase 
@@ -249,14 +257,14 @@ class Debug
      * 
      * etc...
      * 
-     * @param boolean $onlyInit for disable printTime
+     * @param boolean $display set to false for disable printTime
      * @return int microtime current value stored
      */
-    public function time( $onlyInit=false )
+    public function time( bool $display=true )
     {
         $time = microtime(true);
         
-        if( !$onlyInit && $this->refMicroTime )
+        if( $display && $this->refMicroTime )
         {
             $microSecDiff   =   $time - $this->refMicroTime;
             $secDiff        =   floor( $microSecDiff/1e+6 );
@@ -270,6 +278,38 @@ class Debug
         $this->refMicroTime = $time;
         
         return $this->refMicroTime;
+    }
+    
+    
+    /**
+     * 
+     * usage :
+     * $debug->memory();
+     * 
+     * -> code to check execution memory usage
+     * 
+     * $debug->memory();
+     * 
+     * -> code to check execution memory usage
+     * 
+     * $debug->time(); ... 
+     * 
+     * etc...
+     * 
+     * @param boolean $onlyInit for disable printTime
+     * @return int microtime current value stored
+     */
+    public function memory( bool $display=true )
+    {
+        $mem = memory_get_usage();
+        
+        if( $display && $this->refMemoryUsage ){
+            $this->dump( ($mem - $this->refMemoryUsage)." bytes allocated since last memory print", "Memory" );
+        }
+        
+        $this->refMemoryUsage = $mem;
+        
+        return $this->refMemoryUsage;
     }
     
     /**

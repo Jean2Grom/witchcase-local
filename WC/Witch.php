@@ -29,6 +29,9 @@ class Witch
     ];
     private $properties     = [];
     
+    var $id;
+    var $name;
+    
     var $statusLevel        = 0;
     
     var $uri                = false;
@@ -354,7 +357,7 @@ class Witch
                 ]]
             );
             
-            $craftedData    = $witchCrafting->craft([ "target" => $this ]);
+            $craftedData    = $witchCrafting->readCraftData([ "target" => $this ]);
             $data           = $craftedData[ $this->target_table ][ $this->target_fk ];
         }
         

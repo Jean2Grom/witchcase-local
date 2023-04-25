@@ -3,6 +3,7 @@ namespace WC;
 
 use WC\DataAccess\TargetStructure as TargetStructureDA;
 use WC\DataAccess\Witch as WitchDA;
+use WC\DataAccess\WitchCrafting;
 
 use WC\Datatype\ExtendedDateTime;
 use WC\Attribute;
@@ -19,7 +20,7 @@ class TargetStructure
     /** @var WitchCase */
     var $wc;
     
-    function __construct( WitchCase $wc, string $structureOrTableName )
+    function __construct( WitchCase $wc, string $structureOrTableName, ?string $forcedType=null )
     {
         $this->wc = $wc;
         
@@ -37,6 +38,12 @@ class TargetStructure
         {
             $this->name     = $structureOrTableName;
             $this->type     = Target::TYPES[0];
+            $this->table    = $this->type.'__'.$this->name;
+        }
+        
+        if( $forcedType && in_array($forcedType, Target::TYPES) )
+        {
+            $this->type     = $forcedType;
             $this->table    = $this->type.'__'.$this->name;
         }
     }
@@ -239,6 +246,24 @@ class TargetStructure
         }
         
         return $structures;
+    }
+    
+    /**
+     * 
+     * @param array $criterias 
+     * @param bool $excludeCriterias default true
+     * @return type
+     */
+    function searchBy( array $criterias, bool $excludeCriterias=true )
+    {
+        $craftedData    = WitchCrafting::craftQueryFromAttributeSearch( $this->wc, $this, $criterias, $excludeCriterias);
+        
+        $returnedTargets = [];
+        foreach( $craftedData ?? [] as $targetId => $targetCraftedData ){
+            $returnedTargets[ $targetId ] =  Target::factory( $this->wc, $this, $targetCraftedData );
+        }
+        
+        return $returnedTargets;
     }
     
 }

@@ -115,7 +115,7 @@ class Website
     function summonWitches()
     {
         $this->witches      = $this->witchSummoning->summon();
-        $this->craftedData  = $this->witchCrafting->craft( $this->witches );
+        $this->craftedData  = $this->witchCrafting->readCraftData( $this->witches );
         
         return $this;
     }

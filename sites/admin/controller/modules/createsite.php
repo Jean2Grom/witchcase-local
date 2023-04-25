@@ -174,7 +174,7 @@ foreach( $modulesVar as $moduleName => $variables ){
     ];
 }
 
-$structureList = TargetStructure::listStructures();
+$structureList = TargetStructure::listStructures( $this->wc );
 
 $structures = [];
 foreach( $structureList as $structureItem )

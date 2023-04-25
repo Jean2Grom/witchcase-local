@@ -23,7 +23,7 @@ if( !$targetWitch ){
     ];
     $this->wc->user->addAlerts([ $alert ]);
     
-    header('Location: '.$this->wc->website->baseUri );
+    header('Location: '.$this->wc->website->getRootUrl() );
     exit();
 }
 
@@ -132,13 +132,13 @@ switch( $action )
     break;
     
     case 'witch-add-content':
-        $structure      = trim( filter_input(INPUT_POST,    'witch-structure', FILTER_SANITIZE_STRING) );
+        $structure      = trim( $this->wc->request->param('witch-structure') );
         
         if( !empty($structure) )
         {
             $isValidStructure = false;
             foreach( $structuresList as $structuresData ){
-                if( $structuresData['table'] == $structure )
+                if( $structuresData['name'] == $structure )
                 {
                     $isValidStructure = true;
                     break;
@@ -149,7 +149,7 @@ switch( $action )
         $witchData = [];
         if( !empty($structure) && $isValidStructure )
         {
-            $targetStructure = new TargetStructure($this->wc, $structure);
+            $targetStructure = new TargetStructure($this->wc, $structure, 'draft');
             $targetId        = $targetStructure->createTarget( $targetWitch->name );
             
             $witchData['target_table']   = $targetStructure->table;

@@ -165,7 +165,6 @@ class TargetStructure
             
             $structures[ $structureName ] = [ 
                 'name'      => $structureName, 
-                'table'     => $tableName, 
                 'created'   => $item['ct'],
             ];
         }

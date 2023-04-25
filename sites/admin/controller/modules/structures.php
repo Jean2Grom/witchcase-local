@@ -74,7 +74,7 @@ if( $action === "publishStructure" )
 
 if( strcmp($action, "createStructure") == 0 )
 {
-    $structuresData = TargetStructure::listStructures( $this->wc );    
+    $structuresData = TargetStructure::listStructures( $this->wc );
     
     if( $this->wc->request->param("currentAction") === "creatingStructure" )
     {

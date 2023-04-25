@@ -219,20 +219,15 @@
     
     <div class="view-content__target">
         <h3>
-            Contenu
+            <?=!empty($targetWitch->target())? ucfirst($targetWitch->target()->structure->type): "Pas de contenu" ?>
         </h3>
-        <?php if( empty($targetWitch->target()) && empty($structuresList) ): ?>
-            <p>
-                Pas de contenu
-            </p>
-            
-        <?php elseif( empty($targetWitch->target()) ): ?>
+        <?php if( empty($targetWitch->target()) ): ?>
             <select name="witch-structure" id="witch-structure">
                 <option value="">
                     Pas de contenu
                 </option>
                 <?php foreach( $structuresList as $structureData ): ?>
-                    <option value="<?=$structureData['table']?>">
+                    <option value="<?=$structureData['name']?>">
                         <?=$structureData['name']?>
                     </option>
                 <?php endforeach; ?>
