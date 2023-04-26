@@ -120,9 +120,17 @@ class Log
         {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             
-            foreach( $backtrace as $i => $backtraceData )
+            foreach( $backtrace as $backtraceData )
             {
-                if( $backtraceData['class'] != __CLASS__ && $backtraceData['class'] != "WC\Debug" ){
+                if( !isset($backtraceData['class']) ){
+                    break;
+                }
+                
+                if( $backtraceData['class'] != __CLASS__ 
+                    && $backtraceData['class'] != "WC\Debug" 
+                    && $backtraceData['function'] != "dump"
+                    && $backtraceData['function'] != "debug"
+                ){
                     break;
                 }
                 

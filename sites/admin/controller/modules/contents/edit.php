@@ -3,6 +3,7 @@
 $possibleActionsList = [
     'save-content',
     'save-content-and-return',
+    'publish',
 ];
 
 $action = $this->wc->request->param('action');
@@ -46,27 +47,27 @@ if( empty($target) ){
 
 switch( $action )
 {
+    case 'publish':
+        $publish = true;
     case 'save-content-and-return':
         $return = true;
     case 'save-content':
-        $return = $return ?? false;
+        $publish    = $publish ?? false;
+        $return     = $return ?? false;
         
-        $save =true;
-        foreach( $target->attributes as $attribute ){
-            foreach( $attribute->tableColumns as $attributeElement => $tableColumnName )
-            {
-                $value =  $this->wc->request->param($tableColumnName);
-                
-                if( $value && !$attribute->setValue($attributeElement, $value) )
-                {
-                    $alerts = array_merge($alerts, $this->wc->user->getAlerts());
-                    $save   = false;
-                    break;
-                }
+        $params = [];
+        foreach( $target->getEditParams() as $key )
+        {
+            $value = $this->wc->request->param($key);
+            if( isset($value) ){
+                $params[ $key ] = $value;
             }
         }
         
-        if( !$save || !$target->save() ){
+        $saved = $target->update( $params );
+        
+        //if( !$save || !$target->save() ){
+        if( !$saved && !$publish ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Une erreur est survenue, le contenu n'a pas été modifié."
@@ -78,6 +79,12 @@ switch( $action )
                 'level'     =>  'success',
                 'message'   =>  "Votre contenu a bien été modifié."
             ];
+            
+            if( $publish )
+            {
+                $this->wc->dump($action);
+                $this->wc->debug->die('jean');
+            }
             
             if( $return )
             {

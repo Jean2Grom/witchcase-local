@@ -264,4 +264,23 @@ abstract class Attribute
         return false;
     }
     
+    function getEditParams(): array
+    {
+        return array_values($this->tableColumns);
+    }
+    
+    function update( array $params )
+    {
+        foreach( $params as $key => $value )
+        {
+            $data = self::splitColumn($key);
+            
+            if( $data['type'] == $this->type 
+                && $data['name'] == $this->name 
+                && in_array($data['element'], array_keys($this->values)) 
+            ){
+                $this->values[ $data['element'] ] = $value;
+            }            
+        }
+    }
 }

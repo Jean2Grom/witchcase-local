@@ -6,7 +6,7 @@ $possibleActionsList = [
     'edit-priorities',
     'delete-witch',
     'delete-content',
-    'witch-add-content',
+    'add-content',
 ];
 
 $action = $this->wc->request->param('action');
@@ -131,8 +131,8 @@ switch( $action )
         }
     break;
     
-    case 'witch-add-content':
-        $structure      = trim( $this->wc->request->param('witch-structure') );
+    case 'add-content':
+        $structure      = $this->wc->request->param('witch-content-structure');
         
         if( !empty($structure) )
         {

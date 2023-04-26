@@ -79,9 +79,33 @@ class Target
         return new $className( $wc, $structure, $data );
     }
     
-    function attribute( $attributeName )
+    function attribute( string $attributeName ): ?Attribute
     {
-        return $this->attributes[$attributeName];
+        return $this->attributes[ $attributeName ] ?? null;
+    }
+    
+    function getEditParams(): array
+    {
+        $searchedParams = [ 'name' ];
+        
+        foreach( $this->attributes as $attribute ){
+            array_push( $searchedParams, ...$attribute->getEditParams() );
+        }
+        
+        return $searchedParams;
+    }
+    
+    function update( array $params )
+    {
+        if( $params['name'] ){
+            $this->name = $params['name'];
+        }
+        
+        foreach( $this->attributes as $attribute ){
+            $attribute->update( $params );
+        }
+        
+        return $this->save();
     }
     
     function countWitches()

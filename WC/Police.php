@@ -40,8 +40,8 @@ class Police
         $police->statusLabel       = $data['statusLabel'] ?? '*';
         
         
-        $profile->wc->dump($profile);
-        $profile->wc->dump($police);
+        //$profile->wc->dump($profile);
+        //$profile->wc->dump($police);
         return $police;
     }
 

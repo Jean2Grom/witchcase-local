@@ -63,16 +63,14 @@
     }
 </style>
 <div class="view-content">
-    <h1>
-        <?=$this->witch->name ?>
-        <?php if( $targetWitch ): ?>
-            :&nbsp;<?=$targetWitch->name ?>
-        <?php endif; ?>
-    </h1>
+    <h1><?=$this->witch->name ?></h1>
+    <?php if( $targetWitch ): ?>
+        <h2><em><?=$targetWitch->name ?></em></h2>
+    <?php endif; ?>
     
     <?php include $this->getIncludeDesignFile('alerts.php'); ?>
     
-    <div class="view-content__data"><?=$this->witch->data?></div>
+    <div class="view-content__data"><p><em><?=$this->witch->data?></em></p></div>
     
     <div class="view-content__info">
         <h3>
@@ -132,9 +130,9 @@
     
     <div class="view-content__daughters">
         <h3>
-            Mère et filles
+            Matriarcat
         </h3>
-        
+        <p><em>Position dans l'arborescence : mère et filles</em></p>
         <table>
             <thead>
                 <tr>
@@ -222,21 +220,26 @@
             <?=!empty($targetWitch->target())? ucfirst($targetWitch->target()->structure->type): "Pas de contenu" ?>
         </h3>
         <?php if( empty($targetWitch->target()) ): ?>
-            <select name="witch-structure" id="witch-structure">
-                <option value="">
-                    Pas de contenu
-                </option>
-                <?php foreach( $structuresList as $structureData ): ?>
-                    <option value="<?=$structureData['name']?>">
-                        <?=$structureData['name']?>
+            <form method="post" id="witch-add-new-content">
+                <select name="witch-content-structure" id="witch-content-structure">
+                    <option value="">
+                        Pas de contenu
                     </option>
-                <?php endforeach; ?>
-            </select>
+                    <?php foreach( $structuresList as $structureData ): ?>
+                        <option value="<?=$structureData['name']?>">
+                            <?=$structureData['name']?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                
+            </form>
             <div class="clear"></div>
-            
-            <button class="" id="witch__add-content" disabled>
-                Ajouter contenu
-            </button>
+                <button id="witch__add-content" disabled
+                        class="trigger-action"
+                        data-action="add-content"
+                        data-target="witch-add-new-content">
+                    Ajouter contenu
+                </button>
             
         <?php else: ?>
             <h4>
@@ -323,26 +326,25 @@ $(document).ready(function()
         }
     });
     
-    $('#witch-structure').change(function(){
-        $('#witch__add-content').prop( 'disabled', ($(this).val() == '') );
+    $('#witch-content-structure').change(function(){
+        $('#witch__add-content').prop( 'disabled', ($(this).val() === '') );
     });
     
-    $('#witch__add-content').click(function(){
-        if( $('#witch-structure').val() != '' )
-        {
-            let structure = $("<input>").attr("type", "hidden")
-                                .attr("name", "witch-structure")
-                                .val( $('#witch-structure').val() );
-            
-            $('#view-action').append( structure );
-            
-            let action = $("<input>").attr("type", "hidden")
-                            .attr("name", "action")
-                            .val( "witch-add-content" );
-
-            $('#view-action').append( action );
-            $('#view-action').submit();
+    $('.trigger-action').click(function(){
+        let actionName  = $(this).data('action');
+        let targetId    = $(this).data('target');
+        if( actionName === undefined || targetId === undefined ){
+            return false;
         }
+        
+        let action = $("<input>").attr("type", "hidden")
+                        .attr("name", "action")
+                        .val( actionName );
+        
+        $('#'+targetId).append( action );        
+        $('#'+targetId).submit();
+        
+        return false;
     });
 });
 </script>
