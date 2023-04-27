@@ -141,21 +141,35 @@ class Target
 
     function save()
     {
-        foreach( $this->attributes as $attribute ){
-            $attribute->save( $this );
-        }
-        
-        $fields = [ 'name' => $this->name ];
-        
-        foreach( $this->attributes as $attribute ){
-            foreach( $attribute->tableColumns as $key => $tableColumn  ){
-                $fields[ $tableColumn ] = $attribute->values[ $key ];
+        $this->wc->db->begin();
+        try {
+            $updated = 0;
+            foreach( $this->attributes as $attribute ){
+                $updated += $attribute->save( $this );
             }
+
+            $fields = [ 'name' => $this->name ];
+
+            foreach( $this->attributes as $attribute ){
+                foreach( $attribute->tableColumns as $key => $tableColumn  ){
+                    $fields[ $tableColumn ] = $attribute->values[ $key ];
+                }
+            }
+            
+            $conditions = [ 'id' => $this->id ];
+            
+            $updated += TargetDA::update( $this->wc, $this->structure->table, $fields, $conditions );
+            
+            $this->wc->db->commit();
         }
-        
-        $conditions = [ 'id' => $this->id ];
-        
-        return TargetDA::update($this->wc, $this->structure->table, $fields, $conditions);
+        catch( \Exception $e )
+        {
+            $this->wc->log->error($e->getMessage());
+            $this->wc->db->rollback();
+            return false;
+        }
+            
+        return $updated;
     }
     
     

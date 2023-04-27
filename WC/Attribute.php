@@ -109,7 +109,7 @@ abstract class Attribute
     
     function save( $target )
     {
-        return $this;
+        return 0;
     }
     
     function delete()

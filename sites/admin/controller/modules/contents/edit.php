@@ -66,13 +66,26 @@ switch( $action )
         
         $saved = $target->update( $params );
         
-        //if( !$save || !$target->save() ){
-        if( !$saved && !$publish ){
+        if( $saved === false ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Une erreur est survenue, le contenu n'a pas été modifié."
             ];
         }
+        elseif( $saved === 0 && !$publish ){
+            $alerts[] = [
+                'level'     =>  'warning',
+                'message'   =>  "Aucune modification, le contenu n'a pas été modifié."
+            ];
+        }
+        elseif( $publish )
+        {
+            $published = $target->publish();
+            
+            $this->wc->dump($action);
+            $this->wc->debug->die('jean');
+        }
+
         else
         {
             $alerts[] = [

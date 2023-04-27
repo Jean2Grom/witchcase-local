@@ -260,7 +260,7 @@ class ConnexionAttribute extends Attribute
             $this->wc->db->insertQuery($query);
         }
         
-        return $this;
+        return 1;
     }
     
     function generate_hash($password, $cost=11)
