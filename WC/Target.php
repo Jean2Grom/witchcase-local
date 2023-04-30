@@ -119,14 +119,20 @@ class Target
     {
         $table = $this->structure->table;
         
-        // TODO
-        return ;//TargetDA::Witches($this->wc, $table, $this->id);
+        $witches = [];
+        foreach( TargetDA::getWitches($this->wc, $table, $this->id) ?? [] as $data ){
+            $witches[] = Witch::createFromData($this->wc, $data);
+        }
+        
+        return $witches;
     }
     
-    function delete()
+    function delete( bool $deleteAttributes=true )
     {
-        foreach( $this->attributes as $attribute ){
-            $attribute->delete();
+        if( $deleteAttributes ){
+            foreach( $this->attributes as $attribute ){
+                $attribute->delete();
+            }
         }
         
         $table  = $this->structure->table;

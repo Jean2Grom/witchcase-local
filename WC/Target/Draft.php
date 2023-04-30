@@ -3,6 +3,7 @@ namespace WC\Target;
 
 use WC\WitchCase;
 use WC\Target;
+use WC\TargetStructure;
 use WC\Datatype\Signature;
 use WC\Datatype\ExtendedDateTime;
 
@@ -157,33 +158,47 @@ class Draft extends Target
         return $samesiteNewLocationId;
     }
     
-    function publish( $args=[] )
+    function publish()
     {
+//        $this->wc->dump($this->id);
+//        $this->wc->dump($this->content_key);
+//        $this->wc->dump($this->structure->table);
+//        $this->wc->dump($this->wc->user->id);
+//        
+//        $userID         = $this->wc->user->id;
+//        
+        
         $this->wc->db->begin();
-        
-        if( count($args) > 0 && !$this->edit($args) )
+        try {
+            if( !$this->content_key )
+            {
+                $structure      = new TargetStructure( $this->wc, $this->structure->name, 'content' );            
+                $content        = Target::factory( $this->wc, $structure );            
+                $content->id    = $this->structure->createTarget($this->name, 'content');
+
+                $content->name          = $this->name;
+                $content->attributes    = $this->attributes;            
+                $content->save();
+
+                foreach( $this->getWitches() as $witch ){
+                    $witch->edit(['target_table' => $content->structure->table, 'target_fk' => $content->id]);
+                }            
+            }
+
+
+            $this->delete( false );
+
+            $this->wc->db->commit();
+        }
+        catch( \Exception $e )
         {
-            $message    = "Cannot save ".$this->name." ".$this->structure;
-            $message   .= " draft of ID: ".$this->id;
-            $message   .= ", aborting publication ";
-            
-            $this->wc->log->error($message);
+            $this->wc->log->error($e->getMessage());
             $this->wc->db->rollback();
             return false;
         }
         
-        if( $this->content_key && !$this->publishUpdate($args) )
-        {
-            $this->wc->db->rollback();
-            return false;
-        }
-        elseif( !$this->content_key && !$this->publishNew() ) 
-        {
-            $this->wc->db->rollback();
-            return false;
-        }
-        
-        return $this->wc->db->commit();
+        return true;
+
     }
     
     private function publishNew()

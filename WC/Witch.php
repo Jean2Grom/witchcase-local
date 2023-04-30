@@ -3,6 +3,7 @@ namespace WC;
 
 use WC\DataAccess\WitchCrafting;
 use WC\DataAccess\Witch as WitchDA;
+use WC\Datatype\ExtendedDateTime;
 
 /**
  * Description of Witch
@@ -31,8 +32,10 @@ class Witch
     
     var $id;
     var $name;
+    var $datetime;
     
     var $statusLevel        = 0;
+    var $status;
     
     var $uri                = false;
     var $depth              = 0;
@@ -81,19 +84,27 @@ class Witch
     {
         $witch = new self( $wc );
         
-        foreach( $data as $field => $value ){
-            $witch->{$field} = $value;
+        $witch->properties = $data;
+        
+        if( !empty($witch->properties['id']) ){
+            $witch->id = (int) $witch->properties['id'];
         }
         
-        if( !empty($witch->datetime) ){
-            $witch->datetime = new \DateTime($witch->datetime);
+        if( !empty($witch->properties['name']) ){
+            $witch->name = htmlentities($witch->properties['name']);
+            //$witch->name = $witch->properties['name'];
         }
         
-        if( isset($witch->status) )
-        {
-            $witch->statusLevel = $witch->status;
-            $witch->status      = $wc->configuration->read('global', "status")[ $witch->status ];
+        if( !empty($witch->properties['datetime']) ){
+            $witch->datetime = new ExtendedDateTime($witch->properties['datetime']);
         }
+        
+        if( isset($witch->properties['status']) ){
+            $witch->statusLevel = (int) $witch->properties['status'];
+        }
+        
+        $witch->status      = $wc->configuration->read('global', "status")[ $witch->statusLevel ];
+
 
         $witch->position    = [];
         
@@ -328,9 +339,12 @@ class Witch
         
         $data = $this->wc->website->craftedData[ $this->target_table ][ $this->target_fk ] ?? null;
         
+        /*
         if( !$data ){
             return false;
         }
+         * 
+         */
         
         $this->craft( $data );
         
@@ -482,8 +496,8 @@ class Witch
         elseif( (isset( $params['site'] ) && empty( $params['site'] ))
                 || (isset( $params['url'] ) && empty( $params['url'] ))
         ){
-            $params['site'] = 'NULL';
-            $params['url']  = 'NULL';
+            $params['site'] = null;
+            $params['url']  = null;
         }
         
         if( empty($params) ){

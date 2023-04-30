@@ -30,7 +30,7 @@ class Content extends Target
         return $draftCount;
     }
     
-    function delete()
+    function delete( bool $deleteAttributes=true )
     {
         $this->archive();
         

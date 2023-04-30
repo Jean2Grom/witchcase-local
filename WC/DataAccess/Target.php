@@ -24,6 +24,26 @@ class Target
         
         return $wc->db->countQuery($query, $params);
     }
+    
+    static function getWitches( WitchCase $wc, string $table, int $id )
+    {
+        if( empty($table) || empty($id) ){
+            return false;
+        }
+        
+        $params = [
+            'target_table'  => $table,
+            'target_fk'     => $id,
+        ];
+        
+        $query = "";
+        $query  .=  "SELECT * ";
+        $query  .=  "FROM `witch` ";
+        $query  .=  "WHERE `witch`.`target_table` = :target_table ";
+        $query  .=  "AND `witch`.`target_fk` = :target_fk ";
+        
+        return $wc->db->selectQuery($query, $params);
+    }
         
     static function delete( WitchCase $wc, string $table, int $id )
     {
