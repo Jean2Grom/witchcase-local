@@ -175,20 +175,21 @@ class Draft extends Target
                 $structure      = new TargetStructure( $this->wc, $this->structure->name, 'content' );            
                 $content        = Target::factory( $this->wc, $structure );            
                 $content->id    = $this->structure->createTarget($this->name, 'content');
-
+                
                 $content->name          = $this->name;
                 $content->attributes    = $this->attributes;            
                 $content->save();
 
                 foreach( $this->getWitches() as $witch ){
                     $witch->edit(['target_table' => $content->structure->table, 'target_fk' => $content->id]);
-                }            
+                }
+                
+                $changedTargets                                                 = $this->wc->website->changedTargets[ $this->structure->table ] ?? [];
+                $changedTargets[ $this->id ]                                    = [ 'table' => $content->structure->table, 'id' => $content->id ];
+                $this->wc->website->changedTargets[ $this->structure->table ]   = $changedTargets;
             }
 
-
-            $this->delete( false );
-
-            $this->wc->db->commit();
+            $this->delete( false );            
         }
         catch( \Exception $e )
         {
@@ -196,120 +197,12 @@ class Draft extends Target
             $this->wc->db->rollback();
             return false;
         }
+        $this->wc->db->commit();
+        
+        
         
         return true;
 
-    }
-    
-    private function publishNew()
-    {
-        $contentTable   = "content__".$this->structure;
-        $currentDate    = date("Y-m-d H:i:s");
-        $userID         = $this->wc->user->id;
-        
-        if( !$userID )
-        {
-            $this->wc->log->error( "Cannot get current user, SESSION var seems empty : aborting publication" );
-            return false;
-        }
-        
-        // Create new content
-        $query  =   "INSERT INTO `".$this->wc->db->escape_string($contentTable)."` ";
-        $query  .=  "( `name`, `context`, `creator`, ";
-        $query  .=  "`publication_date`, `modificator`, `modification_date`";
-        
-        foreach( $this->attributes as $attribute ){
-            foreach( $attribute->tableColumns as $key => $tableColumn  ){
-                if( strcmp($attribute->values[$key], "__last_value__") != 0 ){
-                    $query  .=  ", `".$tableColumn."`";
-                }
-            }
-        }
-        
-        $query  .=  " ) ";
-        
-        $query  .=  "VALUES ( '".$this->wc->db->escape_string($this->name)."', ";
-        $query  .=  "'".$this->wc->db->escape_string("")."', ";
-        $query  .=  "'".$userID."', "; 
-        $query  .=  "'".$currentDate."', ";
-        $query  .=  "'".$userID."', "; 
-        $query  .=  "'".$currentDate."'";
-        
-        foreach( $this->attributes as $attribute ){
-            foreach( $attribute->tableColumns as $key => $tableColumn  ){
-                if( strcmp($attribute->values[$key], "__last_value__") != 0 )
-                {
-                    $value  =   $attribute->values[$key];
-                    $query  .=  ", '".$this->wc->db->escape_string($value)."'"; 
-                }
-            }
-        }
-        
-        $query  .=  " ) ";
-        
-        $this->content_key = $this->wc->db->insertQuery($query);
-        
-        if( !is_numeric($this->content_key) )
-        {
-            $message    = "Cannot insert content ".$this->name;
-            $message   .= ", aborting publication ";
-            $this->wc->log->error($message);
-            
-            return false;
-        }
-        
-        $content = new Content( $this->wc, $this->structure );
-        
-        $content->fetch($this->content_key);
-        
-        foreach( $this->attributes as $attribute ){
-            $attribute->create($content);
-        }
-        
-        // Update locations
-        $query  =   "UPDATE `localisation` ";
-        $query  .=  "SET `target_table` = '".$this->wc->db->escape_string($contentTable)."', ";
-        $query  .=  "`target_fk` = '".$this->content_key."', ";
-        //$query  .=  "`name` = '".$this->wc->db->escape_string($this->name)."', ";
-        $query  .=  "`datetime` = '".$currentDate."' ";
-        $query  .=  "WHERE `target_table` = '".$this->wc->db->escape_string($this->table)."' ";
-        $query  .=  "AND `target_fk` = '".$this->id."' ";
-        
-        /*$query  .=  "AND ( ";
-        
-        $first = true;
-        foreach( $this->wc->localisation->getAdministratedSites() as $administratedSite )
-        {
-            if( $first )
-            {   $first = false; }
-            else
-            {   $query  .=  "OR ";  }
-            
-            $query  .=  "`site` = '".$this->wc->db->escape_string($administratedSite)."' ";
-        }
-        
-        $query  .=  ") ";*/
-        
-        if( !$this->wc->db->updateQuery($query) )
-        {
-            $message    = "Cannot update localisations for content ".$this->name;
-            $message   .= ", aborting publication ";
-            $this->wc->log->error($message);
-            
-            return false;
-        }
-        
-        // Delete draft
-        $query  =   "DELETE FROM `".$this->wc->db->escape_string($this->table)."` ";
-        $query  .=  "WHERE id = '".$this->wc->db->escape_string($this->id)."'";
-        
-        if( !$this->wc->db->deleteQuery($query) )
-        {
-            $this->wc->log->error("Delete current draft query failed, aborting publication");
-            return false;
-        }
-        
-        return true;
     }
     
     private function publishUpdate( $args )

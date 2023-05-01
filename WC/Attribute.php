@@ -1,6 +1,8 @@
 <?php
 namespace WC;
 
+use WC\Target;
+
 abstract class Attribute 
 {
     const ATTRIBUTE_TYPE                = null;
@@ -107,9 +109,14 @@ abstract class Attribute
         return true;
     }
     
-    function save( $target )
+    function save( Target $target )
     {
         return 0;
+    }
+    
+    function clone( Target $target )
+    {
+        return clone $this;
     }
     
     function delete()

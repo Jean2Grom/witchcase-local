@@ -3,12 +3,45 @@ namespace WC\Target;
 
 use WC\WitchCase;
 use WC\Target;
+use WC\TargetStructure;
+use WC\Target\Draft;
 
 class Content extends Target 
 {
-    const TYPE          = 'content';
+    const TYPE          = 'content';    
+    static $dbFields    = [];
     
-    static $dbFields    =   [];
+    function createDraft()
+    {
+        $draftStructure = new TargetStructure( $this->wc, $this->structure->name, Draft::TYPE );
+        $draft          = Target::factory( $this->wc, $draftStructure );
+        
+        $draft->name          = $this->name;
+        $draft->content_key   = $this->id;
+        
+        foreach( $this->attributes as $attributeName => $attribute ){
+            $draft->attributes[ $attributeName ] = $attribute->clone( $draft );
+        }
+        
+        $draft->save();
+        
+        return $draft;
+    }
+    
+    function getDraft()
+    {
+        if( empty($this->getRelatedTargetsIds(Draft::TYPE)) ){
+            return $this->createDraft();
+        }
+        
+        $draftStructure = new TargetStructure( $this->wc, $this->structure->name, Draft::TYPE );
+        $craftData      = $this->wc->website->witchCrafting->getCraftDataFromIds($draftStructure->table, $this->getRelatedTargetsIds(Draft::TYPE) );
+        
+        $this->wc->dump($draftStructure->table);
+        $this->wc->dump($craftData);
+        
+        return Target::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
+    }
     
     function set( $args )
     {
@@ -16,14 +49,14 @@ class Content extends Target
     }
     
     
-    function countActiveDrafts()
+    function countDrafts()
     {
-        $draftTable = "draft_".$this->structure;
+        $draftTable = "draft__".$this->structure->name;
         
         $query  =   "SELECT COUNT(*) FROM `".$this->wc->db->escape_string($draftTable)."` ";
         $query  .=  "WHERE `content_key` = '".$this->id."' ";
         $query  .=  "AND `content_key` = '".$this->id."' ";
-        $query  .=  "AND `creation_date` > '".$this->modification_date->format('Y-m-d H:i:s')."' ";
+        $query  .=  "AND `creation_date` > '".$this->modification->format('Y-m-d H:i:s')."' ";
         
         $draftCount = $this->wc->db->countQuery($query);
         

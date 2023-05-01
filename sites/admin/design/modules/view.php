@@ -231,15 +231,15 @@
                         </option>
                     <?php endforeach; ?>
                 </select>
-                
             </form>
             <div class="clear"></div>
-                <button id="witch__add-content" disabled
-                        class="trigger-action"
-                        data-action="add-content"
-                        data-target="witch-add-new-content">
-                    Ajouter contenu
-                </button>
+            
+            <button id="witch__add-content" disabled
+                    class="trigger-action"
+                    data-action="add-content"
+                    data-target="witch-add-new-content">
+                Ajouter contenu
+            </button>
             
         <?php else: ?>
             <h4>
@@ -267,6 +267,12 @@
                         id="content__edit">
                     Modifier
                 </button>
+                <button class="trigger-action"
+                        data-action="edit-content"
+                        data-target="view-action">
+                    Editer
+                </button>
+
             </div>
         <?php endif; ?>
     </div>

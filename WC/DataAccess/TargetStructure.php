@@ -190,7 +190,7 @@ class TargetStructure
         return $count;
     }
     
-    static function createTarget( WitchCase $wc, string $table, string $name=null )
+    static function createTarget( WitchCase $wc, string $table, ?string $name=null, ?int $contentKey=null )
     {
         if( empty($table) ){
             return false;
@@ -205,6 +205,9 @@ class TargetStructure
         }
         if( $name ){
             $params["name"]         = $name;
+        }
+        if( $contentKey ){
+            $params["content_key"]  = $contentKey;
         }
         
         $query = "";

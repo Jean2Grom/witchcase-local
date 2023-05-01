@@ -36,7 +36,10 @@ class Target
     var $attributes;
     var $id;
     var $name;
-
+    
+    private $relatedTargetsIds = [];
+    
+    
     /** @var WitchCase */
     var $wc;
     
@@ -105,6 +108,15 @@ class Target
             $attribute->update( $params );
         }
         
+        $table                                          = $this->structure->table;
+        $updatedTargets                                 = $this->wc->website->updatedTargets[ $table ] ?? [];
+        $updatedTargets[]                               = $this->id;
+        $this->wc->website->updatedTargets[ $table ]    = $updatedTargets;
+        
+        return $this->save();
+    }
+    
+    function publish(){
         return $this->save();
     }
     
@@ -113,6 +125,21 @@ class Target
         $table = $this->structure->table;
         
         return TargetDA::countWitches($this->wc, $table, $this->id);
+    }
+    
+    function getRelatedTargetsIds( string $type  )
+    {
+        if( !in_array($type, self::TYPES) ){
+            return false;
+        }
+        
+        if( !isset($this->relatedTargetsIds[ $type ]) )
+        {
+            $table                              = $type.'__'.$this->structure->name;            
+            $this->relatedTargetsIds[ $type ]   = TargetDA::getRelatedTargetsIds($this->wc, $table, $this->id);
+        }
+        
+        return $this->relatedTargetsIds[ $type ];
     }
     
     function getWitches()
@@ -129,26 +156,45 @@ class Target
     
     function delete( bool $deleteAttributes=true )
     {
-        if( $deleteAttributes ){
-            foreach( $this->attributes as $attribute ){
-                $attribute->delete();
+        $this->wc->db->begin();
+        try {
+            if( $deleteAttributes ){
+                foreach( $this->attributes as $attribute ){
+                    $attribute->delete();
+                }
+            }
+            
+            $table  = $this->structure->table;
+            
+            if( TargetDA::delete($this->wc, $table, $this->id) && isset($this->wc->website->craftedData[ $table ][ $this->id ]) ){
+                unset($this->wc->website->craftedData[ $table ][ $this->id ]);
             }
         }
-        
-        $table  = $this->structure->table;
-        $id     = $this->id;
-        
-        if( TargetDA::delete($this->wc, $table, $id) && isset($this->wc->website->craftedData[ $table ][ $id ]) ){
-            unset($this->wc->website->craftedData[ $table ][ $id ]);
+        catch( \Exception $e )
+        {
+            $this->wc->log->error($e->getMessage());
+            $this->wc->db->rollback();
+            return false;
         }
+        $this->wc->db->commit();
+        
+        $deletedTargets                                 = $this->wc->website->deletedTargets[ $table ] ?? [];
+        $deletedTargets[]                               = $this->id;
+        $this->wc->website->deletedTargets[ $table ]    = $deletedTargets;
         
         return true;
     }
-
+    
     function save()
     {
         $this->wc->db->begin();
         try {
+            if( !$this->id )
+            {
+                $contentKey = ($this->content_key ?? false)? $this->content_key: null;
+                $this->id   = $this->structure->createTarget( $this->name, $this->structure->type, $contentKey );
+            }
+            
             $updated = 0;
             foreach( $this->attributes as $attribute ){
                 $updated += $attribute->save( $this );
@@ -165,16 +211,15 @@ class Target
             $conditions = [ 'id' => $this->id ];
             
             $updated += TargetDA::update( $this->wc, $this->structure->table, $fields, $conditions );
-            
-            $this->wc->db->commit();
         }
         catch( \Exception $e )
         {
             $this->wc->log->error($e->getMessage());
             $this->wc->db->rollback();
             return false;
-        }
-            
+        }        
+        $this->wc->db->commit();
+        
         return $updated;
     }
     

@@ -1,5 +1,9 @@
 <?php
 
+use WC\Target\Content;
+use WC\Target\Draft;
+use WC\DataAccess\WitchCrafting;
+
 $possibleActionsList = [
     'save-content',
     'save-content-and-return',
@@ -38,6 +42,13 @@ if( !$target )
     exit();
 }
 
+
+if( $target->structure->type === Content::TYPE )
+{
+    $target = $target->getDraft();
+}
+
+
 if( empty($target) ){
     $alerts[] = [
         'level'     =>  'error',
@@ -66,11 +77,14 @@ switch( $action )
         
         $saved = $target->update( $params );
         
-        if( $saved === false ){
+        if( $saved === false )
+        {
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Une erreur est survenue, le contenu n'a pas été modifié."
             ];
+            
+            $return = false;
         }
         elseif( $saved === 0 && !$publish ){
             $alerts[] = [
@@ -80,32 +94,35 @@ switch( $action )
         }
         elseif( $publish )
         {
-            $published = $target->publish();
-            
-            $this->wc->dump($action);
-            $this->wc->debug->die('jean');
+            if( $target->publish() === false )
+            {
+                $alerts[] = [
+                    'level'     =>  'error',
+                    'message'   =>  "Une erreur est survenue, le contenu n'a pas été publié."
+                ];
+                
+                $return = false;
+            }
+            else {
+                $alerts[] = [
+                    'level'     =>  'success',
+                    'message'   =>  "Votre contenu a bien été publié."
+                ];                
+            }
         }
-
-        else
-        {
+        else {
             $alerts[] = [
                 'level'     =>  'success',
                 'message'   =>  "Votre contenu a bien été modifié."
             ];
-            
-            if( $publish )
-            {
-                $this->wc->dump($action);
-                $this->wc->debug->die('jean');
-            }
-            
-            if( $return )
-            {
-                $this->wc->user->addAlerts($alerts);
-                
-                header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
-                exit();
-            }
+        }
+        
+        if( $return )
+        {
+            $this->wc->user->addAlerts($alerts);
+
+            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+            exit();
         }
     break;
 }

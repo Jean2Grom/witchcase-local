@@ -337,14 +337,25 @@ class Witch
             return false;
         }
         
-        $data = $this->wc->website->craftedData[ $this->target_table ][ $this->target_fk ] ?? null;
+        $changedTargets = $this->wc->website->changedTargets[ $this->target_table ] ?? [];
+        if( isset($changedTargets[ $this->target_fk ]) )
+        {
+            $this->target_fk     = $changedTargets[ $this->target_fk ]['id'];
+            $this->target_table  = $changedTargets[ $this->target_fk ]['table'];
+        }
         
-        /*
-        if( !$data ){
+        $deletedTargets = $this->wc->website->updatedTargets[ $this->target_table ] ?? [];
+        if( in_array($this->target_fk, $deletedTargets) ){
             return false;
         }
-         * 
-         */
+        
+        $updatedTargets = $this->wc->website->updatedTargets[ $this->target_table ] ?? [];
+        if( in_array($this->target_fk , $updatedTargets) ){
+            $data = null;
+        }
+        else{            
+            $data = $this->wc->website->craftedData[ $this->target_table ][ $this->target_fk ] ?? null;
+        }
         
         $this->craft( $data );
         

@@ -231,7 +231,7 @@ class TargetStructure
         return $returnStatus;
     }
     
-    function createTarget( string $name=null, ?string $type=null )
+    function createTarget( string $name=null, ?string $type=null, ?int $contentKey=null )
     {
         if( !$type || !in_array($type, Target::TYPES) ){
             $targetTable =  $this->table;
@@ -240,7 +240,7 @@ class TargetStructure
             $targetTable = $type.'__'.$this->name;
         }
         
-        return TargetStructureDA::createTarget($this->wc, $targetTable, $name);
+        return TargetStructureDA::createTarget($this->wc, $targetTable, $name, $contentKey);
     }
     
     static function listStructures( WitchCase $wc, bool $countElements=false )

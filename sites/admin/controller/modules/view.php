@@ -170,9 +170,9 @@ switch( $action )
     break;
 }
 
-$editTargetWitchHref    = $this->wc->website->baseUri."/edit?id=".$targetWitch->id;
-$createElementHref      = $this->wc->website->baseUri."/create?mother=".$targetWitch->id;
-$editTargetContentHref  = $this->wc->website->baseUri."/edit-content?id=".$targetWitch->id;
+$editTargetWitchHref    = $this->wc->website->getUrl("edit?id=".$targetWitch->id);
+$createElementHref      = $this->wc->website->getUrl("create?mother=".$targetWitch->id);
+$editTargetContentHref  = $this->wc->website->getUrl("edit-content?id=".$targetWitch->id);
 
 $subTree = [
     'headers'   => [

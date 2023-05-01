@@ -5,6 +5,29 @@ use WC\WitchCase;
 
 class Target 
 {
+    static function getRelatedTargetsIds( WitchCase $wc, string $table, int $id )
+    {
+        if( empty($table) || empty($id) ){
+            return false;
+        }
+        
+        $params = [ 'id' => $id, ];
+        
+        $query = "";
+        $query  .=  "SELECT `id` ";
+        $query  .=  "FROM `".$wc->db->escape_string($table)."` ";
+        $query  .=  "WHERE `content_key` = :id ";
+        
+        $result =   $wc->db->selectQuery($query, $params);
+        
+        $ids = [];
+        foreach( $result ?? [] as $row ){
+            $ids[] = $row['id'];
+        }
+        
+        return $ids;
+    }
+    
     static function countWitches( WitchCase $wc, string $table, int $id )
     {
         if( empty($table) || empty($id) ){

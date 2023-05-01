@@ -206,6 +206,32 @@ class WitchCrafting
         return $targetsToCraft;
     }
     
+    
+    function getCraftDataFromIds( string $table,  array $ids )
+    {
+        $craftedData     = [];
+        $idList          = [];
+        
+        $cachedData = $this->wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
+
+        foreach( array_unique($ids) as $id ){
+            if( isset( $cachedData[ $id ]) ){
+                $craftedData[ $id ] = $cachedData[ $id ];
+            }
+            else {
+                $idList[] = $id;
+            }
+        }
+
+        if( !empty($idList) )
+        {
+            $craftedData  = array_replace($craftedData, self::craftQueryFromIds( $this->wc, $table, $idList ));
+            $this->wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData) );
+        }
+        
+        return $craftedData;
+    }
+    
     static function craftQueryFromIds( WitchCase $wc, string $table, array $ids )
     {
         if( empty($table) || empty($ids) ){
