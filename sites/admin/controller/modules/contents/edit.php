@@ -44,7 +44,7 @@ if( !$target )
 
 
 if( $target->structure->type === Content::TYPE )
-{
+{    
     $target = $target->getDraft();
 }
 

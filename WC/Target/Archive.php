@@ -1,18 +1,19 @@
 <?php
 namespace WC\Target;
 
-use WC\WitchCase;
 use WC\Target;
 
 
 class Archive extends Target 
 {
-    const TYPE          = 'archive';
-
-    static $dbFields    =   [
+    const TYPE      = 'archive';
+    const DB_FIELDS = [
         "`content_key` int(11) DEFAULT NULL",
     ];
-    
+    const ELEMENTS = [ 
+        'content_key',
+    ];
+
     var $content_key = false;
     
     static $datatypes            =   array(

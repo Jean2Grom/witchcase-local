@@ -9,7 +9,8 @@ use WC\Target\Draft;
 class Content extends Target 
 {
     const TYPE          = 'content';    
-    static $dbFields    = [];
+    const DB_FIELDS     = [];
+    const ELEMENTS      = [];
     
     function createDraft()
     {
@@ -42,7 +43,7 @@ class Content extends Target
         
         return Target::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
     }
-    
+        
     function set( $args )
     {
         return $this->setTarget( $args, self::$datatypes );

@@ -240,8 +240,10 @@ class WitchCrafting
         
         $structure = new TargetStructure( $wc, $table );
         
-        $querySelectElements    = [];
-        $queryTablesElements    = [];
+        //$querySelectElements    = [];
+        $querySelectElements    = $structure->getJoinFields();
+        //$queryTablesElements    = [];
+        $queryTablesElements    = $structure->getJointure();
         $queryWhereElements     = [];
         $params                 = [];
         
@@ -250,8 +252,8 @@ class WitchCrafting
         }
 
         $queryWhereElements[]   = "`".$table."`.`id` IN ( :".implode(', :', array_keys($params))." ) ";
-
-        foreach( array_keys(Target::ELEMENTS) as $commonStructureField )
+        
+        foreach( $structure->getFields() as $commonStructureField )
         {
             $field  =   "`".$table."`.`".$commonStructureField."` ";
             $field  .=  "AS `".$table."|".$commonStructureField."` ";
@@ -276,6 +278,7 @@ class WitchCrafting
 
         $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements )." ";
         
+        $wc->db->debugQuery( $query, $params );        
         $result         = $wc->db->selectQuery( $query, $params );        
         $craftedData    = self::formatCraftData( $result );
         
@@ -297,7 +300,7 @@ class WitchCrafting
         $params                 = [];
         
         $queryTablesElements[ $table ] = [];
-        foreach( array_keys(Target::ELEMENTS) as $commonStructureField )
+        foreach( $structure->getFields() as $commonStructureField )
         {
             $field  =   "`".$table."`.`".$commonStructureField."` ";
             $field  .=  "AS `".$table."|".$commonStructureField."` ";

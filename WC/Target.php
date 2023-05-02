@@ -17,11 +17,15 @@ class Target
     ];
     
     const ELEMENTS      = [
-        "id"        => "INT(11) UNSIGNED NOT NULL AUTO_INCREMENT",
-        "name"      => "VARCHAR(255) DEFAULT NULL",
+        "id",
+        "name",
+        "creator",
+        "created",
+        "modificator",
+        "modified",
     ];
     
-    static $dbFields    = [
+    const DB_FIELDS    = [
         "`id` int(11) unsigned NOT NULL AUTO_INCREMENT",
         "`name` varchar(255) DEFAULT NULL",
         "`creator` int(11) DEFAULT NULL",
@@ -30,12 +34,33 @@ class Target
         "`modified` DATETIME on update CURRENT_TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP",
     ];
     
-    static $primaryDbField = "PRIMARY KEY (`id`) ";
+    const PRIMARY_DB_FIELD  = "PRIMARY KEY (`id`) ";
+    
+    const JOIN_TABLES       =   [
+        [
+            'table'     =>  "user_connexion",
+            'alias'     =>  "creator_connexion",
+            'condition' =>  ":creator_connexion.`id` = :target_table.`creator`",
+        ],
+        [
+            'table'     =>  "user_connexion",
+            'alias'     =>  "modificator_connexion",
+            'condition' =>  ":modificator_connexion.`id` = :target_table.`modificator`",
+        ],
+    ];
+    
+    const JOIN_FIELDS       =   [
+        'creator_name'      =>  ":creator_connexion.`name` AS :target_table|creator_name`",
+        'modificator_name'  =>  ":modificator_connexion.`name` AS :target_table|modificator_name`",
+    ];
     
     var $exist;
     var $attributes;
+    
     var $id;
     var $name;
+    
+    private $properties     = [];
     
     private $relatedTargetsIds = [];
     
@@ -54,10 +79,16 @@ class Target
         
         if( !empty($data) )
         {
-            foreach( array_keys(self::ELEMENTS) as $field ){
-                if( isset($data[ $field ]) ){
-                    $this->{$field} = $data[ $field ];
-                }
+            foreach( $structure->getFields() as $field ){
+                $this->properties[$field] = $data[ $field ] ?? null;
+            }
+            
+            if( !empty($this->properties['id']) ){
+                $this->id = (int) $this->properties['id'];
+            }
+
+            if( !empty($this->properties['name']) ){
+                $this->name = htmlentities($this->properties['name']);
             }
             
             foreach( $structure->attributes() as $attributeName => $attributeData )
@@ -74,6 +105,14 @@ class Target
         
         $this->structure    = $structure;
     }
+    
+    public function __set(string $name, mixed $value): void {
+        $this->properties[$name] = $value;
+    }
+    
+    public function __get(string $name): mixed {
+        return $this->properties[$name];
+    }    
     
     static function factory( WitchCase $wc, TargetStructure $structure, array $data=null )
     {
@@ -96,6 +135,15 @@ class Target
         }
         
         return $searchedParams;
+    }
+        
+    static function dbFields()
+    {
+        return array_unique(array_merge(
+            self::DB_FIELDS,
+            static::DB_FIELDS,
+            [ self::PRIMARY_DB_FIELD ] 
+        ));
     }
     
     function update( array $params )

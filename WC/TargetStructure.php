@@ -126,9 +126,8 @@ class TargetStructure
         {
             $table      = $type.'__'.$structureName;
             $className  = "WC\\Target\\". ucfirst($type);
-            $dbFields   = array_merge( Target::$dbFields, $className::$dbFields, [Target::$primaryDbField] );
             
-            if( TargetStructureDA::createTargetStructureTable( $wc, $table, $dbFields ) === false ){
+            if( TargetStructureDA::createTargetStructureTable( $wc, $table, $className::dbFields() ) === false ){
                 return false;
             }
         }
@@ -273,5 +272,81 @@ class TargetStructure
         
         return $returnedTargets;
     }
+    
+    
+    function getFields( ?string $forcedType=null ): array
+    {
+        $type = $forcedType ?? $this->type;
+        
+        $fields = Target::ELEMENTS;
+        
+        if( !in_array($type, Target::TYPES) ){
+            return $fields;
+        }
+        
+        $className  = "WC\\Target\\". ucfirst($type);
+        
+        array_push( $fields, ...($className::ELEMENTS ?? []) );
+        
+        return array_unique($fields);
+    }
+    
+    function getJointure(): array
+    {
+        $targetTable        = trim( $this->wc->db->escape_string($this->table) );
+        $jointuresParams    = [ 'target_table' => $targetTable ];
+        
+        foreach( Target::JOIN_TABLES as $joinTableData )
+        {
+            $table = $joinTableData['alias'] ?? $joinTableData['table'];
+            $jointuresParams[ $table ] = $table.'|'.$targetTable;
+        }
+
+        $jointures          = [];
+        foreach( Target::JOIN_TABLES as $joinTableData )
+        {
+            $table = $joinTableData['alias'] ?? $joinTableData['table'];
+            
+            $jointureQueryPart  =   "LEFT JOIN ";
+            $jointureQueryPart  .=  "`".$joinTableData['table']."` AS `".$jointuresParams[ $table ]."` ";
+            $jointureQueryPart  .=  "ON ";
+            $jointureQueryPart  .=  str_replace(
+                                        array_map( fn($key): string => ':'.$key, array_keys($jointuresParams) ), 
+                                        array_map( fn($value): string => "`".$value."`", array_values($jointuresParams) ), 
+                                        $joinTableData['condition']
+                                    );
+            $jointureQueryPart  .=  " ";
+            
+            $jointures[] = $jointureQueryPart;
+        }
+        
+        return $jointures;
+    }
+    
+    function getJoinFields(): array
+    {
+        $targetTable        = trim( $this->wc->db->escape_string($this->table) );
+        $jointuresParams    = [ 'target_table' => $targetTable ];
+        foreach( Target::JOIN_TABLES as $joinTableData )
+        {
+            $table = $joinTableData['alias'] ?? $joinTableData['table'];
+            $jointuresParams[ $table ] = $table.'|'.$targetTable;
+        }
+        
+        $joinFields = [];
+        foreach( Target::JOIN_FIELDS as $joinField )
+        {
+            $field =    str_replace(
+                            array_map( fn($key): string => ':'.$key, array_keys($jointuresParams) ), 
+                            array_map( fn($value): string => "`".$value."`", array_values($jointuresParams) ), 
+                            $joinField
+                        );
+            
+            $joinFields[] = str_replace("`|", "|", $field)." ";
+        }
+        
+        return $joinFields;
+    }
+
     
 }

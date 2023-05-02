@@ -9,11 +9,13 @@ use WC\Datatype\ExtendedDateTime;
 
 class Draft extends Target 
 {
-    const TYPE = 'draft';
-    
-    static $dbFields = [
+    const TYPE      = 'draft';
+    const DB_FIELDS = [
         "`content_key` int(11) DEFAULT NULL",
-    ];   
+    ];
+    const ELEMENTS = [ 
+        'content_key',
+    ];
     
     var $content_key = false;
     
