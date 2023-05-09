@@ -38,9 +38,6 @@ class Content extends Target
         $draftStructure = new TargetStructure( $this->wc, $this->structure->name, Draft::TYPE );
         $craftData      = $this->wc->website->witchCrafting->getCraftDataFromIds($draftStructure->table, $this->getRelatedTargetsIds(Draft::TYPE) );
         
-        $this->wc->dump($draftStructure->table);
-        $this->wc->dump($craftData);
-        
         return Target::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
     }
         
@@ -66,6 +63,9 @@ class Content extends Target
     
     function delete( bool $deleteAttributes=true )
     {
+        parent::delete( $deleteAttributes );
+        
+        return true;
         $this->archive();
         
         
@@ -111,6 +111,7 @@ class Content extends Target
     
     function archive()
     {
+        return true;
         $userID         = $this->wc->user->id;
         $currentDate    = date("Y-m-d H:i:s");
         

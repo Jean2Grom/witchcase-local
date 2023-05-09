@@ -28,7 +28,7 @@ class Target
         return $ids;
     }
     
-    static function countWitches( WitchCase $wc, string $table, int $id )
+    static function countWitches( WitchCase $wc, ?string $table, ?int $id )
     {
         if( empty($table) || empty($id) ){
             return false;

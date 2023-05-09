@@ -59,6 +59,8 @@ class Target
     
     var $id;
     var $name;
+    var $created;
+    var $modified;
     
     private $properties     = [];
     
@@ -88,7 +90,19 @@ class Target
             }
 
             if( !empty($this->properties['name']) ){
-                $this->name = htmlentities($this->properties['name']);
+                $this->name = $this->properties['name'];
+            }
+            
+            if( property_exists($this, 'content_key') && !empty($this->properties['content_key']) ){
+                $this->content_key = $this->properties['content_key'];
+            }
+            
+            if( !empty($data['created']) ){
+                $this->created = new ExtendedDateTime( $data['created'], $data['creator_name'] ?? '' );
+            }
+            
+            if( !empty($data['modified']) ){
+                $this->modified = new ExtendedDateTime( $data['modified'], $data['modificator_name'] ?? '' );
             }
             
             foreach( $structure->attributes() as $attributeName => $attributeData )
@@ -156,12 +170,18 @@ class Target
             $attribute->update( $params );
         }
         
-        $table                                          = $this->structure->table;
-        $updatedTargets                                 = $this->wc->website->updatedTargets[ $table ] ?? [];
-        $updatedTargets[]                               = $this->id;
-        $this->wc->website->updatedTargets[ $table ]    = $updatedTargets;
+        $save = $this->save();
         
-        return $this->save();
+        if( $save )
+        {
+            $table                                          = $this->structure->table;
+            $updatedTargets                                 = $this->wc->website->updatedTargets[ $table ] ?? [];
+            $updatedTargets[]                               = $this->id;
+            $this->wc->website->updatedTargets[ $table ]    = $updatedTargets;
+            $this->modified                                 = null;
+        }
+        
+        return $save;
     }
     
     function publish(){

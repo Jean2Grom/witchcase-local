@@ -5,9 +5,10 @@ use WC\Target\Draft;
 use WC\DataAccess\WitchCrafting;
 
 $possibleActionsList = [
-    'save-content',
-    'save-content-and-return',
+    'save',
+    'save-and-return',
     'publish',
+    'delete',
 ];
 
 $action = $this->wc->request->param('action');
@@ -42,17 +43,14 @@ if( !$target )
     exit();
 }
 
-
-if( $target->structure->type === Content::TYPE )
-{    
-    $target = $target->getDraft();
-}
+// TODO multi draft management
+$draft = $target->getDraft();
 
 
-if( empty($target) ){
+if( empty($draft) ){
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Impossible d'identifier le contenu à éditer."
+        'message'   =>  "Impossible de lire le brouillon"
     ];
 }
 
@@ -60,14 +58,14 @@ switch( $action )
 {
     case 'publish':
         $publish = true;
-    case 'save-content-and-return':
+    case 'save-and-return':
         $return = true;
-    case 'save-content':
+    case 'save':
         $publish    = $publish ?? false;
         $return     = $return ?? false;
         
         $params = [];
-        foreach( $target->getEditParams() as $key )
+        foreach( $draft->getEditParams() as $key )
         {
             $value = $this->wc->request->param($key);
             if( isset($value) ){
@@ -75,13 +73,13 @@ switch( $action )
             }
         }
         
-        $saved = $target->update( $params );
+        $saved = $draft->update( $params );
         
         if( $saved === false )
         {
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, le contenu n'a pas été modifié."
+                'message'   =>  "Une erreur est survenue, modification annulée"
             ];
             
             $return = false;
@@ -89,16 +87,16 @@ switch( $action )
         elseif( $saved === 0 && !$publish ){
             $alerts[] = [
                 'level'     =>  'warning',
-                'message'   =>  "Aucune modification, le contenu n'a pas été modifié."
+                'message'   =>  "Aucune modification"
             ];
         }
         elseif( $publish )
         {
-            if( $target->publish() === false )
+            if( $draft->publish() === false )
             {
                 $alerts[] = [
                     'level'     =>  'error',
-                    'message'   =>  "Une erreur est survenue, le contenu n'a pas été publié."
+                    'message'   =>  "Une erreur est survenue, publication annulée"
                 ];
                 
                 $return = false;
@@ -106,14 +104,14 @@ switch( $action )
             else {
                 $alerts[] = [
                     'level'     =>  'success',
-                    'message'   =>  "Votre contenu a bien été publié."
+                    'message'   =>  "Publié"
                 ];                
             }
         }
         else {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Votre contenu a bien été modifié."
+                'message'   =>  "Modifié"
             ];
         }
         
@@ -124,7 +122,33 @@ switch( $action )
             header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
             exit();
         }
-    break;
+    break;    
+    case 'delete':
+        if( $draft == $targetWitch->target() && !$targetWitch->deleteContent() ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Une erreur est survenue, suppression annulée",
+            ];
+        }
+        elseif( $draft != $targetWitch->target() && !$draft->delete() ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Une erreur est survenue, suppression annulée",
+            ];
+        }
+        else 
+        {
+            $alerts[] = [
+                'level'     =>  'success',
+                'message'   =>  "Brouillon supprimé"
+            ];
+            
+            $this->wc->user->addAlerts($alerts);
+            
+            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+            exit();
+        }
+    break;    
 }
 
 $cancelHref = false;
@@ -132,7 +156,7 @@ if( $targetWitch->invoke == 'root' ){
     $cancelHref = $targetWitch->uri;
 }
 else {
-    $cancelHref = $this->wc->website->baseUri."/view?id=".$targetWitch->id;
+    $cancelHref = $this->wc->website->getUrl("view?id=".$targetWitch->id);
 }
 
 $this->setContext('standard');

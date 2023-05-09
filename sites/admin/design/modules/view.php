@@ -267,11 +267,11 @@
                         id="content__edit">
                     Modifier
                 </button>
-                <button class="trigger-action"
+                <!--button class="trigger-action"
                         data-action="edit-content"
                         data-target="view-action">
                     Editer
-                </button>
+                </button-->
 
             </div>
         <?php endif; ?>

@@ -14,7 +14,7 @@ class Archive extends Target
         'content_key',
     ];
 
-    var $content_key = false;
+    var $content_key;
     
     static $datatypes            =   array(
                                             'Signature'         =>  array(

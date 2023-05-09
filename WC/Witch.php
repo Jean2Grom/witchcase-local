@@ -91,8 +91,7 @@ class Witch
         }
         
         if( !empty($witch->properties['name']) ){
-            $witch->name = htmlentities($witch->properties['name']);
-            //$witch->name = $witch->properties['name'];
+            $witch->name = $witch->properties['name'];
         }
         
         if( !empty($witch->properties['datetime']) ){

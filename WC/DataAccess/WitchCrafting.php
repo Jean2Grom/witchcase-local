@@ -232,7 +232,7 @@ class WitchCrafting
         return $craftedData;
     }
     
-    static function craftQueryFromIds( WitchCase $wc, string $table, array $ids )
+    static function craftQueryFromIds( WitchCase $wc, string $table, array $ids ): array
     {
         if( empty($table) || empty($ids) ){
             return [];
@@ -278,11 +278,11 @@ class WitchCrafting
 
         $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements )." ";
         
-        $wc->db->debugQuery( $query, $params );        
+        //$wc->db->debugQuery( $query, $params );        
         $result         = $wc->db->selectQuery( $query, $params );        
         $craftedData    = self::formatCraftData( $result );
         
-        return $craftedData[ $table ];
+        return $craftedData[ $table ] ?? [];
     }
     
     
