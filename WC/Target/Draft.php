@@ -16,9 +16,8 @@ class Draft extends Target
     
     var $content_key;
     
-    function set( $args )
-    {
-        return $this->setTarget( $args, self::$datatypes );
+    function createDraft(){
+        return clone $this;
     }
     
     function getDraft(){
@@ -35,10 +34,6 @@ class Draft extends Target
             {
                 $newContentId   = $structure->createTarget($this->name);
                 $data           = [ 'id' => $newContentId, 'name' => $this->name ];
-                
-                foreach( $this->getWitches() as $witch ){
-                    $witch->edit(['target_table' => $structure->table, 'target_fk' => $newContentId]);
-                }
             }
             else 
             {
@@ -49,12 +44,16 @@ class Draft extends Target
             $content                = Target::factory( $this->wc, $structure, $data );
             
             if( $this->content_key ){
-                $content->archive();
+                $content->archive( true );
             }
             
             $content->name          = $this->name;
             $content->attributes    = $this->attributes;            
             $content->save();
+            
+            foreach( $this->getWitches() as $witch ){
+                $witch->edit(['target_table' => $structure->table, 'target_fk' => $newContentId]);
+            }
             
             $changedTargets                                                 = $this->wc->website->changedTargets[ $this->structure->table ] ?? [];
             $changedTargets[ $this->id ]                                    = [ 'table' => $content->structure->table, 'id' => $content->id ];

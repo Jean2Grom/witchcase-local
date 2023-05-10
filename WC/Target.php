@@ -5,7 +5,7 @@ use WC\DataAccess\Target as TargetDA;
 
 use WC\WitchCase;
 use WC\Datatype\ExtendedDateTime;
-use WC\Datatype\Signature;
+use WC\Target\Draft;
 use WC\Attribute;
 
 class Target 
@@ -204,7 +204,7 @@ class Target
         if( !isset($this->relatedTargetsIds[ $type ]) )
         {
             $table                              = $type.'__'.$this->structure->name;            
-            $this->relatedTargetsIds[ $type ]   = TargetDA::getRelatedTargetsIds($this->wc, $table, $this->id);
+            $this->relatedTargetsIds[ $type ]   = TargetDA::getRelatedTargetsIds( $this->wc, $table, $this->content_key ?? $this->id );
         }
         
         return $this->relatedTargetsIds[ $type ];
@@ -257,10 +257,8 @@ class Target
     {
         $this->wc->db->begin();
         try {
-            if( !$this->id )
-            {
-                $contentKey = ($this->content_key ?? false)? $this->content_key: null;
-                $this->id   = $this->structure->createTarget( $this->name, $this->structure->type, $contentKey );
+            if( !$this->id ){
+                $this->id   = $this->structure->createTarget( $this->name, $this->structure->type, $this->content_key ?? null );
             }
             
             $updated = 0;
@@ -269,7 +267,11 @@ class Target
             }
 
             $fields = [ 'name' => $this->name ];
-
+            
+            if( property_exists($this, 'content_key') && !empty($this->content_key) ){
+                $fields['content_key'] = $this->content_key;
+            }
+            
             foreach( $this->attributes as $attribute ){
                 foreach( $attribute->tableColumns as $key => $tableColumn  ){
                     $fields[ $tableColumn ] = $attribute->values[ $key ];
@@ -291,51 +293,6 @@ class Target
         return $updated;
     }
     
-    
-    protected function setTarget( $args, $datatypes )
-    {
-        $doneAttributes = [];
-        foreach( $args as $argLabel => $argValue )
-        {
-            if( strcmp("@", substr($argLabel, 0, 1)) != 0 )
-            {
-                if( in_array($argLabel, $datatypes['ExtendedDateTime']) ){
-                    $this->$argLabel = new ExtendedDateTime($argValue);
-                }
-                elseif( in_array($argLabel, $datatypes['Signature']) )
-                {
-                    $this->$argLabel =  new Signature(  $argLabel, 
-                                                        $argValue, 
-                                                        $args[$argLabel."__signature"] 
-                                        );
-                    
-                    unset($args[$argLabel."__signature"]);
-                }
-                elseif( strcmp("context", $argLabel) == 0 ){
-                    $context = $this->formatContext($argValue);
-                }
-                else {
-                    $this->$argLabel = $argValue;
-                }
-            }
-            else
-            {
-                $columnData = Attribute::splitColumn($argLabel);
-                
-                if( !isset($this->attributes[ $columnData['name'] ]) ){
-                    continue;
-                }
-                elseif( !in_array($columnData['name'], $doneAttributes) )
-                {
-                    $doneAttributes[] = $columnData['name'];
-                    $this->attributes[ $columnData['name'] ]->set($args);
-                }
-            }
-        }
-        
-        return true;
-    }
-        
     function formatContext( $contextString )
     {
         if( !$contextString ){
@@ -357,5 +314,35 @@ class Target
         
         return $this->context;
     }
+    
+    function createDraft()
+    {
+        $draftStructure = new TargetStructure( $this->wc, $this->structure->name, Draft::TYPE );
+        $draft          = Target::factory( $this->wc, $draftStructure );
+        
+        $draft->name          = $this->name;
+        $draft->content_key   = $this->content_key ?? $this->id;
+        
+        foreach( $this->attributes as $attributeName => $attribute ){
+            $draft->attributes[ $attributeName ] = $attribute->clone( $draft );
+        }
+        
+        $draft->save();
+        
+        return $draft;
+    }
+    
+    function getDraft()
+    {
+        if( empty($this->getRelatedTargetsIds(Draft::TYPE)) ){
+            return $this->createDraft();
+        }
+        
+        $draftStructure = new TargetStructure( $this->wc, $this->structure->name, Draft::TYPE );
+        $craftData      = $this->wc->website->witchCrafting->getCraftDataFromIds($draftStructure->table, $this->getRelatedTargetsIds(Draft::TYPE) );
+        
+        return Target::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
+    }
+    
     
 }

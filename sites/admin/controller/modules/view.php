@@ -1,18 +1,21 @@
 <?php
-
 use WC\TargetStructure;
+use WC\Target\Draft;
 
 $possibleActionsList = [
     'edit-priorities',
     'delete-witch',
     'delete-content',
     'add-content',
+    'archive-content',
 ];
 
 $action = $this->wc->request->param('action');
 if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
+
+$this->wc->debug($action);
 
 $targetWitch = $this->wc->website->witches["target"] ?? false;
 
@@ -149,7 +152,7 @@ switch( $action )
         $witchData = [];
         if( !empty($structure) && $isValidStructure )
         {
-            $targetStructure = new TargetStructure($this->wc, $structure, 'draft');
+            $targetStructure = new TargetStructure($this->wc, $structure, Draft::TYPE);
             $targetId        = $targetStructure->createTarget( $targetWitch->name );
             
             $witchData['target_table']   = $targetStructure->table;
@@ -168,6 +171,17 @@ switch( $action )
             exit();
         }
     break;
+    
+    case 'archive-content':
+        if( $targetWitch->target()->archive() === false ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Une erreur est survenue, archivage annulé"
+            ];
+        }
+        
+    break;
+    
 }
 
 $editTargetWitchHref    = $this->wc->website->getUrl("edit?id=".$targetWitch->id);

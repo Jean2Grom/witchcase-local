@@ -64,13 +64,12 @@
 </style>
 <div class="view-content">
     <h1><?=$this->witch->name ?></h1>
-    <?php if( $targetWitch ): ?>
-        <h2><em><?=$targetWitch->name ?></em></h2>
-    <?php endif; ?>
+    <div class="view-content__data"><p><em><?=$this->witch->data?></em></p></div>
     
     <?php include $this->getIncludeDesignFile('alerts.php'); ?>
     
-    <div class="view-content__data"><p><em><?=$this->witch->data?></em></p></div>
+    <h2><em><?=$targetWitch->name ?></em></h2>
+    <p><em><?=$targetWitch->data?></em></p>
     
     <div class="view-content__info">
         <h3>
@@ -257,15 +256,24 @@
             <?php endforeach; ?>
             
             <div class="view-content__target__actions">
-                <button class="" 
-                        data-confirm="Etes vous sur de vouloir supprimer le contenu ?"
-                        id="content__delete">
-                    Supprimer
-                </button>
+                <?php if( $targetWitch->target()->structure->type === WC\Target\Content::TYPE ): ?>
+                    <button class="trigger-action"
+                            data-confirm="Etes vous sur de vouloir archiver le contenu ?"
+                            data-action="archive-content"
+                            data-target="view-action">
+                        Archiver
+                    </button>
+                <?php endif; ?>
                 <button class="" 
                         data-href="<?=$editTargetContentHref ?>"
                         id="content__edit">
                     Modifier
+                </button>
+                <button class="trigger-action"
+                        data-confirm="Etes vous sur de vouloir supprimer le contenu ?"
+                        data-action="delete-content"
+                        data-target="view-action">
+                    Supprimer
                 </button>
                 <!--button class="trigger-action"
                         data-action="edit-content"
@@ -320,35 +328,25 @@ $(document).ready(function()
         }
     });
     
-    $('#content__delete').click(function(){
-        if( confirm( $(this).data('confirm') ) )
-        {
-            let action = $("<input>").attr("type", "hidden")
-                            .attr("name", "action")
-                            .val( "delete-content" );
-
-            $('#view-action').append( action );
-            $('#view-action').submit();
-        }
-    });
-    
     $('#witch-content-structure').change(function(){
         $('#witch__add-content').prop( 'disabled', ($(this).val() === '') );
     });
     
     $('.trigger-action').click(function(){
-        let actionName  = $(this).data('action');
-        let targetId    = $(this).data('target');
-        if( actionName === undefined || targetId === undefined ){
+        let data = $(this).data();
+        if( data.action === undefined 
+            ||  data.target === undefined 
+            || (data.confirm !== undefined && !confirm( data.confirm ))
+        ){
             return false;
         }
         
         let action = $("<input>").attr("type", "hidden")
                         .attr("name", "action")
-                        .val( actionName );
+                        .val( data.action );
         
-        $('#'+targetId).append( action );        
-        $('#'+targetId).submit();
+        $('#' + data.target).append( action );
+        $('#' + data.target).submit();
         
         return false;
     });
