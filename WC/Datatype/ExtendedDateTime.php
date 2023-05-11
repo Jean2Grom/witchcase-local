@@ -6,6 +6,15 @@ class ExtendedDateTime extends \DateTime
 {
     var $frenchFormatDate;
     var $frenchFormatDateTime;
+    var $actor;
+    
+    public function __construct(string $datetime = "now", ?string $actor = null, ?string $timezone = null) 
+    {
+        $this->actor    =  $actor ?? '';
+        $dateTimeZone   = new \DateTimeZone( $timezone ?? date_default_timezone_get() );
+        
+        parent::__construct($datetime, $dateTimeZone);
+    }
     
     function sqlFormat()
     {

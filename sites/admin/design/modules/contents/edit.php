@@ -12,6 +12,7 @@
         float: left;
         margin-right: 15px;
         padding: 20px 10px;
+        border: 1px solid #ccc;
         box-shadow: 5px 5px 5px #ccc;
     }
         fieldset legend {
@@ -53,24 +54,31 @@
     
     
 </style>
-<h1>
-    Edition du contenu
-    <?php if( $target ): ?>
-        :
-        <?=$target->structure->name ?>
-    <?php endif; ?>
-</h1>
 
-<?php if( $target ): ?>
-    <h2>
-        <?=$target->name ?>
-    </h2>
-<?php endif; ?>
+<h1><?=$this->witch->name ?></h1>
+<p><em><?=$this->witch->data?></em></p>
 
+<h3>[<?=$draft->structure->name ?>] <em><?=$draft->name ?></em></h3>
+<p>
+    <?php if( $draft->created ): ?>
+        <em>Créé le <?=$draft->created->frenchFormat( true )?> par <?=$draft->created->actor?></em>
+        <?php if( $draft->modified && $draft->created != $draft->modified ): ?>
+            <br/> 
+            <em>Modifié le <?=$draft->modified->frenchFormat( true )?> par <?=$draft->modified->actor?></em>
+        <?php endif; ?>
+    <?php endif; ?>    
+</p>
+    
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
-    <?php foreach( $target->attributes as $attribute ): ?>
+    <fieldset>
+        <legend>Nom</legend>
+        <input type="text" name="name" value="<?=$draft->name ?>" />
+    </fieldset>
+    <div class="clear"></div>
+    
+    <?php foreach( $draft->attributes as $attribute ): ?>
         <fieldset>
             <legend><?=$attribute->name?> [<?=$attribute->type?>]</legend>
                 <?php $attribute->edit() ?>
@@ -79,19 +87,30 @@
     <?php endforeach; ?>
     
     <?php if( $targetWitch ): ?>
-        <button class="" 
-                id="save-content-and-return-action">
+        <button class="trigger-action" 
+                data-action="publish"
+                data-target="edit-action">
+            Publier
+        </button>
+        <button class="trigger-action"
+                data-action="save-and-return"
+                data-target="edit-action">
             Sauvegarder et Quitter
         </button>
-        <button class="" 
-                id="save-content-action">
+        <button class="trigger-action"
+                data-action="save"
+                data-target="edit-action">
             Sauvegarder
+        </button>
+        <button class="trigger-action"
+                data-action="delete"
+                data-target="edit-action">
+            Supprimer le brouillon
         </button>
     <?php endif; ?>
     
     <?php if( $cancelHref ): ?>
-        <button class="" 
-                id="cancel"
+        <button class="trigger-href" 
                 data-href="<?=$cancelHref ?>">
             Annuler
         </button>
@@ -101,30 +120,27 @@
     
 <script>
 $(document).ready(function()
-{
-    $('#cancel').click(function(){
+{    
+    $('.trigger-href').click(function(){
         window.location.href = $(this).data('href');
         return false;
     });
     
-    $('#save-content-action').click(function(){
-        return save( "save-content" );
-    });
-
-    $('#save-content-and-return-action').click(function(){
-        return save( "save-content-and-return" );
-    });
-    
-    function save( actionName )
-    {
+    $('.trigger-action').click(function(){
+        let actionName  = $(this).data('action');
+        let targetId    = $(this).data('target');
+        if( actionName === undefined || targetId === undefined ){
+            return false;
+        }
+        
         let action = $("<input>").attr("type", "hidden")
                         .attr("name", "action")
                         .val( actionName );
         
-        $('#edit-action').append( action );
+        $('#'+targetId).append( action );        
+        $('#'+targetId).submit();
         
-        return true;
-    }
-
+        return false;
+    });
 });
 </script>    

@@ -2,6 +2,7 @@
 namespace WC\DataAccess;
 
 use WC\WitchCase;
+use WC\Target;
 
 class TargetStructure 
 {
@@ -67,9 +68,9 @@ class TargetStructure
         return $wc->db->createQuery($query);
     }
     
-    static function updateTargetStructureTable( WitchCase $wc, string $table, array $addColumns=[], array $removeColumns=[] )
+    static function updateTargetStructureTable( WitchCase $wc, string $table, array $addColumns=[], array $removeColumns=[], array $changeColumns=[] )
     { 
-        if( empty($table) || (empty( $addColumns ) && empty( $removeColumns )) ){
+        if( empty($table) || (empty( $addColumns ) && empty( $removeColumns ) && empty( $changeColumns )) ){
             return false;
         }
         
@@ -77,14 +78,19 @@ class TargetStructure
         $query  .=  "ALTER TABLE `".$wc->db->escape_string($table)."` ";
         
         $separator = "";
-        foreach( $removeColumns as $column )
+        foreach( $removeColumns as $columnName )
         {
-            $query      .=  $separator." DROP `".$column."` ";
+            $query      .=  $separator." DROP `".$columnName."` ";
             $separator  =   ", ";
         }
-        foreach( $addColumns as $column )
+        foreach( $addColumns as $columnDefinition )
         {
-            $query      .=  $separator." ADD ".$column." ";
+            $query      .=  $separator." ADD ".$columnDefinition." ";
+            $separator  =   ", ";
+        }
+        foreach( $changeColumns as $fromColumnName => $toColumnDefinition )
+        {
+            $query      .=  $separator." CHANGE `".$fromColumnName."` ".$toColumnDefinition." ";
             $separator  =   ", ";
         }
         
@@ -141,7 +147,7 @@ class TargetStructure
         $query  .=  ", create_time AS ct ";
         $query  .=  "FROM information_schema.tables ";
         $query  .=  "WHERE table_type = 'BASE TABLE' ";
-        $query  .=  "AND table_name LIKE 'content_%' ";
+        $query  .=  "AND table_name LIKE 'content__%' ";
         $query  .=  "ORDER BY table_name ASC ";
         
         $result =   $wc->db->multipleRowsQuery($query);
@@ -151,15 +157,14 @@ class TargetStructure
         {
             $tableName  = $item['tn'];
             
-            if( !str_starts_with($tableName, "content_") ){
+            if( !str_starts_with($tableName, "content__") ){
                 continue;
             } 
             
-            $structureName = substr($tableName, strlen("content_"));
+            $structureName = substr($tableName, strlen("content__"));
             
             $structures[ $structureName ] = [ 
                 'name'      => $structureName, 
-                'table'     => $tableName, 
                 'created'   => $item['ct'],
             ];
         }
@@ -173,17 +178,11 @@ class TargetStructure
             return false;
         }
         
-        $typesArray = [
-            //'draft', 
-            'content', 
-            //'archive',
-        ];
-        
         $count = [];
-        foreach( $typesArray as $type ) 
+        foreach( Target::TYPES as $type ) 
         {
             $query  =   "SELECT COUNT(*) ";
-            $query  .=  "FROM `".$type."_".$structure."` ";
+            $query  .=  "FROM `".$type."__".$structure."` ";
             
             $count[$type]  = $wc->db->countQuery($query);
         }
@@ -191,7 +190,7 @@ class TargetStructure
         return $count;
     }
     
-    static function createTarget( WitchCase $wc, string $table, string $name=null )
+    static function createTarget( WitchCase $wc, string $table, ?string $name=null, ?int $contentKey=null )
     {
         if( empty($table) ){
             return false;
@@ -206,6 +205,9 @@ class TargetStructure
         }
         if( $name ){
             $params["name"]         = $name;
+        }
+        if( $contentKey ){
+            $params["content_key"]  = $contentKey;
         }
         
         $query = "";

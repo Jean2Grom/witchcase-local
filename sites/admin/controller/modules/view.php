@@ -1,12 +1,13 @@
 <?php
-
 use WC\TargetStructure;
+use WC\Target\Draft;
 
 $possibleActionsList = [
     'edit-priorities',
     'delete-witch',
     'delete-content',
-    'witch-add-content',
+    'add-content',
+    'archive-content',
 ];
 
 $action = $this->wc->request->param('action');
@@ -23,7 +24,7 @@ if( !$targetWitch ){
     ];
     $this->wc->user->addAlerts([ $alert ]);
     
-    header('Location: '.$this->wc->website->baseUri );
+    header('Location: '.$this->wc->website->getRootUrl() );
     exit();
 }
 
@@ -114,7 +115,7 @@ switch( $action )
                 'message'   =>  "Le contenu n'a pas été supprimé car il n'a pas été trouvé.",
             ];
         }
-        elseif( !$targetWitch->deleteContent() ){
+        elseif( !$targetWitch->removeTarget() ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Une erreur est survenue, le contenu n'a pas été supprimé.",
@@ -131,14 +132,13 @@ switch( $action )
         }
     break;
     
-    case 'witch-add-content':
-        $structure      = trim( filter_input(INPUT_POST,    'witch-structure', FILTER_SANITIZE_STRING) );
+    case 'add-content':
+        $structure          = $this->wc->request->param('witch-content-structure');
+        $isValidStructure   = false;
         
-        if( !empty($structure) )
-        {
-            $isValidStructure = false;
+        if( !empty($structure) ){
             foreach( $structuresList as $structuresData ){
-                if( $structuresData['table'] == $structure )
+                if( $structuresData['name'] == $structure )
                 {
                     $isValidStructure = true;
                     break;
@@ -146,21 +146,13 @@ switch( $action )
             }
         }
         
-        $witchData = [];
-        if( !empty($structure) && $isValidStructure )
-        {
-            $targetStructure = new TargetStructure($this->wc, $structure);
-            $targetId        = $targetStructure->createTarget( $targetWitch->name );
-            
-            $witchData['target_table']   = $targetStructure->table;
-            $witchData['target_fk']      = $targetId;
-        }
-        
-        if( empty($structure) || empty($targetId) || !$targetWitch->edit( $witchData ) ){
+        if( !$isValidStructure 
+            || !$targetWitch->addTargetStructure(new TargetStructure( $this->wc, $structure, Draft::TYPE )) 
+        ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, votre contenu n'a pas été ajouté."
-            ];
+                'message'   =>  "Une erreur est survenue, ajout annulé"
+            ];            
         }
         else
         {
@@ -168,11 +160,21 @@ switch( $action )
             exit();
         }
     break;
+    
+    case 'archive-content':
+        if( $targetWitch->target()->archive() === false ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Une erreur est survenue, archivage annulé"
+            ];
+        }      
+    break;
+    
 }
 
-$editTargetWitchHref    = $this->wc->website->baseUri."/edit?id=".$targetWitch->id;
-$createElementHref      = $this->wc->website->baseUri."/create?mother=".$targetWitch->id;
-$editTargetContentHref  = $this->wc->website->baseUri."/edit-content?id=".$targetWitch->id;
+$editTargetWitchHref    = $this->wc->website->getUrl("edit?id=".$targetWitch->id);
+$createElementHref      = $this->wc->website->getUrl("create?mother=".$targetWitch->id);
+$editTargetContentHref  = $this->wc->website->getUrl("edit-content?id=".$targetWitch->id);
 
 $subTree = [
     'headers'   => [

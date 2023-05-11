@@ -79,7 +79,7 @@ switch( $action )
         {
             $isValidStructure = false;
             foreach( $structuresList as $structuresData ){
-                if( $structuresData['table'] == $structure )
+                if( $structuresData['name'] == $structure )
                 {
                     $isValidStructure = true;
                     break;

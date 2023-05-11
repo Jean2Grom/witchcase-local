@@ -22,17 +22,23 @@ class Website
     var $modulesList;
     private $rootUrl;
     
+    
     var $modules;
     var $attributes;
     var $status;
     var $witches;
     var $craftedData;
+    var $updatedTargets = [];
+    var $deletedTargets = [];
+    var $changedTargets = [];
+    
     var $extensions;
+    
     var $siteHeritages;
     var $depth;
     var $witchSummoning;    
     var $witchCrafting;
-    var $context;    
+    var $context;
     
     /** @var WitchCase */
     var $wc;
@@ -115,7 +121,7 @@ class Website
     function summonWitches()
     {
         $this->witches      = $this->witchSummoning->summon();
-        $this->craftedData  = $this->witchCrafting->craft( $this->witches );
+        $this->craftedData  = $this->witchCrafting->readCraftData( $this->witches );
         
         return $this;
     }
@@ -308,7 +314,7 @@ class Website
         return $this->rootUrl;
     }
     
-    function getFullUrl( string $urlPath='', Request $request=null )
+    function getFullUrl( string $urlPath='', ?Request $request=null )
     {
         if( !$request ){
             $request = $this->wc->request;
@@ -316,12 +322,20 @@ class Website
         
         $fullUrl    =   $request->protocole.'://';
         $fullUrl    .=  $request->host;
-        $fullUrl    .=  $this->baseUri;
-        if( !empty($urlPath) && !str_starts_with($urlPath, '/') ){
-            $fullUrl .= '/';
-        }
-        $fullUrl    .=  $urlPath;
+        
+        $fullUrl    .=  $this->getUrl( $urlPath );
         
         return $fullUrl;
-    }    
+    }
+    
+    function getUrl( string $urlPath='' )
+    {
+        $url    = $this->baseUri;
+        if( !empty($urlPath) && !str_starts_with($urlPath, '/') ){
+            $url .= '/';
+        }
+        $url    .=  $urlPath;
+        
+        return $url;
+    }
 }

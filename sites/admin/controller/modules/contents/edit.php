@@ -1,8 +1,9 @@
 <?php
-
 $possibleActionsList = [
-    'save-content',
-    'save-content-and-return',
+    'save',
+    'save-and-return',
+    'publish',
+    'delete',
 ];
 
 $action = $this->wc->request->param('action');
@@ -37,57 +38,106 @@ if( !$target )
     exit();
 }
 
-if( empty($target) ){
+// TODO multi draft management
+$draft = $target->getDraft();
+
+if( empty($draft) ){
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Impossible d'identifier le contenu à éditer."
+        'message'   =>  "Impossible de lire le brouillon"
     ];
 }
 
 switch( $action )
 {
-    case 'save-content-and-return':
+    case 'publish':
+        $publish = true;
+    case 'save-and-return':
         $return = true;
-    case 'save-content':
-        $return = $return ?? false;
+    case 'save':
+        $publish    = $publish ?? false;
+        $return     = $return ?? false;
         
-        $save =true;
-        foreach( $target->attributes as $attribute ){
-            foreach( $attribute->tableColumns as $attributeElement => $tableColumnName )
-            {
-                $value =  $this->wc->request->param($tableColumnName);
-                
-                if( $value && !$attribute->setValue($attributeElement, $value) )
-                {
-                    $alerts = array_merge($alerts, $this->wc->user->getAlerts());
-                    $save   = false;
-                    break;
-                }
+        $params = [];
+        foreach( $draft->getEditParams() as $key )
+        {
+            $value = $this->wc->request->param($key);
+            if( isset($value) ){
+                $params[ $key ] = $value;
             }
         }
         
-        if( !$save || !$target->save() ){
+        $saved = $draft->update( $params );
+        
+        if( $saved === false )
+        {
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, le contenu n'a pas été modifié."
+                'message'   =>  "Une erreur est survenue, modification annulée"
+            ];
+            
+            $return = false;
+        }
+        elseif( $saved === 0 && !$publish ){
+            $alerts[] = [
+                'level'     =>  'warning',
+                'message'   =>  "Aucune modification"
             ];
         }
-        else
+        elseif( $publish )
+        {
+            if( $draft->publish() === false )
+            {
+                $alerts[] = [
+                    'level'     =>  'error',
+                    'message'   =>  "Une erreur est survenue, publication annulée"
+                ];
+                
+                $return = false;
+            }
+            else {
+                $alerts[] = [
+                    'level'     =>  'success',
+                    'message'   =>  "Publié"
+                ];                
+            }
+        }
+        else {
+            $alerts[] = [
+                'level'     =>  'success',
+                'message'   =>  "Modifié"
+            ];
+        }
+        
+        if( $return )
+        {
+            $this->wc->user->addAlerts($alerts);
+
+            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+            exit();
+        }
+    break;
+    
+    case 'delete':
+        if( !$draft->remove() ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Une erreur est survenue, suppression annulée",
+            ];
+        }
+        else 
         {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Votre contenu a bien été modifié."
+                'message'   =>  "Brouillon supprimé"
             ];
             
-            if( $return )
-            {
-                $this->wc->user->addAlerts($alerts);
-                
-                header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
-                exit();
-            }
+            $this->wc->user->addAlerts($alerts);
+            
+            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+            exit();
         }
-    break;
+    break;    
 }
 
 $cancelHref = false;
@@ -95,7 +145,7 @@ if( $targetWitch->invoke == 'root' ){
     $cancelHref = $targetWitch->uri;
 }
 else {
-    $cancelHref = $this->wc->website->baseUri."/view?id=".$targetWitch->id;
+    $cancelHref = $this->wc->website->getUrl("view?id=".$targetWitch->id);
 }
 
 $this->setContext('standard');

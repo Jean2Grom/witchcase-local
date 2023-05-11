@@ -120,24 +120,21 @@ class Log
         {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             
-            foreach( $backtrace as $i => $backtraceData )
+            foreach( $backtrace as $backtraceData )
             {
-                if( $backtraceData['class'] == "WC\Log"
-                    || ($backtraceData['class'] == "WC\Debug" && $backtraceData['function'] == "prefix") 
-                    || (    ($backtraceData['class'] == "WC\Debug" && $backtraceData['function'] == "dump") 
-                            && !empty($backtrace[ $i+1 ]['class'])
-                            && !empty($backtrace[ $i+1 ]['function'])
-                            && $backtrace[ $i+1 ]['class'] == "WC\WitchCase" 
-                            && ($backtrace[ $i+1 ]['function'] == "debug" || $backtrace[ $i+1 ]['function'] == "dump")  )
-                ){
-                    continue;
-                }
-
-                if( !empty($backtraceData['file']) )
-                {
-                    $caller = $backtraceData;
+                if( !isset($backtraceData['class']) ){
                     break;
                 }
+                
+                if( $backtraceData['class'] != __CLASS__ 
+                    && $backtraceData['class'] != "WC\Debug" 
+                    && $backtraceData['function'] != "dump"
+                    && $backtraceData['function'] != "debug"
+                ){
+                    break;
+                }
+                
+                $caller = $backtraceData;
             }
         }
         

@@ -3,6 +3,7 @@ namespace WC;
 
 use WC\DataAccess\WitchCrafting;
 use WC\DataAccess\Witch as WitchDA;
+use WC\Datatype\ExtendedDateTime;
 
 /**
  * Description of Witch
@@ -29,7 +30,12 @@ class Witch
     ];
     private $properties     = [];
     
+    var $id;
+    var $name;
+    var $datetime;
+    
     var $statusLevel        = 0;
+    var $status;
     
     var $uri                = false;
     var $depth              = 0;
@@ -78,19 +84,9 @@ class Witch
     {
         $witch = new self( $wc );
         
-        foreach( $data as $field => $value ){
-            $witch->{$field} = $value;
-        }
+        $witch->properties = $data;
         
-        if( !empty($witch->datetime) ){
-            $witch->datetime = new \DateTime($witch->datetime);
-        }
-        
-        if( isset($witch->status) )
-        {
-            $witch->statusLevel = $witch->status;
-            $witch->status      = $wc->configuration->read('global', "status")[ $witch->status ];
-        }
+        $witch->propertiesRead();
 
         $witch->position    = [];
         
@@ -116,6 +112,29 @@ class Witch
         }
         
         return $witch;
+    }
+    
+    function propertiesRead()
+    {
+        if( !empty($this->properties['id']) ){
+            $this->id = (int) $this->properties['id'];
+        }
+        
+        if( !empty($this->properties['name']) ){
+            $this->name = $this->properties['name'];
+        }
+        
+        if( !empty($this->properties['datetime']) ){
+            $this->datetime = new ExtendedDateTime($this->properties['datetime']);
+        }
+        
+        if( isset($this->properties['status']) ){
+            $this->statusLevel = (int) $this->properties['status'];
+        }
+        
+        $this->status      = $this->wc->configuration->read('global', "status")[ $this->statusLevel ];
+        
+        return;
     }
     
     function setMother( self $mother ): self
@@ -315,18 +334,36 @@ class Witch
     
     function target()
     {
-        if( $this->target ){
-            return $this->target;
-        }
-        
         if( !$this->hasTarget() ){
             return false;
         }
         
-        $data = $this->wc->website->craftedData[ $this->target_table ][ $this->target_fk ] ?? null;
+        $changedTargets = $this->wc->website->changedTargets[ $this->target_table ] ?? [];        
+        if( isset($changedTargets[ $this->target_fk ]) )
+        {
+            $this->target        =  null;
+            $originId            = $this->target_fk;
+            $this->target_fk     = $changedTargets[ $originId ]['id'];
+            $this->target_table  = $changedTargets[ $originId ]['table'];
+        }
         
-        if( !$data ){
+        $deletedTargets = $this->wc->website->deletedTargets[ $this->target_table ] ?? [];
+        if( in_array($this->target_fk, $deletedTargets) ){
             return false;
+        }
+        
+        $updatedTargets = $this->wc->website->updatedTargets[ $this->target_table ] ?? [];
+        if( in_array($this->target_fk , $updatedTargets) )
+        {
+            $this->target   = null;
+            $data           = null;
+        }
+        else{            
+            $data = $this->wc->website->craftedData[ $this->target_table ][ $this->target_fk ] ?? null;
+        }
+        
+        if( $this->target ){
+            return $this->target;
         }
         
         $this->craft( $data );
@@ -354,11 +391,11 @@ class Witch
                 ]]
             );
             
-            $craftedData    = $witchCrafting->craft([ "target" => $this ]);
+            $craftedData    = $witchCrafting->readCraftData([ "target" => $this ]);
             $data           = $craftedData[ $this->target_table ][ $this->target_fk ];
         }
         
-        $this->target = new Target( $this->wc, $structure, $data );
+        $this->target = Target::factory( $this->wc, $structure, $data );
         
         return $this;
     }
@@ -479,8 +516,8 @@ class Witch
         elseif( (isset( $params['site'] ) && empty( $params['site'] ))
                 || (isset( $params['url'] ) && empty( $params['url'] ))
         ){
-            $params['site'] = 'NULL';
-            $params['url']  = 'NULL';
+            $params['site'] = null;
+            $params['url']  = null;
         }
         
         if( empty($params) ){
@@ -501,11 +538,7 @@ class Witch
                 $this->properties[$field] = $value;
             }
             
-            if( isset($params['status']) )
-            {
-                $this->statusLevel = $this->status;
-                $this->status      = $this->wc->website->get("status")[ $this->status ];
-            }
+            $this->propertiesRead();
             
             return true;
         }
@@ -701,7 +734,7 @@ class Witch
             }
         }
         
-        $this->deleteContent();
+        $this->removeTarget();
         if( $fetchDescendants ){
             $deleteIds[] = $this->id;
         }
@@ -709,7 +742,7 @@ class Witch
         return WitchDA::delete($this->wc, $deleteIds);
     }    
     
-    function deleteContent(): bool
+    function removeTarget(): bool
     {
         if( !$this->hasTarget() ){
             return false;
@@ -722,6 +755,34 @@ class Witch
         $this->target = null;
         
         return $this->edit(['target_table' => null, 'target_fk' => null]);
+    }
+    
+    function addTargetStructure( TargetStructure $targetStructure ): bool
+    {
+        $targetId = $targetStructure->createTarget( $this->name );
+        
+        if( empty($targetId) ){
+            return false;
+        }
+        
+        if( $this->hasTarget() && $this->target()->countWitches() == 1 ){
+            $this->target()->delete();
+        }
+        
+        $this->target = null;
+        
+        return $this->edit([ 'target_table' => $targetStructure->table, 'target_fk' => $targetId ]);
+    }
+    
+    function addTarget( Target $target ): bool
+    {
+        if( $this->hasTarget() && $this->target()->countWitches() == 1 ){
+            $this->target()->delete();
+        }
+        
+        $this->target = $target;
+        
+        return $this->edit([ 'target_table' => $target->structure->table, 'target_fk' => $target->id ]);
     }
     
     function isParent( self $potentialDescendant ): bool

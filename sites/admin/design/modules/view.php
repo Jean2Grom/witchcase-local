@@ -63,16 +63,13 @@
     }
 </style>
 <div class="view-content">
-    <h1>
-        <?=$this->witch->name ?>
-        <?php if( $targetWitch ): ?>
-            :&nbsp;<?=$targetWitch->name ?>
-        <?php endif; ?>
-    </h1>
+    <h1><?=$this->witch->name ?></h1>
+    <div class="view-content__data"><p><em><?=$this->witch->data?></em></p></div>
     
     <?php include $this->getIncludeDesignFile('alerts.php'); ?>
     
-    <div class="view-content__data"><?=$this->witch->data?></div>
+    <h2><em><?=$targetWitch->name ?></em></h2>
+    <p><em><?=$targetWitch->data?></em></p>
     
     <div class="view-content__info">
         <h3>
@@ -132,9 +129,9 @@
     
     <div class="view-content__daughters">
         <h3>
-            Mère et filles
+            Matriarcat
         </h3>
-        
+        <p><em>Position dans l'arborescence : mère et filles</em></p>
         <table>
             <thead>
                 <tr>
@@ -219,27 +216,27 @@
     
     <div class="view-content__target">
         <h3>
-            Contenu
+            <?=!empty($targetWitch->target())? ucfirst($targetWitch->target()->structure->type): "Pas de contenu" ?>
         </h3>
-        <?php if( empty($targetWitch->target()) && empty($structuresList) ): ?>
-            <p>
-                Pas de contenu
-            </p>
-            
-        <?php elseif( empty($targetWitch->target()) ): ?>
-            <select name="witch-structure" id="witch-structure">
-                <option value="">
-                    Pas de contenu
-                </option>
-                <?php foreach( $structuresList as $structureData ): ?>
-                    <option value="<?=$structureData['table']?>">
-                        <?=$structureData['name']?>
+        <?php if( empty($targetWitch->target()) ): ?>
+            <form method="post" id="witch-add-new-content">
+                <select name="witch-content-structure" id="witch-content-structure">
+                    <option value="">
+                        Pas de contenu
                     </option>
-                <?php endforeach; ?>
-            </select>
+                    <?php foreach( $structuresList as $structureData ): ?>
+                        <option value="<?=$structureData['name']?>">
+                            <?=$structureData['name']?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
             <div class="clear"></div>
             
-            <button class="" id="witch__add-content" disabled>
+            <button id="witch__add-content" disabled
+                    class="trigger-action"
+                    data-action="add-content"
+                    data-target="witch-add-new-content">
                 Ajouter contenu
             </button>
             
@@ -259,16 +256,31 @@
             <?php endforeach; ?>
             
             <div class="view-content__target__actions">
-                <button class="" 
-                        data-confirm="Etes vous sur de vouloir supprimer le contenu ?"
-                        id="content__delete">
-                    Supprimer
-                </button>
+                <?php if( $targetWitch->target()->structure->type === WC\Target\Content::TYPE ): ?>
+                    <button class="trigger-action"
+                            data-confirm="Etes vous sur de vouloir archiver le contenu ?"
+                            data-action="archive-content"
+                            data-target="view-action">
+                        Archiver
+                    </button>
+                <?php endif; ?>
                 <button class="" 
                         data-href="<?=$editTargetContentHref ?>"
                         id="content__edit">
                     Modifier
                 </button>
+                <button class="trigger-action"
+                        data-confirm="Etes vous sur de vouloir supprimer le contenu ?"
+                        data-action="delete-content"
+                        data-target="view-action">
+                    Supprimer
+                </button>
+                <!--button class="trigger-action"
+                        data-action="edit-content"
+                        data-target="view-action">
+                    Editer
+                </button-->
+
             </div>
         <?php endif; ?>
     </div>
@@ -316,38 +328,27 @@ $(document).ready(function()
         }
     });
     
-    $('#content__delete').click(function(){
-        if( confirm( $(this).data('confirm') ) )
-        {
-            let action = $("<input>").attr("type", "hidden")
-                            .attr("name", "action")
-                            .val( "delete-content" );
-
-            $('#view-action').append( action );
-            $('#view-action').submit();
-        }
+    $('#witch-content-structure').change(function(){
+        $('#witch__add-content').prop( 'disabled', ($(this).val() === '') );
     });
     
-    $('#witch-structure').change(function(){
-        $('#witch__add-content').prop( 'disabled', ($(this).val() == '') );
-    });
-    
-    $('#witch__add-content').click(function(){
-        if( $('#witch-structure').val() != '' )
-        {
-            let structure = $("<input>").attr("type", "hidden")
-                                .attr("name", "witch-structure")
-                                .val( $('#witch-structure').val() );
-            
-            $('#view-action').append( structure );
-            
-            let action = $("<input>").attr("type", "hidden")
-                            .attr("name", "action")
-                            .val( "witch-add-content" );
-
-            $('#view-action').append( action );
-            $('#view-action').submit();
+    $('.trigger-action').click(function(){
+        let data = $(this).data();
+        if( data.action === undefined 
+            ||  data.target === undefined 
+            || (data.confirm !== undefined && !confirm( data.confirm ))
+        ){
+            return false;
         }
+        
+        let action = $("<input>").attr("type", "hidden")
+                        .attr("name", "action")
+                        .val( data.action );
+        
+        $('#' + data.target).append( action );
+        $('#' + data.target).submit();
+        
+        return false;
     });
 });
 </script>

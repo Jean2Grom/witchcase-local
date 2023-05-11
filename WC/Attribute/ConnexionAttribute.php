@@ -44,7 +44,26 @@ class ConnexionAttribute extends Attribute
             'profile_id'    =>  ":rel__user_connexion__user_profile.`fk_user_profile` AS :target_table|".$this->name."#profile_id`",
         ];
     }
+    
+    function getEditParams(): array
+    {
+        $editParams = array_values($this->tableColumns);
+        $postedVarSearchArray = [
+            'name',
+            'login',
+            'email',
+            'password',
+            'password_confirm',
+        ];
         
+        foreach( $postedVarSearchArray as $postedVarSearchItem ){
+            $editParams[] = self::getColumnName( $this->type, $this->name, $postedVarSearchItem );
+        }
+        
+        return $editParams;
+    }    
+    
+    
     function set( $args )
     {
         foreach( $args as $key => $value ){
@@ -241,7 +260,7 @@ class ConnexionAttribute extends Attribute
             $this->wc->db->insertQuery($query);
         }
         
-        return $this;
+        return 1;
     }
     
     function generate_hash($password, $cost=11)

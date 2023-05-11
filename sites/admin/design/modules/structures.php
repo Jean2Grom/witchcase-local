@@ -63,20 +63,16 @@
     <div class="structures-content__list">
         <form method="POST" name="structures">
             <div id="navHeader">
-            <h2><?=$count?> Structures</h2>
+                <h2><?=$count?> Structures</h2>
             </div>
-            <?php /* if( $archiveHref ): ?>
-                <a id="structures-navHeader-a" 
-                    href="<?=$archiveHref["href"]?>">
-                    <?=$archiveHref["name"]?>
-                </a>
-            <?php endif; */?>
 
             <table id="structures-navHeader-table">
                 <thead>
                     <tr>
                         <th>Nom</th>
                         <th>Contents</th>
+                        <th>Drafts</th>
+                        <th>Archives</th>
                         <th>Création</th>
                     </tr>
                 </thead>
@@ -88,16 +84,17 @@
                                     <?=$structure['name']?>
                                 </a>
                             </td>
-                            <?php /* if($archives): ?>
-                                <td align="center">
-                                    <?=$structure['isArchive']?>
-                                </td>
-                            <?php endif; */ ?>
                             <td>
                                 <?=$structure['count']['content']?>
                             </td>
                             <td>
-                                <?=$structure['creation']->format( 'H:i:s d/m/Y' )?>
+                                <?=$structure['count']['draft']?>
+                            </td>
+                            <td>
+                                <?=$structure['count']['archive']?>
+                            </td>
+                            <td>
+                                <?=$structure['creation']->frenchFormat(true)?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

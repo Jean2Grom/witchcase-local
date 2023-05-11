@@ -2,6 +2,7 @@
 namespace WC\Attribute;
 
 use WC\Attribute;
+use WC\Datatype\ExtendedDateTime;
 
 class DateTimeAttribute extends Attribute 
 {
@@ -20,4 +21,17 @@ class DateTimeAttribute extends Attribute
         
         return false;
     }
+    
+    function update( array $params )
+    {
+        $key = $this->tableColumns['value'];
+        
+        if( !empty($params[ $key ]) )
+        {
+            $value = new ExtendedDateTime( $params[ $key ] );
+            
+            
+            $this->values['value'] = $value->sqlFormat();
+        }
+    }    
 }

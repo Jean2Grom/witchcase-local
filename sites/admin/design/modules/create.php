@@ -201,7 +201,7 @@
                 Pas de contenu
             </option>
             <?php foreach( $structuresList as $structureData ): ?>
-                <option value="<?=$structureData['table']?>">
+                <option value="<?=$structureData['name']?>">
                     <?=$structureData['name']?>
                 </option>
             <?php endforeach; ?>
