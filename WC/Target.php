@@ -204,18 +204,41 @@ class Target
         if( !isset($this->relatedTargetsIds[ $type ]) )
         {
             $table                              = $type.'__'.$this->structure->name;            
-            $this->relatedTargetsIds[ $type ]   = TargetDA::getRelatedTargetsIds( $this->wc, $table, $this->content_key ?? $this->id );
+            if( property_exists($this, 'content_key') && $this->content_key ){
+                $id = $this->content_key;
+            }
+            else {
+                $id = $this->id;
+            }
+            $this->relatedTargetsIds[ $type ]   = TargetDA::getRelatedTargetsIds( $this->wc, $table, $id );
         }
         
         return $this->relatedTargetsIds[ $type ];
     }
     
-    function getWitches()
+    function getWitches( ?string $type=null )
     {
-        $table = $this->structure->table;
+        if( $type && !in_array($type, self::TYPES) ){
+            return false;
+        }
+        elseif( $type ){
+            $table = $type.'__'.$this->structure->name;
+        }
+        else {
+            $table = $this->structure->table;
+        }
+        
+        if( $type && $type !== static::TYPE 
+            && property_exists($this, 'content_key') && $this->content_key
+        ){
+            $dataArray = TargetDA::getWitchesFromContentKey($this->wc, $table, $this->content_key) ?? [];
+        }
+        else {
+            $dataArray = TargetDA::getWitches($this->wc, $table, $this->id) ?? [];
+        }
         
         $witches = [];
-        foreach( TargetDA::getWitches($this->wc, $table, $this->id) ?? [] as $data ){
+        foreach( $dataArray as $data ){
             $witches[] = Witch::createFromData($this->wc, $data);
         }
         
@@ -237,6 +260,10 @@ class Target
             if( TargetDA::delete($this->wc, $table, $this->id) && isset($this->wc->website->craftedData[ $table ][ $this->id ]) ){
                 unset($this->wc->website->craftedData[ $table ][ $this->id ]);
             }
+            
+            if( property_exists($this, 'content_key') && $this->content_key ){
+                TargetDA::cleanupContentKey( $this->wc, $this->structure->name, $this->content_key );
+            }
         }
         catch( \Exception $e )
         {
@@ -257,8 +284,15 @@ class Target
     {
         $this->wc->db->begin();
         try {
+            if( property_exists($this, 'content_key') && !empty($this->content_key) ){
+                $contentKey = $this->content_key;
+            }
+            else {
+                $contentKey = null;
+            }
+            
             if( !$this->id ){
-                $this->id   = $this->structure->createTarget( $this->name, $this->structure->type, $this->content_key ?? null );
+                $this->id   = $this->structure->createTarget( $this->name, $this->structure->type, $contentKey );
             }
             
             $updated = 0;
@@ -268,8 +302,8 @@ class Target
 
             $fields = [ 'name' => $this->name ];
             
-            if( property_exists($this, 'content_key') && !empty($this->content_key) ){
-                $fields['content_key'] = $this->content_key;
+            if( $contentKey ){
+                $fields['content_key'] = $contentKey;
             }
             
             foreach( $this->attributes as $attribute ){
@@ -321,7 +355,13 @@ class Target
         $draft          = Target::factory( $this->wc, $draftStructure );
         
         $draft->name          = $this->name;
-        $draft->content_key   = $this->content_key ?? $this->id;
+        
+        if( property_exists($this, 'content_key') && $this->content_key ){
+            $draft->content_key   = $this->content_key;
+        }
+        else {
+            $draft->content_key   = $this->id;
+        }        
         
         foreach( $this->attributes as $attributeName => $attribute ){
             $draft->attributes[ $attributeName ] = $attribute->clone( $draft );
@@ -337,7 +377,7 @@ class Target
         if( empty($this->getRelatedTargetsIds(Draft::TYPE)) ){
             return $this->createDraft();
         }
-        
+        $this->wc->debug('lalala');
         $draftStructure = new TargetStructure( $this->wc, $this->structure->name, Draft::TYPE );
         $craftData      = $this->wc->website->witchCrafting->getCraftDataFromIds($draftStructure->table, $this->getRelatedTargetsIds(Draft::TYPE) );
         

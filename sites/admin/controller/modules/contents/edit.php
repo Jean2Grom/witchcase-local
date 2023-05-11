@@ -1,9 +1,4 @@
 <?php
-
-use WC\Target\Content;
-use WC\Target\Draft;
-use WC\DataAccess\WitchCrafting;
-
 $possibleActionsList = [
     'save',
     'save-and-return',
@@ -45,7 +40,6 @@ if( !$target )
 
 // TODO multi draft management
 $draft = $target->getDraft();
-
 
 if( empty($draft) ){
     $alerts[] = [
@@ -122,15 +116,10 @@ switch( $action )
             header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
             exit();
         }
-    break;    
+    break;
+    
     case 'delete':
-        if( $draft == $targetWitch->target() && !$targetWitch->deleteContent() ){
-            $alerts[] = [
-                'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, suppression annulée",
-            ];
-        }
-        elseif( $draft != $targetWitch->target() && !$draft->delete() ){
+        if( !$draft->remove() ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Une erreur est survenue, suppression annulée",

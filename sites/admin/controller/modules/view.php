@@ -15,8 +15,6 @@ if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$this->wc->debug($action);
-
 $targetWitch = $this->wc->website->witches["target"] ?? false;
 
 if( !$targetWitch ){
@@ -117,7 +115,7 @@ switch( $action )
                 'message'   =>  "Le contenu n'a pas été supprimé car il n'a pas été trouvé.",
             ];
         }
-        elseif( !$targetWitch->deleteContent() ){
+        elseif( !$targetWitch->removeTarget() ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Une erreur est survenue, le contenu n'a pas été supprimé.",
@@ -135,11 +133,10 @@ switch( $action )
     break;
     
     case 'add-content':
-        $structure      = $this->wc->request->param('witch-content-structure');
+        $structure          = $this->wc->request->param('witch-content-structure');
+        $isValidStructure   = false;
         
-        if( !empty($structure) )
-        {
-            $isValidStructure = false;
+        if( !empty($structure) ){
             foreach( $structuresList as $structuresData ){
                 if( $structuresData['name'] == $structure )
                 {
@@ -149,21 +146,13 @@ switch( $action )
             }
         }
         
-        $witchData = [];
-        if( !empty($structure) && $isValidStructure )
-        {
-            $targetStructure = new TargetStructure($this->wc, $structure, Draft::TYPE);
-            $targetId        = $targetStructure->createTarget( $targetWitch->name );
-            
-            $witchData['target_table']   = $targetStructure->table;
-            $witchData['target_fk']      = $targetId;
-        }
-        
-        if( empty($structure) || empty($targetId) || !$targetWitch->edit( $witchData ) ){
+        if( !$isValidStructure 
+            || !$targetWitch->addTargetStructure(new TargetStructure( $this->wc, $structure, Draft::TYPE )) 
+        ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, votre contenu n'a pas été ajouté."
-            ];
+                'message'   =>  "Une erreur est survenue, ajout annulé"
+            ];            
         }
         else
         {
@@ -178,8 +167,7 @@ switch( $action )
                 'level'     =>  'error',
                 'message'   =>  "Une erreur est survenue, archivage annulé"
             ];
-        }
-        
+        }      
     break;
     
 }

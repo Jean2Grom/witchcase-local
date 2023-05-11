@@ -2,6 +2,8 @@
 namespace WC\DataAccess;
 
 use WC\WitchCase;
+use WC\Target\Draft;
+use WC\Target\Archive;
 
 class Target 
 {
@@ -68,6 +70,31 @@ class Target
         return $wc->db->selectQuery($query, $params);
     }
         
+    static function getWitchesFromContentKey( WitchCase $wc, string $table, int $contentKey )
+    {
+        if( empty($table) || empty($contentKey) ){
+            return false;
+        }
+        
+        $params = [
+            'target_table'  => $table,
+            'content_key'   => $contentKey,
+        ];
+        
+        $tableSql = $wc->db->escape_string($table);
+        
+        $query = "";
+        $query  .=  "SELECT `witch`.* ";
+        $query  .=  "FROM `".$tableSql."` ";
+        $query  .=  "LEFT JOIN `witch` ";
+        $query  .=      "ON `witch`.`target_fk` = `".$tableSql."`.`id` ";
+        $query  .=      "AND `witch`.`target_table` = :target_table ";
+        $query  .=  "WHERE `".$tableSql."`.`content_key` = :content_key ";
+        $query  .=  "AND `witch`.`id` IS NOT NULL ";
+        
+        return $wc->db->selectQuery($query, $params);
+    }
+    
     static function delete( WitchCase $wc, string $table, int $id )
     {
         if( empty($table) || empty($id) ){
@@ -84,6 +111,75 @@ class Target
         $query  .=  "WHERE `id` = :id ";
         
         return $wc->db->deleteQuery($query, [ 'id' => $id ]);
+    }
+    
+    static function cleanupContentKey( WitchCase $wc, string $structureName, int $contentKey )
+    {
+        if( empty($structureName) || empty($contentKey) ){
+            return false;
+        }
+        
+        $draftIds   = self::getRelatedTargetsIds($wc, Draft::TYPE.'__'.$structureName, $contentKey);
+        $archiveIds = self::getRelatedTargetsIds($wc, Archive::TYPE.'__'.$structureName, $contentKey);
+        
+        if( empty($draftIds) && empty($archiveIds) ){
+            return;
+        }
+        
+        $query = "";
+        $query  .=  "SELECT count(`id`) ";
+        $query  .=  "FROM `witch` ";        
+        $query  .=  "WHERE ";
+        
+        $params = [];
+        if( !empty($draftIds) )
+        {
+            $params['draft_target_table'] = Archive::TYPE.'__'.$structureName;
+            
+            foreach( $draftIds as $i => $id ){
+                $params[ 'draft_id_'.$i ] = $id;
+            }
+            
+            $query  .=  "( `witch`.`target_table` = :draft_target_table ";
+            $query  .=      "AND `witch`.`target_fk` IN ( :draft_id_".implode(', :draft_id_', array_keys($draftIds))." ) ";
+            $query  .=  ") ";
+        }
+        
+        if( !empty($draftIds) && !empty($archiveIds) ){
+             $query  .=  "OR ";
+        }
+        
+        if( !empty($archiveIds) )
+        {
+            $params['archive_target_table'] = Draft::TYPE.'__'.$structureName;
+            
+            foreach( $archiveIds as $i => $id ){
+                $params[ 'archive_id_'.$i ] = $id;
+            }
+            
+            $query  .=  "( `witch`.`target_table` = :archive_target_table ";
+            $query  .=      "AND `witch`.`target_fk` IN ( :archive_id_".implode(', :draft_id_', array_keys($archiveIds))." ) ";
+            $query  .=  ") ";
+        }
+        
+        $count = $wc->db->countQuery($query, $params);
+        
+        if( $count === 0 )
+        {
+            $query = "";
+            $query  .=  "DELETE FROM `".$wc->db->escape_string( Draft::TYPE.'__'.$structureName )."` ";
+            $query  .=  "WHERE `content_key` = :content_key ";
+
+            $wc->db->deleteQuery($query, [ 'content_key' => $contentKey ]);
+            
+            $query = "";
+            $query  .=  "DELETE FROM `".$wc->db->escape_string( Archive::TYPE.'__'.$structureName )."` ";
+            $query  .=  "WHERE `content_key` = :content_key ";
+
+            $wc->db->deleteQuery($query, [ 'content_key' => $contentKey ]);            
+        }
+        
+        return;
     }
     
     static function update( WitchCase $wc, string $table, array $fields, array $conditions )

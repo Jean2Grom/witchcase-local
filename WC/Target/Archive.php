@@ -16,27 +16,7 @@ class Archive extends Target
 
     var $content_key;
     
-    static $datatypes            =   array(
-                                            'Signature'         =>  array(
-                                                                        'last_modificator', 
-                                                                        'archiver'
-                                                                    ),
-                                            'ExtendedDateTime'  =>  array(
-                                                                        'last_modification_date', 
-                                                                        'archive_date'
-                                                                    )
-                                        );
-    
-    function restore()
-    {
-        return true;
-    }
-    
-    function publish()
-    {
-        return $this->restore();
-    }
-    
+       
     function archive( bool $historyMode=false )
     {
         return false;

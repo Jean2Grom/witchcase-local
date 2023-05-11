@@ -32,6 +32,11 @@ class Content extends Target
                     $witch->edit(['target_table' => $structure->table, 'target_fk' => $newArchiveId]);
                 }
                 
+                $changedTargets                                                 = $this->wc->website->changedTargets[ $this->structure->table ] ?? [];
+                $changedTargets[ $this->id ]                                    = [ 'table' => $archive->structure->table, 'id' => $archive->id ];
+                $this->wc->website->changedTargets[ $this->structure->table ]   = $changedTargets;
+                
+                
                 $this->delete( false );
             }
         }
