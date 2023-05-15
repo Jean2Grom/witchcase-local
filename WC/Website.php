@@ -43,6 +43,9 @@ class Website
     /** @var WitchCase */
     var $wc;
     
+    /** @var Cairn */
+    var $cairn;
+    
     function __construct( WitchCase $wc, string $name, string $siteAccess=null )
     {
         $this->wc               = $wc;
@@ -120,28 +123,27 @@ class Website
     
     function summonWitches()
     {
-        $this->witches      = $this->witchSummoning->summon();
-        $this->craftedData  = $this->witchCrafting->readCraftData( $this->witches );
+        $this->cairn        = (new Cairn($this->wc) )->addWitches( $this->witchSummoning->summon() );
         
-        return $this;
+        return $this->cairn->addData($this->witchCrafting->readCraftData( $this->cairn->getWitches() ));
     }
     
     
     function sabbath()
     {
         foreach( $this->witchSummoning->configuration as $refWitch => $witchConf ){
-            if( !empty($this->witches[ $refWitch ]) )
+            if( $this->cairn->witch( $refWitch ) )
             {
                 if( empty($witchConf['invoke']) ){
                     continue;
                 }
                 
                 if( is_string($witchConf['invoke']) 
-                        && empty($this->witches[ $refWitch ]->modules[ $witchConf['invoke'] ]) ){
-                    $this->witches[ $refWitch ]->invoke( $witchConf['invoke'] );
+                        && empty($this->cairn->{$refWitch}->modules[ $witchConf['invoke'] ]) ){
+                    $this->cairn->{$refWitch}->invoke( $witchConf['invoke'] );
                 }
-                elseif( empty($this->witches[ $refWitch ]->result) ){
-                    $this->witches[ $refWitch ]->invoke();
+                elseif( empty($this->cairn->{$refWitch}->result) ){
+                    $this->cairn->{$refWitch}->invoke();
                 }
             }
         }

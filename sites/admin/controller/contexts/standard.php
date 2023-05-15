@@ -6,9 +6,8 @@ $faviconFile    = substr( $this->getImageFile("favicon.ico"), 1);
 $faviconMime    = mime_content_type($faviconFile) ?? '';
 $faviconContent = base64_encode( file_get_contents($faviconFile) ) ?? '';
 
-$baseUri        =   $this->website->baseUri;
-
-$currentWitch   = $this->website->witches["current"];
+$baseUri        = $this->website->baseUri;
+$currentWitch   = $this->wc->witch();
 
 $selfHref = $baseUri.$currentWitch->url;
 if( !empty($this->wc->request->queryString) ){

@@ -15,7 +15,7 @@ if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$targetWitch = $this->wc->website->witches["target"] ?? false;
+$targetWitch = $this->wc->witch("target");
 
 if( !$targetWitch ){
     $alert = [

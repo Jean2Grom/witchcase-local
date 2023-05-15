@@ -257,8 +257,8 @@ class Target
             
             $table  = $this->structure->table;
             
-            if( TargetDA::delete($this->wc, $table, $this->id) && isset($this->wc->website->craftedData[ $table ][ $this->id ]) ){
-                unset($this->wc->website->craftedData[ $table ][ $this->id ]);
+            if( TargetDA::delete($this->wc, $table, $this->id) ){
+                $this->wc->cairn->unsetData( $table, $this->id );
             }
             
             if( property_exists($this, 'content_key') && $this->content_key ){

@@ -5,6 +5,6 @@
     </head>
     
     <body>
-        <?=$this->website->witches["current"]->result ?>
+        <?=$this->wc->witch()->result ?>
     </body>
 </html>

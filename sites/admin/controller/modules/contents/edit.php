@@ -10,9 +10,8 @@ $action = $this->wc->request->param('action');
 if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
-
 $alerts         = $this->wc->user->getAlerts();
-$targetWitch    = $this->wc->website->witches["target"] ?? false;
+$targetWitch    = $this->wc->witch("target");
 if( !$targetWitch )
 {
     $alerts[] = [

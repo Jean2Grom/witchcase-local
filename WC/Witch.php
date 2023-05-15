@@ -358,8 +358,8 @@ class Witch
             $this->target   = null;
             $data           = null;
         }
-        else{            
-            $data = $this->wc->website->craftedData[ $this->target_table ][ $this->target_fk ] ?? null;
+        else {
+            $data = $this->wc->cairn->readData( $this->target_table, $this->target_fk );
         }
         
         if( $this->target ){

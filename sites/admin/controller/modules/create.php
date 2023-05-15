@@ -21,10 +21,9 @@ else {
 }
 
 $structuresList = TargetStructure::listStructures( $this->wc );
+$motherWitch    = $this->wc->witch("mother");
+$alerts         = $this->wc->user->getAlerts();
 
-$motherWitch = $this->wc->website->witches["mother"] ?? false;
-
-$alerts = $this->wc->user->getAlerts();
 if( !$motherWitch ){
     $alerts[] = [
         'level'     =>  'error',

@@ -24,7 +24,7 @@ class WitchCrafting
     /** @var WitchCase */
     var $wc;
     
-    function __construct( WitchCase $wc, array $summoningConfiguration, Website $website=NULL )
+    function __construct( WitchCase $wc, array $summoningConfiguration, ?Website $website=null )
     {
         $this->wc                   = $wc;
         $this->configuration        = $summoningConfiguration;
