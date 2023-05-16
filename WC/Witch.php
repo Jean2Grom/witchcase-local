@@ -43,7 +43,6 @@ class Witch
     var $accessDeniedFor    = false;
     var $module             = false;
     var $modules            = [];
-    var $target;
     
     var $mother;
     var $sisters            = [];
@@ -332,74 +331,15 @@ class Witch
         return $result;
     }
     
-    function target()
+    function craft()
     {
         if( !$this->hasTarget() ){
             return false;
         }
         
-        $changedTargets = $this->wc->website->changedTargets[ $this->target_table ] ?? [];        
-        if( isset($changedTargets[ $this->target_fk ]) )
-        {
-            $this->target        =  null;
-            $originId            = $this->target_fk;
-            $this->target_fk     = $changedTargets[ $originId ]['id'];
-            $this->target_table  = $changedTargets[ $originId ]['table'];
-        }
-        
-        $deletedTargets = $this->wc->website->deletedTargets[ $this->target_table ] ?? [];
-        if( in_array($this->target_fk, $deletedTargets) ){
-            return false;
-        }
-        
-        $updatedTargets = $this->wc->website->updatedTargets[ $this->target_table ] ?? [];
-        if( in_array($this->target_fk , $updatedTargets) )
-        {
-            $this->target   = null;
-            $data           = null;
-        }
-        else {
-            $data = $this->wc->cairn->readData( $this->target_table, $this->target_fk );
-        }
-        
-        if( $this->target ){
-            return $this->target;
-        }
-        
-        $this->craft( $data );
-        
-        return $this->target;        
+        return $this->wc->cairn->craft( $this->target_table, $this->target_fk );
     }
-    
-    function craft( array $data=null, TargetStructure $structure=null ): self
-    {
-        if( (!$data || !$structure) && !$this->hasTarget() ){
-            return $this;
-        }
         
-        if( !$structure ){
-            $structure = new TargetStructure( $this->wc, $this->target_table );
-        }
-        
-        if( !$data )
-        {
-            $witchCrafting = new WitchCrafting( 
-                $this->wc, 
-                [ "target" => [ 
-                    'id'    => $this->id, 
-                    'craft' => true,
-                ]]
-            );
-            
-            $craftedData    = $witchCrafting->readCraftData([ "target" => $this ]);
-            $data           = $craftedData[ $this->target_table ][ $this->target_fk ];
-        }
-        
-        $this->target = Target::factory( $this->wc, $structure, $data );
-        
-        return $this;
-    }
-    
     function isAllowed( Module $module=null, User $user=null ): bool
     {
         if( empty($module) && empty($this->invoke) ){
@@ -748,11 +688,9 @@ class Witch
             return false;
         }
         
-        if( $this->target()->countWitches() == 1 ){
-            $this->target()->delete();
+        if( $this->craft()->countWitches() == 1 ){
+            $this->craft()->delete();
         }
-        
-        $this->target = null;
         
         return $this->edit(['target_table' => null, 'target_fk' => null]);
     }
@@ -765,22 +703,20 @@ class Witch
             return false;
         }
         
-        if( $this->hasTarget() && $this->target()->countWitches() == 1 ){
-            $this->target()->delete();
+        if( $this->hasTarget() && $this->craft()->countWitches() == 1 ){
+            $this->craft()->delete();
         }
-        
-        $this->target = null;
         
         return $this->edit([ 'target_table' => $targetStructure->table, 'target_fk' => $targetId ]);
     }
     
     function addTarget( Target $target ): bool
     {
-        if( $this->hasTarget() && $this->target()->countWitches() == 1 ){
-            $this->target()->delete();
+        if( $this->hasTarget() && $this->craft()->countWitches() == 1 ){
+            $this->craft()->delete();
         }
         
-        $this->target = $target;
+        $this->wc->cairn->setCraft($target, $target->structure->table, $target->id);
         
         return $this->edit([ 'target_table' => $target->structure->table, 'target_fk' => $target->id ]);
     }

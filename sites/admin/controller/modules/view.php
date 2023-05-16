@@ -162,7 +162,7 @@ switch( $action )
     break;
     
     case 'archive-content':
-        if( $targetWitch->target()->archive() === false ){
+        if( $targetWitch->craft()->archive() === false ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Une erreur est survenue, archivage annulé"

@@ -216,9 +216,9 @@
     
     <div class="view-content__target">
         <h3>
-            <?=!empty($targetWitch->target())? ucfirst($targetWitch->target()->structure->type): "Pas de contenu" ?>
+            <?=!empty($targetWitch->craft())? ucfirst($targetWitch->craft()->structure->type): "Pas de contenu" ?>
         </h3>
-        <?php if( empty($targetWitch->target()) ): ?>
+        <?php if( empty($targetWitch->craft()) ): ?>
             <form method="post" id="witch-add-new-content">
                 <select name="witch-content-structure" id="witch-content-structure">
                     <option value="">
@@ -242,12 +242,12 @@
             
         <?php else: ?>
             <h4>
-                <?=$targetWitch->target()->name ?>
+                <?=$targetWitch->craft()->name ?>
                 <span class="content-structure-type">
-                    [<?=$targetWitch->target()->structure->name ?>]
+                    [<?=$targetWitch->craft()->structure->name ?>]
                 </span>
             </h4>
-            <?php foreach( $targetWitch->target()->attributes as $attribute ): ?>
+            <?php foreach( $targetWitch->craft()->attributes as $attribute ): ?>
                 <fieldset>
                     <legend><?=$attribute->name?> [<?=$attribute->type?>]</legend>
                         <?php $attribute->display() ?>
@@ -256,7 +256,7 @@
             <?php endforeach; ?>
             
             <div class="view-content__target__actions">
-                <?php if( $targetWitch->target()->structure->type === WC\Target\Content::TYPE ): ?>
+                <?php if( $targetWitch->craft()->structure->type === WC\Target\Content::TYPE ): ?>
                     <button class="trigger-action"
                             data-confirm="Etes vous sur de vouloir archiver le contenu ?"
                             data-action="archive-content"

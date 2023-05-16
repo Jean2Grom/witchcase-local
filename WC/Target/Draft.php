@@ -48,9 +48,7 @@ class Draft extends Target
                 }
             }
             
-            $changedTargets                                                 = $this->wc->website->changedTargets[ $this->structure->table ] ?? [];
-            $changedTargets[ $this->id ]                                    = [ 'table' => $content->structure->table, 'id' => $content->id ];
-            $this->wc->website->changedTargets[ $this->structure->table ]   = $changedTargets;
+            $this->wc->cairn->setCraft($content, $this->structure->table, $this->id);
             
             $this->delete( false );            
         }
@@ -114,9 +112,7 @@ class Draft extends Target
     function remove()
     {
         if( !$this->content_key ){
-            foreach( $this->getWitches() as $witch )
-            {
-                $witch->target = null;
+            foreach( $this->getWitches() as $witch ){
                 $witch->edit([ 'target_table' => null, 'target_fk' => null ]);
             }
         }

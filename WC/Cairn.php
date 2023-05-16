@@ -1,19 +1,22 @@
 <?php
 namespace WC;
 
+use WC\DataAccess\WitchCrafting;
+
 class Cairn 
 {
     const DEFAULT_WITCH = "current";
-
-
+    
     /** WitchCase */
     var $wc;
     
     /** Website */
     var $website;
     
-    var $witches;
-    var $cauldron;
+    private $witches;
+    private $cauldron;
+    private $crafts;
+    private $override;
     
     function __construct( WitchCase $wc, ?Website $website=null )
     {
@@ -22,9 +25,11 @@ class Cairn
         
         $this->witches  = [];
         $this->cauldron = [];
+        $this->crafts   = [];
+        $this->override = [];
     }
     
-    function addWitches( array $witches )
+    function addWitches( array $witches ): self
     {
         foreach( $witches as $witchName => $witch )
         {
@@ -37,7 +42,7 @@ class Cairn
         return $this; 
     }
     
-    function getWitches(){
+    function getWitches(): array {
         return $this->witches; 
     }
     
@@ -49,7 +54,7 @@ class Cairn
         return $this->witches[ $witchName ] ?? null; 
     }
     
-    function addData( array $craftData )
+    function addData( array $craftData ): self
     {
         foreach( $craftData as $table => $craftDataItem )
         {
@@ -63,12 +68,17 @@ class Cairn
         return $this;
     }
     
-    function readData( string $table, int $id ){
+    function readData( string $table, int $id )
+    {
+        $this->cauldron[ $table ] = $this->cauldron[ $table ] ?? [];
+        
         return $this->cauldron[ $table ][ $id ] ?? null;
     }
     
     function unsetData( string $table, int $id ): bool
     {
+        $this->cauldron[ $table ] = $this->cauldron[ $table ] ?? [];
+        
         if( isset($this->cauldron[ $table ][ $id ]) )
         {
             unset($this->cauldron[ $table ][ $id ]);
@@ -77,4 +87,47 @@ class Cairn
         
         return false;
     }
+    
+    function remove( string $table, int $id ): bool
+    {
+        $this->crafts[ $table ] = $this->crafts[ $table ] ?? [];
+        
+        if( isset($this->crafts[ $table ][ $id ]) ){
+            unset($this->crafts[ $table ][ $id ]);
+        }
+        
+        return $this->unsetData($table, $id);
+    }
+    
+    function craft( string $table, int $id ): Target
+    {
+        $this->override[ $table ] = $this->override[ $table ] ?? [];
+        if( !empty($this->override[ $table ][ $id ]) ){
+            return $this->override[ $table ][ $id ];
+        }
+        
+        $this->crafts[ $table ] = $this->crafts[ $table ] ?? [];
+        
+        if( !isset($this->crafts[ $table ][ $id ]) )
+        {
+            $this->cauldron[ $table ] = $this->cauldron[ $table ] ?? [];
+            
+            if( !isset($this->cauldron[ $table ][ $id ]) ){
+                $this->cauldron[ $table ]   = array_replace($this->cauldron[ $table ], WitchCrafting::craftQueryFromIds( $this->wc, $table, [$id] ));
+            }
+            
+            $this->crafts[ $table ][ $id ] = Target::factory( $this->wc, (new TargetStructure( $this->wc, $table )), $this->cauldron[$table][$id] );
+        }
+        
+        return $this->crafts[ $table ][ $id ];
+    }
+    
+    
+    function setCraft( Target $craft, string $table, int $id ): self
+    {
+        $this->override[ $table ]         = $this->override[ $table ] ?? [];
+        $this->override[ $table ][ $id ]  = $craft;
+        
+        return $this;
+    }    
 }

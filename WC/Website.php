@@ -26,11 +26,6 @@ class Website
     var $modules;
     var $attributes;
     var $status;
-    var $witches;
-    var $craftedData;
-    var $updatedTargets = [];
-    var $deletedTargets = [];
-    var $changedTargets = [];
     
     var $extensions;
     

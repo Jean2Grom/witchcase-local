@@ -172,13 +172,8 @@ class Target
         
         $save = $this->save();
         
-        if( $save )
-        {
-            $table                                          = $this->structure->table;
-            $updatedTargets                                 = $this->wc->website->updatedTargets[ $table ] ?? [];
-            $updatedTargets[]                               = $this->id;
-            $this->wc->website->updatedTargets[ $table ]    = $updatedTargets;
-            $this->modified                                 = null;
+        if( $save ){
+            $this->modified = null;
         }
         
         return $save;
@@ -258,7 +253,7 @@ class Target
             $table  = $this->structure->table;
             
             if( TargetDA::delete($this->wc, $table, $this->id) ){
-                $this->wc->cairn->unsetData( $table, $this->id );
+                $this->wc->cairn->remove( $table, $this->id );
             }
             
             if( property_exists($this, 'content_key') && $this->content_key ){
@@ -272,10 +267,6 @@ class Target
             return false;
         }
         $this->wc->db->commit();
-        
-        $deletedTargets                                 = $this->wc->website->deletedTargets[ $table ] ?? [];
-        $deletedTargets[]                               = $this->id;
-        $this->wc->website->deletedTargets[ $table ]    = $deletedTargets;
         
         return true;
     }
@@ -377,7 +368,7 @@ class Target
         if( empty($this->getRelatedTargetsIds(Draft::TYPE)) ){
             return $this->createDraft();
         }
-        $this->wc->debug('lalala');
+        
         $draftStructure = new TargetStructure( $this->wc, $this->structure->name, Draft::TYPE );
         $craftData      = $this->wc->website->witchCrafting->getCraftDataFromIds($draftStructure->table, $this->getRelatedTargetsIds(Draft::TYPE) );
         
