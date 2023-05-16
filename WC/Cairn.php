@@ -99,7 +99,7 @@ class Cairn
         return $this->unsetData($table, $id);
     }
     
-    function craft( string $table, int $id ): Target
+    function craft( string $table, int $id ): Craft
     {
         $this->override[ $table ] = $this->override[ $table ] ?? [];
         if( !empty($this->override[ $table ][ $id ]) ){
@@ -116,14 +116,14 @@ class Cairn
                 $this->cauldron[ $table ]   = array_replace($this->cauldron[ $table ], WitchCrafting::craftQueryFromIds( $this->wc, $table, [$id] ));
             }
             
-            $this->crafts[ $table ][ $id ] = Target::factory( $this->wc, (new TargetStructure( $this->wc, $table )), $this->cauldron[$table][$id] );
+            $this->crafts[ $table ][ $id ] = Craft::factory( $this->wc, (new Structure( $this->wc, $table )), $this->cauldron[$table][$id] );
         }
         
         return $this->crafts[ $table ][ $id ];
     }
     
     
-    function setCraft( Target $craft, string $table, int $id ): self
+    function setCraft( Craft $craft, string $table, int $id ): self
     {
         $this->override[ $table ]         = $this->override[ $table ] ?? [];
         $this->override[ $table ][ $id ]  = $craft;

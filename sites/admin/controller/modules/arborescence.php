@@ -70,7 +70,7 @@ function recursiveTree( WC\Module $module, \WC\Witch $witch, $website, $currentI
         'name'              => $witch->name,
         'site'              => $witch->site ?? "",
         'description'       => $witch->data,
-        'craft'             => $witch->hasTarget(),
+        'craft'             => $witch->hasCraft(),
         'invoke'            => !empty($witch->invoke),
         'daughters'         => $daughters,
         'daughters_orders'  => array_keys( $daughters ),

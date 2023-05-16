@@ -1,7 +1,7 @@
 <?php
 
 use WC\Website;
-use WC\TargetStructure;
+use WC\Structure;
 
 $possibleActionsList = [
     'create-new-witch',
@@ -20,7 +20,7 @@ else {
     $sites = array_keys($this->wc->configuration->sites);
 }
 
-$structuresList = TargetStructure::listStructures( $this->wc );
+$structuresList = Structure::listStructures( $this->wc );
 $motherWitch    = $this->wc->witch("mother");
 $alerts         = $this->wc->user->getAlerts();
 
@@ -73,12 +73,12 @@ switch( $action )
         $customUrl      = trim( $this->wc->request->param('new-witch-custom-url') );        
         $customRootUrl  = $this->wc->request->param('new-witch-custom-url-from-root', 'POST', FILTER_VALIDATE_BOOL);       
         
-        $structure      = trim( $this->wc->request->param('new-witch-structure') );       
-        if( !empty($structure) )
+        $structureName  = trim( $this->wc->request->param('new-witch-structure') );       
+        if( !empty($structureName) )
         {
             $isValidStructure = false;
             foreach( $structuresList as $structuresData ){
-                if( $structuresData['name'] == $structure )
+                if( $structuresData['name'] == $structureName )
                 {
                     $isValidStructure = true;
                     break;
@@ -119,12 +119,12 @@ switch( $action )
             }
         }
         
-        if( !empty($structure) && $isValidStructure )
+        if( !empty($structureName) && $isValidStructure )
         {
-            $targetStructure = new TargetStructure($this->wc, $structure);
-            $targetId        = $targetStructure->createTarget( $name );
+            $structure  = new Structure($this->wc, $structureName);
+            $targetId   = $structure->createCraft( $name );
             
-            $newWitchData['target_table']   = $targetStructure->table;
+            $newWitchData['target_table']   = $structure->table;
             $newWitchData['target_fk']      = $targetId;
         }
         
@@ -136,7 +136,7 @@ switch( $action )
                 'message'   =>  "Une erreur est survenue, votre élément n'a pas été créé."
             ];
         }
-        elseif( !empty($structure) && !empty($targetId) )
+        elseif( !empty($structureName) && !empty($targetId) )
         {
             header('Location: '.$this->wc->website->getFullUrl('edit-content?id='.$newWitchId) );
             exit();

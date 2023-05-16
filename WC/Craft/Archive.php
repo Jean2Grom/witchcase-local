@@ -1,10 +1,10 @@
 <?php
-namespace WC\Target;
+namespace WC\Craft;
 
-use WC\Target;
+use WC\Craft;
 
 
-class Archive extends Target 
+class Archive extends Craft 
 {
     const TYPE      = 'archive';
     const DB_FIELDS = [

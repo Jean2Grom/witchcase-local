@@ -1,6 +1,6 @@
 <?php
-use WC\TargetStructure;
-use WC\Target\Draft;
+use WC\Structure;
+use WC\Craft\Draft;
 
 $possibleActionsList = [
     'edit-priorities',
@@ -39,8 +39,8 @@ if( !empty($targetWitch->mother) ){
 }
 
 $structuresList = [];
-if( !$targetWitch->hasTarget() ){
-    $structuresList = TargetStructure::listStructures( $this->wc );
+if( !$targetWitch->hasCraft() ){
+    $structuresList = Structure::listStructures( $this->wc );
 }
 
 $alerts = $this->wc->user->getAlerts();
@@ -109,13 +109,13 @@ switch( $action )
     break;
     
     case 'delete-content':
-        if( !$targetWitch->hasTarget() ){
+        if( !$targetWitch->hasCraft() ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Le contenu n'a pas été supprimé car il n'a pas été trouvé.",
             ];
         }
-        elseif( !$targetWitch->removeTarget() ){
+        elseif( !$targetWitch->removeCraft() ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Une erreur est survenue, le contenu n'a pas été supprimé.",
@@ -128,7 +128,7 @@ switch( $action )
                 'message'   =>  "Le contenu a bien été supprimé."
             ];
             
-            $structuresList = TargetStructure::listStructures( $this->wc );
+            $structuresList = Structure::listStructures( $this->wc );
         }
     break;
     
@@ -147,7 +147,7 @@ switch( $action )
         }
         
         if( !$isValidStructure 
-            || !$targetWitch->addTargetStructure(new TargetStructure( $this->wc, $structure, Draft::TYPE )) 
+            || !$targetWitch->addStructure(new Structure( $this->wc, $structure, Draft::TYPE )) 
         ){
             $alerts[] = [
                 'level'     =>  'error',
@@ -172,9 +172,9 @@ switch( $action )
     
 }
 
-$editTargetWitchHref    = $this->wc->website->getUrl("edit?id=".$targetWitch->id);
-$createElementHref      = $this->wc->website->getUrl("create?mother=".$targetWitch->id);
-$editTargetContentHref  = $this->wc->website->getUrl("edit-content?id=".$targetWitch->id);
+$editCraftWitchHref    = $this->wc->website->getUrl("edit?id=".$targetWitch->id);
+$createElementHref     = $this->wc->website->getUrl("create?mother=".$targetWitch->id);
+$editCraftContentHref  = $this->wc->website->getUrl("edit-content?id=".$targetWitch->id);
 
 $subTree = [
     'headers'   => [

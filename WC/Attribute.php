@@ -1,7 +1,7 @@
 <?php
 namespace WC;
 
-use WC\Target;
+use WC\Craft;
 
 abstract class Attribute 
 {
@@ -109,12 +109,12 @@ abstract class Attribute
         return true;
     }
     
-    function save( Target $target )
+    function save( Craft $target )
     {
         return 0;
     }
     
-    function clone( Target $target )
+    function clone( Craft $target )
     {
         return clone $this;
     }

@@ -120,7 +120,7 @@
                 </button>
             <?php endif; ?>
             <button class="" 
-                    data-href="<?=$editTargetWitchHref ?>"
+                    data-href="<?=$editCraftWitchHref ?>"
                     id="witch__edit">
                 Modifier
             </button>
@@ -156,11 +156,11 @@
                             <?=$targetWitch->mother->site ?>
                         </td>
                         <td>
-                            <?php if( !empty($targetWitch->mother->invoke) && $targetWitch->mother->hasTarget() ): ?>
+                            <?php if( !empty($targetWitch->mother->invoke) && $targetWitch->mother->hasCraft() ): ?>
                                 Module & Contenu
                             <?php elseif( !empty($targetWitch->mother->invoke) ): ?>
                                 Module
-                            <?php elseif( $targetWitch->mother->hasTarget() ): ?>
+                            <?php elseif( $targetWitch->mother->hasCraft() ): ?>
                                 Contenu
                             <?php else: ?>
                                 Répertoire
@@ -181,11 +181,11 @@
                             <?=$daughter->site ?>
                         </td>
                         <td>
-                            <?php if( !empty($daughter->invoke) && $daughter->hasTarget() ): ?>
+                            <?php if( !empty($daughter->invoke) && $daughter->hasCraft() ): ?>
                                 Module & Contenu
                             <?php elseif( !empty($daughter->invoke) ): ?>
                                 Module
-                            <?php elseif( $daughter->hasTarget() ): ?>
+                            <?php elseif( $daughter->hasCraft() ): ?>
                                 Contenu
                             <?php else: ?>
                                 Répertoire
@@ -256,7 +256,7 @@
             <?php endforeach; ?>
             
             <div class="view-content__target__actions">
-                <?php if( $targetWitch->craft()->structure->type === WC\Target\Content::TYPE ): ?>
+                <?php if( $targetWitch->craft()->structure->type === WC\Craft\Content::TYPE ): ?>
                     <button class="trigger-action"
                             data-confirm="Etes vous sur de vouloir archiver le contenu ?"
                             data-action="archive-content"
@@ -265,7 +265,7 @@
                     </button>
                 <?php endif; ?>
                 <button class="" 
-                        data-href="<?=$editTargetContentHref ?>"
+                        data-href="<?=$editCraftContentHref ?>"
                         id="content__edit">
                     Modifier
                 </button>

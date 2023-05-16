@@ -1,5 +1,5 @@
 <?php
-use WC\TargetStructure;
+use WC\Structure;
 use WC\Witch;
 use WC\Attribute;
 use WC\Datatype\ExtendedDateTime;
@@ -34,7 +34,7 @@ $baseUri  = $this->witch->uri;
 if( $action === "publishStructure" )
 {
     $structureName      = $this->wc->request->param("edit", 'get');
-    $structure          = new TargetStructure( $this->wc,  $structureName );    
+    $structure          = new Structure( $this->wc,  $structureName );    
     $attributesPost     = $this->wc->request->param("attributes", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
     $attributesList     = Attribute::list();
     
@@ -74,7 +74,7 @@ if( $action === "publishStructure" )
 
 if( strcmp($action, "createStructure") == 0 )
 {
-    $structuresData = TargetStructure::listStructures( $this->wc );
+    $structuresData = Structure::listStructures( $this->wc );
     
     if( $this->wc->request->param("currentAction") === "creatingStructure" )
     {
@@ -100,7 +100,7 @@ if( strcmp($action, "createStructure") == 0 )
         
         if( $nextStep )
         {
-            TargetStructure::create($this->wc, $name);
+            Structure::create($this->wc, $name);
             
             $queryString = "?edit=".$name;
             
@@ -132,10 +132,10 @@ if( $action === "editStructure" )
         $baseStructure = $this->wc->request->param("base", 'get');
         
         if( $baseStructure ){
-            $structure = new TargetStructure( $this->wc, $baseStructure );
+            $structure = new Structure( $this->wc, $baseStructure );
         }
         else {
-            $structure  = new TargetStructure( $this->wc, $structureName );
+            $structure  = new Structure( $this->wc, $structureName );
         }
         
         foreach( $structure->attributes() as $attributeName => $attributeData ){
@@ -184,7 +184,7 @@ if( $action === "editStructure" )
 if( $action === "viewStructure" )
 {
     $structureName      = $this->wc->request->param('view');
-    $structure          = new TargetStructure( $this->wc, $structureName );
+    $structure          = new Structure( $this->wc, $structureName );
     
     $creationDateTime   = $structure->getLastModificationTime();
     $attributes         = $structure->attributes();
@@ -203,7 +203,7 @@ if( $action === "deleteStructures" )
     
     if( $structureName )
     {            
-        $structure = new TargetStructure( $this->wc,  $structureName );
+        $structure = new Structure( $this->wc,  $structureName );
         
         if( !$structure->delete() ){
             $messages[] = "Deletion of ".$structureName." failed";
@@ -218,7 +218,7 @@ if( $action === "deleteStructures" )
 
 if( $action === "listStructures" )
 {
-    $structures = TargetStructure::listStructures( $this->wc, true );
+    $structures = Structure::listStructures( $this->wc, true );
     $count      = count($structures);
     
     foreach( $structures as $key => $value )

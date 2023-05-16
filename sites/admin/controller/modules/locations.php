@@ -149,12 +149,12 @@ if( strcmp($action, "deleteLocation") == 0 )
     
     $redirectHref = false;
     if( strcmp($locationId, $baseLocalisation->location_id) == 0 ){
-        foreach( $baseLocalisation->sameTarget() as $sameTargetLocalisations ){
-            if( strcmp($sameTargetLocalisations['location_id'], $locationId) != 0 
-                && strcmp($sameTargetLocalisations['site'], $localisation->site) == 0 
+        foreach( $baseLocalisation->sameCraft() as $sameCraftLocalisations ){
+            if( strcmp($sameCraftLocalisations['location_id'], $locationId) != 0 
+                && strcmp($sameCraftLocalisations['site'], $localisation->site) == 0 
             ){
                 $redirectHref =   "https://".$this->localisation->siteAccess.$this->localisation->url;
-                $redirectHref .=  "?id=".$sameTargetLocalisations['id'];
+                $redirectHref .=  "?id=".$sameCraftLocalisations['id'];
                 
                 break;
             }
@@ -176,7 +176,7 @@ if( strcmp($action, "deleteLocation") == 0 )
 
 if( strcmp($action, "display") == 0 )
 {
-    $locations =    $baseLocalisation->sameTargetLocations();
+    $locations =    $baseLocalisation->sameCraftLocations();
     
     foreach( $locations as $linkId => $localisationsArray ){
         foreach( $localisationsArray as $key => $localisationsArrayItem )

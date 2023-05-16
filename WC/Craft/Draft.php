@@ -1,11 +1,11 @@
 <?php
-namespace WC\Target;
+namespace WC\Craft;
 
-use WC\Target;
-use WC\TargetStructure;
-use WC\DataAccess\Target as TargetDA;
+use WC\Craft;
+use WC\Structure;
+use WC\DataAccess\Craft as CraftDA;
 
-class Draft extends Target 
+class Draft extends Craft 
 {
     const TYPE      = 'draft';
     const DB_FIELDS = [
@@ -29,7 +29,7 @@ class Draft extends Target
     {
         $this->wc->db->begin();
         try {
-            $structure      = new TargetStructure( $this->wc, $this->structure->name, Content::TYPE );
+            $structure      = new Structure( $this->wc, $this->structure->name, Content::TYPE );
             
             // No content or archive exist
             if( !$this->content_key ){
@@ -63,9 +63,9 @@ class Draft extends Target
         return true;
     }
     
-    private function publishNewContent( TargetStructure $structure )
+    private function publishNewContent( Structure $structure )
     {
-        $content        = Target::factory( $this->wc, $structure );
+        $content        = Craft::factory( $this->wc, $structure );
         
         $content->name          = $this->name;
         $content->attributes    = $this->attributes;            
@@ -78,9 +78,9 @@ class Draft extends Target
         return $content;
     }
     
-    private function publishUpdatedContent( TargetStructure $structure, array $data )
+    private function publishUpdatedContent( Structure $structure, array $data )
     {
-        $content = Target::factory( $this->wc, $structure, $data );
+        $content = Craft::factory( $this->wc, $structure, $data );
             
         $content->archive( true );
             
@@ -91,9 +91,9 @@ class Draft extends Target
         return $content;
     }
     
-    private function publishRestoredContent( TargetStructure $structure )
+    private function publishRestoredContent( Structure $structure )
     {
-        $content = Target::factory( $this->wc, $structure );
+        $content = Craft::factory( $this->wc, $structure );
         
         $content->name          = $this->name;
         $content->attributes    = $this->attributes;            
@@ -103,8 +103,8 @@ class Draft extends Target
             $witch->edit(['target_table' => $structure->table, 'target_fk' => $content->id]);
         }
         
-        TargetDA::update( $this->wc, $this->structure->table, ['content_key' => $content->id], ['content_key' => $this->content_key] );
-        TargetDA::update( $this->wc, Archive::TYPE.'__'.$this->structure->name, ['content_key' => $content->id], ['content_key' => $this->content_key] );
+        CraftDA::update( $this->wc, $this->structure->table, ['content_key' => $content->id], ['content_key' => $this->content_key] );
+        CraftDA::update( $this->wc, Archive::TYPE.'__'.$this->structure->name, ['content_key' => $content->id], ['content_key' => $this->content_key] );
         
         return $content;
     }

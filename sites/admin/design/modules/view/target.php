@@ -5,7 +5,7 @@
 <div id="attributs">
     <h2>Attributs du contenu :</h2>
     <ul>
-        <? foreach( $viewTarget->attributes as $attribute ){ ?>
+        <? foreach( $viewCraft->attributes as $attribute ){ ?>
             <li>
                 <fieldset>
                     <legend><?=$attribute->name?> [<?=$attribute->type?>]</legend>

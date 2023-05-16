@@ -1,10 +1,10 @@
 <?php
-namespace WC\Target;
+namespace WC\Craft;
 
-use WC\Target;
-use WC\TargetStructure;
+use WC\Craft;
+use WC\Structure;
 
-class Content extends Target 
+class Content extends Craft 
 {
     const TYPE          = 'content';    
     const DB_FIELDS     = [];
@@ -15,10 +15,10 @@ class Content extends Target
     {
         $this->wc->db->begin();
         try {
-            $structure      = new TargetStructure( $this->wc, $this->structure->name, Archive::TYPE );
+            $structure      = new Structure( $this->wc, $this->structure->name, Archive::TYPE );
             
-            $newArchiveId   = $structure->createTarget($this->name);
-            $archive        = Target::factory( $this->wc, $structure );
+            $newArchiveId   = $structure->createCraft($this->name);
+            $archive        = Craft::factory( $this->wc, $structure );
             
             $archive->id            = $newArchiveId;
             $archive->name          = $this->name;

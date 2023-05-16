@@ -5,8 +5,7 @@ use WC\WitchCase;
 use WC\Website;
 use WC\Witch;
 use WC\Module;
-use WC\Target;
-use WC\TargetStructure;
+use WC\Structure;
 use WC\Attribute;
 
 /**
@@ -238,7 +237,7 @@ class WitchCrafting
             return [];
         }
         
-        $structure = new TargetStructure( $wc, $table );
+        $structure = new Structure( $wc, $table );
         
         //$querySelectElements    = [];
         $querySelectElements    = $structure->getJoinFields();
@@ -286,7 +285,7 @@ class WitchCrafting
     }
     
     
-    static function craftQueryFromAttributeSearch( WitchCase $wc, TargetStructure $structure, array $criterias, bool $excludeCriterias=true )
+    static function craftQueryFromAttributeSearch( WitchCase $wc, Structure $structure, array $criterias, bool $excludeCriterias=true )
     {
         if( empty($criterias) ){
             return [];

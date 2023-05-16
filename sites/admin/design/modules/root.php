@@ -82,11 +82,11 @@
                             <?=$daughter->site ?>
                         </td>
                         <td>
-                            <?php if( !empty($daughter->invoke) && $daughter->hasTarget() ): ?>
+                            <?php if( !empty($daughter->invoke) && $daughter->hasCraft() ): ?>
                                 Module & Contenu
                             <?php elseif( !empty($daughter->invoke) ): ?>
                                 Module
-                            <?php elseif( $daughter->hasTarget() ): ?>
+                            <?php elseif( $daughter->hasCraft() ): ?>
                                 Contenu
                             <?php else: ?>
                                 Répertoire

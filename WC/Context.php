@@ -206,8 +206,8 @@ class Context
             }
         }
         
-        // Context is in Target record
-        // ===========================
+        // Context is in Craft record
+        // ==========================
         if( isset($target->context[ $this->wc->localisation->site ]) )
         {
             $this->execFile = $this->wc->module->getControllerFile( "contexts/".$target->context[ $this->wc->localisation->site ] );

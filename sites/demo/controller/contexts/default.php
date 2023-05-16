@@ -47,7 +47,7 @@ else
     if( !$rootContent )
     {
         $rootLocalisation   = new Localisation( $this, $this->configuration->read($this->localisation->site, 'rootID') );
-        $rootContent        = $rootLocalisation->getTarget();
+        $rootContent        = $rootLocalisation->getCraft();
     }
     
     $contextData['meta-title']          = $rootContent->attributes['meta-title']->content();

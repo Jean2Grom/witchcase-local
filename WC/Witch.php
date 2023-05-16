@@ -1,7 +1,6 @@
 <?php
 namespace WC;
 
-use WC\DataAccess\WitchCrafting;
 use WC\DataAccess\Witch as WitchDA;
 use WC\Datatype\ExtendedDateTime;
 
@@ -278,7 +277,7 @@ class Witch
         return $isDaughter;
     }
     
-    function hasTarget(){
+    function hasCraft(){
         return !empty($this->properties[ 'target_table' ]) && !empty($this->properties[ 'target_fk' ]);
     }
     
@@ -333,7 +332,7 @@ class Witch
     
     function craft()
     {
-        if( !$this->hasTarget() ){
+        if( !$this->hasCraft() ){
             return false;
         }
         
@@ -674,7 +673,7 @@ class Witch
             }
         }
         
-        $this->removeTarget();
+        $this->removeCraft();
         if( $fetchDescendants ){
             $deleteIds[] = $this->id;
         }
@@ -682,9 +681,9 @@ class Witch
         return WitchDA::delete($this->wc, $deleteIds);
     }    
     
-    function removeTarget(): bool
+    function removeCraft(): bool
     {
-        if( !$this->hasTarget() ){
+        if( !$this->hasCraft() ){
             return false;
         }
         
@@ -695,24 +694,24 @@ class Witch
         return $this->edit(['target_table' => null, 'target_fk' => null]);
     }
     
-    function addTargetStructure( TargetStructure $targetStructure ): bool
+    function addStructure( Structure $structure ): bool
     {
-        $targetId = $targetStructure->createTarget( $this->name );
+        $targetId = $structure->createCraft( $this->name );
         
         if( empty($targetId) ){
             return false;
         }
         
-        if( $this->hasTarget() && $this->craft()->countWitches() == 1 ){
+        if( $this->hasCraft() && $this->craft()->countWitches() == 1 ){
             $this->craft()->delete();
         }
         
-        return $this->edit([ 'target_table' => $targetStructure->table, 'target_fk' => $targetId ]);
+        return $this->edit([ 'target_table' => $structure->table, 'target_fk' => $targetId ]);
     }
     
-    function addTarget( Target $target ): bool
+    function addCraft( Craft $target ): bool
     {
-        if( $this->hasTarget() && $this->craft()->countWitches() == 1 ){
+        if( $this->hasCraft() && $this->craft()->countWitches() == 1 ){
             $this->craft()->delete();
         }
         

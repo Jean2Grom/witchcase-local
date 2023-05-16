@@ -52,9 +52,9 @@
                     <?php if( !$this->wc->witch() ): ?>
                         404
                     <?php else: ?>
-                        <?php if( $this->wc->witch()->hasTarget() && $this->wc->witch()->invoke ): ?>
+                        <?php if( $this->wc->witch()->hasCraft() && $this->wc->witch()->invoke ): ?>
                             <i  class="fas fa-hat-wizard"></i>
-                        <?php elseif( $this->wc->witch()->hasTarget() ): ?>
+                        <?php elseif( $this->wc->witch()->hasCraft() ): ?>
                             <i  class="fas fa-mortar-pestle"></i>
                         <?php elseif( $this->wc->witch()->invoke ): ?>
                             <i  class="fas fa-hand-sparkles"></i>

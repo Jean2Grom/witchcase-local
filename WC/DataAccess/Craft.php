@@ -2,12 +2,12 @@
 namespace WC\DataAccess;
 
 use WC\WitchCase;
-use WC\Target\Draft;
-use WC\Target\Archive;
+use WC\Craft\Draft;
+use WC\Craft\Archive;
 
-class Target 
+class Craft 
 {
-    static function getRelatedTargetsIds( WitchCase $wc, string $table, int $id )
+    static function getRelatedCraftsIds( WitchCase $wc, string $table, int $id )
     {
         if( empty($table) || empty($id) ){
             return false;
@@ -119,8 +119,8 @@ class Target
             return false;
         }
         
-        $draftIds   = self::getRelatedTargetsIds($wc, Draft::TYPE.'__'.$structureName, $contentKey);
-        $archiveIds = self::getRelatedTargetsIds($wc, Archive::TYPE.'__'.$structureName, $contentKey);
+        $draftIds   = self::getRelatedCraftsIds($wc, Draft::TYPE.'__'.$structureName, $contentKey);
+        $archiveIds = self::getRelatedCraftsIds($wc, Archive::TYPE.'__'.$structureName, $contentKey);
         
         if( empty($draftIds) && empty($archiveIds) ){
             return;
