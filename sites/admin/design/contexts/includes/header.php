@@ -14,11 +14,11 @@
                 <i class="fa fa-user"></i>
                 &nbsp;
                 <a  id="currentuser-a"  
-                    href="<?=$this->website->baseUri.'/view?id='.$this->website->witches["user"]->id ?>">
+                    href="<?=$this->website->getUrl( "view?id=".$this->wc->witch("user")->id ) ?>">
                     <?=$this->wc->user->name ?>
                 </a>
                 &nbsp;
-                <a href="<?=$this->website->baseUri."/login"?>">
+                <a href="<?=$this->website->getUrl("login") ?>">
                     <i class="fa fa-times"></i>
                 </a>
             </div>

@@ -1,11 +1,11 @@
 <?php
-namespace WC\Target;
+namespace WC\Craft;
 
-use WC\Target;
-use WC\TargetStructure;
-use WC\DataAccess\Target as TargetDA;
+use WC\Craft;
+use WC\Structure;
+use WC\DataAccess\Craft as CraftDA;
 
-class Draft extends Target 
+class Draft extends Craft 
 {
     const TYPE      = 'draft';
     const DB_FIELDS = [
@@ -29,7 +29,7 @@ class Draft extends Target
     {
         $this->wc->db->begin();
         try {
-            $structure      = new TargetStructure( $this->wc, $this->structure->name, Content::TYPE );
+            $structure      = new Structure( $this->wc, $this->structure->name, Content::TYPE );
             
             // No content or archive exist
             if( !$this->content_key ){
@@ -48,9 +48,7 @@ class Draft extends Target
                 }
             }
             
-            $changedTargets                                                 = $this->wc->website->changedTargets[ $this->structure->table ] ?? [];
-            $changedTargets[ $this->id ]                                    = [ 'table' => $content->structure->table, 'id' => $content->id ];
-            $this->wc->website->changedTargets[ $this->structure->table ]   = $changedTargets;
+            $this->wc->cairn->setCraft($content, $this->structure->table, $this->id);
             
             $this->delete( false );            
         }
@@ -65,24 +63,24 @@ class Draft extends Target
         return true;
     }
     
-    private function publishNewContent( TargetStructure $structure )
+    private function publishNewContent( Structure $structure )
     {
-        $content        = Target::factory( $this->wc, $structure );
+        $content        = Craft::factory( $this->wc, $structure );
         
         $content->name          = $this->name;
         $content->attributes    = $this->attributes;            
         $content->save();
         
         foreach( $this->getWitches() as $witch ){
-            $witch->edit([ 'target_table' => $structure->table, 'target_fk' => $content->id ]);
+            $witch->edit([ 'craft_table' => $structure->table, 'craft_fk' => $content->id ]);
         }
         
         return $content;
     }
     
-    private function publishUpdatedContent( TargetStructure $structure, array $data )
+    private function publishUpdatedContent( Structure $structure, array $data )
     {
-        $content = Target::factory( $this->wc, $structure, $data );
+        $content = Craft::factory( $this->wc, $structure, $data );
             
         $content->archive( true );
             
@@ -93,20 +91,20 @@ class Draft extends Target
         return $content;
     }
     
-    private function publishRestoredContent( TargetStructure $structure )
+    private function publishRestoredContent( Structure $structure )
     {
-        $content = Target::factory( $this->wc, $structure );
+        $content = Craft::factory( $this->wc, $structure );
         
         $content->name          = $this->name;
         $content->attributes    = $this->attributes;            
         $content->save();
         
         foreach( $this->getWitches(Archive::TYPE) as $witch ){
-            $witch->edit(['target_table' => $structure->table, 'target_fk' => $content->id]);
+            $witch->edit(['craft_table' => $structure->table, 'craft_fk' => $content->id]);
         }
         
-        TargetDA::update( $this->wc, $this->structure->table, ['content_key' => $content->id], ['content_key' => $this->content_key] );
-        TargetDA::update( $this->wc, Archive::TYPE.'__'.$this->structure->name, ['content_key' => $content->id], ['content_key' => $this->content_key] );
+        CraftDA::update( $this->wc, $this->structure->table, ['content_key' => $content->id], ['content_key' => $this->content_key] );
+        CraftDA::update( $this->wc, Archive::TYPE.'__'.$this->structure->name, ['content_key' => $content->id], ['content_key' => $this->content_key] );
         
         return $content;
     }
@@ -114,10 +112,8 @@ class Draft extends Target
     function remove()
     {
         if( !$this->content_key ){
-            foreach( $this->getWitches() as $witch )
-            {
-                $witch->target = null;
-                $witch->edit([ 'target_table' => null, 'target_fk' => null ]);
+            foreach( $this->getWitches() as $witch ){
+                $witch->edit([ 'craft_table' => null, 'craft_fk' => null ]);
             }
         }
         

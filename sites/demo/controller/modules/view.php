@@ -1,12 +1,12 @@
 <?php
 
-$backgroundImage    = $target->attributes['background-image']->content()['file'];
-$headline           = $target->attributes['headline']->content();
-$headlineBody       = $target->attributes['body']->content();
+$backgroundImage    = $craft->attributes['background-image']->content()['file'];
+$headline           = $craft->attributes['headline']->content();
+$headlineBody       = $craft->attributes['body']->content();
 
-if( isset($target->attributes["contents"]) )
+if( isset($craft->attributes["contents"]) )
 {
-    $contents = $target->attributes["contents"]->content();
+    $contents = $craft->attributes["contents"]->content();
     
     $downloads  = [];
     $images     = [];

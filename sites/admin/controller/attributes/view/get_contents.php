@@ -3,19 +3,19 @@
 //use WC\Localisation;
 
 if( $this->values['fk_localisation'] > 0){   
-    //$localisationTarget = new Localisation($this->module->wc, $this->values['fk_localisation']);
+    //$localisationCraft = new Localisation($this->module->wc, $this->values['fk_localisation']);
 }
 else {
-    $localisationTarget = false;
+    $localisationCraft = false;
 }
 
 $names = [];
-foreach( $this->values['targets'] as $target ){
-    if( !empty($target['name']) ){
-        $names[] = $target['name'];
+foreach( $this->values['crafts'] as $craft ){
+    if( !empty($craft['name']) ){
+        $names[] = $craft['name'];
     }
-    elseif( isset($target['attributes']["titre"]->values['string']) ){
-        $names[] = $target['attributes']["titre"]->values['string'];
+    elseif( isset($craft['attributes']["titre"]->values['string']) ){
+        $names[] = $craft['attributes']["titre"]->values['string'];
     }
 }
 

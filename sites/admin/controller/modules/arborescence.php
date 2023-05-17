@@ -4,12 +4,7 @@ $this->addJsFile('fontawesome.js');
 $this->addCssFile('arborescence_menu.css');
 $this->addJsFile('arborescence_menu.js');
 
-$currentWitch   = $this->wc->website->witches["current"];
-
-$currentId = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
-if( !$currentId ){
-    $currentId      = $currentWitch->id;
-}
+$currentId = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT, 0) ?? $this->wc->witch()->id;
 
 $root = recursiveTree( $this, $this->witch, $this->wc->website, $currentId );
 $tree = [ $this->witch->id => $root ];
@@ -75,7 +70,7 @@ function recursiveTree( WC\Module $module, \WC\Witch $witch, $website, $currentI
         'name'              => $witch->name,
         'site'              => $witch->site ?? "",
         'description'       => $witch->data,
-        'craft'             => $witch->hasTarget(),
+        'craft'             => $witch->hasCraft(),
         'invoke'            => !empty($witch->invoke),
         'daughters'         => $daughters,
         'daughters_orders'  => array_keys( $daughters ),

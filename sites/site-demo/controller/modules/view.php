@@ -1,12 +1,12 @@
 <?php
 
-$backgroundImage    = $this->target()->attributes['background-image']->content()['file'];
-$headline           = $this->target()->attributes['headline']->content();
-$headlineBody       = $this->target()->attributes['body']->content();
+$backgroundImage    = $this->craft()->attributes['background-image']->content()['file'];
+$headline           = $this->craft()->attributes['headline']->content();
+$headlineBody       = $this->craft()->attributes['body']->content();
 
-if( !empty($this->target()->attributes["contents"]) )
+if( !empty($this->craft()->attributes["contents"]) )
 {
-    $contents = $this->target()->attributes["contents"]->content();
+    $contents = $this->craft()->attributes["contents"]->content();
     
     $downloads  = [];
     $images     = [];

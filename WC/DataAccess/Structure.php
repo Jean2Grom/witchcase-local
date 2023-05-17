@@ -2,9 +2,9 @@
 namespace WC\DataAccess;
 
 use WC\WitchCase;
-use WC\Target;
+use WC\Craft;
 
-class TargetStructure 
+class Structure 
 {
     const CACHE_FOLDER = "structure";
     
@@ -54,7 +54,7 @@ class TargetStructure
         return $result['time'] ?? false;
     }
     
-    static function createTargetStructureTable( WitchCase $wc, string $table, array $columns )
+    static function createStructureTable( WitchCase $wc, string $table, array $columns )
     { 
         if( empty($table) || empty($columns) ){
             return false;
@@ -68,7 +68,7 @@ class TargetStructure
         return $wc->db->createQuery($query);
     }
     
-    static function updateTargetStructureTable( WitchCase $wc, string $table, array $addColumns=[], array $removeColumns=[], array $changeColumns=[] )
+    static function updateStructureTable( WitchCase $wc, string $table, array $addColumns=[], array $removeColumns=[], array $changeColumns=[] )
     { 
         if( empty($table) || (empty( $addColumns ) && empty( $removeColumns ) && empty( $changeColumns )) ){
             return false;
@@ -100,7 +100,7 @@ class TargetStructure
         return true;
     }
     
-    static function getWitchDataFromTargetStructureTables( WitchCase $wc, array $tables )
+    static function getWitchDataFromStructureTables( WitchCase $wc, array $tables )
     {
         if( empty($tables) ){
             return false;
@@ -116,7 +116,7 @@ class TargetStructure
         foreach( $tables as $i => $tableName )
         {
             $key = 'table'.$i;
-            $query  .=  $separator."`target_table` LIKE :".$key." ";
+            $query  .=  $separator."`craft_table` LIKE :".$key." ";
             $params[ $key ] = $tableName;
             $separator      = "OR ";
         }
@@ -125,7 +125,7 @@ class TargetStructure
     }
     
     
-    static function deleteTargetStructureTable( WitchCase $wc, string $table )
+    static function deleteStructureTable( WitchCase $wc, string $table )
     { 
         if( empty($table) ){
             return false;
@@ -179,7 +179,7 @@ class TargetStructure
         }
         
         $count = [];
-        foreach( Target::TYPES as $type ) 
+        foreach( Craft::TYPES as $type ) 
         {
             $query  =   "SELECT COUNT(*) ";
             $query  .=  "FROM `".$type."__".$structure."` ";
@@ -190,7 +190,7 @@ class TargetStructure
         return $count;
     }
     
-    static function createTarget( WitchCase $wc, string $table, ?string $name=null, ?int $contentKey=null )
+    static function createCraft( WitchCase $wc, string $table, ?string $name=null, ?int $contentKey=null )
     {
         if( empty($table) ){
             return false;

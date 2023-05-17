@@ -1,10 +1,10 @@
 <?php
-namespace WC\Target;
+namespace WC\Craft;
 
-use WC\Target;
-use WC\TargetStructure;
+use WC\Craft;
+use WC\Structure;
 
-class Content extends Target 
+class Content extends Craft 
 {
     const TYPE          = 'content';    
     const DB_FIELDS     = [];
@@ -15,10 +15,10 @@ class Content extends Target
     {
         $this->wc->db->begin();
         try {
-            $structure      = new TargetStructure( $this->wc, $this->structure->name, Archive::TYPE );
+            $structure      = new Structure( $this->wc, $this->structure->name, Archive::TYPE );
             
-            $newArchiveId   = $structure->createTarget($this->name);
-            $archive        = Target::factory( $this->wc, $structure );
+            $newArchiveId   = $structure->createCraft($this->name);
+            $archive        = Craft::factory( $this->wc, $structure );
             
             $archive->id            = $newArchiveId;
             $archive->name          = $this->name;
@@ -29,13 +29,10 @@ class Content extends Target
             if( !$historyMode )
             {
                 foreach( $this->getWitches() as $witch ){
-                    $witch->edit(['target_table' => $structure->table, 'target_fk' => $newArchiveId]);
+                    $witch->edit(['craft_table' => $structure->table, 'craft_fk' => $newArchiveId]);
                 }
                 
-                $changedTargets                                                 = $this->wc->website->changedTargets[ $this->structure->table ] ?? [];
-                $changedTargets[ $this->id ]                                    = [ 'table' => $archive->structure->table, 'id' => $archive->id ];
-                $this->wc->website->changedTargets[ $this->structure->table ]   = $changedTargets;
-                
+                $this->wc->cairn->setCraft($archive, $this->structure->table, $this->id);
                 
                 $this->delete( false );
             }

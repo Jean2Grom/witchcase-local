@@ -1,7 +1,6 @@
 <?php
 namespace WC;
 
-use WC\DataAccess\WitchCrafting;
 use WC\DataAccess\Witch as WitchDA;
 use WC\Datatype\ExtendedDateTime;
 
@@ -20,8 +19,8 @@ class Witch
         "url",
         "status",
         "invoke",
-        "target_table",
-        "target_fk",
+        "craft_table",
+        "craft_fk",
         "ext_id",
         "is_main",
         "context",
@@ -43,7 +42,6 @@ class Witch
     var $accessDeniedFor    = false;
     var $module             = false;
     var $modules            = [];
-    var $target;
     
     var $mother;
     var $sisters            = [];
@@ -279,8 +277,8 @@ class Witch
         return $isDaughter;
     }
     
-    function hasTarget(){
-        return !empty($this->properties[ 'target_table' ]) && !empty($this->properties[ 'target_fk' ]);
+    function hasCraft(){
+        return !empty($this->properties[ 'craft_table' ]) && !empty($this->properties[ 'craft_fk' ]);
     }
     
     function invoke( $assignedModuleName=false, $fromUnassigned=false )
@@ -332,74 +330,15 @@ class Witch
         return $result;
     }
     
-    function target()
+    function craft()
     {
-        if( !$this->hasTarget() ){
+        if( !$this->hasCraft() ){
             return false;
         }
         
-        $changedTargets = $this->wc->website->changedTargets[ $this->target_table ] ?? [];        
-        if( isset($changedTargets[ $this->target_fk ]) )
-        {
-            $this->target        =  null;
-            $originId            = $this->target_fk;
-            $this->target_fk     = $changedTargets[ $originId ]['id'];
-            $this->target_table  = $changedTargets[ $originId ]['table'];
-        }
-        
-        $deletedTargets = $this->wc->website->deletedTargets[ $this->target_table ] ?? [];
-        if( in_array($this->target_fk, $deletedTargets) ){
-            return false;
-        }
-        
-        $updatedTargets = $this->wc->website->updatedTargets[ $this->target_table ] ?? [];
-        if( in_array($this->target_fk , $updatedTargets) )
-        {
-            $this->target   = null;
-            $data           = null;
-        }
-        else{            
-            $data = $this->wc->website->craftedData[ $this->target_table ][ $this->target_fk ] ?? null;
-        }
-        
-        if( $this->target ){
-            return $this->target;
-        }
-        
-        $this->craft( $data );
-        
-        return $this->target;        
+        return $this->wc->cairn->craft( $this->craft_table, $this->craft_fk );
     }
-    
-    function craft( array $data=null, TargetStructure $structure=null ): self
-    {
-        if( (!$data || !$structure) && !$this->hasTarget() ){
-            return $this;
-        }
         
-        if( !$structure ){
-            $structure = new TargetStructure( $this->wc, $this->target_table );
-        }
-        
-        if( !$data )
-        {
-            $witchCrafting = new WitchCrafting( 
-                $this->wc, 
-                [ "target" => [ 
-                    'id'    => $this->id, 
-                    'craft' => true,
-                ]]
-            );
-            
-            $craftedData    = $witchCrafting->readCraftData([ "target" => $this ]);
-            $data           = $craftedData[ $this->target_table ][ $this->target_fk ];
-        }
-        
-        $this->target = Target::factory( $this->wc, $structure, $data );
-        
-        return $this;
-    }
-    
     function isAllowed( Module $module=null, User $user=null ): bool
     {
         if( empty($module) && empty($this->invoke) ){
@@ -734,7 +673,7 @@ class Witch
             }
         }
         
-        $this->removeTarget();
+        $this->removeCraft();
         if( $fetchDescendants ){
             $deleteIds[] = $this->id;
         }
@@ -742,47 +681,43 @@ class Witch
         return WitchDA::delete($this->wc, $deleteIds);
     }    
     
-    function removeTarget(): bool
+    function removeCraft(): bool
     {
-        if( !$this->hasTarget() ){
+        if( !$this->hasCraft() ){
             return false;
         }
         
-        if( $this->target()->countWitches() == 1 ){
-            $this->target()->delete();
+        if( $this->craft()->countWitches() == 1 ){
+            $this->craft()->delete();
         }
         
-        $this->target = null;
-        
-        return $this->edit(['target_table' => null, 'target_fk' => null]);
+        return $this->edit(['craft_table' => null, 'craft_fk' => null]);
     }
     
-    function addTargetStructure( TargetStructure $targetStructure ): bool
+    function addStructure( Structure $structure ): bool
     {
-        $targetId = $targetStructure->createTarget( $this->name );
+        $craftId = $structure->createCraft( $this->name );
         
-        if( empty($targetId) ){
+        if( empty($craftId) ){
             return false;
         }
         
-        if( $this->hasTarget() && $this->target()->countWitches() == 1 ){
-            $this->target()->delete();
+        if( $this->hasCraft() && $this->craft()->countWitches() == 1 ){
+            $this->craft()->delete();
         }
         
-        $this->target = null;
-        
-        return $this->edit([ 'target_table' => $targetStructure->table, 'target_fk' => $targetId ]);
+        return $this->edit([ 'craft_table' => $structure->table, 'craft_fk' => $craftId ]);
     }
     
-    function addTarget( Target $target ): bool
+    function addCraft( Craft $craft ): bool
     {
-        if( $this->hasTarget() && $this->target()->countWitches() == 1 ){
-            $this->target()->delete();
+        if( $this->hasCraft() && $this->craft()->countWitches() == 1 ){
+            $this->craft()->delete();
         }
         
-        $this->target = $target;
+        $this->wc->cairn->setCraft($craft, $craft->structure->table, $craft->id);
         
-        return $this->edit([ 'target_table' => $target->structure->table, 'target_fk' => $target->id ]);
+        return $this->edit([ 'craft_table' => $craft->structure->table, 'craft_fk' => $craft->id ]);
     }
     
     function isParent( self $potentialDescendant ): bool

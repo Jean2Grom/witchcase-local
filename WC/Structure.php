@@ -1,14 +1,14 @@
 <?php
 namespace WC;
 
-use WC\DataAccess\TargetStructure as TargetStructureDA;
+use WC\DataAccess\Structure as StructureDA;
 use WC\DataAccess\Witch as WitchDA;
 use WC\DataAccess\WitchCrafting;
 
 use WC\Datatype\ExtendedDateTime;
 use WC\Attribute;
 
-class TargetStructure 
+class Structure 
 {
     var $table;
     var $type;
@@ -24,7 +24,7 @@ class TargetStructure
     {
         $this->wc = $wc;
         
-        foreach( Target::TYPES as $type ){
+        foreach( Craft::TYPES as $type ){
             if( str_starts_with($structureOrTableName, $type.'__') )
             {
                 $this->table    = $structureOrTableName;
@@ -37,11 +37,11 @@ class TargetStructure
         if( !$this->table )
         {
             $this->name     = $structureOrTableName;
-            $this->type     = Target::TYPES[0];
+            $this->type     = Craft::TYPES[0];
             $this->table    = $this->type.'__'.$this->name;
         }
         
-        if( $forcedType && in_array($forcedType, Target::TYPES) )
+        if( $forcedType && in_array($forcedType, Craft::TYPES) )
         {
             $this->type     = $forcedType;
             $this->table    = $this->type.'__'.$this->name;
@@ -57,7 +57,7 @@ class TargetStructure
         }
         
         $table      = $type.'__'.$this->name;        
-        $columns    = TargetStructureDA::readTableStructure($this->wc, $table);
+        $columns    = StructureDA::readTableStructure($this->wc, $table);
         
         $attributes   = [];
         foreach( array_keys($columns) as $columnName )
@@ -111,7 +111,7 @@ class TargetStructure
             return $this->lastModified;
         }
         
-        $time = TargetStructureDA::readTableCreateTime( $this->wc, $this->table );
+        $time = StructureDA::readTableCreateTime( $this->wc, $this->table );
         
         if( $time ){
             $this->lastModified  = new ExtendedDateTime($time);
@@ -122,12 +122,12 @@ class TargetStructure
     
     static function create( WitchCase $wc, string $structureName )
     {
-        foreach( Target::TYPES as $type )
+        foreach( Craft::TYPES as $type )
         {
             $table      = $type.'__'.$structureName;
-            $className  = "WC\\Target\\". ucfirst($type);
+            $className  = "WC\\Craft\\". ucfirst($type);
             
-            if( TargetStructureDA::createTargetStructureTable( $wc, $table, $className::dbFields() ) === false ){
+            if( StructureDA::createStructureTable( $wc, $table, $className::dbFields() ) === false ){
                 return false;
             }
         }
@@ -138,7 +138,7 @@ class TargetStructure
     function update( $attributes )
     {
         $returnStatus = true;
-        foreach( Target::TYPES as $type )
+        foreach( Craft::TYPES as $type )
         {
             $removeColumns = [];
             $changeColumns = [];
@@ -176,7 +176,7 @@ class TargetStructure
                 }
             }
                         
-            $result = TargetStructureDA::updateTargetStructureTable( 
+            $result = StructureDA::updateStructureTable( 
                 $this->wc, 
                 $type.'__'.$this->name, 
                 $addColumns, 
@@ -193,11 +193,11 @@ class TargetStructure
     function delete()
     {
         $tables = [];
-        foreach( Target::TYPES as $type ){
+        foreach( Craft::TYPES as $type ){
             $tables[] = $table = $type.'__'.$this->name;
         }
         
-        $datas =  TargetStructureDA::getWitchDataFromTargetStructureTables($this->wc, $tables);
+        $datas =  StructureDA::getWitchDataFromStructureTables($this->wc, $tables);
         
         $witchesByDepth = [];
         foreach( $datas as $witchData )
@@ -217,38 +217,38 @@ class TargetStructure
                     $witch->delete();
                 }
                 else {
-                    $witch->edit([ 'target_table' => 'NULL', 'target_fk' => 'NULL' ]);
+                    $witch->edit([ 'craft_table' => null, 'craft_fk' => null ]);
                 }
             }
         }
         
         $returnStatus = true;
         foreach( $tables as $table ){
-            $returnStatus = $returnStatus && TargetStructureDA::deleteTargetStructureTable( $this->wc, $table );
+            $returnStatus = $returnStatus && StructureDA::deleteStructureTable( $this->wc, $table );
         }
         
         return $returnStatus;
     }
     
-    function createTarget( string $name=null, ?string $type=null, ?int $contentKey=null )
+    function createCraft( string $name=null, ?string $type=null, ?int $contentKey=null )
     {
-        if( !$type || !in_array($type, Target::TYPES) ){
-            $targetTable =  $this->table;
+        if( !$type || !in_array($type, Craft::TYPES) ){
+            $craftTable =  $this->table;
         }
         else {
-            $targetTable = $type.'__'.$this->name;
+            $craftTable = $type.'__'.$this->name;
         }
         
-        return TargetStructureDA::createTarget($this->wc, $targetTable, $name, $contentKey);
+        return StructureDA::createCraft($this->wc, $craftTable, $name, $contentKey);
     }
     
     static function listStructures( WitchCase $wc, bool $countElements=false )
     {
-        $structures = TargetStructureDA::listStructures($wc);
+        $structures = StructureDA::listStructures($wc);
         
         if( $countElements ){
             foreach( $structures as $structureName => $structureData ){
-                $structures[ $structureName ]['count'] = TargetStructureDA::countElements( $wc, $structureData['name'] );
+                $structures[ $structureName ]['count'] = StructureDA::countElements( $wc, $structureData['name'] );
             }
         }
         
@@ -265,12 +265,12 @@ class TargetStructure
     {
         $craftedData    = WitchCrafting::craftQueryFromAttributeSearch( $this->wc, $this, $criterias, $excludeCriterias);
         
-        $returnedTargets = [];
-        foreach( $craftedData ?? [] as $targetId => $targetCraftedData ){
-            $returnedTargets[ $targetId ] =  Target::factory( $this->wc, $this, $targetCraftedData );
+        $returnedCrafts = [];
+        foreach( $craftedData ?? [] as $id => $data ){
+            $returnedCrafts[ $id ] =  Craft::factory( $this->wc, $this, $data );
         }
         
-        return $returnedTargets;
+        return $returnedCrafts;
     }
     
     
@@ -278,13 +278,13 @@ class TargetStructure
     {
         $type = $forcedType ?? $this->type;
         
-        $fields = Target::ELEMENTS;
+        $fields = Craft::ELEMENTS;
         
-        if( !in_array($type, Target::TYPES) ){
+        if( !in_array($type, Craft::TYPES) ){
             return $fields;
         }
         
-        $className  = "WC\\Target\\". ucfirst($type);
+        $className  = "WC\\Craft\\". ucfirst($type);
         
         array_push( $fields, ...($className::ELEMENTS ?? []) );
         
@@ -293,17 +293,17 @@ class TargetStructure
     
     function getJointure(): array
     {
-        $targetTable        = trim( $this->wc->db->escape_string($this->table) );
-        $jointuresParams    = [ 'target_table' => $targetTable ];
+        $craftTable        = trim( $this->wc->db->escape_string($this->table) );
+        $jointuresParams    = [ 'craft_table' => $craftTable ];
         
-        foreach( Target::JOIN_TABLES as $joinTableData )
+        foreach( Craft::JOIN_TABLES as $joinTableData )
         {
             $table = $joinTableData['alias'] ?? $joinTableData['table'];
-            $jointuresParams[ $table ] = $table.'|'.$targetTable;
+            $jointuresParams[ $table ] = $table.'|'.$craftTable;
         }
 
         $jointures          = [];
-        foreach( Target::JOIN_TABLES as $joinTableData )
+        foreach( Craft::JOIN_TABLES as $joinTableData )
         {
             $table = $joinTableData['alias'] ?? $joinTableData['table'];
             
@@ -325,16 +325,16 @@ class TargetStructure
     
     function getJoinFields(): array
     {
-        $targetTable        = trim( $this->wc->db->escape_string($this->table) );
-        $jointuresParams    = [ 'target_table' => $targetTable ];
-        foreach( Target::JOIN_TABLES as $joinTableData )
+        $craftTable        = trim( $this->wc->db->escape_string($this->table) );
+        $jointuresParams    = [ 'craft_table' => $craftTable ];
+        foreach( Craft::JOIN_TABLES as $joinTableData )
         {
             $table = $joinTableData['alias'] ?? $joinTableData['table'];
-            $jointuresParams[ $table ] = $table.'|'.$targetTable;
+            $jointuresParams[ $table ] = $table.'|'.$craftTable;
         }
         
         $joinFields = [];
-        foreach( Target::JOIN_FIELDS as $joinField )
+        foreach( Craft::JOIN_FIELDS as $joinField )
         {
             $field =    str_replace(
                             array_map( fn($key): string => ':'.$key, array_keys($jointuresParams) ), 

@@ -9,9 +9,9 @@
 
 <p>
     <strong>emplacement&nbsp;:</strong>
-    <? if( $localisationTarget ) { ?>
-        [<?=$localisationTarget->site?>]
-        <?=$localisationTarget->url?>
+    <? if( $localisationCraft ) { ?>
+        [<?=$localisationCraft->site?>]
+        <?=$localisationCraft->url?>
     <? } else { ?>
         Pas d'emplacement
     <? } ?>

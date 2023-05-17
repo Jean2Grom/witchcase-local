@@ -32,6 +32,9 @@ class WitchCase
     /** @var User */
     var $user;
     
+    /** @var Cairn */
+    var $cairn;
+    
     public function __construct() 
     {
         try {
@@ -46,14 +49,13 @@ class WitchCase
         }
     }
     
-    public function injest()
+    public function injest(): self
     {
         try {
             $this->request  = new Request( $this );
             $this->website  = $this->request->getWebsite();
-            $this->user     = new User( $this );
-            
-            $this->website->summonWitches();
+            $this->user     = new User( $this );            
+            $this->cairn    = $this->website->summonWitches();
         }
         catch (\Exception $e){
             $this->log->error($e->getMessage(), true, [ 'file' => $e->getFile(), 'line' => $e->getLine() ]);
@@ -62,7 +64,7 @@ class WitchCase
         return $this;
     }
     
-    public function run()
+    public function run(): self
     {
         try {
             $this->website->sabbath();
@@ -77,11 +79,15 @@ class WitchCase
         return $this;
     }
     
-    public function debug( $variable, $userPrefix='', $depth=1 ){
+    public function debug( mixed $variable, string $userPrefix='', int $depth=1 ){
         return $this->debug->dump( $variable, $userPrefix, $depth );
     }
     
-    public function dump( $variable, $userPrefix='', $depth=10 ){
+    public function dump( mixed $variable, string $userPrefix='', int $depth=10 ){
         return $this->debug->dump( $variable, $userPrefix, $depth );
+    }
+    
+    public function witch( ?string $witchName=null ){
+        return $this->cairn->witch( $witchName );
     }
 }

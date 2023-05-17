@@ -2,12 +2,12 @@
 namespace WC\DataAccess;
 
 use WC\WitchCase;
-use WC\Target\Draft;
-use WC\Target\Archive;
+use WC\Craft\Draft;
+use WC\Craft\Archive;
 
-class Target 
+class Craft 
 {
-    static function getRelatedTargetsIds( WitchCase $wc, string $table, int $id )
+    static function getRelatedCraftsIds( WitchCase $wc, string $table, int $id )
     {
         if( empty($table) || empty($id) ){
             return false;
@@ -37,15 +37,15 @@ class Target
         }
         
         $params = [
-            'target_table'  => $table,
-            'target_fk'     => $id,
+            'craft_table'  => $table,
+            'craft_fk'     => $id,
         ];
         
         $query = "";
         $query  .=  "SELECT count(`id`) ";
         $query  .=  "FROM `witch` ";
-        $query  .=  "WHERE `witch`.`target_table` = :target_table ";
-        $query  .=  "AND `witch`.`target_fk` = :target_fk ";
+        $query  .=  "WHERE `witch`.`craft_table` = :craft_table ";
+        $query  .=  "AND `witch`.`craft_fk` = :craft_fk ";
         
         return $wc->db->countQuery($query, $params);
     }
@@ -57,15 +57,15 @@ class Target
         }
         
         $params = [
-            'target_table'  => $table,
-            'target_fk'     => $id,
+            'craft_table'  => $table,
+            'craft_fk'     => $id,
         ];
         
         $query = "";
         $query  .=  "SELECT * ";
         $query  .=  "FROM `witch` ";
-        $query  .=  "WHERE `witch`.`target_table` = :target_table ";
-        $query  .=  "AND `witch`.`target_fk` = :target_fk ";
+        $query  .=  "WHERE `witch`.`craft_table` = :craft_table ";
+        $query  .=  "AND `witch`.`craft_fk` = :craft_fk ";
         
         return $wc->db->selectQuery($query, $params);
     }
@@ -77,7 +77,7 @@ class Target
         }
         
         $params = [
-            'target_table'  => $table,
+            'craft_table'  => $table,
             'content_key'   => $contentKey,
         ];
         
@@ -87,8 +87,8 @@ class Target
         $query  .=  "SELECT `witch`.* ";
         $query  .=  "FROM `".$tableSql."` ";
         $query  .=  "LEFT JOIN `witch` ";
-        $query  .=      "ON `witch`.`target_fk` = `".$tableSql."`.`id` ";
-        $query  .=      "AND `witch`.`target_table` = :target_table ";
+        $query  .=      "ON `witch`.`craft_fk` = `".$tableSql."`.`id` ";
+        $query  .=      "AND `witch`.`craft_table` = :craft_table ";
         $query  .=  "WHERE `".$tableSql."`.`content_key` = :content_key ";
         $query  .=  "AND `witch`.`id` IS NOT NULL ";
         
@@ -119,8 +119,8 @@ class Target
             return false;
         }
         
-        $draftIds   = self::getRelatedTargetsIds($wc, Draft::TYPE.'__'.$structureName, $contentKey);
-        $archiveIds = self::getRelatedTargetsIds($wc, Archive::TYPE.'__'.$structureName, $contentKey);
+        $draftIds   = self::getRelatedCraftsIds($wc, Draft::TYPE.'__'.$structureName, $contentKey);
+        $archiveIds = self::getRelatedCraftsIds($wc, Archive::TYPE.'__'.$structureName, $contentKey);
         
         if( empty($draftIds) && empty($archiveIds) ){
             return;
@@ -134,14 +134,14 @@ class Target
         $params = [];
         if( !empty($draftIds) )
         {
-            $params['draft_target_table'] = Archive::TYPE.'__'.$structureName;
+            $params['draft_craft_table'] = Archive::TYPE.'__'.$structureName;
             
             foreach( $draftIds as $i => $id ){
                 $params[ 'draft_id_'.$i ] = $id;
             }
             
-            $query  .=  "( `witch`.`target_table` = :draft_target_table ";
-            $query  .=      "AND `witch`.`target_fk` IN ( :draft_id_".implode(', :draft_id_', array_keys($draftIds))." ) ";
+            $query  .=  "( `witch`.`craft_table` = :draft_craft_table ";
+            $query  .=      "AND `witch`.`craft_fk` IN ( :draft_id_".implode(', :draft_id_', array_keys($draftIds))." ) ";
             $query  .=  ") ";
         }
         
@@ -151,14 +151,14 @@ class Target
         
         if( !empty($archiveIds) )
         {
-            $params['archive_target_table'] = Draft::TYPE.'__'.$structureName;
+            $params['archive_craft_table'] = Draft::TYPE.'__'.$structureName;
             
             foreach( $archiveIds as $i => $id ){
                 $params[ 'archive_id_'.$i ] = $id;
             }
             
-            $query  .=  "( `witch`.`target_table` = :archive_target_table ";
-            $query  .=      "AND `witch`.`target_fk` IN ( :archive_id_".implode(', :draft_id_', array_keys($archiveIds))." ) ";
+            $query  .=  "( `witch`.`craft_table` = :archive_craft_table ";
+            $query  .=      "AND `witch`.`craft_fk` IN ( :archive_id_".implode(', :draft_id_', array_keys($archiveIds))." ) ";
             $query  .=  ") ";
         }
         

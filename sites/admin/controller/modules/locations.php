@@ -94,8 +94,8 @@ if( strcmp($action, "create") == 0 )
     
     $location->addChild($name, 
                         $baseLocalisation->module, 
-                        $baseLocalisation->target_table, 
-                        $baseLocalisation->target_fk, 
+                        $baseLocalisation->craft_table, 
+                        $baseLocalisation->craft_fk, 
                         $description, 
                         $customUrl
     );
@@ -149,12 +149,12 @@ if( strcmp($action, "deleteLocation") == 0 )
     
     $redirectHref = false;
     if( strcmp($locationId, $baseLocalisation->location_id) == 0 ){
-        foreach( $baseLocalisation->sameTarget() as $sameTargetLocalisations ){
-            if( strcmp($sameTargetLocalisations['location_id'], $locationId) != 0 
-                && strcmp($sameTargetLocalisations['site'], $localisation->site) == 0 
+        foreach( $baseLocalisation->sameCraft() as $sameCraftLocalisations ){
+            if( strcmp($sameCraftLocalisations['location_id'], $locationId) != 0 
+                && strcmp($sameCraftLocalisations['site'], $localisation->site) == 0 
             ){
                 $redirectHref =   "https://".$this->localisation->siteAccess.$this->localisation->url;
-                $redirectHref .=  "?id=".$sameTargetLocalisations['id'];
+                $redirectHref .=  "?id=".$sameCraftLocalisations['id'];
                 
                 break;
             }
@@ -176,7 +176,7 @@ if( strcmp($action, "deleteLocation") == 0 )
 
 if( strcmp($action, "display") == 0 )
 {
-    $locations =    $baseLocalisation->sameTargetLocations();
+    $locations =    $baseLocalisation->sameCraftLocations();
     
     foreach( $locations as $linkId => $localisationsArray ){
         foreach( $localisationsArray as $key => $localisationsArrayItem )
@@ -201,7 +201,7 @@ if( strcmp($action, "display") == 0 )
     
     $viewUri = "https://".$this->localisation->siteAccess;
     
-    if( strcmp($baseLocalisation->module, 'view') != 0 || !$baseLocalisation->has_target ){
+    if( strcmp($baseLocalisation->module, 'view') != 0 || !$baseLocalisation->has_craft ){
         $viewUri .= "/view?id=".$baseLocalisation->id;
     }
     else {

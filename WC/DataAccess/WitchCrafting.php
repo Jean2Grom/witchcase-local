@@ -5,8 +5,7 @@ use WC\WitchCase;
 use WC\Website;
 use WC\Witch;
 use WC\Module;
-use WC\Target;
-use WC\TargetStructure;
+use WC\Structure;
 use WC\Attribute;
 
 /**
@@ -24,7 +23,7 @@ class WitchCrafting
     /** @var WitchCase */
     var $wc;
     
-    function __construct( WitchCase $wc, array $summoningConfiguration, Website $website=NULL )
+    function __construct( WitchCase $wc, array $summoningConfiguration, ?Website $website=null )
     {
         $this->wc                   = $wc;
         $this->configuration        = $summoningConfiguration;
@@ -56,8 +55,8 @@ class WitchCrafting
                 
                 if( !isset($witchConf['craft']) || !empty($witchConf['craft']) )
                 {
-                    $table  = $witches[ $refWitch ]->target_table;
-                    $fk     = (int) $witches[ $refWitch ]->target_fk;
+                    $table  = $witches[ $refWitch ]->craft_table;
+                    $fk     = (int) $witches[ $refWitch ]->craft_fk;
                     
                     if( !empty($table) && !empty($fk) )
                     {
@@ -132,8 +131,8 @@ class WitchCrafting
         if( !empty($witch->daughters) ){
             foreach( $witch->daughters as $daughterWitch )
             {
-                $table  = $daughterWitch->target_table;
-                $fk     = (int) $daughterWitch->target_fk;
+                $table  = $daughterWitch->craft_table;
+                $fk     = (int) $daughterWitch->craft_fk;
                 
                 if( !empty($table) && !empty($fk) )
                 {
@@ -174,8 +173,8 @@ class WitchCrafting
         {
             $motherWitch    = $witch->mother;
             
-            $table          = $motherWitch->target_table;
-            $fk             = (int) $motherWitch->target_fk;
+            $table          = $motherWitch->craft_table;
+            $fk             = (int) $motherWitch->craft_fk;
             
             if( !empty($table) && !empty($fk) )
             {
@@ -238,7 +237,7 @@ class WitchCrafting
             return [];
         }
         
-        $structure = new TargetStructure( $wc, $table );
+        $structure = new Structure( $wc, $table );
         
         //$querySelectElements    = [];
         $querySelectElements    = $structure->getJoinFields();
@@ -286,7 +285,7 @@ class WitchCrafting
     }
     
     
-    static function craftQueryFromAttributeSearch( WitchCase $wc, TargetStructure $structure, array $criterias, bool $excludeCriterias=true )
+    static function craftQueryFromAttributeSearch( WitchCase $wc, Structure $structure, array $criterias, bool $excludeCriterias=true )
     {
         if( empty($criterias) ){
             return [];

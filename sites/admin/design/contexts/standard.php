@@ -42,34 +42,29 @@
             </div>
             
             <div class="tabs">
-                <?php if( !empty($this->website->witches["arborescence"]) ): ?>
+                <?php if( $this->wc->witch("arborescence") ): ?>
                     <a class="tabs__item" href="#tab-navigation">
                         <i class="fas fa-sitemap"></i>
                         Navigation
                     </a>
                 <?php endif; ?>
                 <a class="tabs__item selected" href="#tab-current">
-                    <?php if( empty($this->website->witches["current"]) ): ?>
+                    <?php if( !$this->wc->witch() ): ?>
                         404
                     <?php else: ?>
-                        <?php if( $this->website->witches["current"]->hasTarget() && !empty($this->website->witches["current"]->invoke) ): ?>
+                        <?php if( $this->wc->witch()->hasCraft() && $this->wc->witch()->invoke ): ?>
                             <i  class="fas fa-hat-wizard"></i>
-                        <?php elseif( $this->website->witches["current"]->hasTarget() ): ?>
+                        <?php elseif( $this->wc->witch()->hasCraft() ): ?>
                             <i  class="fas fa-mortar-pestle"></i>
-                        <?php elseif( !empty($this->website->witches["current"]->invoke) ): ?>
+                        <?php elseif( $this->wc->witch()->invoke ): ?>
                             <i  class="fas fa-hand-sparkles"></i>
                         <?php else: ?>
                             <i class="fas fa-folder"></i>
                         <?php endif; ?>
                         
-                        <?=$this->website->witches["current"]->name ?>
-                        
-                        <?php if(  !empty($this->website->witches["target"]) ): ?>
-                            :&nbsp;<?=$this->website->witches["target"]->name ?>
-                        <?php elseif(  !empty($this->website->witches["mother"]) ): ?>
-                            depuis l'élément&nbsp;:
-                            <?=$this->website->witches["mother"]->name ?>
-                        <?php endif; ?>
+                        <?=$this->wc->witch()->name ?>
+                        <?=$this->wc->witch("target")?  "&nbsp;:": ($this->wc->witch("mother")? "depuis l'élément&nbsp;:": "") ?>
+                        <?=$this->wc->witch("target")->name ?? $this->wc->witch("mother")->name ?? "" ?>                        
                     <?php endif; ?>
                 </a>
                 <div class="clear"></div>
@@ -77,15 +72,15 @@
             
             <div class="tabs-target">
                 <div class="tabs-target__item selected" id="tab-current">
-                    <?php if( empty($this->website->witches["current"]) ): ?>
+                    <?php if( !$this->wc->witch() ): ?>
                         404
                     <?php else: ?>
-                        <?=$this->website->witches["current"]->result ?>
+                        <?=$this->wc->witch()->result ?>
                     <?php endif; ?>
                 </div>
-                <?php if( !empty($this->website->witches["arborescence"]) ): ?>
+                <?php if( $this->wc->witch("arborescence") ): ?>
                     <div class="tabs-target__item" id="tab-navigation">
-                        <?=$this->website->witches["arborescence"]->modules["arborescence"]->result ?>
+                        <?=$this->wc->witch("arborescence")->modules["arborescence"]->result ?>
                     </div>
                 <?php endif; ?>
             </div>

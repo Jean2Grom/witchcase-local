@@ -1,14 +1,14 @@
 <?php
 namespace WC;
 
-use WC\DataAccess\Target as TargetDA;
+use WC\DataAccess\Craft as CraftDA;
 
 use WC\WitchCase;
 use WC\Datatype\ExtendedDateTime;
-use WC\Target\Draft;
+use WC\Craft\Draft;
 use WC\Attribute;
 
-class Target 
+class Craft 
 {
     const TYPES         = [ 
         'content', 
@@ -40,18 +40,18 @@ class Target
         [
             'table'     =>  "user_connexion",
             'alias'     =>  "creator_connexion",
-            'condition' =>  ":creator_connexion.`id` = :target_table.`creator`",
+            'condition' =>  ":creator_connexion.`id` = :craft_table.`creator`",
         ],
         [
             'table'     =>  "user_connexion",
             'alias'     =>  "modificator_connexion",
-            'condition' =>  ":modificator_connexion.`id` = :target_table.`modificator`",
+            'condition' =>  ":modificator_connexion.`id` = :craft_table.`modificator`",
         ],
     ];
     
     const JOIN_FIELDS       =   [
-        'creator_name'      =>  ":creator_connexion.`name` AS :target_table|creator_name`",
-        'modificator_name'  =>  ":modificator_connexion.`name` AS :target_table|modificator_name`",
+        'creator_name'      =>  ":creator_connexion.`name` AS :craft_table|creator_name`",
+        'modificator_name'  =>  ":modificator_connexion.`name` AS :craft_table|modificator_name`",
     ];
     
     var $exist;
@@ -64,16 +64,16 @@ class Target
     
     private $properties     = [];
     
-    private $relatedTargetsIds = [];
+    private $relatedCraftsIds = [];
     
     
     /** @var WitchCase */
     var $wc;
     
-    /** @var TargetStructure */
+    /** @var Structure */
     var $structure;
     
-    function __construct( WitchCase $wc, TargetStructure $structure, array $data=null )
+    function __construct( WitchCase $wc, Structure $structure, array $data=null )
     {
         $this->wc           = $wc;
         $this->exist        = false;
@@ -128,9 +128,9 @@ class Target
         return $this->properties[$name];
     }    
     
-    static function factory( WitchCase $wc, TargetStructure $structure, array $data=null )
+    static function factory( WitchCase $wc, Structure $structure, array $data=null )
     {
-        $className  = "WC\\Target\\". ucfirst($structure->type);
+        $className  = "WC\\Craft\\". ucfirst($structure->type);
         
         return new $className( $wc, $structure, $data );
     }
@@ -172,13 +172,8 @@ class Target
         
         $save = $this->save();
         
-        if( $save )
-        {
-            $table                                          = $this->structure->table;
-            $updatedTargets                                 = $this->wc->website->updatedTargets[ $table ] ?? [];
-            $updatedTargets[]                               = $this->id;
-            $this->wc->website->updatedTargets[ $table ]    = $updatedTargets;
-            $this->modified                                 = null;
+        if( $save ){
+            $this->modified = null;
         }
         
         return $save;
@@ -192,16 +187,16 @@ class Target
     {
         $table = $this->structure->table;
         
-        return TargetDA::countWitches($this->wc, $table, $this->id);
+        return CraftDA::countWitches($this->wc, $table, $this->id);
     }
     
-    function getRelatedTargetsIds( string $type  )
+    function getRelatedCraftsIds( string $type  )
     {
         if( !in_array($type, self::TYPES) ){
             return false;
         }
         
-        if( !isset($this->relatedTargetsIds[ $type ]) )
+        if( !isset($this->relatedCraftsIds[ $type ]) )
         {
             $table                              = $type.'__'.$this->structure->name;            
             if( property_exists($this, 'content_key') && $this->content_key ){
@@ -210,10 +205,10 @@ class Target
             else {
                 $id = $this->id;
             }
-            $this->relatedTargetsIds[ $type ]   = TargetDA::getRelatedTargetsIds( $this->wc, $table, $id );
+            $this->relatedCraftsIds[ $type ]   = CraftDA::getRelatedCraftsIds( $this->wc, $table, $id );
         }
         
-        return $this->relatedTargetsIds[ $type ];
+        return $this->relatedCraftsIds[ $type ];
     }
     
     function getWitches( ?string $type=null )
@@ -231,10 +226,10 @@ class Target
         if( $type && $type !== static::TYPE 
             && property_exists($this, 'content_key') && $this->content_key
         ){
-            $dataArray = TargetDA::getWitchesFromContentKey($this->wc, $table, $this->content_key) ?? [];
+            $dataArray = CraftDA::getWitchesFromContentKey($this->wc, $table, $this->content_key) ?? [];
         }
         else {
-            $dataArray = TargetDA::getWitches($this->wc, $table, $this->id) ?? [];
+            $dataArray = CraftDA::getWitches($this->wc, $table, $this->id) ?? [];
         }
         
         $witches = [];
@@ -257,12 +252,12 @@ class Target
             
             $table  = $this->structure->table;
             
-            if( TargetDA::delete($this->wc, $table, $this->id) && isset($this->wc->website->craftedData[ $table ][ $this->id ]) ){
-                unset($this->wc->website->craftedData[ $table ][ $this->id ]);
+            if( CraftDA::delete($this->wc, $table, $this->id) ){
+                $this->wc->cairn->remove( $table, $this->id );
             }
             
             if( property_exists($this, 'content_key') && $this->content_key ){
-                TargetDA::cleanupContentKey( $this->wc, $this->structure->name, $this->content_key );
+                CraftDA::cleanupContentKey( $this->wc, $this->structure->name, $this->content_key );
             }
         }
         catch( \Exception $e )
@@ -272,10 +267,6 @@ class Target
             return false;
         }
         $this->wc->db->commit();
-        
-        $deletedTargets                                 = $this->wc->website->deletedTargets[ $table ] ?? [];
-        $deletedTargets[]                               = $this->id;
-        $this->wc->website->deletedTargets[ $table ]    = $deletedTargets;
         
         return true;
     }
@@ -292,7 +283,7 @@ class Target
             }
             
             if( !$this->id ){
-                $this->id   = $this->structure->createTarget( $this->name, $this->structure->type, $contentKey );
+                $this->id   = $this->structure->createCraft( $this->name, $this->structure->type, $contentKey );
             }
             
             $updated = 0;
@@ -314,7 +305,7 @@ class Target
             
             $conditions = [ 'id' => $this->id ];
             
-            $updated += TargetDA::update( $this->wc, $this->structure->table, $fields, $conditions );
+            $updated += CraftDA::update( $this->wc, $this->structure->table, $fields, $conditions );
         }
         catch( \Exception $e )
         {
@@ -351,8 +342,8 @@ class Target
     
     function createDraft()
     {
-        $draftStructure = new TargetStructure( $this->wc, $this->structure->name, Draft::TYPE );
-        $draft          = Target::factory( $this->wc, $draftStructure );
+        $draftStructure = new Structure( $this->wc, $this->structure->name, Draft::TYPE );
+        $draft          = Craft::factory( $this->wc, $draftStructure );
         
         $draft->name          = $this->name;
         
@@ -374,15 +365,13 @@ class Target
     
     function getDraft()
     {
-        if( empty($this->getRelatedTargetsIds(Draft::TYPE)) ){
+        if( empty($this->getRelatedCraftsIds(Draft::TYPE)) ){
             return $this->createDraft();
         }
-        $this->wc->debug('lalala');
-        $draftStructure = new TargetStructure( $this->wc, $this->structure->name, Draft::TYPE );
-        $craftData      = $this->wc->website->witchCrafting->getCraftDataFromIds($draftStructure->table, $this->getRelatedTargetsIds(Draft::TYPE) );
         
-        return Target::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
+        $draftStructure = new Structure( $this->wc, $this->structure->name, Draft::TYPE );
+        $craftData      = $this->wc->website->witchCrafting->getCraftDataFromIds($draftStructure->table, $this->getRelatedCraftsIds(Draft::TYPE) );
+        
+        return Craft::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
     }
-    
-    
 }

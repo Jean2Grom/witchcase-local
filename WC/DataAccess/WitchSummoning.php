@@ -117,12 +117,12 @@ class WitchSummoning
             $query      .=  $separator."`w`.`level_".$i."` ";
         }
         if( $userConnexionJointure ){
-            $query  .= ", `user_target_table`.`id` AS `user_target_fk` ";
+            $query  .= ", `user_craft_table`.`id` AS `user_craft_fk` ";
         }
         
         $query  .= "FROM ";
         if( $userConnexionJointure ){
-            $query  .= "`".$this->wc->user->connexionData["target_table"]."` AS `user_target_table`, ";
+            $query  .= "`".$this->wc->user->connexionData["craft_table"]."` AS `user_craft_table`, ";
         }
         
         $refWitch = false;
@@ -215,10 +215,10 @@ class WitchSummoning
             elseif( !empty($witchRefConf['user']) )
             {
                 $parameterKey                   = $witchRef.'_user_table';
-                $parameters[ $parameterKey ]    = $this->wc->user->connexionData["target_table"];                
+                $parameters[ $parameterKey ]    = $this->wc->user->connexionData["craft_table"];                
                 
-                $condition  =   "( %s.`target_table` = :".$parameterKey." ";
-                $condition  .=  "AND %s.`target_fk` = `user_target_table`.`id` ) ";
+                $condition  =   "( %s.`craft_table` = :".$parameterKey." ";
+                $condition  .=  "AND %s.`craft_fk` = `user_craft_table`.`id` ) ";
             }
             
             $query      .=  $separator;
@@ -255,7 +255,7 @@ class WitchSummoning
         if( $userConnexionJointure )
         {
             $parameters[ 'user_id' ] = (int) $this->wc->user->id;
-            $query  .= "AND `user_target_table`.`".$this->wc->user->connexionData["target_column"]."` = :user_id ";
+            $query  .= "AND `user_craft_table`.`".$this->wc->user->connexionData["craft_column"]."` = :user_id ";
         }
         
         return $this->wc->db->selectQuery($query, $parameters);
@@ -381,10 +381,10 @@ class WitchSummoning
                     'id'    => $this->getParams[ $witchRefConf['get'] ], 
                 ];
             }
-            elseif( !empty($witchRefConf['user']) && !empty($result[0]['user_target_fk']) ){
+            elseif( !empty($witchRefConf['user']) && !empty($result[0]['user_craft_fk']) ){
                 $conditions[ $witchRef ] = [ 
-                    'target_table'  => $this->wc->user->connexionData["target_table"], 
-                    'target_fk'     => $result[0]['user_target_fk'], 
+                    'craft_table'  => $this->wc->user->connexionData["craft_table"], 
+                    'craft_fk'     => $result[0]['user_craft_fk'], 
                 ];
             }
         }

@@ -10,9 +10,8 @@ $action = $this->wc->request->param('action');
 if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
-
 $alerts         = $this->wc->user->getAlerts();
-$targetWitch    = $this->wc->website->witches["target"] ?? false;
+$targetWitch    = $this->wc->witch("target");
 if( !$targetWitch )
 {
     $alerts[] = [
@@ -25,8 +24,8 @@ if( !$targetWitch )
     exit();
 }
 
-$target      = $targetWitch->target() ?? false;
-if( !$target )
+$craft      = $targetWitch->craft() ?? false;
+if( !$craft )
 {
     $alerts[] = [
         'level'     =>  'error',
@@ -39,7 +38,7 @@ if( !$target )
 }
 
 // TODO multi draft management
-$draft = $target->getDraft();
+$draft = $craft->getDraft();
 
 if( empty($draft) ){
     $alerts[] = [
