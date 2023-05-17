@@ -80,11 +80,11 @@ class StringAttribute extends Attribute
         return;
     }
     
-    function searchCondition( string $targetTable, mixed $value ): array
+    function searchCondition( string $craftTable, mixed $value ): array
     {
-        $key = md5($targetTable.$this->tableColumns[ 'value' ].$value);
+        $key = md5($craftTable.$this->tableColumns[ 'value' ].$value);
         return [
-            'query'     => "`".$targetTable."`.`".$this->tableColumns[ 'value' ]."` LIKE :".$key." ",
+            'query'     => "`".$craftTable."`.`".$this->tableColumns[ 'value' ]."` LIKE :".$key." ",
             'params'    => [ $key => "%".$value."%" ],
         ];
     }

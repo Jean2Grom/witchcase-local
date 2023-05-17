@@ -34,7 +34,7 @@ class ExternalTableAttribute extends Attribute {
                 'table'     =>  "attribute_".$this->type,
                 'alias'     =>  $this->type."_".$this->name, 
                 'condition' =>  "`".$this->type."_".$this->name."`.content_key ".
-                                    "= target.`".$this->tableColumns['content_key']."`"
+                                    "= craft.`".$this->tableColumns['content_key']."`"
             ],
         ];
         
@@ -43,7 +43,7 @@ class ExternalTableAttribute extends Attribute {
         ];
     }
     
-    function create( $target )
+    function create( $craft )
     {
         $content_key = $this->getNewContentKey();
         
@@ -54,7 +54,7 @@ class ExternalTableAttribute extends Attribute {
         }
         
         if( count($insertArray) > 0
-            && !$target->edit( [$this->tableColumns['content_key'] => $content_key] ) 
+            && !$craft->edit( [$this->tableColumns['content_key'] => $content_key] ) 
         ){
             return false;
         }
@@ -62,7 +62,7 @@ class ExternalTableAttribute extends Attribute {
         return true;
     }
     
-    function save( $target ) 
+    function save( $craft ) 
     {
         if( !$this->delete() ){
             return false;

@@ -72,7 +72,7 @@ class Draft extends Craft
         $content->save();
         
         foreach( $this->getWitches() as $witch ){
-            $witch->edit([ 'target_table' => $structure->table, 'target_fk' => $content->id ]);
+            $witch->edit([ 'craft_table' => $structure->table, 'craft_fk' => $content->id ]);
         }
         
         return $content;
@@ -100,7 +100,7 @@ class Draft extends Craft
         $content->save();
         
         foreach( $this->getWitches(Archive::TYPE) as $witch ){
-            $witch->edit(['target_table' => $structure->table, 'target_fk' => $content->id]);
+            $witch->edit(['craft_table' => $structure->table, 'craft_fk' => $content->id]);
         }
         
         CraftDA::update( $this->wc, $this->structure->table, ['content_key' => $content->id], ['content_key' => $this->content_key] );
@@ -113,7 +113,7 @@ class Draft extends Craft
     {
         if( !$this->content_key ){
             foreach( $this->getWitches() as $witch ){
-                $witch->edit([ 'target_table' => null, 'target_fk' => null ]);
+                $witch->edit([ 'craft_table' => null, 'craft_fk' => null ]);
             }
         }
         

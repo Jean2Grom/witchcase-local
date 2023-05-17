@@ -1,8 +1,8 @@
 <?php
 
-$backgroundImage    = $target->attributes['background-image']->content()['file'];
-$headline           = $target->attributes['headline']->content();
-$headlineBody       = $target->attributes['body']->content();
+$backgroundImage    = $craft->attributes['background-image']->content()['file'];
+$headline           = $craft->attributes['headline']->content();
+$headlineBody       = $craft->attributes['body']->content();
 
 
 $result = false;

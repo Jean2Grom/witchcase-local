@@ -40,18 +40,18 @@ class Craft
         [
             'table'     =>  "user_connexion",
             'alias'     =>  "creator_connexion",
-            'condition' =>  ":creator_connexion.`id` = :target_table.`creator`",
+            'condition' =>  ":creator_connexion.`id` = :craft_table.`creator`",
         ],
         [
             'table'     =>  "user_connexion",
             'alias'     =>  "modificator_connexion",
-            'condition' =>  ":modificator_connexion.`id` = :target_table.`modificator`",
+            'condition' =>  ":modificator_connexion.`id` = :craft_table.`modificator`",
         ],
     ];
     
     const JOIN_FIELDS       =   [
-        'creator_name'      =>  ":creator_connexion.`name` AS :target_table|creator_name`",
-        'modificator_name'  =>  ":modificator_connexion.`name` AS :target_table|modificator_name`",
+        'creator_name'      =>  ":creator_connexion.`name` AS :craft_table|creator_name`",
+        'modificator_name'  =>  ":modificator_connexion.`name` AS :craft_table|modificator_name`",
     ];
     
     var $exist;

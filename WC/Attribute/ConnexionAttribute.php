@@ -28,7 +28,7 @@ class ConnexionAttribute extends Attribute
         $this->joinTables   =   [
             [
                 'table'     =>  "user_connexion",
-                'condition' =>  ":user_connexion.`id` = :target_table.`".$this->name."@connexion#id`",
+                'condition' =>  ":user_connexion.`id` = :craft_table.`".$this->name."@connexion#id`",
             ],
             [
                 'table'     =>  "rel__user_connexion__user_profile",
@@ -37,11 +37,11 @@ class ConnexionAttribute extends Attribute
         ];
         
         $this->joinFields   =   [
-            'name'          =>  ":user_connexion.`name` AS :target_table|".$this->name."#name`",
-            'login'         =>  ":user_connexion.`login` AS :target_table|".$this->name."#login`",
-            'email'         =>  ":user_connexion.`email` AS :target_table|".$this->name."#email`",
-            'pass_hash'     =>  ":user_connexion.`pass_hash` AS :target_table|".$this->name."#pass_hash`",
-            'profile_id'    =>  ":rel__user_connexion__user_profile.`fk_user_profile` AS :target_table|".$this->name."#profile_id`",
+            'name'          =>  ":user_connexion.`name` AS :craft_table|".$this->name."#name`",
+            'login'         =>  ":user_connexion.`login` AS :craft_table|".$this->name."#login`",
+            'email'         =>  ":user_connexion.`email` AS :craft_table|".$this->name."#email`",
+            'pass_hash'     =>  ":user_connexion.`pass_hash` AS :craft_table|".$this->name."#pass_hash`",
+            'profile_id'    =>  ":rel__user_connexion__user_profile.`fk_user_profile` AS :craft_table|".$this->name."#profile_id`",
         ];
     }
     
@@ -184,14 +184,14 @@ class ConnexionAttribute extends Attribute
         return $this;
     }
     
-    function save( $target ) 
+    function save( $craft ) 
     {
         $query = "";
         if( empty($this->values['id']) )
         {
             $query .=   "INSERT INTO `user_connexion` ";
             $query .=   "( `name`, `email`, `login`, `pass_hash`, ";
-            $query .=   "`target_table`, `target_attribute`, `target_attribute_var`, ";
+            $query .=   "`craft_table`, `craft_attribute`, `craft_attribute_var`, ";
             
             if( !empty($this->wc->user->id) ){
                 $query .=   "`creator`, `modifier`, ";
@@ -204,7 +204,7 @@ class ConnexionAttribute extends Attribute
             $query .=   ", '".$this->wc->db->escape_string($this->values['login'])."' ";
             $query .=   ", '".$this->values['pass_hash']."' ";
             
-            $query .=   ", '".$target->structure->table."' ";
+            $query .=   ", '".$craft->structure->table."' ";
             $query .=   ", '".$this->type."' ";
             $query .=   ", 'id' ";
 
@@ -224,9 +224,9 @@ class ConnexionAttribute extends Attribute
             $query  .=  ", `email` = '".$this->wc->db->escape_string($this->values['email'])."' ";
             $query  .=  ", `login` = '".$this->wc->db->escape_string($this->values['login'])."' ";
             $query  .=  ", `pass_hash` = '".$this->wc->db->escape_string($this->values['pass_hash'])."' ";
-            $query  .=  ", `target_table` = '".$this->wc->db->escape_string($target->structure->table)."' ";
-            $query  .=  ", `target_attribute` = '".$this->wc->db->escape_string($this->type)."' ";
-            $query  .=  ", `target_attribute_var` = 'id' ";
+            $query  .=  ", `craft_table` = '".$this->wc->db->escape_string($craft->structure->table)."' ";
+            $query  .=  ", `craft_attribute` = '".$this->wc->db->escape_string($this->type)."' ";
+            $query  .=  ", `craft_attribute_var` = 'id' ";
             $query  .=  ", `attribute_name` = '".$this->wc->db->escape_string($this->name)."' ";
             if( !empty($this->wc->user->id) ){
                 $query  .=  ", `modifier` = '".$this->wc->user->id."' ";

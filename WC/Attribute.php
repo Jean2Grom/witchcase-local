@@ -109,12 +109,12 @@ abstract class Attribute
         return true;
     }
     
-    function save( Craft $target )
+    function save( Craft $craft )
     {
         return 0;
     }
     
-    function clone( Craft $target )
+    function clone( Craft $craft )
     {
         return clone $this;
     }
@@ -150,10 +150,10 @@ abstract class Attribute
     
     function getJointure( string $fromTable ): array
     {
-        $targetTable        = trim( $this->wc->db->escape_string($fromTable) );
-        $jointuresParams    = [ 'target_table' => $targetTable ];
+        $craftTable        = trim( $this->wc->db->escape_string($fromTable) );
+        $jointuresParams    = [ 'craft_table' => $craftTable ];
         foreach( $this->joinTables as $joinTableData ){
-            $jointuresParams[ $joinTableData['table'] ] = $joinTableData['table'].'|'.$targetTable.'@'.$this->name;
+            $jointuresParams[ $joinTableData['table'] ] = $joinTableData['table'].'|'.$craftTable.'@'.$this->name;
         }
         
         $jointures          = [];
@@ -177,10 +177,10 @@ abstract class Attribute
     
     function getJoinFields( string $fromTable ): array
     {
-        $targetTable        = trim( $this->wc->db->escape_string($fromTable) );
-        $jointuresParams    = [ 'target_table' => $targetTable ];
+        $craftTable        = trim( $this->wc->db->escape_string($fromTable) );
+        $jointuresParams    = [ 'craft_table' => $craftTable ];
         foreach( $this->joinTables as $joinTableData ){
-            $jointuresParams[ $joinTableData['table'] ] = $joinTableData['table'].'|'.$targetTable.'@'.$this->name;
+            $jointuresParams[ $joinTableData['table'] ] = $joinTableData['table'].'|'.$craftTable.'@'.$this->name;
         }
         
         $joinFields = [];
@@ -257,13 +257,13 @@ abstract class Attribute
         return $attributesList;        
     }
     
-    function searchCondition( string $targetTable, mixed $value )
+    function searchCondition( string $craftTable, mixed $value )
     {
         if( $this->tableColumns['value'] )
         {
-            $key = md5($targetTable.$this->tableColumns[ 'value' ].$value);
+            $key = md5($craftTable.$this->tableColumns[ 'value' ].$value);
             return  [
-                'query'     => "`".$this->wc->db->escape_string($targetTable)."`.`".$this->tableColumns[ 'value' ]."` = :".$key." ",
+                'query'     => "`".$this->wc->db->escape_string($craftTable)."`.`".$this->tableColumns[ 'value' ]."` = :".$key." ",
                 'params'    => [ $key => $value ],
             ];
         }

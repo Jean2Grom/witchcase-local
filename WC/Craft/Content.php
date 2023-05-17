@@ -29,7 +29,7 @@ class Content extends Craft
             if( !$historyMode )
             {
                 foreach( $this->getWitches() as $witch ){
-                    $witch->edit(['target_table' => $structure->table, 'target_fk' => $newArchiveId]);
+                    $witch->edit(['craft_table' => $structure->table, 'craft_fk' => $newArchiveId]);
                 }
                 
                 $this->wc->cairn->setCraft($archive, $this->structure->table, $this->id);

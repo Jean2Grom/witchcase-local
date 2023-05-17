@@ -217,7 +217,7 @@ class Structure
                     $witch->delete();
                 }
                 else {
-                    $witch->edit([ 'target_table' => 'NULL', 'target_fk' => 'NULL' ]);
+                    $witch->edit([ 'craft_table' => null, 'craft_fk' => null ]);
                 }
             }
         }
@@ -233,13 +233,13 @@ class Structure
     function createCraft( string $name=null, ?string $type=null, ?int $contentKey=null )
     {
         if( !$type || !in_array($type, Craft::TYPES) ){
-            $targetTable =  $this->table;
+            $craftTable =  $this->table;
         }
         else {
-            $targetTable = $type.'__'.$this->name;
+            $craftTable = $type.'__'.$this->name;
         }
         
-        return StructureDA::createCraft($this->wc, $targetTable, $name, $contentKey);
+        return StructureDA::createCraft($this->wc, $craftTable, $name, $contentKey);
     }
     
     static function listStructures( WitchCase $wc, bool $countElements=false )
@@ -266,8 +266,8 @@ class Structure
         $craftedData    = WitchCrafting::craftQueryFromAttributeSearch( $this->wc, $this, $criterias, $excludeCriterias);
         
         $returnedCrafts = [];
-        foreach( $craftedData ?? [] as $targetId => $targetCraftedData ){
-            $returnedCrafts[ $targetId ] =  Craft::factory( $this->wc, $this, $targetCraftedData );
+        foreach( $craftedData ?? [] as $id => $data ){
+            $returnedCrafts[ $id ] =  Craft::factory( $this->wc, $this, $data );
         }
         
         return $returnedCrafts;
@@ -293,13 +293,13 @@ class Structure
     
     function getJointure(): array
     {
-        $targetTable        = trim( $this->wc->db->escape_string($this->table) );
-        $jointuresParams    = [ 'target_table' => $targetTable ];
+        $craftTable        = trim( $this->wc->db->escape_string($this->table) );
+        $jointuresParams    = [ 'craft_table' => $craftTable ];
         
         foreach( Craft::JOIN_TABLES as $joinTableData )
         {
             $table = $joinTableData['alias'] ?? $joinTableData['table'];
-            $jointuresParams[ $table ] = $table.'|'.$targetTable;
+            $jointuresParams[ $table ] = $table.'|'.$craftTable;
         }
 
         $jointures          = [];
@@ -325,12 +325,12 @@ class Structure
     
     function getJoinFields(): array
     {
-        $targetTable        = trim( $this->wc->db->escape_string($this->table) );
-        $jointuresParams    = [ 'target_table' => $targetTable ];
+        $craftTable        = trim( $this->wc->db->escape_string($this->table) );
+        $jointuresParams    = [ 'craft_table' => $craftTable ];
         foreach( Craft::JOIN_TABLES as $joinTableData )
         {
             $table = $joinTableData['alias'] ?? $joinTableData['table'];
-            $jointuresParams[ $table ] = $table.'|'.$targetTable;
+            $jointuresParams[ $table ] = $table.'|'.$craftTable;
         }
         
         $joinFields = [];

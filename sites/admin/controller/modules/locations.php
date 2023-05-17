@@ -94,8 +94,8 @@ if( strcmp($action, "create") == 0 )
     
     $location->addChild($name, 
                         $baseLocalisation->module, 
-                        $baseLocalisation->target_table, 
-                        $baseLocalisation->target_fk, 
+                        $baseLocalisation->craft_table, 
+                        $baseLocalisation->craft_fk, 
                         $description, 
                         $customUrl
     );
@@ -201,7 +201,7 @@ if( strcmp($action, "display") == 0 )
     
     $viewUri = "https://".$this->localisation->siteAccess;
     
-    if( strcmp($baseLocalisation->module, 'view') != 0 || !$baseLocalisation->has_target ){
+    if( strcmp($baseLocalisation->module, 'view') != 0 || !$baseLocalisation->has_craft ){
         $viewUri .= "/view?id=".$baseLocalisation->id;
     }
     else {

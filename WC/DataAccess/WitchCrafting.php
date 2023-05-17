@@ -55,8 +55,8 @@ class WitchCrafting
                 
                 if( !isset($witchConf['craft']) || !empty($witchConf['craft']) )
                 {
-                    $table  = $witches[ $refWitch ]->target_table;
-                    $fk     = (int) $witches[ $refWitch ]->target_fk;
+                    $table  = $witches[ $refWitch ]->craft_table;
+                    $fk     = (int) $witches[ $refWitch ]->craft_fk;
                     
                     if( !empty($table) && !empty($fk) )
                     {
@@ -131,8 +131,8 @@ class WitchCrafting
         if( !empty($witch->daughters) ){
             foreach( $witch->daughters as $daughterWitch )
             {
-                $table  = $daughterWitch->target_table;
-                $fk     = (int) $daughterWitch->target_fk;
+                $table  = $daughterWitch->craft_table;
+                $fk     = (int) $daughterWitch->craft_fk;
                 
                 if( !empty($table) && !empty($fk) )
                 {
@@ -173,8 +173,8 @@ class WitchCrafting
         {
             $motherWitch    = $witch->mother;
             
-            $table          = $motherWitch->target_table;
-            $fk             = (int) $motherWitch->target_fk;
+            $table          = $motherWitch->craft_table;
+            $fk             = (int) $motherWitch->craft_fk;
             
             if( !empty($table) && !empty($fk) )
             {

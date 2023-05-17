@@ -8,7 +8,7 @@ $rootContent        = false;
 if( $this->localisation->id == $this->configuration->read($this->localisation->site, 'rootID') )
 {
     $rootLocalisation   = $this->localisation;
-    $rootContent        = $target;
+    $rootContent        = $craft;
 }
 
 //menuPart

@@ -116,7 +116,7 @@ class Structure
         foreach( $tables as $i => $tableName )
         {
             $key = 'table'.$i;
-            $query  .=  $separator."`target_table` LIKE :".$key." ";
+            $query  .=  $separator."`craft_table` LIKE :".$key." ";
             $params[ $key ] = $tableName;
             $separator      = "OR ";
         }

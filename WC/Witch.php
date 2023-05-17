@@ -19,8 +19,8 @@ class Witch
         "url",
         "status",
         "invoke",
-        "target_table",
-        "target_fk",
+        "craft_table",
+        "craft_fk",
         "ext_id",
         "is_main",
         "context",
@@ -278,7 +278,7 @@ class Witch
     }
     
     function hasCraft(){
-        return !empty($this->properties[ 'target_table' ]) && !empty($this->properties[ 'target_fk' ]);
+        return !empty($this->properties[ 'craft_table' ]) && !empty($this->properties[ 'craft_fk' ]);
     }
     
     function invoke( $assignedModuleName=false, $fromUnassigned=false )
@@ -336,7 +336,7 @@ class Witch
             return false;
         }
         
-        return $this->wc->cairn->craft( $this->target_table, $this->target_fk );
+        return $this->wc->cairn->craft( $this->craft_table, $this->craft_fk );
     }
         
     function isAllowed( Module $module=null, User $user=null ): bool
@@ -691,14 +691,14 @@ class Witch
             $this->craft()->delete();
         }
         
-        return $this->edit(['target_table' => null, 'target_fk' => null]);
+        return $this->edit(['craft_table' => null, 'craft_fk' => null]);
     }
     
     function addStructure( Structure $structure ): bool
     {
-        $targetId = $structure->createCraft( $this->name );
+        $craftId = $structure->createCraft( $this->name );
         
-        if( empty($targetId) ){
+        if( empty($craftId) ){
             return false;
         }
         
@@ -706,18 +706,18 @@ class Witch
             $this->craft()->delete();
         }
         
-        return $this->edit([ 'target_table' => $structure->table, 'target_fk' => $targetId ]);
+        return $this->edit([ 'craft_table' => $structure->table, 'craft_fk' => $craftId ]);
     }
     
-    function addCraft( Craft $target ): bool
+    function addCraft( Craft $craft ): bool
     {
         if( $this->hasCraft() && $this->craft()->countWitches() == 1 ){
             $this->craft()->delete();
         }
         
-        $this->wc->cairn->setCraft($target, $target->structure->table, $target->id);
+        $this->wc->cairn->setCraft($craft, $craft->structure->table, $craft->id);
         
-        return $this->edit([ 'target_table' => $target->structure->table, 'target_fk' => $target->id ]);
+        return $this->edit([ 'craft_table' => $craft->structure->table, 'craft_fk' => $craft->id ]);
     }
     
     function isParent( self $potentialDescendant ): bool

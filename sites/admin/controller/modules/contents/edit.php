@@ -24,8 +24,8 @@ if( !$targetWitch )
     exit();
 }
 
-$target      = $targetWitch->craft() ?? false;
-if( !$target )
+$craft      = $targetWitch->craft() ?? false;
+if( !$craft )
 {
     $alerts[] = [
         'level'     =>  'error',
@@ -38,7 +38,7 @@ if( !$target )
 }
 
 // TODO multi draft management
-$draft = $target->getDraft();
+$draft = $craft->getDraft();
 
 if( empty($draft) ){
     $alerts[] = [

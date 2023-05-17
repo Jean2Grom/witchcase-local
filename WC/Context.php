@@ -208,14 +208,14 @@ class Context
         
         // Context is in Craft record
         // ==========================
-        if( isset($target->context[ $this->wc->localisation->site ]) )
+        if( isset($craft->context[ $this->wc->localisation->site ]) )
         {
-            $this->execFile = $this->wc->module->getControllerFile( "contexts/".$target->context[ $this->wc->localisation->site ] );
+            $this->execFile = $this->wc->module->getControllerFile( "contexts/".$craft->context[ $this->wc->localisation->site ] );
             
             if( !$this->execFile )
             {
-                $message    =   "Context File: ".$target->context[ $this->wc->localisation->site ];
-                $message    .=  " specified in target but not found";
+                $message    =   "Context File: ".$craft->context[ $this->wc->localisation->site ];
+                $message    .=  " specified in craft but not found";
                 $this->wc->log->error($message);
             }
             else {
@@ -276,25 +276,25 @@ class Context
                     $exclude = false;
                     switch( $rule )
                     {
-                        case 'target_structure':
-                            if( $this->wc->localisation->has_target 
-                                && ( strcmp($this->wc->localisation->target_structure, $value) == 0 )
+                        case 'craft_structure':
+                            if( $this->wc->localisation->has_craft 
+                                && ( strcmp($this->wc->localisation->craft_structure, $value) == 0 )
                             ){
                                 $match = true;
                             }
                             break;
                             
-                        case 'parent_target_structure':
+                        case 'parent_craft_structure':
                             $parents = $this->wc->localisation->parents();
-                            $parent_target_structure = "";
-                            if( $parents[0]["target_table"] )
+                            $parent_craft_structure = "";
+                            if( $parents[0]["craft_table"] )
                             {
-                                $buffer = explode('_', $parents[0]["target_table"]);
+                                $buffer = explode('_', $parents[0]["craft_table"]);
                                 unset($buffer[0]);
-                                $parent_target_structure = implode("_", $buffer);
+                                $parent_craft_structure = implode("_", $buffer);
                             }
                             
-                            if( strcmp($parent_target_structure, $value) == 0 ){
+                            if( strcmp($parent_craft_structure, $value) == 0 ){
                                 $match = true;
                             }
                             break;
@@ -305,9 +305,9 @@ class Context
                             }
                             break;
                             
-                        case 'target_type':
-                            if( $this->wc->localisation->has_target 
-                                && ( strcmp($this->wc->localisation->target_type, $value) == 0 )
+                        case 'craft_type':
+                            if( $this->wc->localisation->has_craft 
+                                && ( strcmp($this->wc->localisation->craft_type, $value) == 0 )
                             ){
                                 $match = true;
                             }

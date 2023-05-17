@@ -122,10 +122,10 @@ switch( $action )
         if( !empty($structureName) && $isValidStructure )
         {
             $structure  = new Structure($this->wc, $structureName);
-            $targetId   = $structure->createCraft( $name );
+            $craftId   = $structure->createCraft( $name );
             
-            $newWitchData['target_table']   = $structure->table;
-            $newWitchData['target_fk']      = $targetId;
+            $newWitchData['craft_table']   = $structure->table;
+            $newWitchData['craft_fk']      = $craftId;
         }
         
         $newWitchId = $motherWitch->createDaughter( $newWitchData );
@@ -136,7 +136,7 @@ switch( $action )
                 'message'   =>  "Une erreur est survenue, votre élément n'a pas été créé."
             ];
         }
-        elseif( !empty($structureName) && !empty($targetId) )
+        elseif( !empty($structureName) && !empty($craftId) )
         {
             header('Location: '.$this->wc->website->getFullUrl('edit-content?id='.$newWitchId) );
             exit();
