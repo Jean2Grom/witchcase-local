@@ -1,7 +1,9 @@
 <?php
-namespace WC;
+namespace WC\User;
 
-class Police 
+use WC\WitchCase;
+
+class Policy 
 {
     var $id;
     var $module;
@@ -48,8 +50,8 @@ class Police
     static function insert( WitchCase $wc, int $profileID, array $data )
     {
         $query = "";
-        $query  .=  "INSERT INTO `user_profile_policy` ";
-        $query  .=  "(`fk_user_profile` ";
+        $query  .=  "INSERT INTO `user__policy` ";
+        $query  .=  "(`fk_profile` ";
         $query  .=  ", `module` ";
         $query  .=  ", `status` ";
         $query  .=  ", `fk_witch` ";

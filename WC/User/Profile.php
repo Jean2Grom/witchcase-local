@@ -1,6 +1,9 @@
 <?php
-namespace WC;
+namespace WC\User;
 
+use WC\WitchCase;
+use WC\Website;
+use WC\Witch;
 
 class Profile 
 {
@@ -54,7 +57,7 @@ class Profile
                 $policyData['statusLabel'] = $statusLabels[ $policyData['status'] ];
             }
             
-            $police = Police::createFromData( $profile, $policyData );
+            $police = Policy::createFromData( $profile, $policyData );
             $profile->policies[ $police->id ] = $police;
         }
         
@@ -65,7 +68,7 @@ class Profile
     {
         $this->wc->cache->delete('profiles', $this->name);
         
-        $query  =   "DELETE FROM `user_profile` ";
+        $query  =   "DELETE FROM `user__profile` ";
         $query  .=  "WHERE id='".$this->wc->db->escape_string($this->id)."' ";
         
         if( !$this->wc->db->deleteQuery( $query ) )
@@ -74,8 +77,8 @@ class Profile
             return false;
         }
         
-        $query  =   "DELETE FROM `rel__user_connexion__user_profile` ";
-        $query  .=  "WHERE `fk_user_profile`='".$this->wc->db->escape_string($this->id)."' ";
+        $query  =   "DELETE FROM `user__rel__connexion__profile` ";
+        $query  .=  "WHERE `fk_profile`='".$this->wc->db->escape_string($this->id)."' ";
         
         if( !$this->wc->db->deleteQuery( $query ) )
         {
@@ -115,11 +118,11 @@ class Profile
             $query      .=  ", witch.level_".$i." ";
         }
         
-        $query  .=  "FROM user_profile AS profile ";
-        $query  .=  "LEFT JOIN rel__user_connexion__user_profile ";
-        $query  .=      "ON rel__user_connexion__user_profile.fk_user_profile = profile.id ";
-        $query  .=  "LEFT JOIN user_profile_policy AS policy ";
-        $query  .=      "ON policy.fk_user_profile = profile.id ";
+        $query  .=  "FROM user__profile AS profile ";
+        $query  .=  "LEFT JOIN user__rel__connexion__profile ";
+        $query  .=      "ON user__rel__connexion__profile.fk_profile = profile.id ";
+        $query  .=  "LEFT JOIN user__policy AS policy ";
+        $query  .=      "ON policy.fk_profile = profile.id ";
         $query  .=  "LEFT JOIN witch ";
         $query  .=      "ON witch.id = policy.fk_witch ";
         
@@ -194,7 +197,7 @@ class Profile
         }
         
         $query = "";
-        $query  .=  "INSERT INTO user_profile (name, site) ";
+        $query  .=  "INSERT INTO user__profile (name, site) ";
         $query  .=  "VALUES ('".$wc->db->escape_string($newProfileData['name'])."', '".$wc->db->escape_string($newProfileData['site'])."') ";     
         
         $profileID = $wc->db->insertQuery($query);
@@ -216,7 +219,7 @@ class Profile
         $this->name = $profileData['name'];
         
         $query = "";
-        $query  .=  "UPDATE `user_profile` ";
+        $query  .=  "UPDATE `user__profile` ";
         $query  .=  "SET `name` = '".$this->wc->db->escape_string($profileData['name'])."' ";
         $query  .=  ", `site` = '".$this->wc->db->escape_string($profileData['site'])."' ";
         $query  .=  "WHERE `id` = ".$this->id." ";
@@ -224,8 +227,8 @@ class Profile
         $this->wc->db->updateQuery($query);
         
         $query = "";
-        $query  .=  "DELETE FROM `user_profile_policy` ";
-        $query  .=  "WHERE `fk_user_profile` = ".$this->id." ";
+        $query  .=  "DELETE FROM `user__policy` ";
+        $query  .=  "WHERE `fk_profile` = ".$this->id." ";
         
         $this->wc->db->deleteQuery($query);
 

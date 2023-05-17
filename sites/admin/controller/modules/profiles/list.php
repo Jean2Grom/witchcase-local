@@ -1,5 +1,5 @@
 <?php
-use WC\Profile;
+use WC\User\Profile;
 
 $possibleActionsList = [
     'delete-profile',
