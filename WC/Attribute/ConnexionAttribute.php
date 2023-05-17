@@ -27,21 +27,21 @@ class ConnexionAttribute extends Attribute
         
         $this->joinTables   =   [
             [
-                'table'     =>  "user_connexion",
-                'condition' =>  ":user_connexion.`id` = :craft_table.`".$this->name."@connexion#id`",
+                'table'     =>  "user__connexion",
+                'condition' =>  ":user__connexion.`id` = :craft_table.`".$this->name."@connexion#id`",
             ],
             [
-                'table'     =>  "rel__user_connexion__user_profile",
-                'condition' =>  ":rel__user_connexion__user_profile.`fk_user_connexion` = :user_connexion.`id`",
+                'table'     =>  "user__rel__connexion__profile",
+                'condition' =>  ":user__rel__connexion__profile.`fk_connexion` = :user__connexion.`id`",
             ],
         ];
         
         $this->joinFields   =   [
-            'name'          =>  ":user_connexion.`name` AS :craft_table|".$this->name."#name`",
-            'login'         =>  ":user_connexion.`login` AS :craft_table|".$this->name."#login`",
-            'email'         =>  ":user_connexion.`email` AS :craft_table|".$this->name."#email`",
-            'pass_hash'     =>  ":user_connexion.`pass_hash` AS :craft_table|".$this->name."#pass_hash`",
-            'profile_id'    =>  ":rel__user_connexion__user_profile.`fk_user_profile` AS :craft_table|".$this->name."#profile_id`",
+            'name'          =>  ":user__connexion.`name` AS :craft_table|".$this->name."#name`",
+            'login'         =>  ":user__connexion.`login` AS :craft_table|".$this->name."#login`",
+            'email'         =>  ":user__connexion.`email` AS :craft_table|".$this->name."#email`",
+            'pass_hash'     =>  ":user__connexion.`pass_hash` AS :craft_table|".$this->name."#pass_hash`",
+            'profile_id'    =>  ":user__rel__connexion__profile.`fk_profile` AS :craft_table|".$this->name."#profile_id`",
         ];
     }
     
@@ -107,7 +107,7 @@ class ConnexionAttribute extends Attribute
             
             $query = "";
             $query  .=  "SELECT `id`, `login`, `email` ";
-            $query  .=  "FROM `user_connexion` ";
+            $query  .=  "FROM `user__connexion` ";
             $query  .=  "WHERE `login` = '".$this->wc->db->escape_string($postedVar['login'])."' ";
             $query  .=  "OR `email` =  '".$this->wc->db->escape_string($postedVar['email'])."' ";
             
@@ -189,7 +189,7 @@ class ConnexionAttribute extends Attribute
         $query = "";
         if( empty($this->values['id']) )
         {
-            $query .=   "INSERT INTO `user_connexion` ";
+            $query .=   "INSERT INTO `user__connexion` ";
             $query .=   "( `name`, `email`, `login`, `pass_hash`, ";
             $query .=   "`craft_table`, `craft_attribute`, `craft_attribute_var`, ";
             
@@ -219,7 +219,7 @@ class ConnexionAttribute extends Attribute
         }
         else
         {
-            $query  .=  "UPDATE `user_connexion` ";
+            $query  .=  "UPDATE `user__connexion` ";
             $query  .=  "SET `name` = '".$this->wc->db->escape_string($this->values['name'])."' ";
             $query  .=  ", `email` = '".$this->wc->db->escape_string($this->values['email'])."' ";
             $query  .=  ", `login` = '".$this->wc->db->escape_string($this->values['login'])."' ";
@@ -237,8 +237,8 @@ class ConnexionAttribute extends Attribute
             $this->wc->db->updateQuery($query);
             
             $query = "";
-            $query  .=  "DELETE FROM `rel__user_connexion__user_profile` ";
-            $query  .=  "WHERE `fk_user_connexion` = '".$this->wc->db->escape_string($this->values['id'])."' ";
+            $query  .=  "DELETE FROM `user__rel__connexion__profile` ";
+            $query  .=  "WHERE `fk_connexion` = '".$this->wc->db->escape_string($this->values['id'])."' ";
             
             $this->wc->db->deleteQuery($query);
         }
@@ -246,8 +246,8 @@ class ConnexionAttribute extends Attribute
         if( !empty($this->values['profiles']) )
         {
             $query = "";
-            $query  .=  "INSERT INTO `rel__user_connexion__user_profile` ";
-            $query  .=  "( `fk_user_connexion`, `fk_user_profile`) ";
+            $query  .=  "INSERT INTO `user__rel__connexion__profile` ";
+            $query  .=  "( `fk_connexion`, `fk_profile`) ";
             $separator = "VALUES ";
             foreach( $this->values['profiles'] as $profileId )
             {

@@ -1,6 +1,6 @@
 <?php
 use WC\Website;
-use WC\Profile;
+use WC\User\Profile;
 
 $possibleActionsList = [
     'edit-profile',

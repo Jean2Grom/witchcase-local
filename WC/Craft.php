@@ -38,12 +38,12 @@ class Craft
     
     const JOIN_TABLES       =   [
         [
-            'table'     =>  "user_connexion",
+            'table'     =>  "user__connexion",
             'alias'     =>  "creator_connexion",
             'condition' =>  ":creator_connexion.`id` = :craft_table.`creator`",
         ],
         [
-            'table'     =>  "user_connexion",
+            'table'     =>  "user__connexion",
             'alias'     =>  "modificator_connexion",
             'condition' =>  ":modificator_connexion.`id` = :craft_table.`modificator`",
         ],

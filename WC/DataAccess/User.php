@@ -13,15 +13,15 @@ class User
         }
         
         $query = "";
-        $query  .=  "SELECT `user_connexion`.`id` AS `connexion_id` ";
-        $query  .=  ", `user_connexion`.`name` AS `connexion_name` ";
-        $query  .=  ", `user_connexion`.`email` AS `connexion_email` ";
-        $query  .=  ", `user_connexion`.`login` AS `connexion_login` ";
-        $query  .=  ", `user_connexion`.`pass_hash` AS `connexion_pass_hash` ";
-        $query  .=  ", `user_connexion`.`craft_table` AS `connexion_craft_table` ";
-        $query  .=  ", `user_connexion`.`craft_attribute` AS `connexion_craft_attribute` ";
-        $query  .=  ", `user_connexion`.`craft_attribute_var` AS `connexion_craft_attribute_var` ";
-        $query  .=  ", `user_connexion`.`attribute_name` AS `connexion_attribute_name` ";
+        $query  .=  "SELECT `user__connexion`.`id` AS `connexion_id` ";
+        $query  .=  ", `user__connexion`.`name` AS `connexion_name` ";
+        $query  .=  ", `user__connexion`.`email` AS `connexion_email` ";
+        $query  .=  ", `user__connexion`.`login` AS `connexion_login` ";
+        $query  .=  ", `user__connexion`.`pass_hash` AS `connexion_pass_hash` ";
+        $query  .=  ", `user__connexion`.`craft_table` AS `connexion_craft_table` ";
+        $query  .=  ", `user__connexion`.`craft_attribute` AS `connexion_craft_attribute` ";
+        $query  .=  ", `user__connexion`.`craft_attribute_var` AS `connexion_craft_attribute_var` ";
+        $query  .=  ", `user__connexion`.`attribute_name` AS `connexion_attribute_name` ";
         
         $query  .=  ", `profile`.`id` AS `profile_id` ";
         $query  .=  ", `profile`.`name` AS `profile_name` ";
@@ -42,13 +42,13 @@ class User
             $query      .=  ", `witch`.`level_".$i."` ";
         }
         
-        $query  .=  "FROM `user_connexion` ";
-        $query  .=  "LEFT JOIN `rel__user_connexion__user_profile` ";
-        $query  .=      "ON `rel__user_connexion__user_profile`.`fk_user_connexion` = `user_connexion`.`id` ";
-        $query  .=  "LEFT JOIN `user_profile` AS `profile` ";
-        $query  .=      "ON `profile`.`id` = `rel__user_connexion__user_profile`.`fk_user_profile` ";
-        $query  .=  "LEFT JOIN `user_profile_policy` AS `policy` ";
-        $query  .=      "ON `policy`.`fk_user_profile` = `profile`.`id` ";
+        $query  .=  "FROM `user__connexion` ";
+        $query  .=  "LEFT JOIN `user__rel__connexion__profile` ";
+        $query  .=      "ON `user__rel__connexion__profile`.`fk_connexion` = `user__connexion`.`id` ";
+        $query  .=  "LEFT JOIN `user__profile` AS `profile` ";
+        $query  .=      "ON `profile`.`id` = `user__rel__connexion__profile`.`fk_profile` ";
+        $query  .=  "LEFT JOIN `user__policy` AS `policy` ";
+        $query  .=      "ON `policy`.`fk_profile` = `profile`.`id` ";
         $query  .=  "LEFT JOIN `witch` ";
         $query  .=      "ON `witch`.`id` = `policy`.`fk_witch` ";
 
@@ -143,8 +143,8 @@ class User
     static function getPublicProfileData(  WitchCase $wc, string $profile )
     {
         $query = "";
-        $query  .=  "SELECT `user_profile`.`id` AS `profile_id` ";
-        $query  .=  ", `user_profile`.`name` AS `profile_name` ";
+        $query  .=  "SELECT `user__profile`.`id` AS `profile_id` ";
+        $query  .=  ", `user__profile`.`name` AS `profile_name` ";
 
         $query  .=  ", `policy`.`id` AS `policy_id` ";
         $query  .=  ", `policy`.`module` AS `policy_module` ";
@@ -156,13 +156,13 @@ class User
 
         $query  .=  ", `witch`.* ";
 
-        $query  .=  "FROM `user_profile` ";
-        $query  .=  "LEFT JOIN `user_profile_policy` AS `policy` ";
-        $query  .=      "ON `policy`.`fk_user_profile` = `user_profile`.`id` ";
+        $query  .=  "FROM `user__profile` ";
+        $query  .=  "LEFT JOIN `user__policy` AS `policy` ";
+        $query  .=      "ON `policy`.`fk_profile` = `user__profile`.`id` ";
         $query  .=  "LEFT JOIN `witch` ";
         $query  .=      "ON `witch`.`id` = `policy`.`fk_witch` ";
         
-        $query  .=  "WHERE `user_profile`.`name` = :profile ";
+        $query  .=  "WHERE `user__profile`.`name` = :profile ";
         
         $result = $wc->db->multipleRowsQuery($query, [ 'profile' => $profile ]);
 
