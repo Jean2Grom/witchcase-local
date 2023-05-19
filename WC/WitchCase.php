@@ -56,13 +56,10 @@ class WitchCase
     public function injest(): self
     {
         try {
+            $this->depth    = WitchSummoning::getDepth( $this );
             $this->request  = new Request( $this );
             $this->website  = $this->request->getWebsite();
-            
-            $this->depth    = WitchSummoning::getDepth( $this );
-            
             $this->cairn    = $this->website->getCairn();
-            
             $this->user     = new User( $this );
             
             $this->cairn->summon();
@@ -77,7 +74,8 @@ class WitchCase
     public function run(): self
     {
         try {
-            $this->website->sabbath();
+            //$this->website->sabbath();
+            $this->cairn->sabbath();
             $this->website->display();        
         }
         catch (\Exception $e){

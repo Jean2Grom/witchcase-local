@@ -95,10 +95,33 @@ class Cairn
     function summon()
     {
         return $this
-                ->addWitches( WitchSummoning::summonXXX($this->wc, $this->configuration) )
+                ->addWitches( WitchSummoning::summon($this->wc, $this->configuration) )
                 ->addData( WitchCrafting::readCraftData($this->wc, $this->configuration, $this->getWitches() ));
     }
-            
+    
+    function sabbath()
+    {
+        foreach( $this->configuration as $refWitch => $witchConf ){
+            if( $this->witch( $refWitch ) )
+            {
+                if( empty($witchConf['invoke']) ){
+                    continue;
+                }
+                
+                if( is_string($witchConf['invoke']) 
+                        && empty($this->witch($refWitch)->modules[ $witchConf['invoke'] ]) ){
+                    $this->witch($refWitch)->invoke( $witchConf['invoke'] );
+                }
+                elseif( empty($this->witch($refWitch)->result) ){
+                    $this->witch($refWitch)->invoke();
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    
     function addWitches( array $witches ): self
     {
         foreach( $witches as $witchName => $witch )

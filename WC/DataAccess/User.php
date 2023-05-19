@@ -131,7 +131,7 @@ class User
             ]
         ];
                 
-        $witches        = WitchSummoning::summonXXX($wc, Cairn::prepareConfiguration($wc->website, $configuration) );
+        $witches        = WitchSummoning::summon($wc, Cairn::prepareConfiguration($wc->website, $configuration) );
         
         $wc->user->connexionData    = $savedConnexionData;
         $wc->user->connexion        = $savedConnexionValue;

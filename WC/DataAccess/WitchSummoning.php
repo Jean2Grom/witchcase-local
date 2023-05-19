@@ -183,7 +183,7 @@ class WitchSummoning
                     $params[] = $witchRefConf[ $relationship ]['depth'];
                 }
                 
-                $query .= call_user_func_array([ __CLASS__, $functionName.'XXX' ], array_merge([$wc], $params) );
+                $query .= call_user_func_array([ __CLASS__, $functionName ], array_merge([$wc], $params) );
             }
             
             $query  .=  ") ";            
@@ -264,7 +264,7 @@ class WitchSummoning
         return $wc->db->selectQuery($query, $parameters);
     }
 
-    private static function childrenJointureXXX( WitchCase $wc, $mother, $daughter, $depth=1 )
+    private static function childrenJointure( WitchCase $wc, $mother, $daughter, $depth=1 )
     {
         $m = function (int $level) use ($mother): string {
             return "`".$mother."`.`level_".$level."`";
@@ -297,12 +297,12 @@ class WitchSummoning
         return $jointure;
     }
     
-    private static function parentsJointureXXX( WitchCase $wc, $daughter, $mother, $depth=1 )
+    private static function parentsJointure( WitchCase $wc, $daughter, $mother, $depth=1 )
     {
-        return self::childrenJointureXXX( $wc, $mother, $daughter, $depth );
+        return self::childrenJointure( $wc, $mother, $daughter, $depth );
     }
     
-    private static function sistersJointureXXX( WitchCase $wc, $witch, $sister, $depth=1 )
+    private static function sistersJointure( WitchCase $wc, $witch, $sister, $depth=1 )
     {
         $w = function (int $level) use ($witch): string {
             return "`".$witch."`.`level_".$level."`";
@@ -353,7 +353,7 @@ class WitchSummoning
     
     
     
-    static function summonXXX( WitchCase $wc, $configuration )
+    static function summon( WitchCase $wc, $configuration )
     {
         $userConnexionJointure = false;
         foreach( $configuration as $refWitchName => $refWitchSummoning ){

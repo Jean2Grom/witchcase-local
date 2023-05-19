@@ -92,31 +92,6 @@ class Website
     }
     
     
-    function sabbath()
-    {
-        foreach( $this->cairn->configuration as $refWitch => $witchConf ){
-            if( $this->cairn->witch( $refWitch ) )
-            {
-                if( empty($witchConf['invoke']) ){
-                    continue;
-                }
-                
-                if( is_string($witchConf['invoke']) 
-                        && empty($this->cairn->witch($refWitch)->modules[ $witchConf['invoke'] ]) ){
-                    $this->cairn->{$refWitch}->invoke( $witchConf['invoke'] );
-                }
-                elseif( empty($this->cairn->witch($refWitch)->result) ){
-//$this->wc->dump($this->cairn->witch($refWitch), $refWitch);
-//$this->wc->debug->die($refWitch);
-
-                    $this->cairn->witch($refWitch)->invoke();
-                }
-            }
-        }
-        
-        return true;
-    }
-    
     function display()
     {
         //$context = $this->context->setExecFile('default');
