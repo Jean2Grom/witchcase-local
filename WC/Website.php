@@ -41,7 +41,7 @@ class Website
     /** @var Cairn */
     var $cairn;
     
-    function __construct( WitchCase $wc, string $name, string $siteAccess=null )
+    function __construct( WitchCase $wc, string $name, ?string $siteAccess=null )
     {
         $this->wc               = $wc;
         $this->name             = $name;
@@ -70,6 +70,7 @@ class Website
         $this->currentAccess    = $siteAccess ?? array_values($this->access)[0];
         $firstSlashPosition     = strpos($this->currentAccess, '/');
         $this->baseUri          = ($firstSlashPosition !== false)? substr( $this->currentAccess, $firstSlashPosition ): '';
+        $this->urlPath          = Witch::urlCleanupString( substr( $this->wc->request->access, strlen($this->currentAccess) ) );
         $this->depth            = WitchSummoning::getDepth( $this->wc );
         
         foreach( $this->modules as $moduleName => $moduleConf ){
@@ -84,6 +85,8 @@ class Website
             }
         }
         
+        $this->cairn    = new Cairn( $this->wc, $witchesConf, $this );
+        
         $this->witchSummoning   = new WitchSummoning( $this->wc, $witchesConf, $this ); 
         $this->witchCrafting    = new WitchCrafting( $this->wc, $this->witchSummoning->configuration, $this );        
         $this->context          = new Context( $this );
@@ -93,32 +96,15 @@ class Website
         return $this->wc->configuration->readSiteVar($name, $this);
     }
     
-    /**
-     * Determine and store the url relative to the website
-     * 
-     * @param string $access : uri acceded by browser request 
-     * @param string $forSiteAccess : string to force siteAccess if needed
-     * @return $this
-     */
-    function urlPathSetup( string $access, string $forSiteAccess='' )
-    {
-        if( empty($forSiteAccess) ){
-            $forSiteAccess = $this->currentAccess;
-        }
-        
-        if( strstr($access, '?') ){
-            $access = strstr($access, '?', true);
-        }
-        
-        $this->urlPath = Witch::urlCleanupString( substr( $access, strlen($forSiteAccess) ) );
-        
-        return $this;
+    function getCairn(): Cairn {
+        return $this->cairn;
     }
     
     
     function summonWitches()
     {
-        $this->cairn        = (new Cairn($this->wc) )->addWitches( $this->witchSummoning->summon() );
+        //$this->cairn->addWitches( $this->witchSummoning->summon() );
+        $this->cairn->addWitches(WitchSummoning::summonXXX($this->wc, $this->cairn->configuration) );
         
         return $this->cairn->addData($this->witchCrafting->readCraftData( $this->cairn->getWitches() ));
     }
@@ -126,12 +112,20 @@ class Website
     
     function sabbath()
     {
-        foreach( $this->witchSummoning->configuration as $refWitch => $witchConf ){
+        //$this->wc->debug($this->witchSummoning->configuration, 'XXX', 2);
+        //$this->wc->debug( $this->witchSummoning->configuration);
+        //$this->wc->debug($this->cairn->getWitches());
+        
+        //foreach( $this->witchSummoning->configuration as $refWitch => $witchConf ){
+        foreach( $this->cairn->configuration as $refWitch => $witchConf ){
             if( $this->cairn->witch( $refWitch ) )
             {
                 if( empty($witchConf['invoke']) ){
                     continue;
                 }
+                
+//                $this->wc->debug($this->cairn->witch( $refWitch )->modules, $refWitch);
+//                $this->wc->debug( gettype($witchConf['invoke']) , $witchConf['invoke'] );
                 
                 if( is_string($witchConf['invoke']) 
                         && empty($this->cairn->{$refWitch}->modules[ $witchConf['invoke'] ]) ){

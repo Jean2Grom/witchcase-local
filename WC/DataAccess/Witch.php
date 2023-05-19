@@ -175,7 +175,7 @@ class Witch
         return $witches['fetchAncestors'];
     }
     
-    static function fetchDescendants(  WitchCase $wc, int $witchId, bool $completeSubtree=true, mixed $sitesRestriction=null ): array
+    static function fetchDescendants(  WitchCase $wc, int $witchId, bool $completeSubtree=true, ?array $sitesRestriction=null ): array
     {
         $depth = 1;
         if( $completeSubtree ){
@@ -193,11 +193,13 @@ class Witch
             ]
         ];
         
-        $witchSummoning = new WitchSummoning( $wc, $configuration, $wc->website );
+        $website = clone $wc->website;
         if( $sitesRestriction ){
-            $witchSummoning->sitesRestrictions  = $sitesRestriction;
-        }        
-        $witches = $witchSummoning->summon();
+            $website->sitesRestrictions  = $sitesRestriction;
+        }
+        
+        $witchSummoning = new WitchSummoning( $wc, $configuration, $website );
+        $witches        = $witchSummoning->summon();
         
         return $witches['fetchDescendants']->daughters ?? [];
     }
