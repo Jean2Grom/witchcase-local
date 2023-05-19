@@ -162,11 +162,12 @@ class Witch
             ]
         ];
         
-        $witchSummoning = new WitchSummoning( $wc, $configuration, $wc->website );
+        $website = clone $wc->website;
         if( $sitesRestriction ){
-            $witchSummoning->sitesRestrictions  = $sitesRestriction;
-        }        
-        $witches = $witchSummoning->summon();
+            $website->sitesRestrictions  = $sitesRestriction;
+        }
+        
+        $witches        = WitchSummoning::summonXXX($wc, Cairn::prepareConfiguration($website, $configuration) );
         
         if( empty($witches['fetchAncestors']) ){
             return false;
@@ -198,8 +199,7 @@ class Witch
             $website->sitesRestrictions  = $sitesRestriction;
         }
         
-        $witchSummoning = new WitchSummoning( $wc, $configuration, $website );
-        $witches        = $witchSummoning->summon();
+        $witches = WitchSummoning::summonXXX($wc, Cairn::prepareConfiguration($website, $configuration) );
         
         return $witches['fetchDescendants']->daughters ?? [];
     }

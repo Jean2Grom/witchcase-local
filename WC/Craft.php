@@ -2,6 +2,7 @@
 namespace WC;
 
 use WC\DataAccess\Craft as CraftDA;
+use WC\DataAccess\WitchCrafting;
 
 use WC\WitchCase;
 use WC\Datatype\ExtendedDateTime;
@@ -370,7 +371,7 @@ class Craft
         }
         
         $draftStructure = new Structure( $this->wc, $this->structure->name, Draft::TYPE );
-        $craftData      = $this->wc->website->witchCrafting->getCraftDataFromIds($draftStructure->table, $this->getRelatedCraftsIds(Draft::TYPE) );
+        $craftData      = WitchCrafting::getCraftDataFromIds($this->wc, $draftStructure->table, $this->getRelatedCraftsIds(Draft::TYPE) );
         
         return Craft::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
     }

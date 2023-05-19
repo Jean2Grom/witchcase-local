@@ -57,12 +57,15 @@ class WitchCase
     {
         try {
             $this->request  = new Request( $this );
-            $this->website  = $this->request->getWebsite();                        
-            $this->depth    = $this->website->depth;
+            $this->website  = $this->request->getWebsite();
+            
+            $this->depth    = WitchSummoning::getDepth( $this );
+            
             $this->cairn    = $this->website->getCairn();
             
             $this->user     = new User( $this );
-            $this->website->summonWitches();
+            
+            $this->cairn->summon();
         }
         catch (\Exception $e){
             $this->log->error($e->getMessage(), true, [ 'file' => $e->getFile(), 'line' => $e->getLine() ]);

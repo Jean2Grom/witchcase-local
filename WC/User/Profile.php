@@ -114,7 +114,7 @@ class Profile
         foreach( Witch::FIELDS as $field ){
             $query      .=  ", witch.".$field." ";
         }
-        for( $i=1; $i<=$wc->website->depth; $i++ ){
+        for( $i=1; $i<=$wc->depth; $i++ ){
             $query      .=  ", witch.level_".$i." ";
         }
         

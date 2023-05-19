@@ -314,7 +314,7 @@ class Context
                             break;
                             
                         case 'depth':
-                            if( $this->wc->localisation->depth == $value ){
+                            if( $this->wc->depth == $value ){
                                 $match = true;
                             }
                             break;

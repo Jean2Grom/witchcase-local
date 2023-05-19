@@ -11,14 +11,8 @@ class Cairn
     /** WitchCase */
     var $wc;
     
-    /** WitchSummoning */
-    var $witchSummoning;
-    
     /** Website */
     var $website;
-    
-    /** WitchCrafting */
-    var $witchCrafting;
     
     private $witches;
     private $cauldron;
@@ -27,18 +21,23 @@ class Cairn
     
     var $configuration;
     
-    function __construct( WitchCase $wc, array $summoningConfiguration, ?Website $website=null )
+    function __construct( WitchCase $wc, array $summoningConfiguration, ?Website $forcedWebsite=null )
     {
-        $this->wc       = $wc;        
-        $this->website  = $website ?? $this->wc->website;
+        $this->wc       = $wc;
+        $this->website  = $forcedWebsite ?? $this->wc->website;
         
         $this->witches  = [];
         $this->cauldron = [];
         $this->crafts   = [];
         $this->override = [];
         
-        $this->configuration    = $summoningConfiguration;
-        foreach( $this->configuration as $refWitchName => $refWitchSummoning )
+        $this->configuration    = self::prepareConfiguration($this->website, $summoningConfiguration);
+    }
+    
+    static function prepareConfiguration(  Website $website, array $rawConfiguration ): array
+    {
+        $configuration = $rawConfiguration;
+        foreach( $configuration as $refWitchName => $refWitchSummoning )
         {
             $unset = false;
             if( empty($refWitchSummoning) ){
@@ -47,11 +46,11 @@ class Cairn
             
             if( !empty($refWitchSummoning['get']) )
             {
-                $paramValue = $this->wc->request->param($refWitchSummoning['get'], 'get');
+                $paramValue = $website->wc->request->param($refWitchSummoning['get'], 'get');
                 if( $paramValue )
                 {
-                    $this->configuration[ $refWitchName ]['id'] = $paramValue;
-                    unset($this->configuration[ $refWitchName ]['get']);
+                    $configuration[ $refWitchName ]['id'] = $paramValue;
+                    unset($configuration[ $refWitchName ]['get']);
                 }
                 else {
                     $unset = true;
@@ -60,13 +59,13 @@ class Cairn
             
             if( !empty($refWitchSummoning['url']) )
             {
-                $this->configuration[ $refWitchName ]['website_name']   = $this->website->name;
-                $this->configuration[ $refWitchName ]['website_url']    = $this->website->urlPath;
+                $configuration[ $refWitchName ]['website_name']   = $website->name;
+                $configuration[ $refWitchName ]['website_url']    = $website->urlPath;
             }
                         
             if( $unset )
             {
-                unset($this->configuration[ $refWitchName ]);
+                unset($configuration[ $refWitchName ]);
                 continue;
             }
             
@@ -74,33 +73,31 @@ class Cairn
                 if( is_array($refWitchSummoningValue) ){
                     foreach( $refWitchSummoningValue as $refWitchSummoningValueKey => $refWitchSummoningValueItem ){
                         if( is_numeric($refWitchSummoningValueItem) ){
-                            $this->configuration[ $refWitchName ][ $refWitchSummoningParam ][ $refWitchSummoningValueKey ] = (integer) $refWitchSummoningValueItem;
+                            $configuration[ $refWitchName ][ $refWitchSummoningParam ][ $refWitchSummoningValueKey ] = (integer) $refWitchSummoningValueItem;
                         }
                     }
                 }
             }
         }
         
-        foreach( $this->configuration as $refWitchName => $refWitchSummoning ){
+        foreach( $configuration as $refWitchName => $refWitchSummoning ){
             if( !empty($refWitchSummoning['sisters']) && empty($refWitchSummoning['parents']) ){
-                $this->configuration[ $refWitchName ]['parents'] = [
+                $configuration[ $refWitchName ]['parents'] = [
                     "depth" => 1,
                     "craft" => false
                 ];
             }
         }
         
-        $this->wc->dump( $this->configuration );
-        
-        
-        
-        $this->witchSummoning   = new WitchSummoning( $this->wc, $summoningConfiguration, $this->website );
-        $this->wc->dump( $this->witchSummoning->configuration );
-        
-        //$this->witchCrafting    = new WitchCrafting( $this->wc, $this->witchSummoning->configuration, $this->website );    
-        $this->witchCrafting    = new WitchCrafting( $this->wc, $this->configuration, $this->website );    
+        return $configuration;
     }
     
+    function summon()
+    {
+        return $this
+                ->addWitches( WitchSummoning::summonXXX($this->wc, $this->configuration) )
+                ->addData( WitchCrafting::readCraftData($this->wc, $this->configuration, $this->getWitches() ));
+    }
             
     function addWitches( array $witches ): self
     {

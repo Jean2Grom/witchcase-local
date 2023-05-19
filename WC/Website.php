@@ -2,8 +2,6 @@
 namespace WC;
 
 use WC\DataAccess\WitchSummoning;
-use WC\DataAccess\WitchCrafting;
-
 
 /**
  * Description of Website
@@ -30,9 +28,6 @@ class Website
     var $extensions;
     
     var $siteHeritages;
-    var $depth;
-    var $witchSummoning;    
-    var $witchCrafting;
     var $context;
     
     /** @var WitchCase */
@@ -71,7 +66,6 @@ class Website
         $firstSlashPosition     = strpos($this->currentAccess, '/');
         $this->baseUri          = ($firstSlashPosition !== false)? substr( $this->currentAccess, $firstSlashPosition ): '';
         $this->urlPath          = Witch::urlCleanupString( substr( $this->wc->request->access, strlen($this->currentAccess) ) );
-        $this->depth            = WitchSummoning::getDepth( $this->wc );
         
         foreach( $this->modules as $moduleName => $moduleConf ){
             foreach( $moduleConf['witches'] ?? [] as $moduleWitchName => $moduleWitchConf ){
@@ -86,10 +80,7 @@ class Website
         }
         
         $this->cairn    = new Cairn( $this->wc, $witchesConf, $this );
-        
-        $this->witchSummoning   = new WitchSummoning( $this->wc, $witchesConf, $this ); 
-        $this->witchCrafting    = new WitchCrafting( $this->wc, $this->witchSummoning->configuration, $this );        
-        $this->context          = new Context( $this );
+        $this->context  = new Context( $this );
     }
     
     function get(string $name): mixed {
@@ -101,22 +92,8 @@ class Website
     }
     
     
-    function summonWitches()
-    {
-        //$this->cairn->addWitches( $this->witchSummoning->summon() );
-        $this->cairn->addWitches(WitchSummoning::summonXXX($this->wc, $this->cairn->configuration) );
-        
-        return $this->cairn->addData($this->witchCrafting->readCraftData( $this->cairn->getWitches() ));
-    }
-    
-    
     function sabbath()
     {
-        //$this->wc->debug($this->witchSummoning->configuration, 'XXX', 2);
-        //$this->wc->debug( $this->witchSummoning->configuration);
-        //$this->wc->debug($this->cairn->getWitches());
-        
-        //foreach( $this->witchSummoning->configuration as $refWitch => $witchConf ){
         foreach( $this->cairn->configuration as $refWitch => $witchConf ){
             if( $this->cairn->witch( $refWitch ) )
             {
@@ -124,15 +101,15 @@ class Website
                     continue;
                 }
                 
-//                $this->wc->debug($this->cairn->witch( $refWitch )->modules, $refWitch);
-//                $this->wc->debug( gettype($witchConf['invoke']) , $witchConf['invoke'] );
-                
                 if( is_string($witchConf['invoke']) 
-                        && empty($this->cairn->{$refWitch}->modules[ $witchConf['invoke'] ]) ){
+                        && empty($this->cairn->witch($refWitch)->modules[ $witchConf['invoke'] ]) ){
                     $this->cairn->{$refWitch}->invoke( $witchConf['invoke'] );
                 }
-                elseif( empty($this->cairn->{$refWitch}->result) ){
-                    $this->cairn->{$refWitch}->invoke();
+                elseif( empty($this->cairn->witch($refWitch)->result) ){
+//$this->wc->dump($this->cairn->witch($refWitch), $refWitch);
+//$this->wc->debug->die($refWitch);
+
+                    $this->cairn->witch($refWitch)->invoke();
                 }
             }
         }

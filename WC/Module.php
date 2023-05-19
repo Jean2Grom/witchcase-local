@@ -61,9 +61,9 @@ class Module
         if( !$this->execFile ){
             $this->wc->log->error("Can't access module file: ".$this->name, true);
         }
-        
+
         ob_start();
-        include $this->execFile;
+        include $this->execFile;        
         $result = ob_get_contents();
         ob_end_clean();
         
