@@ -1,18 +1,20 @@
 <?php
-
 namespace WC;
 
 class Context 
 {
-    const CONTROLLER_SUBFOLDER      = "controller/contexts";
+    const DEFAULT_FILE = "default";
+    
+    const DIR      = "contexts";
+    
     const DESIGN_SUBFOLDER          = "design/contexts";
     const DESIGN_INCLUDES_SUBFOLDER = "design/contexts/includes";
-    const IMAGES_SUBFOLDER          = "design/images";
-    const JS_SUBFOLDER              = "design/js";
-    const CSS_SUBFOLDER             = "design/css";
-    const FONTS_SUBFOLDER           = "design/fonts";
     
-    var $name;
+    const IMAGES_SUBFOLDER          = "assets/images";
+    const JS_SUBFOLDER              = "assets/js";
+    const CSS_SUBFOLDER             = "assets/css";
+    const FONTS_SUBFOLDER           = "assets/fonts";
+    
     var $execFile;
     var $designFile;
     var $website;
@@ -24,36 +26,35 @@ class Context
     /** @var WitchCase */
     var $wc;
     
-    function __construct( Website $website, $contextFile=false )
+    function __construct( Website $website, ?string $initialContext=null )
     {
         $this->website  = $website;
         $this->wc       = $this->website->wc;
         
-        if( !empty($contextFile) )
-        {
-            if( strcasecmp(substr($contextFile, -4), ".php") != 0 ){
-                $contextFile .=  ".php";
-            }
-            
-            $this->execFile = $this->website->getFilePath( self::CONTROLLER_SUBFOLDER."/".$contextFile );
-            
-            if( !$this->execFile ){
-                $this->wc->log->error("Context File: ".$contextFile." summoned in module but not found");
-            }
+        $context = $initialContext ?? self::DEFAULT_FILE;
+        
+        if( strcasecmp(substr($context, -4), ".php") == 0 ){
+            $context = substr($context, 0, -4);
+        }
+        
+        $this->execFile = $this->website->getFilePath( self::DIR."/".$context.".php" );
+
+        if( !$this->execFile ){
+            $this->wc->log->error("Context File: ".$context." not found");
         }
     }
     
-    function setExecFile( $contextFile, $force=false )
+    function setExecFile( string $context )
     {
-        if( !empty($this->execFile) && !$force ){
-            return $this;
+        if( strcasecmp(substr($context, -4), ".php") == 0 ){
+            $context = substr($context, 0, -4);
         }
         
-        if( strcasecmp(substr($contextFile, -4), ".php") != 0 ){
-            $contextFile .= ".php";
+        $this->execFile = $this->website->getFilePath( self::DIR."/".$context.".php" );
+
+        if( !$this->execFile ){
+            $this->wc->log->error("Context File: ".$context." not found");
         }
-        
-        $this->execFile = $this->wc->website->getFilePath( self::CONTROLLER_SUBFOLDER."/".$contextFile );
         
         return $this;
     }
@@ -193,7 +194,7 @@ class Context
         // =============================
         if( $this->wc->localisation->context )
         {
-            $this->execFile = $this->wc->website->getFilePath( self::CONTROLLER_SUBFOLDER."/".$this->wc->localisation->context );
+            $this->execFile = $this->wc->website->getFilePath( self::DIR."/".$this->wc->localisation->context );
             
             if( !$this->execFile )
             {
@@ -314,7 +315,7 @@ class Context
                             break;
                             
                         case 'depth':
-                            if( $this->wc->localisation->depth == $value ){
+                            if( $this->wc->depth == $value ){
                                 $match = true;
                             }
                             break;

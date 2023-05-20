@@ -4,6 +4,7 @@ namespace WC\Craft;
 use WC\Craft;
 use WC\Structure;
 use WC\DataAccess\Craft as CraftDA;
+use WC\DataAccess\WitchCrafting;
 
 class Draft extends Craft 
 {
@@ -37,7 +38,7 @@ class Draft extends Craft
             }
             else 
             {
-                $craftData  = $this->wc->website->witchCrafting->getCraftDataFromIds($structure->table, [ $this->content_key ]);
+                $craftData  = WitchCrafting::getCraftDataFromIds($this->wc, $structure->table, [ $this->content_key ]);
                 $data       = array_values($craftData)[0] ?? null;
                 
                 if( $data ){

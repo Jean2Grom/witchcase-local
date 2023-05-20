@@ -3,9 +3,10 @@ namespace WC;
 
 class Module 
 {
-    const CONTROLLER_SUBFOLDER          = "controller/modules";
     const DESIGN_SUBFOLDER              = "design/modules";
     const DESIGN_INCLUDES_SUBFOLDER     = "design/modules/includes";
+
+    const DIR = "modules";
     
     var $name;
     var $execFile;
@@ -20,18 +21,17 @@ class Module
     /** @var WitchCase */
     var $wc;
     
-    function __construct( Witch $witch, $moduleName )
+    function __construct( Witch $witch, string $moduleName )
     {
         $this->witch    = $witch;
         $this->wc       = $this->witch->wc;
+                
+        if( strcasecmp(substr($moduleName, -4), ".php") == 0 ){
+            $moduleName =  substr($moduleName, 0, -4);
+        }        
         
-        if( strcasecmp(substr($moduleName, -4), ".php") != 0 ){
-            $moduleName .=  ".php";
-        }
-        
-        $this->name     = substr($moduleName, 0, -4);
-        $filename       = self::CONTROLLER_SUBFOLDER."/".$moduleName;
-        $this->execFile = $this->wc->website->getFilePath( $filename );
+        $this->name     = $moduleName;
+        $this->execFile = $this->wc->website->getFilePath( self::DIR.'/'.$this->name.".php" );
         
         $this->config = [];
         foreach( array_reverse($this->wc->website->siteHeritages) as $siteItem )
@@ -61,9 +61,9 @@ class Module
         if( !$this->execFile ){
             $this->wc->log->error("Can't access module file: ".$this->name, true);
         }
-        
+
         ob_start();
-        include $this->execFile;
+        include $this->execFile;   
         $result = ob_get_contents();
         ob_end_clean();
         
@@ -130,8 +130,8 @@ class Module
         return $this->wc->website->context->getJsFiles();
     }
     
-    function setContext( $context, $force=false ){
-        return $this->wc->website->context->setExecFile( $context, $force );
+    function setContext( $context ){
+        return $this->wc->website->context->setExecFile( $context );
     }
     
     function getIncludeDesignFile( $filename )

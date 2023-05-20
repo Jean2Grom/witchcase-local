@@ -213,7 +213,7 @@ class Structure
         
         foreach( array_reverse($witchesByDepth) as $witchesArray ){
             foreach( $witchesArray as $witch ){
-                if( empty(WitchDA::fetchDescendants($this->wc, $witch->id, false, false)) ){
+                if( empty(WitchDA::fetchDescendants($this->wc, $witch->id, false)) ){
                     $witch->delete();
                 }
                 else {

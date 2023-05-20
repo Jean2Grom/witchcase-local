@@ -1,10 +1,6 @@
 <?php
 namespace WC;
 
-use WC\DataAccess\WitchSummoning;
-use WC\DataAccess\WitchCrafting;
-
-
 /**
  * Description of Website
  *
@@ -12,11 +8,17 @@ use WC\DataAccess\WitchCrafting;
  */
 class Website 
 {
+    const SITES_DIR         = "sites";
+    const DEFAULT_SITE_DIR  = "sites/default";
+    
     var $name;
     var $currentAccess;
+    
     var $access;
     var $adminForSites;
+    var $isSkinForSite;    
     var $sitesRestrictions;
+    
     var $baseUri;
     var $urlPath;
     var $modulesList;
@@ -30,10 +32,9 @@ class Website
     var $extensions;
     
     var $siteHeritages;
-    var $depth;
-    var $witchSummoning;    
-    var $witchCrafting;
+    
     var $context;
+    var $defaultContext;
     
     /** @var WitchCase */
     var $wc;
@@ -41,18 +42,20 @@ class Website
     /** @var Cairn */
     var $cairn;
     
-    function __construct( WitchCase $wc, string $name, string $siteAccess=null )
+    function __construct( WitchCase $wc, string $name, ?string $siteAccess=null )
     {
         $this->wc               = $wc;
         $this->name             = $name;
         
         $this->access               = $this->wc->configuration->read($this->name, "access");
         $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");
+        $this->isSkinForSite        = $this->wc->configuration->read($this->name, "isSkinForSite");
         
         $this->siteHeritages        = $this->wc->configuration->getSiteHeritage( $this->name );
         $this->siteHeritages[]      = "global";
         
         $this->modules              = $this->wc->configuration->readSiteVar('modules', $this) ?? [];
+        $this->defaultContext       = $this->wc->configuration->readSiteVar('defaultContext', $this);
         $witchesConf                = $this->wc->configuration->readSiteVar('witches', $this) ?? [];
         
         $this->sitesRestrictions    = [ $this->name ];
@@ -70,7 +73,7 @@ class Website
         $this->currentAccess    = $siteAccess ?? array_values($this->access)[0];
         $firstSlashPosition     = strpos($this->currentAccess, '/');
         $this->baseUri          = ($firstSlashPosition !== false)? substr( $this->currentAccess, $firstSlashPosition ): '';
-        $this->depth            = WitchSummoning::getDepth( $this->wc );
+        $this->urlPath          = Witch::urlCleanupString( substr( $this->wc->request->access, strlen($this->currentAccess) ) );
         
         foreach( $this->modules as $moduleName => $moduleConf ){
             foreach( $moduleConf['witches'] ?? [] as $moduleWitchName => $moduleWitchConf ){
@@ -84,75 +87,29 @@ class Website
             }
         }
         
-        $this->witchSummoning   = new WitchSummoning( $this->wc, $witchesConf, $this ); 
-        $this->witchCrafting    = new WitchCrafting( $this->wc, $this->witchSummoning->configuration, $this );        
-        $this->context          = new Context( $this );
+        $this->cairn    = new Cairn( $this->wc, $witchesConf, $this );
+        $this->context  = new Context( $this, $this->defaultContext );
     }
     
     function get(string $name): mixed {
         return $this->wc->configuration->readSiteVar($name, $this);
     }
     
-    /**
-     * Determine and store the url relative to the website
-     * 
-     * @param string $access : uri acceded by browser request 
-     * @param string $forSiteAccess : string to force siteAccess if needed
-     * @return $this
-     */
-    function urlPathSetup( string $access, string $forSiteAccess='' )
-    {
-        if( empty($forSiteAccess) ){
-            $forSiteAccess = $this->currentAccess;
-        }
-        
-        if( strstr($access, '?') ){
-            $access = strstr($access, '?', true);
-        }
-        
-        $this->urlPath = Witch::urlCleanupString( substr( $access, strlen($forSiteAccess) ) );
-        
-        return $this;
+    function getCairn(): Cairn {
+        return $this->cairn;
     }
     
-    
-    function summonWitches()
+    function getUrlSearchParameters()
     {
-        $this->cairn        = (new Cairn($this->wc) )->addWitches( $this->witchSummoning->summon() );
-        
-        return $this->cairn->addData($this->witchCrafting->readCraftData( $this->cairn->getWitches() ));
-    }
-    
-    
-    function sabbath()
-    {
-        foreach( $this->witchSummoning->configuration as $refWitch => $witchConf ){
-            if( $this->cairn->witch( $refWitch ) )
-            {
-                if( empty($witchConf['invoke']) ){
-                    continue;
-                }
-                
-                if( is_string($witchConf['invoke']) 
-                        && empty($this->cairn->{$refWitch}->modules[ $witchConf['invoke'] ]) ){
-                    $this->cairn->{$refWitch}->invoke( $witchConf['invoke'] );
-                }
-                elseif( empty($this->cairn->{$refWitch}->result) ){
-                    $this->cairn->{$refWitch}->invoke();
-                }
-            }
-        }
-        
-        return true;
+        return [
+            'site'  => $this->isSkinForSite ?? $this->name,
+            'url'   => $this->urlPath,
+        ];
     }
     
     function display()
     {
-        //$context = $this->context->setExecFile('default');
-        
-        $this->context->setExecFile('default')->display();
-        
-        //include $this->context->getExecFile();
+        $this->context->display();
         
         return $this;
     }
@@ -161,7 +118,7 @@ class Website
     function getFilePath( $filename )
     {
         // Looking in this site
-        $filePath = "sites/".$this->name."/".$filename;
+        $filePath = self::SITES_DIR.'/'.$this->name.'/'.$filename;
         
         if( is_file($filePath) ){
             return $filePath;
@@ -170,7 +127,7 @@ class Website
         // Looking in herited sites
         foreach( $this->siteHeritages as $heritedSite )
         {
-            $filePath = "sites/".$heritedSite."/".$filename;
+            $filePath = self::SITES_DIR.'/'.$heritedSite.'/'.$filename;
 
             if( file_exists($filePath) ){
                 return $filePath;
@@ -220,10 +177,10 @@ class Website
         foreach( $this->siteHeritages as $siteItem )
         {
             if( $siteItem == "global" ){
-                $dir = "sites/default/".Module::CONTROLLER_SUBFOLDER;
+                $dir = self::DEFAULT_SITE_DIR.'/'.Module::DIR;
             }
             else {
-                $dir = "sites/".$siteItem."/".Module::CONTROLLER_SUBFOLDER;
+                $dir = self::SITES_DIR.'/'.$siteItem."/".Module::DIR;
             }
             
             if( is_dir($dir) ){
@@ -273,10 +230,10 @@ class Website
         foreach( $this->siteHeritages as $siteItem )
         {
             if( $siteItem == "global" ){
-                $dir = "sites/default/".Context::CONTROLLER_SUBFOLDER;
+                $dir = "sites/default/".Context::DIR;
             }
             else {
-                $dir = "sites/".$siteItem."/".Context::CONTROLLER_SUBFOLDER;
+                $dir = "sites/".$siteItem."/".Context::DIR;
             }
             
             if( is_dir($dir) ){

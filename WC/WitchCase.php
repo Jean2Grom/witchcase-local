@@ -1,6 +1,8 @@
 <?php
 namespace WC;
 
+use WC\DataAccess\WitchSummoning;
+
 /**
  * Handler and container of this env
  *
@@ -35,6 +37,8 @@ class WitchCase
     /** @var Cairn */
     var $cairn;
     
+    public int $depth;
+    
     public function __construct() 
     {
         try {
@@ -52,10 +56,13 @@ class WitchCase
     public function injest(): self
     {
         try {
+            $this->depth    = WitchSummoning::getDepth( $this );
             $this->request  = new Request( $this );
             $this->website  = $this->request->getWebsite();
-            $this->user     = new User( $this );            
-            $this->cairn    = $this->website->summonWitches();
+            $this->cairn    = $this->website->getCairn();
+            $this->user     = new User( $this );
+            
+            $this->cairn->summon();
         }
         catch (\Exception $e){
             $this->log->error($e->getMessage(), true, [ 'file' => $e->getFile(), 'line' => $e->getLine() ]);
@@ -67,7 +74,7 @@ class WitchCase
     public function run(): self
     {
         try {
-            $this->website->sabbath();
+            $this->cairn->sabbath();
             $this->website->display();        
         }
         catch (\Exception $e){

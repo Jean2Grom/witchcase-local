@@ -3,6 +3,7 @@ namespace WC\DataAccess;
 
 use WC\WitchCase;
 use WC\Witch;
+use WC\Cairn;
 
 class User
 {    
@@ -38,7 +39,7 @@ class User
         foreach( Witch::FIELDS as $field ){
             $query      .=  ", `witch`.`".$field."` ";
         }
-        for( $i=1; $i<=$wc->website->depth; $i++ ){
+        for( $i=1; $i<=$wc->depth; $i++ ){
             $query      .=  ", `witch`.`level_".$i."` ";
         }
         
@@ -129,9 +130,8 @@ class User
                 'craft' => true,
             ]
         ];
-        
-        $witchSummoning = new WitchSummoning( $wc, $configuration, $wc->website );
-        $witches        = $witchSummoning->summon();
+                
+        $witches        = WitchSummoning::summon($wc, Cairn::prepareConfiguration($wc->website, $configuration) );
         
         $wc->user->connexionData    = $savedConnexionData;
         $wc->user->connexion        = $savedConnexionValue;

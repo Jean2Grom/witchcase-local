@@ -5,8 +5,8 @@ use WC\Craft;
 
 abstract class Attribute 
 {
-    const ATTRIBUTE_TYPE                = null;
-    const CONTROLLER_SUBFOLDER          = "controller/attributes";
+    const ATTRIBUTE_TYPE        = null;
+    const DIR                   = "attributes";
     const DESIGN_SUBFOLDER              = "design/attributes";
 
     var $parameters     = [];
@@ -77,10 +77,10 @@ abstract class Attribute
             $filename = strtolower( $this->type );
         }
         
-        $file = $this->wc->website->getFilePath( self::CONTROLLER_SUBFOLDER."/view/".$filename.'.php');
+        $file = $this->wc->website->getFilePath( self::DIR."/view/".$filename.'.php');
         
         if( !$file ){
-            $file = $this->wc->website->getFilePath( self::CONTROLLER_SUBFOLDER."/view/default.php");
+            $file = $this->wc->website->getFilePath( self::DIR."/view/default.php");
         }
         
         if( $file ){
@@ -96,10 +96,10 @@ abstract class Attribute
             $filename = strtolower( $this->type );
         }
         
-        $file = $this->wc->website->getFilePath( self::CONTROLLER_SUBFOLDER."/edit/".$filename.'.php');
+        $file = $this->wc->website->getFilePath( self::DIR."/edit/".$filename.'.php');
         
         if( !$file ){
-            $file = $this->wc->website->getFilePath( self::CONTROLLER_SUBFOLDER."/edit/default.php");
+            $file = $this->wc->website->getFilePath( self::DIR."/edit/default.php");
         }
         
         if( $file ){

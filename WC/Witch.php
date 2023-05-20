@@ -293,7 +293,7 @@ class Witch
         if( empty($moduleName) ){
             return $this;
         }
-        
+                
         $module     = new Module( $this, $moduleName );
         $permission = $this->isAllowed( $module );
         
@@ -538,7 +538,7 @@ class Witch
         $site   = trim($params['site'] ?? "");
         $url    = trim($params['url'] ?? "");
         
-        if( $this->depth == $this->wc->website->depth ){
+        if( $this->depth == $this->wc->depth ){
             $this->addLevel();
         }
         
@@ -587,11 +587,11 @@ class Witch
     function addLevel(): bool
     {
         $depth = WitchDA::increasePlateformDepth($this->wc);
-        if( $depth == $this->wc->website->depth ){
+        if( $depth == $this->wc->depth ){
             return false;
         }
         
-        $this->wc->website->depth = $depth;
+        $this->wc->depth = $depth;
         
         return true;
     }
@@ -661,7 +661,7 @@ class Witch
         }
         
         if( $fetchDescendants ){
-            foreach( WitchDA::fetchDescendants($this->wc, $this->id, true, false) as $daughter ){
+            foreach( WitchDA::fetchDescendants($this->wc, $this->id, true) as $daughter ){
                 $this->addDaughter( $daughter );
             }
         }

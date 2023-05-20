@@ -2,7 +2,6 @@
 namespace WC\DataAccess;
 
 use WC\WitchCase;
-use WC\Website;
 use WC\Witch;
 use WC\Module;
 use WC\Structure;
@@ -17,23 +16,10 @@ class WitchCrafting
 {
     const CACHE_FOLDER = "craft";
     
-    var $configuration;
-    var $website;
-    
-    /** @var WitchCase */
-    var $wc;
-    
-    function __construct( WitchCase $wc, array $summoningConfiguration, ?Website $website=null )
-    {
-        $this->wc                   = $wc;
-        $this->configuration        = $summoningConfiguration;
-        $this->website              = $website ?? $this->wc->website;
-    }
-
-    function readCraftData( array $witches )
+    static function readCraftData( WitchCase $wc, array $summoningConfiguration, array $witches )
     {
         $targetsToCraft = [];
-        foreach( $this->configuration as $refWitch => $witchConf ){
+        foreach( $summoningConfiguration as $refWitch => $witchConf ){
             if( !empty($witches[ $refWitch ]) )
             {
                 if( !empty($witches[ $refWitch ]->invoke) )
@@ -73,7 +59,7 @@ class WitchCrafting
                 if( !empty($witchConf['parents']['craft']) ){
                     $targetsToCraft = array_merge_recursive( 
                         $targetsToCraft, 
-                        $this->getParentsCraftData( $witches[ $refWitch ], $witchConf['parents']['craft'] )
+                        self::getParentsCraftData( $witches[ $refWitch ], $witchConf['parents']['craft'] )
                     );
 
                 }
@@ -82,7 +68,7 @@ class WitchCrafting
                     foreach( $witches[ $refWitch ]->sisters as $sisterWitch ){
                         $targetsToCraft = array_merge_recursive( 
                             $targetsToCraft, 
-                            $this->getChildrenCraftData( $sisterWitch, $witchConf['sisters']['craft'] )
+                            self::getChildrenCraftData( $sisterWitch, $witchConf['sisters']['craft'] )
                         );
                     }
                 }
@@ -90,7 +76,7 @@ class WitchCrafting
                 if( !empty($witchConf['children']['craft']) ){
                     $targetsToCraft = array_merge_recursive( 
                         $targetsToCraft, 
-                        $this->getChildrenCraftData( $witches[ $refWitch ], $witchConf['children']['craft'] )
+                        self::getChildrenCraftData( $witches[ $refWitch ], $witchConf['children']['craft'] )
                     );
                 }
             }
@@ -102,7 +88,7 @@ class WitchCrafting
             $craftedData[ $table ]  = [];
             $idList                 = [];
             
-            $cachedData = $this->wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
+            $cachedData = $wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
             
             foreach( array_unique($ids) as $id ){
                 if( isset( $cachedData[ $id ]) ){
@@ -115,8 +101,8 @@ class WitchCrafting
             
             if( !empty($idList) )
             {
-                $craftedData[ $table ]  = array_replace($craftedData[ $table ], self::craftQueryFromIds( $this->wc, $table, $idList ));
-                $this->wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData[ $table ]) );
+                $craftedData[ $table ]  = array_replace($craftedData[ $table ], self::craftQueryFromIds( $wc, $table, $idList ));
+                $wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData[ $table ]) );
             }
             $cachedData = null;
         }
@@ -125,7 +111,7 @@ class WitchCrafting
     }
 
     // RECURSIVE READ CRAFT DATA FUNCTIONS
-    private function getChildrenCraftData( Witch $witch, int $craftLevel )
+    private static function getChildrenCraftData( Witch $witch, mixed $craftLevel )
     {
         $targetsToCraft = [];
         if( !empty($witch->daughters) ){
@@ -158,7 +144,7 @@ class WitchCrafting
                 
                 $targetsToCraft = array_merge_recursive(
                     $targetsToCraft, 
-                    $this->getChildrenCraftData($daughterWitch, $craftSubLevel) 
+                    self::getChildrenCraftData($daughterWitch, $craftSubLevel) 
                 );
             }
         }
@@ -166,7 +152,7 @@ class WitchCrafting
         return $targetsToCraft;
     }
     
-    private function getParentsCraftData( Witch $witch, int $craftLevel )
+    private static function getParentsCraftData( Witch $witch, mixed $craftLevel )
     {
         $targetsToCraft = [];
         if( !empty($witch->mother) )
@@ -197,7 +183,7 @@ class WitchCrafting
             if( $craftSubLevel == "*" || $craftSubLevel > 0 ){
                 $targetsToCraft = array_merge_recursive(
                     $targetsToCraft, 
-                    $this->getParentsCraftData($motherWitch, $craftSubLevel) 
+                    self::getParentsCraftData($motherWitch, $craftSubLevel) 
                 );
             }
         }
@@ -206,12 +192,12 @@ class WitchCrafting
     }
     
     
-    function getCraftDataFromIds( string $table,  array $ids )
+    static function getCraftDataFromIds( WitchCase $wc, string $table,  array $ids )
     {
         $craftedData     = [];
         $idList          = [];
         
-        $cachedData = $this->wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
+        $cachedData = $wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
 
         foreach( array_unique($ids) as $id ){
             if( isset( $cachedData[ $id ]) ){
@@ -224,8 +210,8 @@ class WitchCrafting
 
         if( !empty($idList) )
         {
-            $craftedData  = array_replace($craftedData, self::craftQueryFromIds( $this->wc, $table, $idList ));
-            $this->wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData) );
+            $craftedData  = array_replace($craftedData, self::craftQueryFromIds( $wc, $table, $idList ));
+            $wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData) );
         }
         
         return $craftedData;

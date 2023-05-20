@@ -15,6 +15,7 @@ class Request
     var $path;
     var $queryString;
     var $requesterIpAddress;
+    var $access;
     
     /** @var Website */
     var $website;
@@ -72,35 +73,34 @@ class Request
     
     function getWebsite()
     {
-        if( !empty($this->website) ){
-            return $this->website;
-        }
-        
-        // Determinating which site is acceded comparing
-        // Configuration and URI
-        $parsed_url     = parse_url( strtolower($this->uri ?? '/') );
-        $access         = $parsed_url["host"].$parsed_url['path'];
-        $compareAccess  = $this->compareAccess($access);
-        
-        // if no match and access has "www" for subomain, try whithout (considered default subdomain)
-        if( !$compareAccess['matchedSiteAccess'] && str_starts_with($access, "www.") )
+        if( empty($this->website) )
         {
-            $access         = substr($access, 4);
-            $compareAccess  = $this->compareAccess( $access );
+            // Determinating which site is acceded comparing
+            // Configuration and URI
+            $parsed_url     = parse_url( strtolower($this->uri ?? '/') );
+            $this->access   = $parsed_url["host"].$parsed_url['path'];
+            $compareAccess  = $this->compareAccess($this->access );
+
+            // if no match and access has "www" for subomain, try whithout (considered default subdomain)
+            if( !$compareAccess['matchedSiteAccess'] && str_starts_with($this->access , "www.") )
+            {
+                $this->access   = substr($this->access , 4);
+                $compareAccess  = $this->compareAccess( $this->access  );
+            }
+
+            if( !$compareAccess['matchedSiteAccess']   ){   
+                $this->wc->log->error("Site access is not in configuration file", true);  
+            }
+            else
+            {
+                $message = "Accessing site: ".$compareAccess['siteName']  .", with site access: ".$compareAccess['matchedSiteAccess'];
+                $this->wc->debug->dump($message);
+            }
+            
+            $this->website = new Website( $this->wc, $compareAccess['siteName']  , $compareAccess['matchedSiteAccess'] );
         }
         
-        if( !$compareAccess['matchedSiteAccess']   ){   
-            $this->wc->log->error("Site access is not in configuration file", true);  
-        }
-        else
-        {
-            $message = "Accessing site: ".$compareAccess['siteName']  .", with site access: ".$compareAccess['matchedSiteAccess'];
-            $this->wc->debug->dump($message);
-        }
-        
-        $this->website = new Website( $this->wc, $compareAccess['siteName']  , $compareAccess['matchedSiteAccess'] );
-        
-        return $this->website->urlPathSetup($access);
+        return $this->website;
     }
     
     function getFullUrl( string $urlPath='', Website $website=null )

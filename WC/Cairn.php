@@ -1,6 +1,7 @@
 <?php
 namespace WC;
 
+use WC\DataAccess\WitchSummoning;
 use WC\DataAccess\WitchCrafting;
 
 class Cairn 
@@ -18,16 +19,106 @@ class Cairn
     private $crafts;
     private $override;
     
-    function __construct( WitchCase $wc, ?Website $website=null )
+    var $configuration;
+    
+    function __construct( WitchCase $wc, array $summoningConfiguration, ?Website $forcedWebsite=null )
     {
-        $this->wc       = $wc;        
-        $this->website  = $website ?? $this->wc->website;
+        $this->wc       = $wc;
+        $this->website  = $forcedWebsite ?? $this->wc->website;
         
         $this->witches  = [];
         $this->cauldron = [];
         $this->crafts   = [];
         $this->override = [];
+        
+        $this->configuration    = self::prepareConfiguration($this->website, $summoningConfiguration);
     }
+    
+    static function prepareConfiguration(  Website $website, array $rawConfiguration ): array
+    {
+        $configuration = $rawConfiguration;
+        foreach( $configuration as $refWitchName => $refWitchSummoning )
+        {
+            $unset = false;
+            if( empty($refWitchSummoning) ){
+                $unset = true;
+            }
+            
+            if( !empty($refWitchSummoning['get']) )
+            {
+                $paramValue = $website->wc->request->param($refWitchSummoning['get'], 'get');
+                if( $paramValue )
+                {
+                    $configuration[ $refWitchName ]['id'] = $paramValue;
+                    unset($configuration[ $refWitchName ]['get']);
+                }
+                else {
+                    $unset = true;
+                }
+            }
+            
+            if( !empty($refWitchSummoning['url']) ){
+                $configuration[ $refWitchName ] = array_replace($configuration[ $refWitchName ], $website->getUrlSearchParameters());
+            }
+                        
+            if( $unset )
+            {
+                unset($configuration[ $refWitchName ]);
+                continue;
+            }
+            
+            foreach( $refWitchSummoning as $refWitchSummoningParam => $refWitchSummoningValue ){
+                if( is_array($refWitchSummoningValue) ){
+                    foreach( $refWitchSummoningValue as $refWitchSummoningValueKey => $refWitchSummoningValueItem ){
+                        if( is_numeric($refWitchSummoningValueItem) ){
+                            $configuration[ $refWitchName ][ $refWitchSummoningParam ][ $refWitchSummoningValueKey ] = (integer) $refWitchSummoningValueItem;
+                        }
+                    }
+                }
+            }
+        }
+        
+        foreach( $configuration as $refWitchName => $refWitchSummoning ){
+            if( !empty($refWitchSummoning['sisters']) && empty($refWitchSummoning['parents']) ){
+                $configuration[ $refWitchName ]['parents'] = [
+                    "depth" => 1,
+                    "craft" => false
+                ];
+            }
+        }
+        
+        return $configuration;
+    }
+    
+    function summon()
+    {
+        return $this
+                ->addWitches( WitchSummoning::summon($this->wc, $this->configuration) )
+                ->addData( WitchCrafting::readCraftData($this->wc, $this->configuration, $this->getWitches() ));
+    }
+    
+    function sabbath()
+    {
+        foreach( $this->configuration as $refWitch => $witchConf ){
+            if( $this->witch( $refWitch ) )
+            {
+                if( empty($witchConf['invoke']) ){
+                    continue;
+                }
+                
+                if( is_string($witchConf['invoke']) 
+                        && empty($this->witch($refWitch)->modules[ $witchConf['invoke'] ]) ){
+                    $this->witch($refWitch)->invoke( $witchConf['invoke'] );
+                }
+                elseif( empty($this->witch($refWitch)->result) ){
+                    $this->witch($refWitch)->invoke();
+                }
+            }
+        }
+        
+        return true;
+    }
+    
     
     function addWitches( array $witches ): self
     {

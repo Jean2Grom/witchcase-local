@@ -2,6 +2,7 @@
 namespace WC\DataAccess;
 
 use WC\WitchCase;
+use WC\Cairn;
 
 class Witch
 {
@@ -162,11 +163,12 @@ class Witch
             ]
         ];
         
-        $witchSummoning = new WitchSummoning( $wc, $configuration, $wc->website );
+        $website = clone $wc->website;
         if( $sitesRestriction ){
-            $witchSummoning->sitesRestrictions  = $sitesRestriction;
-        }        
-        $witches = $witchSummoning->summon();
+            $website->sitesRestrictions  = $sitesRestriction;
+        }
+        
+        $witches        = WitchSummoning::summon($wc, Cairn::prepareConfiguration($website, $configuration) );
         
         if( empty($witches['fetchAncestors']) ){
             return false;
@@ -175,7 +177,7 @@ class Witch
         return $witches['fetchAncestors'];
     }
     
-    static function fetchDescendants(  WitchCase $wc, int $witchId, bool $completeSubtree=true, mixed $sitesRestriction=null ): array
+    static function fetchDescendants(  WitchCase $wc, int $witchId, bool $completeSubtree=true, ?array $sitesRestriction=null ): array
     {
         $depth = 1;
         if( $completeSubtree ){
@@ -193,11 +195,12 @@ class Witch
             ]
         ];
         
-        $witchSummoning = new WitchSummoning( $wc, $configuration, $wc->website );
+        $website = clone $wc->website;
         if( $sitesRestriction ){
-            $witchSummoning->sitesRestrictions  = $sitesRestriction;
-        }        
-        $witches = $witchSummoning->summon();
+            $website->sitesRestrictions  = $sitesRestriction;
+        }
+        
+        $witches = WitchSummoning::summon($wc, Cairn::prepareConfiguration($website, $configuration) );
         
         return $witches['fetchDescendants']->daughters ?? [];
     }
