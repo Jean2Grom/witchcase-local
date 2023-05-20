@@ -293,7 +293,7 @@ class Witch
         if( empty($moduleName) ){
             return $this;
         }
-        
+                
         $module     = new Module( $this, $moduleName );
         $permission = $this->isAllowed( $module );
         

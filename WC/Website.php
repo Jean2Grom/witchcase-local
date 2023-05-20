@@ -1,8 +1,6 @@
 <?php
 namespace WC;
 
-use WC\DataAccess\WitchSummoning;
-
 /**
  * Description of Website
  *
@@ -10,6 +8,9 @@ use WC\DataAccess\WitchSummoning;
  */
 class Website 
 {
+    const SITES_DIR         = "sites";
+    const DEFAULT_SITE_DIR  = "sites/default";
+    
     var $name;
     var $currentAccess;
     
@@ -31,7 +32,9 @@ class Website
     var $extensions;
     
     var $siteHeritages;
+    
     var $context;
+    var $defaultContext;
     
     /** @var WitchCase */
     var $wc;
@@ -52,6 +55,7 @@ class Website
         $this->siteHeritages[]      = "global";
         
         $this->modules              = $this->wc->configuration->readSiteVar('modules', $this) ?? [];
+        $this->defaultContext       = $this->wc->configuration->readSiteVar('defaultContext', $this);
         $witchesConf                = $this->wc->configuration->readSiteVar('witches', $this) ?? [];
         
         $this->sitesRestrictions    = [ $this->name ];
@@ -84,7 +88,7 @@ class Website
         }
         
         $this->cairn    = new Cairn( $this->wc, $witchesConf, $this );
-        $this->context  = new Context( $this );
+        $this->context  = new Context( $this, $this->defaultContext );
     }
     
     function get(string $name): mixed {
@@ -105,11 +109,7 @@ class Website
     
     function display()
     {
-        //$context = $this->context->setExecFile('default');
-        
-        $this->context->setExecFile('default')->display();
-        
-        //include $this->context->getExecFile();
+        $this->context->display();
         
         return $this;
     }
@@ -118,7 +118,7 @@ class Website
     function getFilePath( $filename )
     {
         // Looking in this site
-        $filePath = "sites/".$this->name."/".$filename;
+        $filePath = self::SITES_DIR.'/'.$this->name.'/'.$filename;
         
         if( is_file($filePath) ){
             return $filePath;
@@ -127,7 +127,7 @@ class Website
         // Looking in herited sites
         foreach( $this->siteHeritages as $heritedSite )
         {
-            $filePath = "sites/".$heritedSite."/".$filename;
+            $filePath = self::SITES_DIR.'/'.$heritedSite.'/'.$filename;
 
             if( file_exists($filePath) ){
                 return $filePath;
@@ -177,10 +177,10 @@ class Website
         foreach( $this->siteHeritages as $siteItem )
         {
             if( $siteItem == "global" ){
-                $dir = "sites/default/".Module::CONTROLLER_SUBFOLDER;
+                $dir = self::DEFAULT_SITE_DIR.'/'.Module::DIR;
             }
             else {
-                $dir = "sites/".$siteItem."/".Module::CONTROLLER_SUBFOLDER;
+                $dir = self::SITES_DIR.'/'.$siteItem."/".Module::DIR;
             }
             
             if( is_dir($dir) ){
@@ -230,10 +230,10 @@ class Website
         foreach( $this->siteHeritages as $siteItem )
         {
             if( $siteItem == "global" ){
-                $dir = "sites/default/".Context::CONTROLLER_SUBFOLDER;
+                $dir = "sites/default/".Context::DIR;
             }
             else {
-                $dir = "sites/".$siteItem."/".Context::CONTROLLER_SUBFOLDER;
+                $dir = "sites/".$siteItem."/".Context::DIR;
             }
             
             if( is_dir($dir) ){
