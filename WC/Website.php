@@ -12,9 +12,12 @@ class Website
 {
     var $name;
     var $currentAccess;
+    
     var $access;
     var $adminForSites;
+    var $isSkinForSite;    
     var $sitesRestrictions;
+    
     var $baseUri;
     var $urlPath;
     var $modulesList;
@@ -43,6 +46,7 @@ class Website
         
         $this->access               = $this->wc->configuration->read($this->name, "access");
         $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");
+        $this->isSkinForSite        = $this->wc->configuration->read($this->name, "isSkinForSite");
         
         $this->siteHeritages        = $this->wc->configuration->getSiteHeritage( $this->name );
         $this->siteHeritages[]      = "global";
@@ -91,6 +95,13 @@ class Website
         return $this->cairn;
     }
     
+    function getUrlSearchParameters()
+    {
+        return [
+            'site'  => $this->isSkinForSite ?? $this->name,
+            'url'   => $this->urlPath,
+        ];
+    }
     
     function display()
     {

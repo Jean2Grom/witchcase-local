@@ -74,7 +74,6 @@ class WitchCase
     public function run(): self
     {
         try {
-            //$this->website->sabbath();
             $this->cairn->sabbath();
             $this->website->display();        
         }

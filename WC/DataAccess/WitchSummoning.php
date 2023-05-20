@@ -51,8 +51,8 @@ class WitchSummoning
             if( !empty($witchRefConf['url']) )
             {
                 $conditions[ $witchRef ] = [ 
-                    'site'  => $witchRefConf['website_name'],
-                    'url'   => $witchRefConf['website_url'],
+                    'site'  => $witchRefConf['site'],
+                    'url'   => $witchRefConf['url'],
                 ];
                 
                 $urlRefWiches[] = $witchRef;
@@ -195,11 +195,11 @@ class WitchSummoning
         {
             if( !empty($witchRefConf['url']) )
             {
-                $parameters['website_name']   = $witchRefConf['website_name'];
-                $parameters['website_url']    = $witchRefConf['website_url'];
+                $parameters['site']   = $witchRefConf['site'];
+                $parameters['url']    = $witchRefConf['url'];
                 
-                $condition  =   "( %s.`site` = :website_name ";
-                $condition  .=  "AND %s.`url` = :website_url ) ";
+                $condition  =   "( %s.`site` = :site ";
+                $condition  .=  "AND %s.`url` = :url ) ";
             }
             elseif( !empty($witchRefConf['id']) )
             {
@@ -235,11 +235,12 @@ class WitchSummoning
         
         if( $refWitch )
         {
-            $parameters[ 'website_name' ]   = $parameters['website_name'] ?? $wc->website->name;
-            $parameters[ 'website_url' ]    = $parameters['website_url'] ?? $wc->website->urlPath;
+            if( empty($parameters['site']) || empty($parameters['url']) ){
+                $parameters = array_replace($parameters, $wc->website->getUrlSearchParameters());
+            }
             
-            $query .=  "AND ( `ref_witch`.`site` = :website_name ";
-            $query .=  "AND `ref_witch`.`url` = :website_url ) ";
+            $query .=  "AND ( `ref_witch`.`site` = :site ";
+            $query .=  "AND `ref_witch`.`url` = :url ) ";
         }
         
         if( $wc->website->sitesRestrictions )

@@ -57,10 +57,8 @@ class Cairn
                 }
             }
             
-            if( !empty($refWitchSummoning['url']) )
-            {
-                $configuration[ $refWitchName ]['website_name']   = $website->name;
-                $configuration[ $refWitchName ]['website_url']    = $website->urlPath;
+            if( !empty($refWitchSummoning['url']) ){
+                $configuration[ $refWitchName ] = array_replace($configuration[ $refWitchName ], $website->getUrlSearchParameters());
             }
                         
             if( $unset )

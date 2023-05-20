@@ -2,6 +2,7 @@
 namespace WC\DataAccess;
 
 use WC\WitchCase;
+use WC\Cairn;
 
 class Witch
 {
