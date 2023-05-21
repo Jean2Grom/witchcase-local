@@ -1,7 +1,7 @@
 <?php
 if( $this->wc->request->param("login") == "login" && $this->wc->user->connexion )
 {
-    header('Location: '.$this->wc->website->getFullUrl());
+    header( 'Location: '.$this->wc->website->getFullUrl() );
     exit();
 }
 
@@ -15,5 +15,4 @@ foreach( $this->wc->user->loginMessages as $message ){
 
 $this->wc->user->disconnect();
 
-
-include $this->getDesignFile();
+$this->view();

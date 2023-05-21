@@ -13,6 +13,7 @@ class Module
     var $designFile;
     var $result;
     var $config;
+    var $view;
     var $maxStatus;
     
     /** @var Witch */
@@ -65,7 +66,10 @@ class Module
         
         $this->wc->debug("Executing file: ".$this->execFile, 'MODULE '.$this->name);
         ob_start();
-        include $this->execFile;   
+        include $this->execFile;        
+        if( $this->view ){
+            include $this->getDesignFile();
+        }
         $result = ob_get_contents();
         ob_end_clean();
         
@@ -85,7 +89,7 @@ class Module
         return $this->result;
     }
     
-    function getDesignFile( $designName=false, $mandatory=true )
+    function getDesignFile( ?string $designName=null, bool $mandatory=true )
     {
         if( !empty($this->designFile) ){
             return $this->designFile;
@@ -107,6 +111,12 @@ class Module
         
         $this->wc->debug("Design file to be included : ".$this->designFile, 'MODULE '.$this->name);
         return $this->designFile;
+    }
+    
+    function view( ?string $designName=null, bool $mandatory=true )
+    {
+        $this->view = true;        
+        return $this->getDesignFile( $designName, $mandatory );
     }
     
     function getImageFile( $filename ){
@@ -145,6 +155,7 @@ class Module
             return false;
         }
         
+        $this->wc->debug("Ressource design file to be Included: ".$fullPath, 'MODULE '.$this->name);
         return $fullPath;
     }
     

@@ -181,13 +181,13 @@ class Context
             return false;
         }
         
+        $this->wc->debug("Ressource design file to be Included: ".$fullPath, 'CONTEXT');
         return $fullPath;
     }
     
     function display()
     {
         $this->wc->debug("Executing file: ".$this->execFile, 'CONTEXT');
-        
         include $this->execFile;
         
         return $this;

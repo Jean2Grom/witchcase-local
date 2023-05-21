@@ -64,7 +64,7 @@ class Witch
     }
     
     public function __get(string $name): mixed {
-        return $this->properties[$name];
+        return $this->properties[$name] ?? null;
     }
     
     static function createFromId( WitchCase $wc, int $id )
