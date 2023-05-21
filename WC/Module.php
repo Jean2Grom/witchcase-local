@@ -33,15 +33,12 @@ class Module
         $this->name     = $moduleName;
         $this->execFile = $this->wc->website->getFilePath( self::DIR.'/'.$this->name.".php" );
         
-        $this->config = [];
-        foreach( array_reverse($this->wc->website->siteHeritages) as $siteItem )
-        {
-            $configModulesItem = $this->wc->configuration->read($siteItem, "modules");
-            $this->config = array_replace_recursive(
-                $this->config, 
-                $configModulesItem[ $this->name ] ?? []
-            );
-        }
+        $websiteModuleConfig = $this->wc->website->get("modules");
+        
+        $this->config = array_replace_recursive( 
+                            $websiteModuleConfig['*'] ?? [], 
+                            $websiteModuleConfig[ $this->name ] ?? [] 
+                        );
         
         $this->maxStatus = 0;
         foreach( $this->wc->user->policies as $policy ){
@@ -61,7 +58,12 @@ class Module
         if( !$this->execFile ){
             $this->wc->log->error("Can't access module file: ".$this->name, true);
         }
-
+        
+        if( !empty($this->config['defaultContext']) ){
+            $this->setContext($this->config['defaultContext']);
+        }
+        
+        $this->wc->debug("Executing file: ".$this->execFile, 'MODULE '.$this->name);
         ob_start();
         include $this->execFile;   
         $result = ob_get_contents();
@@ -103,6 +105,7 @@ class Module
             $this->wc->log->error("Can't get design file: ".$filename, $mandatory);
         }
         
+        $this->wc->debug("Design file to be included : ".$this->designFile, 'MODULE '.$this->name);
         return $this->designFile;
     }
     

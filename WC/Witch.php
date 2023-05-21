@@ -297,18 +297,16 @@ class Witch
         $module     = new Module( $this, $moduleName );
         $permission = $this->isAllowed( $module );
         
-        if( !$permission && !empty($module->config['notAllowedRedirect']) )
+        if( !$permission && !empty($module->config['notAllowed']) )
         {
-            $moduleName = $module->config['notAllowedRedirect'];
-            $this->wc->debug->dump( "Access denied to ".$module->name." for user: ".$this->wc->user->name.", redirecting to ".$moduleName );
-            return $this->invoke( $moduleName, (!$assignedModuleName || $fromUnassigned) );
+            $this->wc->debug->dump( "Access denied to for user: ".$this->wc->user->name.", redirecting to ".$module->config['notAllowed'], 'MODULE '.$module->name  );
+            return $this->invoke( $module->config['notAllowed'], (!$assignedModuleName || $fromUnassigned) );
         }
         elseif( !$permission )
         {
-            $moduleName = '403';
-            $this->wc->debug->dump( "Access denied to ".$module->name." for user: ".$this->wc->user->name.". " );
-            $this->wc->user->loginMessages[] = "You must login to access this module";
-            return $this->invoke( $moduleName, (!$assignedModuleName || $fromUnassigned) );
+            $this->wc->debug->dump( "Access denied for user: ".$this->wc->user->name, 'MODULE '.$module->name );
+            $this->modules[ $moduleName ]   = false;
+            return "";
         }
         
         $this->modules[ $moduleName ]   = $module;

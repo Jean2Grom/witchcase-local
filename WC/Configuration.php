@@ -73,16 +73,16 @@ class Configuration
     
     function read( string $section, string $variable=null)
     {
-        if( $variable && !empty($this->configuration[ $section ][ $variable ]) ){
+        if( $variable && isset($this->configuration[ $section ][ $variable ]) ){
             return $this->configuration[ $section ][ $variable ];
         }
-        elseif( $variable && !empty($this->sites[ $section ][ $variable ]) ){
+        elseif( $variable && isset($this->sites[ $section ][ $variable ]) ){
             return $this->sites[ $section ][ $variable ];
         }
-        elseif( !$variable && !empty($this->configuration[ $section ]) ){
+        elseif( !$variable && isset($this->configuration[ $section ]) ){
             return $this->configuration[ $section ];
         }
-        elseif( !$variable && !empty($this->sites[ $section ]) ){
+        elseif( !$variable && isset($this->sites[ $section ]) ){
             return $this->sites[ $section ];
         }
         

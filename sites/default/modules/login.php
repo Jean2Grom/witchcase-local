@@ -15,6 +15,5 @@ foreach( $this->wc->user->loginMessages as $message ){
 
 $this->wc->user->disconnect();
 
-$this->setContext('login');
 
 include $this->getDesignFile();

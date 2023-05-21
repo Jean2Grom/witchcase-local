@@ -55,8 +55,11 @@ class Website
         $this->siteHeritages[]      = "global";
         
         $this->modules              = $this->wc->configuration->readSiteVar('modules', $this) ?? [];
-        $this->defaultContext       = $this->wc->configuration->readSiteVar('defaultContext', $this);
         $witchesConf                = $this->wc->configuration->readSiteVar('witches', $this) ?? [];
+        $defaultContext             = $this->wc->configuration->readSiteVar('defaultContext', $this);
+        if( !empty($defaultContext) ){
+            $this->defaultContext       = $defaultContext;
+        }
         
         $this->sitesRestrictions    = [ $this->name ];
         foreach( $this->adminForSites ?? [] as $adminisratedSite )
@@ -115,7 +118,7 @@ class Website
     }
     
     
-    function getFilePath( $filename )
+    function getFilePath( string $filename ): ?string
     {
         // Looking in this site
         $filePath = self::SITES_DIR.'/'.$this->name.'/'.$filename;
@@ -150,7 +153,7 @@ class Website
         */
         
         // Looking in default site
-        $filePath = "sites/default/".$filename;
+        $filePath = self::DEFAULT_SITE_DIR.'/'.$filename;
         
         if( is_file($filePath) ){
             return $filePath;
