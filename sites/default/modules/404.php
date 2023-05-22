@@ -1,5 +1,2 @@
 <?php
-
-$this->setContext('login');
-
-include $this->getDesignFile();
+$this->view();

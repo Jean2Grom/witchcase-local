@@ -91,10 +91,8 @@ class Request
             if( !$compareAccess['matchedSiteAccess']   ){   
                 $this->wc->log->error("Site access is not in configuration file", true);  
             }
-            else
-            {
-                $message = "Accessing site: ".$compareAccess['siteName']  .", with site access: ".$compareAccess['matchedSiteAccess'];
-                $this->wc->debug->dump($message);
+            else {
+                $this->wc->debug("Accessing site: ".$compareAccess['siteName']  .", with site access: ".$compareAccess['matchedSiteAccess'], 'SITEACCESS');
             }
             
             $this->website = new Website( $this->wc, $compareAccess['siteName']  , $compareAccess['matchedSiteAccess'] );

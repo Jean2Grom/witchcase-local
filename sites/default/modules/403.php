@@ -1,4 +1,2 @@
 <?php
-
-
-include $this->getDesignFile();
+$this->view();

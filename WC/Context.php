@@ -59,29 +59,31 @@ class Context
         return $this;
     }
     
-    function getDesignFile( $designFile=false, $mandatory=true )
+    function getDesignFile( ?string $designFile=null, bool $mandatory=true )
     {
         if( $this->designFile ){
             return $this->designFile;
         }
         
         if( !$this->execFile ){
-            $this->getExecFile();
+            return false;
         }
         
         if( !$designFile ){
-            $designFile = basename( $this->getExecFile() );
-        }
-        elseif( strcasecmp(substr($designFile, -4), ".php") != 0 ){
-            $designFile .=  ".php";
+            $designFile = basename( $this->execFile );
         }
         
-        $this->designFile = $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/".$designFile );
+        if( strcasecmp(substr($designFile, -4), ".php") == 0 ){
+            $designFile = substr($designFile, 0, -4);
+        }
+        
+        $this->designFile = $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/".$designFile.".php" );
         
         if( !$this->designFile ){
             $this->wc->log->error("Can't get design file: ".$designFile, $mandatory);
         }
         
+        $this->wc->debug("Design file to be included : ".$this->designFile, 'CONTEXT');
         return $this->designFile;
     }
     
@@ -179,200 +181,14 @@ class Context
             return false;
         }
         
+        $this->wc->debug("Ressource design file to be Included: ".$fullPath, 'CONTEXT');
         return $fullPath;
     }
     
-    
-    
-    function getExecFile()
-    {
-        if( $this->execFile ){
-            return $this->execFile;
-        }
-        
-        // Context is in Location record
-        // =============================
-        if( $this->wc->localisation->context )
-        {
-            $this->execFile = $this->wc->website->getFilePath( self::DIR."/".$this->wc->localisation->context );
-            
-            if( !$this->execFile )
-            {
-                $message    =   "Context File: ".$this->wc->localisation->context;
-                $message    .=  " specified in localisation but not found";
-                $this->wc->log->error($message);
-            }
-            else {
-                return $this->execFile;
-            }
-        }
-        
-        // Context is in Craft record
-        // ==========================
-        if( isset($craft->context[ $this->wc->localisation->site ]) )
-        {
-            $this->execFile = $this->wc->module->getControllerFile( "contexts/".$craft->context[ $this->wc->localisation->site ] );
-            
-            if( !$this->execFile )
-            {
-                $message    =   "Context File: ".$craft->context[ $this->wc->localisation->site ];
-                $message    .=  " specified in craft but not found";
-                $this->wc->log->error($message);
-            }
-            else {
-                return $this->execFile;
-            }
-        }
-        
-        // Context is ruled in configuration file
-        // ======================================
-        if( !$this->execFile )
-        {
-            $this->execFile = $this->contextRuleConf( $this->wc->localisation->site );
-
-            if( $this->execFile ){
-                return $this->execFile;
-            }
-            
-            $this->execFile = $this->contextRuleConf('global');
-            
-            if( $this->execFile ){
-                return $this->execFile;
-            }
-        }
-        
-        // Context is default
-        // ==================
-        $this->execFile = $this->wc->module->getControllerFile( "contexts/default.php" );
-        
-        if( $this->execFile ){
-            return $this->execFile;
-        }
-        
-        $this->wc->log->error('No context file can be identified', true);
-    }
-    
-    private function contextRuleConf( $confPart )
-    {
-        $contextRules   = $this->wc->configuration->read( $confPart, 'contextRules' );
-        $contextValues  = $this->wc->configuration->read( $confPart, 'contextValues' );
-        if( is_array($contextRules) && is_array($contextValues) ) 
-        {
-            if( count($contextRules) != count($contextValues)  )
-            {
-                $message    =   "Context rules and values don't match ";
-                $message    .=  "(not same quantity) in the: ";
-                $message    .=  $confPart." part of configuration file.";
-                $this->wc->log->error( $message );
-            }
-            else
-            {   
-                foreach( $contextRules as $key => $rule_value )
-                {
-                    $buffer = explode('.', $rule_value);
-                    $rule   = $buffer[0];
-                    $value  = $buffer[1];
-                    
-                    $match   = false;
-                    $exclude = false;
-                    switch( $rule )
-                    {
-                        case 'craft_structure':
-                            if( $this->wc->localisation->has_craft 
-                                && ( strcmp($this->wc->localisation->craft_structure, $value) == 0 )
-                            ){
-                                $match = true;
-                            }
-                            break;
-                            
-                        case 'parent_craft_structure':
-                            $parents = $this->wc->localisation->parents();
-                            $parent_craft_structure = "";
-                            if( $parents[0]["craft_table"] )
-                            {
-                                $buffer = explode('_', $parents[0]["craft_table"]);
-                                unset($buffer[0]);
-                                $parent_craft_structure = implode("_", $buffer);
-                            }
-                            
-                            if( strcmp($parent_craft_structure, $value) == 0 ){
-                                $match = true;
-                            }
-                            break;
-                            
-                        case 'status':
-                            if( strcmp($this->wc->localisation->status, $value) == 0 ){
-                                $match = true;
-                            }
-                            break;
-                            
-                        case 'craft_type':
-                            if( $this->wc->localisation->has_craft 
-                                && ( strcmp($this->wc->localisation->craft_type, $value) == 0 )
-                            ){
-                                $match = true;
-                            }
-                            break;
-                            
-                        case 'depth':
-                            if( $this->wc->depth == $value ){
-                                $match = true;
-                            }
-                            break;
-                            
-                        case 'subposition_parent':
-                            $exclude = true;
-                        case 'subposition_parent_included':
-                            $positionMatch = explode(',', $value);
-                            
-                            $match = true;
-                            if( $exclude && count($this->wc->localisation->position) <= count($positionMatch) ){
-                                $match = false;
-                            }
-                            elseif( count($this->wc->localisation->position) < count($positionMatch) ){
-                                $match = false;
-                            }
-                            else {
-                                foreach( $this->wc->localisation->position as $i => $positionID ){
-                                    if( !isset($positionMatch[$i-1]) ){
-                                        break;
-                                    }
-                                    elseif( $positionMatch[$i-1] != $positionID )
-                                    {
-                                        $match = false;
-                                        break;
-                                    }
-                                }   
-                            }
-                            break;
-                            
-                        default:
-                            $message    =   "the context rule in configuration part: ";
-                            $message    .=  $confPart." is not accepted by the system.";
-                            $this->wc->log->error( $message );
-                            break;
-                    }
-                    
-                    if( $match )
-                    {
-                        $filename = "contexts/".$contextValues[$key];
-                        $this->execFile = $this->wc->module->getControllerFile( $filename );
-                        
-                        if( $this->execFile ){
-                            return $this->execFile;
-                        }
-                    }
-                }
-            }
-        }
-        
-        return false;
-    }
-    
-    
     function display()
     {
-        include $this->getExecFile();
+        $this->wc->debug("Executing file: ".$this->execFile, 'CONTEXT');
+        include $this->execFile;
         
         return $this;
     }
