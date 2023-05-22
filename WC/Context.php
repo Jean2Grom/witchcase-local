@@ -18,6 +18,7 @@ class Context
     var $execFile;
     var $designFile;
     var $website;
+    var $view;
     
     private $css    = [];
     private $js     = [];
@@ -87,6 +88,11 @@ class Context
         return $this->designFile;
     }
     
+    function view( ?string $designName=null, bool $mandatory=true )
+    {
+        $this->view = true;        
+        return $this->getDesignFile( $designName, $mandatory );
+    }
     
     function addCssFile( $cssFile )
     {
@@ -189,8 +195,12 @@ class Context
     {
         $this->wc->debug("Executing file: ".$this->execFile, 'CONTEXT');
         include $this->execFile;
+        if( $this->view ){
+            include $this->getDesignFile();
+        }
         
         return $this;
     }
 
+    
 }

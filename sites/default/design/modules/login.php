@@ -6,25 +6,21 @@
     
     <?php include $this->getIncludeDesignFile('alerts.php'); ?>
     
-    <p>
-        Vous devez vous identifier pour accéder à cette page.
-    </p>
+    <?php if( $this->witch->accessDeniedFor !== false ): ?>
+        <p>Vous devez vous identifier pour accéder à cette page.</p>
+    <?php endif; ?>
 
-    <p>
-        <form method="POST">
-            <input type="hidden" name="login" value="login" />
-
-            <p>
-                <h4>Nom d'utilisateur ou email</h4>
-                <input type="text" name="username" />
-            </p>
-            <p>
-                <h4>Mot de passe</h4>
-                <input type="password" name="password" />
-            </p>
-            <button class="">
-                Se connecter
-            </button>
-        </form>
-    </p>
+    <form method="POST">
+        <input type="hidden" name="login" value="login" />
+        
+        <label for="username">Nom d'utilisateur ou email</label>
+        <input type="text" name="username" id="username"/>
+        
+        <label for="password">Mot de passe</label>
+        <input type="password" name="password" id="password" />
+        
+        <button class="">
+            Se connecter
+        </button>
+    </form>
 </div>

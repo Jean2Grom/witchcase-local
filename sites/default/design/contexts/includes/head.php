@@ -133,31 +133,5 @@
             .tabs-target__item.selected {
                 display: block;
             }
-    .alert-message {
-        border: 1px solid #424242;
-        padding: 10px;
-        display: block;
-        width: max-content;
-        margin-bottom: 15px;
-        border-radius: 10px;  
-        box-shadow: 3px 3px 5px #aaa;
-        color: #424242;
-        font-style: italic;
-    }
-        .alert-message.error {
-            border-color: #dc3545;
-            color: #dc3545;
-        }
-        .alert-message.warning {
-            border-color: #ff9900;
-            color: #ff9900;
-        }
-        .alert-message.success {
-            border-color: #28a745;
-            color: #28a745;
-        }
-        .alert-message strong {
-            font-weight: bold;
-        }    
 </style>
 
