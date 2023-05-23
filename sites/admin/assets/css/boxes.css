@@ -1,0 +1,45 @@
+.content__data {
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+.content__data-edit {
+    display: none;
+    margin-bottom: 5px;
+}
+    #witch__data {
+        width: 100%;
+        resize: none;
+    }
+.box-container {
+    display: flex;
+    justify-content: flex-start;
+}
+.box {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin: 15px 15px 5px 0;
+    padding: 10px;
+    box-shadow: 5px 5px 5px #ccc;
+}
+    .box h2 {
+        font-size: 1.1em;
+        margin-top: 5px;
+    }
+    .box__actions {
+        margin: 20px 0px 10px 0;
+        text-align: right;
+    }
+
+    
+    .box table th {
+        min-width: 100px;
+        background-color: #eee;
+        padding: 3px;
+    }
+    .box table td {
+        padding: 1px 10px;
+    }
+    .box table input {
+        width: 60px;
+    }
+    

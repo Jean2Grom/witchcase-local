@@ -51,16 +51,12 @@ class Debug
      */
     var $enabled;
     
-    
     var $buffer = [];
+    var $resume = [];
+    var $databaseAnalysis = [];
     
-    /**
-     * Microtime value of implementation of class
-     * Update it for exec times analysis
-     * 
-     * @var int
-     */
-    var $refMicroTime;
+    private $refNanoTime;
+    private $databaseRefNanoTime;
     
     /**
      * Bytes value of implementation of class
@@ -77,13 +73,14 @@ class Debug
     var $wc;
     
     /**
-     * @param \WC\WitchCase $wc : container
+     * 
+     * @param WitchCase $wc container
      */
     function __construct( WitchCase $wc )
     {
         $this->wc           = $wc;
         $this->enabled      = false;
-        $this->refMicroTime = microtime(true);
+        $this->refNanoTime = hrtime(true);
         
         set_error_handler(function($errno, $errstr, $errfile, $errline) {
             $errLevel = "PHP ERROR HANDLED: ";
@@ -99,13 +96,13 @@ class Debug
      * @param mixed $variable : variable to dump
      * @param string $userPrefix : prefix a header to the dump
      * @param int $depth : max depth to explore, ignored if set to 0 
-     * @param array $callerArray : [ 'file' => File full path name, 'line' => int line number of caller file ]
-     * @return void
+     * @param array|null $callerArray : [ 'file' => File full path name, 'line' => int line number of caller file ]
+     * @return $this
      */
-    function dump( $variable, $userPrefix='', $depth=10, $callerArray=null )
+    function dump( mixed $variable, string $userPrefix='', int $depth=10, ?array $callerArray=null ): self
     {
         if( $this->enabled )
-        {            
+        {
             ob_start();
             
             if( !empty($userPrefix) ){
@@ -131,13 +128,13 @@ class Debug
     /**
      * Recursive function to print analysis
      * 
-     * @param type $variable
-     * @param type $depth
-     * @param type $i
-     * @param type $objects
+     * @param mixed $variable
+     * @param int $depth
+     * @param int $i
+     * @param array $objects
      * @return type
      */
-    private function debugPrint( $variable, $depth=10, $i=0, &$objects=array() )
+    private function debugPrint( mixed $variable, int $depth=10, int $i=0, array $objects=[] )
     {
         $search     = array("\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v");
         $replace    = array('\0', '\a', '\b', '\f', '\n', '\r', '\t', '\v');
@@ -262,24 +259,25 @@ class Debug
      */
     public function time( bool $display=true )
     {
-        $time = microtime(true);
+        $time = hrtime(true);
         
-        if( $display && $this->refMicroTime )
+        if( $display && $this->refNanoTime )
         {
-            $microSecDiff   =   $time - $this->refMicroTime;
-            $secDiff        =   floor( $microSecDiff/1e+6 );
-            $microSecDiff   -=  $secDiff * 1e+6;
-            $mSecDiff       =   floor( $microSecDiff/1e+3 );
-            $microSecDiff   -=  $mSecDiff * 1e+3;
+            $nanoSec        =   $time - $this->refNanoTime;
+            $secDiff        =   floor( $nanoSec/1e+9 );
+            $nanoSec        -=  $secDiff * 1e+9;
+            $mSecDiff       =   floor( $nanoSec/1e+6 );
+            $nanoSec        -=  $mSecDiff * 1e+6;
+            $microSecDiff   =   floor( $nanoSec/1e+3 );
+            $nanoSec        -=  $microSecDiff * 1e+3;
             
             $this->dump( $secDiff." seconds, ".$mSecDiff." milliseconds and ".$microSecDiff." microseconds", "Time" );
         }
         
-        $this->refMicroTime = $time;
+        $this->refNanoTime = $time;
         
-        return $this->refMicroTime;
-    }
-    
+        return $this->refNanoTime;
+    }    
     
     /**
      * 
@@ -296,7 +294,7 @@ class Debug
      * 
      * etc...
      * 
-     * @param boolean $onlyInit for disable printTime
+     * @param boolean $display for disable print (initialize only)
      * @return int microtime current value stored
      */
     public function memory( bool $display=true )
@@ -315,23 +313,68 @@ class Debug
     /**
      * Get the Log class prefix
      * 
-     * @param array $callerArray : [ 'file' => File full path name, 'line' => int line number of caller file ]
-     * 
+     * @param array|null $callerArray : [ 'file' => File full path name, 'line' => int line number of caller file ]
+     * @param bool $addDateTimeIp 
      * @return string
      */
-    function prefix($callerArray=null)
+    function prefix( ?array $callerArray=null, bool $addDateTimeIp=true )
     {
         if( empty($this->wc->log) ){
             return '';
         }
         
-        return $this->wc->log->prefix($callerArray)."\n\n";
+        return $this->wc->log->prefix($callerArray, $addDateTimeIp)."\n\n";
     }
     
-    
+    /**
+     * 
+     * @return void
+     */
     function display(): void
     {
-        if( $this->enabled && $this->buffer )
+        if( !$this->enabled ){
+            return;
+        }
+        
+        if( !empty($this->resume) )
+        {
+            ob_start();
+            
+            echo "**********\n";
+            echo "* RESUME *\n";
+            echo "**********\n";
+            foreach( $this->resume as $resumeItem ){
+                echo "\n".$resumeItem['userPrefix'].' '.trim($resumeItem['callerArray']).' '.$resumeItem['variable'];
+            }
+            
+            $this->buffer[] = ob_get_contents();
+            ob_end_clean();
+        }
+        
+        if( !empty($this->databaseAnalysis) )
+        {
+            ob_start();
+            
+            echo "Database\n";
+            echo "========\n";
+            foreach( $this->databaseAnalysis as $DAItem => $DAData )
+            {
+                $nanoSec        =   $DAData['time'];
+                $secDiff        =   floor( $nanoSec/1e+9 );
+                $nanoSec        -=  $secDiff * 1e+9;
+                $mSecDiff       =   floor( $nanoSec/1e+6 );
+                $nanoSec        -=  $mSecDiff * 1e+6;
+                $microSecDiff   =   floor( $nanoSec/1e+3 );
+                $nanoSec        -=  $microSecDiff * 1e+3;
+                
+                echo $DAItem.' Request quantity='.$DAData['requests'].' Execution time='.$secDiff." seconds, ".$mSecDiff." milliseconds and ".$microSecDiff." microseconds"."\n";
+            }
+            
+            $this->buffer[] = ob_get_contents();
+            ob_end_clean();
+        }
+        
+        if( $this->buffer )
         {
             $style = self::CSS_STYLE;
             
@@ -353,13 +396,71 @@ class Debug
         }
     }
     
-    function throwException( string $msg ):void
+    /**
+     * Stop execution and display debug data
+     * 
+     * @param string $msg
+     * @return void
+     * @throws \Exception
+     */
+    function throwException( string $msg ): void
     {
         throw new \Exception( $msg );
     }
     
-    function die( string $msg ):void
+    /**
+     * 
+     * @param string $variable
+     * @param string $userPrefix
+     * @param array|null $callerArray
+     * @return void
+     */
+    function toResume( string $variable, string $userPrefix='', ?array $callerArray=null ): void
     {
-        $this->throwException($msg);
+        if( $this->enabled ){
+            $this->resume[] = [
+                'variable'       => $variable,
+                'userPrefix'     => $userPrefix,
+                'callerArray'    => $this->prefix($callerArray, false),
+            ];
+         }
+    }
+    
+    /**
+     * 
+     * @param string $type
+     * @return void
+     */
+    function databaseAnalysePrepare( string $type ): void
+    {
+        if( !$this->enabled ){
+            return;
+        }
+        
+        if( !isset($this->databaseAnalysis[ $type ]) ){
+            $this->databaseAnalysis[ $type ] = [
+                'requests'  => 0,
+                'time'      => 0,
+            ];
+        }
+        
+        $this->databaseRefNanoTime = hrtime(true);
+    }
+    
+    /**
+     * 
+     * @param string $type
+     * @return void
+     */
+    function databaseAnalyse( string $type ): void
+    {
+        if( !$this->enabled ){
+            return;
+        }
+        
+        $time = hrtime(true) - $this->databaseRefNanoTime;
+        
+        $this->databaseAnalysis[ $type ]['requests']++;
+        $this->databaseAnalysis[ $type ]['time'] += $time;
     }
 }

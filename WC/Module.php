@@ -64,7 +64,7 @@ class Module
             $this->setContext($this->config['defaultContext']);
         }
         
-        $this->wc->debug("Executing file: ".$this->execFile, 'MODULE '.$this->name);
+        $this->wc->debug->toResume("Executing file: ".$this->execFile, 'MODULE '.$this->name);
         ob_start();
         include $this->execFile;        
         if( $this->view ){
@@ -109,7 +109,7 @@ class Module
             $this->wc->log->error("Can't get design file: ".$filename, $mandatory);
         }
         
-        $this->wc->debug("Design file to be included : ".$this->designFile, 'MODULE '.$this->name);
+        $this->wc->debug->toResume("Design file to be included : ".$this->designFile, 'MODULE '.$this->name);
         return $this->designFile;
     }
     
@@ -155,7 +155,7 @@ class Module
             return false;
         }
         
-        $this->wc->debug("Ressource design file to be Included: ".$fullPath, 'MODULE '.$this->name);
+        $this->wc->debug->toResume("Ressource design file to be Included: ".$fullPath, 'MODULE '.$this->name);
         return $fullPath;
     }
     

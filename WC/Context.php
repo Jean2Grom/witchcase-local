@@ -18,6 +18,7 @@ class Context
     var $execFile;
     var $designFile;
     var $website;
+    var $view;
     
     private $css    = [];
     private $js     = [];
@@ -83,10 +84,15 @@ class Context
             $this->wc->log->error("Can't get design file: ".$designFile, $mandatory);
         }
         
-        $this->wc->debug("Design file to be included : ".$this->designFile, 'CONTEXT');
+        $this->wc->debug->toResume("Design file to be included : ".$this->designFile, 'CONTEXT');
         return $this->designFile;
     }
     
+    function view( ?string $designName=null, bool $mandatory=true )
+    {
+        $this->view = true;        
+        return $this->getDesignFile( $designName, $mandatory );
+    }
     
     function addCssFile( $cssFile )
     {
@@ -181,16 +187,20 @@ class Context
             return false;
         }
         
-        $this->wc->debug("Ressource design file to be Included: ".$fullPath, 'CONTEXT');
+        $this->wc->debug->toResume("Ressource design file to be Included: ".$fullPath, 'CONTEXT');
         return $fullPath;
     }
     
     function display()
     {
-        $this->wc->debug("Executing file: ".$this->execFile, 'CONTEXT');
+        $this->wc->debug->toResume("Executing file: ".$this->execFile, 'CONTEXT');
         include $this->execFile;
+        if( $this->view ){
+            include $this->getDesignFile();
+        }
         
         return $this;
     }
 
+    
 }

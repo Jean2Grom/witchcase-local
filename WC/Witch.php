@@ -299,12 +299,12 @@ class Witch
         
         if( !$permission && !empty($module->config['notAllowed']) )
         {
-            $this->wc->debug->dump( "Access denied to for user: ".$this->wc->user->name.", redirecting to ".$module->config['notAllowed'], 'MODULE '.$module->name  );
+            $this->wc->debug->toResume( "Access denied to for user: ".$this->wc->user->name.", redirecting to ".$module->config['notAllowed'], 'MODULE '.$module->name  );
             return $this->invoke( $module->config['notAllowed'], (!$assignedModuleName || $fromUnassigned) );
         }
         elseif( !$permission )
         {
-            $this->wc->debug->dump( "Access denied for user: ".$this->wc->user->name, 'MODULE '.$module->name );
+            $this->wc->debug->toResume( "Access denied for user: ".$this->wc->user->name, 'MODULE '.$module->name );
             $this->modules[ $moduleName ]   = false;
             return "";
         }
@@ -414,7 +414,7 @@ class Witch
         return $permission;
     }
     
-    function edit( array $params ): bool
+    function edit( array $params ): mixed
     {
         foreach( $params as $field => $value ){
             if( !in_array($field, self::FIELDS) ){
@@ -469,18 +469,19 @@ class Witch
             unset($params['name']);
         }
         
-        if( WitchDA::update($this->wc, $params, ['id' => $this->id]) )
-        {
-            foreach( $params as $field => $value ){
-                $this->properties[$field] = $value;
-            }
-            
-            $this->propertiesRead();
-            
-            return true;
+        $updateResult = WitchDA::update($this->wc, $params, ['id' => $this->id]);
+        
+        if( $updateResult === false ){
+            return false;
         }
         
-        return false;
+        foreach( $params as $field => $value ){
+            $this->properties[$field] = $value;
+        }
+
+        $this->propertiesRead();
+
+        return $updateResult;
     }
     
     static function urlCleanupString( string $urlRaw ): string

@@ -25,7 +25,11 @@ class Database
     
     function fetchQuery( string $query, array $bindParams=[] )
     {
-        return $this->ressource->fetchQuery( $query, $bindParams );
+        $this->wc->debug->databaseAnalysePrepare( 'FETCH' );
+        $result = $this->ressource->fetchQuery( $query, $bindParams );        
+        $this->wc->debug->databaseAnalyse( 'FETCH' );
+        
+        return $result;
     }
     
     function multipleRowsQuery( string $query, array $bindParams=[] )
@@ -46,33 +50,65 @@ class Database
     
     function selectQuery( string $query, array $bindParams=[] )
     {
-        return $this->ressource->selectQuery( $query, $bindParams );   
+        $this->wc->debug->databaseAnalysePrepare( 'SELECT' );
+        $result = $this->ressource->selectQuery( $query, $bindParams );
+        $this->wc->debug->databaseAnalyse( 'SELECT' );
+        
+        return $result;
     }
     
     function insertQuery( string $query, array $bindParams=[], $multiple=false )
     {
-        return $this->ressource->insertQuery( $query, $bindParams, $multiple ); 
+        $this->wc->debug->databaseAnalysePrepare( 'INSERT' );
+        $result = $this->ressource->insertQuery( $query, $bindParams, $multiple );         
+        $this->wc->debug->databaseAnalyse( 'INSERT' );
+        
+        return $result;
     }
     
-    function query( string $query, array $bindParams=[], $multiple=false ){
-        return $this->ressource->query( $query, $bindParams, $multiple );
+    function query( string $query, array $bindParams=[], $multiple=false )
+    {
+        $this->wc->debug->databaseAnalysePrepare( 'QUERY' );
+        $result = $this->ressource->query( $query, $bindParams, $multiple );
+        $this->wc->debug->databaseAnalyse( 'QUERY' );
+        
+        return $result;
     }
     
-    function updateQuery( string $query, array $bindParams=[], $multiple=false ){
-        return $this->ressource->query( $query, $bindParams, $multiple );
+    function updateQuery( string $query, array $bindParams=[], $multiple=false )
+    {
+        $this->wc->debug->databaseAnalysePrepare( 'UPDATE' );
+        $result = $this->ressource->query( $query, $bindParams, $multiple );
+        $this->wc->debug->databaseAnalyse( 'UPDATE' );
+        
+        return $result;
     }
     
-    function deleteQuery( string $query, array $bindParams=[], $multiple=false ){
-        return $this->ressource->query( $query, $bindParams, $multiple );
+    function deleteQuery( string $query, array $bindParams=[], $multiple=false )
+    {
+        $this->wc->debug->databaseAnalysePrepare( 'DELETE' );
+        $result = $this->ressource->query( $query, $bindParams, $multiple );
+        $this->wc->debug->databaseAnalyse( 'DELETE' );
+        
+        return $result;
     }
     
-    function alterQuery( string $query, array $bindParams=[], $multiple=false ){
-        return $this->ressource->query( $query, $bindParams, $multiple );
+    function alterQuery( string $query, array $bindParams=[], $multiple=false )
+    {
+        $this->wc->debug->databaseAnalysePrepare( 'ALTER' );
+        $result = $this->ressource->query( $query, $bindParams, $multiple );
+        $this->wc->debug->databaseAnalyse( 'ALTER' );
+        
+        return $result;
     }
     
     function createQuery( string $query, array $bindParams=[], $multiple=false ){
         try {
-            return $this->ressource->query( $query, $bindParams, $multiple );
+            $this->wc->debug->databaseAnalysePrepare( 'CREATE' );
+            $result = $this->ressource->query( $query, $bindParams, $multiple );
+            $this->wc->debug->databaseAnalyse( 'CREATE' );
+
+            return $result;
         }
         catch( \Exception $e ){
             return false;
