@@ -1,0 +1,22 @@
+header {
+    position: sticky;
+    height: 60px;
+    top: 0;
+    z-index: 10;
+    padding: 7px 20px;
+    text-align: center;
+    box-shadow: 0px 3px 5px #cccccc;
+    background-color: #FFFFFF;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+    header h1 {
+        font-size: 1.5em;
+    }
+    header .header__logo img {
+        height: 55px;
+    }
+    header .header__user {
+        min-width: 55px;
+    }

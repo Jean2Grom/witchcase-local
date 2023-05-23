@@ -1,6 +1,6 @@
 $(document).ready(function()
 {
-    /**
+    /*
      * LISTERNERS
      */
     $('.arborescence-menu-container').on('click', '.arborescence-level__witch__daughters-display', function()
@@ -21,7 +21,7 @@ $(document).ready(function()
             {
                 let subTreeId = $(element).data('id');
 
-                if( subTreeId != witchId )
+                if( subTreeId !== witchId )
                 {
                     order   = subTree[ subTreeId ]['daughters_orders'];
                     subTree = subTree[ subTreeId ]['daughters'];
@@ -38,13 +38,13 @@ $(document).ready(function()
         }
     });
 
-    /**
+    /*
      * INIT ACTIONS
      */
     addArborescenceLevel( treeData );
     initArborescenceMenu( initPath );
     
-    /**
+    /*
      * FUNCTIONS
      */
     function addArborescenceLevel( subTree, order=false )
@@ -61,12 +61,12 @@ $(document).ready(function()
             let daughterData = subTree[ daughterId ];
             
             newArborescenceLevelHtml    +=      '<div class="arborescence-level__witch ';
-            if( daughterId == currentId ){
+            if( daughterId === currentId ){
                 newArborescenceLevelHtml    +=              'current ';
             }
             newArborescenceLevelHtml    +=              '" data-id="' + daughterId + '"> ';
             
-            if( currentSite != daughterData['site'] && daughterData['site'] != '' ){
+            if( currentSite !== daughterData['site'] && daughterData['site'] !== '' ){
                 newArborescenceLevelHtml    +=      '<span class="arborescence-level__witch__website">';
                 newArborescenceLevelHtml    +=          daughterData['site'];
                 newArborescenceLevelHtml    +=      '</span>';

@@ -100,12 +100,17 @@ class Log
     }
     /**
      * 
-     * @param array $caller : [ 'file' => File full path name, 'line' => int line number of caller file ]
+     * @param array|null $caller : [ 'file' => File full path name, 'line' => int line number of caller file ]
+     * @param bool $addDateTimeIp
      * @return string
      */
-    function prefix( $caller=null )
+    function prefix( ?array $caller=null, bool $addDateTimeIp=true ): string
     {
-        $prefix = "[ ".date(DATE_RFC2822)." ] [ ".$this->currentIP." ] ";
+        
+        $prefix = "";
+        if( $addDateTimeIp ){
+            $prefix .= "[ ".date(DATE_RFC2822)." ] [ ".$this->currentIP." ] ";
+        }
         
         if( !isset( $this->backtraceFileBegin ) ){   
             if( !filter_has_var(INPUT_SERVER, "DOCUMENT_ROOT") ){

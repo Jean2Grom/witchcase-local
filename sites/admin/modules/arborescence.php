@@ -1,8 +1,4 @@
 <?php
-$this->addJsLibFile('jquery-3.6.0.min.js');
-$this->addJsFile('fontawesome.js');
-$this->addCssFile('arborescence_menu.css');
-$this->addJsFile('arborescence_menu.js');
 
 $currentId = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT, 0) ?? $this->wc->witch()->id;
 
@@ -80,4 +76,4 @@ function recursiveTree( WC\Module $module, \WC\Witch $witch, $website, $currentI
     return $tree;
 }
 
-include $this->getDesignFile();
+$this->view();

@@ -9,7 +9,6 @@
     box-shadow: 0.2vw 0.2vw 0.2vw #ccc;
     text-align: center;
 }
-    
     .content form {
         display: flex;
         flex-direction: column;
@@ -26,4 +25,5 @@
     .content label {
         margin-top: 0.5em;
         font-weight: bold;
+        text-align: left;
     }
