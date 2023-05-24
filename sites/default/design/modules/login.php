@@ -6,10 +6,10 @@
     
     <?php include $this->getIncludeDesignFile('alerts.php'); ?>
     
-    <?php if( $this->witch->accessDeniedFor !== false ): ?>
+    <?php if( $this->isRedirection ): ?>
         <p>Vous devez vous identifier pour accéder à cette page.</p>
     <?php endif; ?>
-
+    
     <form method="POST">
         <input type="hidden" name="login" value="login" />
         

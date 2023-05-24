@@ -16,7 +16,7 @@
         <!-- header -->
         <?php include $this->getIncludeDesignFile('header.php'); ?>
         
-        <?=$this->wc->witch()->result ?>
+        <?=$this->wc->witch()->result() ?>
         
         <!-- footer -->
         <?php include $this->getIncludeDesignFile('footer.php'); ?>

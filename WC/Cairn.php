@@ -110,7 +110,7 @@ class Cairn
                         && empty($this->witch($refWitch)->modules[ $witchConf['invoke'] ]) ){
                     $this->witch($refWitch)->invoke( $witchConf['invoke'] );
                 }
-                elseif( empty($this->witch($refWitch)->result) ){
+                elseif( empty($this->witch($refWitch)->result()) ){
                     $this->witch($refWitch)->invoke();
                 }
             }
@@ -138,7 +138,8 @@ class Cairn
     }
     
     function witch( ?string $witchName=null ){
-        return $this->witches[ $witchName ?? self::DEFAULT_WITCH ] ?? null; 
+        return  $this->witches[ $witchName ?? self::DEFAULT_WITCH ] 
+                    ?? Witch::createFromData( $this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ] ); 
     }
     
     function __get( string $witchName ){

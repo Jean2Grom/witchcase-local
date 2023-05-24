@@ -75,7 +75,7 @@ class WitchCase
     {
         try {
             $this->cairn->sabbath();
-            $this->website->display();        
+            $this->website->display();
         }
         catch (\Exception $e){
             $this->log->error($e->getMessage(), true, [ 'file' => $e->getFile(), 'line' => $e->getLine() ]);
