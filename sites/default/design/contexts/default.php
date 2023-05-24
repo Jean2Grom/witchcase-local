@@ -37,6 +37,6 @@
     </head>
     
     <body>        
-        <?=$this->wc->witch()->result ?>
+        <?=$this->wc->witch()->result() ?>
     </body>
 </html>

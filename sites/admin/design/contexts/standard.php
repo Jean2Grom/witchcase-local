@@ -82,12 +82,12 @@
                     <?php if( !$this->wc->witch() ): ?>
                         404
                     <?php else: ?>
-                        <?=$this->wc->witch()->result ?>
+                        <?=$this->wc->witch()->result() ?>
                     <?php endif; ?>
                 </div>
                 <?php if( $this->wc->witch("arborescence") ): ?>
                     <div class="tabs-target__item" id="tab-navigation">
-                        <?=$this->wc->witch("arborescence")->modules["arborescence"]->result ?>
+                        <?=$this->wc->witch("arborescence")->result("arborescence") ?>
                     </div>
                 <?php endif; ?>
             </div>

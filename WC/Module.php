@@ -15,6 +15,7 @@ class Module
     var $config;
     var $view;
     var $maxStatus;
+    var $isRedirection;
     
     /** @var Witch */
     var $witch;
@@ -56,8 +57,8 @@ class Module
     
     function execute()
     {
-        if( !$this->execFile ){
-            $this->wc->log->error("Can't access module file: ".$this->name, true);
+        if( !$this->isValid() ){
+            $this->wc->log->error("Cannot execute unvalid module : ".$this->name, true);
         }
         
         if( !empty($this->config['defaultContext']) ){
@@ -76,6 +77,17 @@ class Module
         $this->result = $result;
         
         return $this->result;
+    }
+    
+    function isValid(): bool
+    {
+        if( !$this->execFile )
+        {
+            $this->wc->log->error("Can't access module file: ".$this->name);
+            return false;
+        }
+
+        return true;
     }
     
     
@@ -159,7 +171,7 @@ class Module
         return $fullPath;
     }
     
-    function getDaughters( Witch $witch=NULL )
+    function getDaughters( Witch $witch=null )
     {
         if( empty($witch) ){
             $witch = $this->witch;
@@ -174,4 +186,11 @@ class Module
         
         return $daughters;
     }
+    
+    function setIsRedirection( bool $isRedirection ): self
+    {
+        $this->isRedirection = $isRedirection;
+        
+        return $this;
+    }    
 }

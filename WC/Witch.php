@@ -39,8 +39,6 @@ class Witch
     var $uri                = false;
     var $depth              = 0;
     var $position           = [];
-    var $accessDeniedFor    = false;
-    var $module             = false;
     var $modules            = [];
     
     var $mother;
@@ -281,26 +279,37 @@ class Witch
         return !empty($this->properties[ 'craft_table' ]) && !empty($this->properties[ 'craft_fk' ]);
     }
     
-    function invoke( $assignedModuleName=false, $fromUnassigned=false )
+    function invoke( ?string $assignedModuleName=null, bool $isRedirection=false ): string
     {
         if( !empty($assignedModuleName) ){
             $moduleName = $assignedModuleName;
         }
         else {
-            $moduleName = $this->invoke;
+            $moduleName = $this->properties["invoke"];
         }
         
         if( empty($moduleName) ){
-            return $this;
+            return "";
         }
-                
+        
         $module     = new Module( $this, $moduleName );
+        $module->setIsRedirection( $isRedirection );
+        
+        if( !$module->isValid() )
+        {
+            $this->wc->debug->toResume( "This module is not valid", 'MODULE '.$module->name );
+            $this->modules[ $moduleName ]   = false;
+            return "";
+        }
+        
         $permission = $this->isAllowed( $module );
         
         if( !$permission && !empty($module->config['notAllowed']) )
         {
             $this->wc->debug->toResume( "Access denied to for user: ".$this->wc->user->name.", redirecting to ".$module->config['notAllowed'], 'MODULE '.$module->name  );
-            return $this->invoke( $module->config['notAllowed'], (!$assignedModuleName || $fromUnassigned) );
+            $result = $this->invoke( $module->config['notAllowed'], true );
+            $this->modules[ $moduleName ] = $this->modules[ $module->config['notAllowed'] ];
+            return $result;
         }
         elseif( !$permission )
         {
@@ -310,22 +319,41 @@ class Witch
         }
         
         $this->modules[ $moduleName ]   = $module;
-                
-        if( !$assignedModuleName || $fromUnassigned )
+        
+        return $module->execute();
+    }
+    
+    
+    function module( ?string $invoke=null )
+    {
+        $moduleInvoked  = $invoke ?? $this->properties["invoke"];
+        
+        if( !$moduleInvoked )
         {
-            $this->module = $module;
-            
-            // TODO set forced context from witch
-            //$this->context = $this->wc->website->context;
+            $this->wc->debug( "Try to reach unnamed module");
+            return false;
+        }        
+        
+        if( !isset($this->modules[ $moduleInvoked ]) ){
+            $this->invoke( $moduleInvoked );
         }
         
-        $result = $module->execute();
+        return $this->modules[ $moduleInvoked ];
+    }
+    
+    function result( ?string $invoke=null )
+    {
+        $module = $this->module( $invoke );
         
-        if( !$assignedModuleName || $fromUnassigned ){
-            $this->result = $result;
+        if( !$module ){
+            return "";
         }
         
-        return $result;
+        if( !$module->getResult() ){
+            $module->execute();
+        }
+        
+        return $module->getResult() ?? "";
     }
     
     function craft()
@@ -337,16 +365,8 @@ class Witch
         return $this->wc->cairn->craft( $this->craft_table, $this->craft_fk );
     }
         
-    function isAllowed( Module $module=null, User $user=null ): bool
+    function isAllowed( Module $module, User $user=null ): bool
     {
-        if( empty($module) && empty($this->invoke) ){
-            return false;
-        }
-        
-        if( empty($module) ){
-            $module = new Module( $this, $this->invoke );
-        }
-        
         if( empty($user) ){
             $user = $this->wc->user;
         }
@@ -406,11 +426,7 @@ class Witch
                 }
             }
         }
-        
-        if( !$permission ){
-            $this->accessDeniedFor  = $module->name;
-        }
-        
+                
         return $permission;
     }
     
