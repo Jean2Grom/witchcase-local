@@ -17,7 +17,6 @@ class Log
     var $logFilename;
     var $currentIP;
     var $errorLogFP;
-    var $backtraceFileBegin;
     
     /** 
      * container
@@ -112,15 +111,6 @@ class Log
             $prefix .= "[ ".date(DATE_RFC2822)." ] [ ".$this->currentIP." ] ";
         }
         
-        if( !isset( $this->backtraceFileBegin ) ){   
-            if( !filter_has_var(INPUT_SERVER, "DOCUMENT_ROOT") ){
-                $this->backtraceFileBegin = 0;  
-            }
-            else {
-                $this->backtraceFileBegin = strlen( filter_input(INPUT_SERVER, "DOCUMENT_ROOT") ) + 1;
-            }   
-        }
-        
         if( !$caller )
         {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
@@ -149,7 +139,7 @@ class Log
             $file = substr( $file, strlen(getcwd())+1 );
         }
         
-        $prefix .= "[ ".substr( $file, $this->backtraceFileBegin );
+        $prefix .= "[ ".$file;
         $prefix .= " on line ".$caller["line"]." ] ";
         
         return $prefix;

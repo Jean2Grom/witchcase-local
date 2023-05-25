@@ -4,7 +4,7 @@ namespace WC\Attribute;
 use WC\Attribute;
 use WC\Datatype\ExtendedDateTime;
 
-class DateTimeAttribute extends Attribute 
+class DatetimeAttribute extends Attribute 
 {
     const ATTRIBUTE_TYPE    = "datetime";
     const ELEMENTS          = [

@@ -71,9 +71,9 @@ class Website
             }
             
             $this->sitesRestrictions[] = $adminisratedSite;
-        }        
+        }
         
-        $this->currentAccess    = $siteAccess ?? array_values($this->access)[0];
+        $this->currentAccess    = $siteAccess ?? array_values($this->access ?? [])[0] ?? '';
         $firstSlashPosition     = strpos($this->currentAccess, '/');
         $this->baseUri          = ($firstSlashPosition !== false)? substr( $this->currentAccess, $firstSlashPosition ): '';
         $this->urlPath          = Witch::urlCleanupString( substr( $this->wc->request->access, strlen($this->currentAccess) ) );
