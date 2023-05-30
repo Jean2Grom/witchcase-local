@@ -153,9 +153,10 @@ class User
         $query  .=  ", `policy`.`position_included` AS `policy_position_included` ";
         $query  .=  ", `policy`.`position_descendants` AS `policy_position_descendants` ";
         $query  .=  ", `policy`.`custom_limitation` AS `policy_custom_limitation` ";
-
+        $query  .=  ", `policy`.`fk_witch` AS `policy_fk_witch` ";
+        
         $query  .=  ", `witch`.* ";
-
+        
         $query  .=  "FROM `user__profile` ";
         $query  .=  "LEFT JOIN `user__policy` AS `policy` ";
         $query  .=      "ON `policy`.`fk_profile` = `user__profile`.`id` ";
@@ -170,6 +171,12 @@ class User
         $policies   = [];
         foreach( $result as $row )
         {
+            if( $row['policy_fk_witch'] 
+                && $row['policy_fk_witch'] !== $row['id'] 
+            ){
+                continue;
+            }
+            
             if( empty($profiles[ $row['profile_id'] ]) ){
                 $profiles[ $row['profile_id'] ] = $row['profile_name'];
             }

@@ -13,10 +13,10 @@ class Website
     
     var $name;
     var $currentAccess;
+    var $site;
     
     var $access;
     var $adminForSites;
-    var $isSkinForSite;    
     var $sitesRestrictions;
     
     var $baseUri;
@@ -47,9 +47,15 @@ class Website
         $this->wc               = $wc;
         $this->name             = $name;
         
+        // Reading non heritable confs variables
         $this->access               = $this->wc->configuration->read($this->name, "access");
-        $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");
-        $this->isSkinForSite        = $this->wc->configuration->read($this->name, "isSkinForSite");
+        $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");        
+        $this->site                 = $this->wc->configuration->read($this->name, "site") ?? $this->name;
+        
+        if( $this->site !== $this->name ){
+            $this->wc->debug->toResume("URL site is acceded by: ".$this->site, 'WEBSITE');
+        }
+        
         
         $this->siteHeritages        = $this->wc->configuration->getSiteHeritage( $this->name );
         $this->siteHeritages[]      = "global";
@@ -105,7 +111,7 @@ class Website
     function getUrlSearchParameters()
     {
         return [
-            'site'  => $this->isSkinForSite ?? $this->name,
+            'site'  => $this->site,
             'url'   => $this->urlPath,
         ];
     }
