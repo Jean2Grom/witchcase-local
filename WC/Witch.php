@@ -426,7 +426,7 @@ class Witch
                 }
             }
         }
-                
+        
         return $permission;
     }
     
@@ -745,5 +745,23 @@ class Witch
         }
         
         return true;
+    }
+    
+    function getUrl( ?Website $forcedWebsite=null )
+    {
+        $website = $forcedWebsite ?? $this->wc->website;
+        
+        if( $this->site !== $website->site ){
+            return null;
+        }
+        
+        if( $forcedWebsite ){            
+            $method = "getFullUrl";
+        }
+        else {
+            $method = "getUrl";   
+        }
+        
+        return call_user_func([$website, $method], $this->url);
     }
 }

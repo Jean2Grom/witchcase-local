@@ -14,11 +14,11 @@
     <body>
         <?php include $this->getIncludeDesignFile('header.php'); ?>
         
-        <?php if( isset($menu) ): ?>
+        <?php if( $this->wc->witch('menu') ): ?>
             <nav>
-                <?php foreach( $menu as $item ): ?>
-                    <a href="<?=$item['href']?>">
-                        <?=$item['name']?>
+                <?php foreach( $this->wc->witch('menu')->daughters as $menuItemWitch ): ?>
+                    <a href="<?=$menuItemWitch->geturl() ?>">
+                        <?=$menuItemWitch->name?>
                     </a>
                 <?php endforeach; ?>
             </nav>
@@ -28,21 +28,16 @@
         <section>
             <div class="breadcrumb">
                 <span class="breadcrumb__label">
-                    Vous &ecirc;tes ici&nbsp;:
+                    <?php //Vous &ecirc;tes ici&nbsp;: ?>
+                    Breadcrumb&nbsp;:
                 </span>
                 
                 <?php foreach( $breadcrumb as $i => $breadcrumbItem ): ?>
-                    <?php if( $i > 0 ): ?>
-                        &nbsp;>&nbsp;
-                    <?php endif; ?>
+                    <?=( $i > 0 )? "&nbsp;>&nbsp": "" ?>
                     <span class="breadcrumb__item">
-                        <?php if( $breadcrumbItem['href'] ): ?>
-                            <a href="<?=$breadcrumbItem['href'] ?>">
-                                <?=$breadcrumbItem['name'] ?>
-                            </a>
-                        <?php else: ?>
+                        <a href="<?=$breadcrumbItem['href'] ?>">
                             <?=$breadcrumbItem['name'] ?>
-                        <?php endif; ?>
+                        </a>
                     </span>
                 <?php endforeach; ?>
                 <div class="clear"></div>

@@ -10,49 +10,30 @@ if( $faviconFileHtmlPath )
 $baseUri        = $this->website->baseUri;
 $currentWitch   = $this->wc->witch();
 
-$selfHref = $baseUri.$currentWitch->url;
-if( !empty($this->wc->request->queryString) ){
-    $selfHref .= '?'.$this->wc->request->queryString;
-}
 $breadcrumb = [
     [
-        "name"  => $currentWitch->name,
-        "href"  => $selfHref,
+        "name"  => $this->wc->witch()->name,
+        "data"  => $this->wc->witch()->data,
+        "href"  => "javascript: location.reload();",
     ]
 ];
+
 $breadcrumbWitch    = $currentWitch->mother;
 while( !empty($breadcrumbWitch) )
 {
-    $uri = $baseUri;
-    if( $breadcrumbWitch->uri != $uri || $this->website->name != $breadcrumbWitch->site ){
-        $uri .= "/view?id=".$breadcrumbWitch->id;
+    $url = $breadcrumbWitch->getUrl();
+    
+    if( $url ){
+        $breadcrumb[]   = [
+            "name"  => $breadcrumbWitch->name,
+            "data"  => $breadcrumbWitch->data,
+            "href"  => $url,
+        ];        
     }
     
-    $breadcrumb[]   = [
-        "name"  => $breadcrumbWitch->name,
-        "href"  => $uri,
-    ];
     $breadcrumbWitch    = $breadcrumbWitch->mother;
 }
 $breadcrumb = array_reverse($breadcrumb);
 
-
-$menu = [
-    [
-        'name'  =>  "Explorer", 
-        'href'  =>  $baseUri, 
-        'class' =>  ''
-    ],
-    [
-        'name'  =>  "Profiles",
-        'href'  =>  $baseUri."/profiles", 
-        'class' =>  ''
-    ],
-    [
-        'name'  =>  "Structures",
-        'href'  =>  $baseUri."/structures", 
-        'class' =>  'last'
-    ],
-];
 
 $this->view();
