@@ -147,20 +147,20 @@
                     <tr>
                         <td>
                             <a href="<?=$upLink ?>" 
-                               title="<?=$targetWitch->mother->name ?>">
+                               title="<?=$targetWitch->mother()->name ?>">
                                 <i class="fas fa-reply rotate-90"></i>
-                                <?=$targetWitch->mother->name ?>
+                                <?=$targetWitch->mother()->name ?>
                             </a>
                         </td>
                         <td>
-                            <?=$targetWitch->mother->site ?>
+                            <?=$targetWitch->mother()->site ?>
                         </td>
                         <td>
-                            <?php if( !empty($targetWitch->mother->invoke) && $targetWitch->mother->hasCraft() ): ?>
+                            <?php if( !empty($targetWitch->mother()->invoke) && $targetWitch->mother()->hasCraft() ): ?>
                                 Module & Contenu
-                            <?php elseif( !empty($targetWitch->mother->invoke) ): ?>
+                            <?php elseif( !empty($targetWitch->mother()->invoke) ): ?>
                                 Module
-                            <?php elseif( $targetWitch->mother->hasCraft() ): ?>
+                            <?php elseif( $targetWitch->mother()->hasCraft() ): ?>
                                 Contenu
                             <?php else: ?>
                                 Répertoire

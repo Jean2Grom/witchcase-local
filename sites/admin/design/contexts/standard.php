@@ -16,7 +16,7 @@
         
         <?php if( $this->wc->witch('menu') ): ?>
             <nav>
-                <?php foreach( $this->wc->witch('menu')->daughters as $menuItemWitch ): ?>
+                <?php foreach( $this->wc->witch('menu')->daughters() as $menuItemWitch ): ?>
                     <a href="<?=$menuItemWitch->geturl() ?>">
                         <?=$menuItemWitch->name?>
                     </a>

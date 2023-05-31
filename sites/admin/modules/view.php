@@ -29,8 +29,8 @@ if( !$targetWitch->id ){
 }
 
 $upLink = false;
-if( !empty($targetWitch->mother) ){
-    $upLink = $this->wc->website->getUrl("view?id=".$targetWitch->mother->id);
+if( $targetWitch->mother() !== false ){
+    $upLink = $this->wc->website->getUrl("view?id=".$targetWitch->mother()->id);
 }
 
 $structuresList = [];
@@ -47,11 +47,11 @@ switch( $action )
         $errors     = [];
         $success    = [];
         foreach( $priorities as $witchId => $witchPriority ){
-            if( !$targetWitch->daughters[ $witchId ]->edit([ 'priority' => $witchPriority ]) ){
-                $errors[] = "La priorité de <strong>".$targetWitch->daughters[ $witchId ]->name."</strong> n'a pas été mise à jour.";
+            if( !$targetWitch->daughters( $witchId )->edit([ 'priority' => $witchPriority ]) ){
+                $errors[] = "La priorité de <strong>".$targetWitch->daughters( $witchId )->name."</strong> n'a pas été mise à jour.";
             }
             else {
-                $success[] = "La priorité de <strong>".$targetWitch->daughters[ $witchId ]->name."</strong> a été mise à jour.";
+                $success[] = "La priorité de <strong>".$targetWitch->daughters( $witchId )->name."</strong> a été mise à jour.";
             }
         }
         
@@ -178,7 +178,7 @@ $subTree = [
         'Type', 
         'Priorité',
     ],
-    'data'      =>  $targetWitch->daughters,
+    'data'      =>  $targetWitch->daughters(),
 ];
 
 $this->view();
