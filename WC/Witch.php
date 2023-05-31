@@ -36,7 +36,6 @@ class Witch
     var $statusLevel        = 0;
     var $status;
     
-    var $uri                = false;
     var $depth              = 0;
     var $position           = [];
     var $modules            = [];
@@ -48,6 +47,10 @@ class Witch
     /** @var WitchCase */
     var $wc;
     
+    /**
+     * This contructor should not be directly used
+     * @param WitchCase $wc
+     */
     function __construct( WitchCase $wc )
     {
         $this->wc = $wc;
@@ -57,15 +60,32 @@ class Witch
         }
     }
     
+    /**
+     * Property setting 
+     * @param string $name
+     * @param mixed $value
+     * @return void
+     */
     public function __set(string $name, mixed $value): void {
         $this->properties[$name] = $value;
     }
     
+    /**
+     * Property reading
+     * @param string $name
+     * @return mixed
+     */
     public function __get(string $name): mixed {
         return $this->properties[$name] ?? null;
     }
     
-    static function createFromId( WitchCase $wc, int $id )
+    /**
+     * Witch factory class, reads witch data associated whith id
+     * @param WitchCase $wc
+     * @param int $id   witch id to create
+     * @return mixed implemented Witch obeject, boolean false if data not found
+     */
+    static function createFromId( WitchCase $wc, int $id ): mixed
     {
         $data = WitchDA::readFromId($wc, $id);
         
@@ -76,6 +96,12 @@ class Witch
         return self::createFromData( $wc, $data );
     }
     
+    /**
+     * Witch factory class, implements witch whith data provided
+     * @param WitchCase $wc
+     * @param array $data
+     * @return self
+     */
     static function createFromData(  WitchCase $wc, array $data ): self
     {
         $witch = new self( $wc );
@@ -96,15 +122,6 @@ class Witch
         
         if( $witch->depth == 0 ){
             $witch->mother = false;
-        }
-        
-        if( !empty($data['url']) )
-        {
-            $witch->uri = "";
-            if( $wc->website->baseUri != '/' ){
-                $witch->uri = $wc->website->baseUri;
-            }
-            $witch->uri .= $witch->url;
         }
         
         return $witch;
@@ -277,6 +294,10 @@ class Witch
     
     function hasCraft(){
         return !empty($this->properties[ 'craft_table' ]) && !empty($this->properties[ 'craft_fk' ]);
+    }
+    
+    function hasInvoke(){
+        return !empty($this->properties[ 'invoke' ]);
     }
     
     function invoke( ?string $assignedModuleName=null, bool $isRedirection=false ): string
@@ -747,7 +768,7 @@ class Witch
         return true;
     }
     
-    function getUrl( ?Website $forcedWebsite=null )
+    function getUrl( ?array $queryParams=null, ?Website $forcedWebsite=null )
     {
         $website = $forcedWebsite ?? $this->wc->website;
         
@@ -762,6 +783,16 @@ class Witch
             $method = "getUrl";   
         }
         
-        return call_user_func([$website, $method], $this->url);
+        $queryString    = '';
+        $separator      = '?';
+        if( $queryParams ){
+            foreach( $queryParams as $paramKey => $paramValue )
+            {
+                $queryString    .=  $separator.$paramKey.'='.$paramValue;
+                $separator      =   '&';
+            }
+        }
+        
+        return call_user_func([$website, $method], $this->url.$queryString);
     }
 }

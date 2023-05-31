@@ -30,12 +30,7 @@ if( !$targetWitch ){
 
 $upLink = false;
 if( !empty($targetWitch->mother) ){
-    if( $targetWitch->mother->invoke == 'root' ){
-        $upLink = $targetWitch->mother->uri;
-    }
-    else {
-        $upLink = $this->wc->website->baseUri."/view?id=".$targetWitch->mother->id;
-    }
+    $upLink = $this->wc->website->getUrl("view?id=".$targetWitch->mother->id);
 }
 
 $structuresList = [];
@@ -186,4 +181,4 @@ $subTree = [
     'data'      =>  $targetWitch->daughters,
 ];
 
-include $this->getDesignFile();
+$this->view();

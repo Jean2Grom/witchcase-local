@@ -10,6 +10,7 @@ $action = $this->wc->request->param('action');
 if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
+
 $alerts         = $this->wc->user->getAlerts();
 $targetWitch    = $this->wc->witch("target");
 if( !$targetWitch )
@@ -139,14 +140,6 @@ switch( $action )
     break;    
 }
 
-$cancelHref = false;
-if( $targetWitch->invoke == 'root' ){
-    $cancelHref = $targetWitch->uri;
-}
-else {
-    $cancelHref = $this->wc->website->getUrl("view?id=".$targetWitch->id);
-}
+$cancelHref = $this->wc->website->getUrl("view?id=".$targetWitch->id);
 
-$this->setContext('standard');
-
-include $this->getDesignFile();
+$this->view();

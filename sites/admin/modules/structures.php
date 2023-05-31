@@ -29,8 +29,6 @@ else {
 }
 
 $messages = [];
-$baseUri  = $this->witch->uri;
-
 if( $action === "publishStructure" )
 {
     $structureName      = $this->wc->request->param("edit", 'get');
@@ -102,21 +100,20 @@ if( strcmp($action, "createStructure") == 0 )
         {
             Structure::create($this->wc, $name);
             
-            $queryString = "?edit=".$name;
+            $queryParams = [ "edit" => $name ];
             
             $structureCopyPost = $this->wc->request->param("structureCopy");
             
             if( $structureCopyPost ){
-                $queryString .= "&base=".$structureCopyPost;
+                $queryParams = [ "base" => $structureCopyPost ];
             }
             
-            header( 'Location: '.$this->wc->website->getFullUrl($this->witch->url.$queryString) );
+            header( 'Location: '.$this->witch->getUrl($queryParams, $this->wc->website) );
             exit;
         }
     }
     
-    $this->setContext('standard');
-    include $this->getDesignFile('structures/create.php');
+    $this->view('structures/create.php');
 }
 
 if( $action === "editStructure" )
@@ -173,12 +170,9 @@ if( $action === "editStructure" )
         }
     }
     
-    $viewHref   = $baseUri."?view=".$structureName;
+    $viewHref   = $this->witch->getUrl([ 'view' => $structureName ]);
     
-    $this->setContext('standard');
-
-    include $this->getDesignFile('structures/edit.php');
-
+    $this->view('structures/edit.php');
 }
 
 if( $action === "viewStructure" )
@@ -190,11 +184,9 @@ if( $action === "viewStructure" )
     $attributes         = $structure->attributes();
     $archivedAttributes = [];
     
-    $modificationHref   = $baseUri."?edit=".$structure->name;
+    $modificationHref   = $this->witch->getUrl([ 'edit' => $structure->name ]);
     
-    $this->setContext('standard');
-    
-    include $this->getDesignFile('structures/view.php');
+    $this->view('structures/view.php');
 }
 
 if( $action === "deleteStructures" )
@@ -223,11 +215,9 @@ if( $action === "listStructures" )
     
     foreach( $structures as $key => $value )
     {
-        $structures[ $key ]['viewHref']  =   $baseUri."?view=".$value['name'];
+        $structures[ $key ]['viewHref']  =   $this->witch->getUrl([ 'view' => $value['name'] ]);
         $structures[ $key ]['creation']  =   new ExtendedDateTime($value['created']);
     }
     
-    $this->setContext('standard');
-
-    include $this->getDesignFile();
+    $this->view();
 }

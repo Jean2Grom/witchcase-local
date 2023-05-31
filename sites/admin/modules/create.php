@@ -1,5 +1,4 @@
 <?php
-
 use WC\Website;
 use WC\Structure;
 
@@ -166,18 +165,7 @@ foreach( $sites as $site ){
     }
 }
 
-$statusGlobal = $this->wc->configuration->read("global", "status");
+$statusGlobal   = $this->wc->configuration->read("global", "status");
+$cancelHref     = $this->wc->website->getUrl("view?id=".$motherWitch->id);
 
-$cancelHref = false;
-if( $motherWitch ){
-    if( $motherWitch->invoke == 'root' ){
-        $cancelHref = $motherWitch->uri;
-    }
-    else {
-        $cancelHref = $this->wc->website->baseUri."/view?id=".$motherWitch->id;
-    }
-}
-
-$this->setContext('standard');
-
-include $this->getDesignFile();
+$this->view();

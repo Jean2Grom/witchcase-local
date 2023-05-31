@@ -28,7 +28,6 @@
         <section>
             <div class="breadcrumb">
                 <span class="breadcrumb__label">
-                    <?php //Vous &ecirc;tes ici&nbsp;: ?>
                     Breadcrumb&nbsp;:
                 </span>
                 
@@ -65,7 +64,7 @@
                         <?php endif; ?>
                         
                         <?=$this->wc->witch()->name ?>
-                        <?=$this->wc->witch("target")?  "&nbsp;:": ($this->wc->witch("mother")? "depuis l'élément&nbsp;:": "") ?>
+                        <?=$this->wc->witch("target")->id?  "&nbsp;:": ($this->wc->witch("mother")->id? "depuis l'élément&nbsp;:": "") ?>
                         <?=$this->wc->witch("target")->name ?? $this->wc->witch("mother")->name ?? "" ?>                        
                     <?php endif; ?>
                 </a>

@@ -1,6 +1,5 @@
 <?php
 
-$baseUri    = "https://".$this->localisation->siteAccess;
 $folder     = "contexts/".$this->localisation->site;
 
 $rootLocalisation   = false;
@@ -28,7 +27,7 @@ else
     {
         $menu[] =   [
             'name'  =>  $child->name,
-            'url'   =>  $baseUri.$child->url,
+            'url'   =>  $child->getUrl(),
         ];
     }
     
