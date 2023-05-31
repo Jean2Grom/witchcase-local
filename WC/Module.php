@@ -178,7 +178,7 @@ class Module
         }
         
         $daughters = [];
-        foreach( $witch->daughters as $daughterKey => $daughterWitch ){
+        foreach( $witch->daughters() as $daughterKey => $daughterWitch ){
             if( $daughterWitch->statusLevel <= $this->maxStatus ){
                 $daughters[ $daughterKey ] = $daughterWitch;
             }

@@ -36,18 +36,21 @@ class Witch
     var $statusLevel        = 0;
     var $status;
     
-    var $uri                = false;
     var $depth              = 0;
     var $position           = [];
     var $modules            = [];
     
     var $mother;
-    var $sisters            = [];
-    var $daughters          = [];    
+    var $sisters;
+    var $daughters;
     
     /** @var WitchCase */
     var $wc;
     
+    /**
+     * This contructor should not be directly used
+     * @param WitchCase $wc
+     */
     function __construct( WitchCase $wc )
     {
         $this->wc = $wc;
@@ -57,15 +60,32 @@ class Witch
         }
     }
     
+    /**
+     * Property setting 
+     * @param string $name
+     * @param mixed $value
+     * @return void
+     */
     public function __set(string $name, mixed $value): void {
         $this->properties[$name] = $value;
     }
     
+    /**
+     * Property reading
+     * @param string $name
+     * @return mixed
+     */
     public function __get(string $name): mixed {
         return $this->properties[$name] ?? null;
     }
     
-    static function createFromId( WitchCase $wc, int $id )
+    /**
+     * Witch factory class, reads witch data associated whith id
+     * @param WitchCase $wc
+     * @param int $id   witch id to create
+     * @return mixed implemented Witch obeject, boolean false if data not found
+     */
+    static function createFromId( WitchCase $wc, int $id ): mixed
     {
         $data = WitchDA::readFromId($wc, $id);
         
@@ -76,6 +96,12 @@ class Witch
         return self::createFromData( $wc, $data );
     }
     
+    /**
+     * Witch factory class, implements witch whith data provided
+     * @param WitchCase $wc
+     * @param array $data
+     * @return self
+     */
     static function createFromData(  WitchCase $wc, array $data ): self
     {
         $witch = new self( $wc );
@@ -98,19 +124,14 @@ class Witch
             $witch->mother = false;
         }
         
-        if( !empty($data['url']) )
-        {
-            $witch->uri = "";
-            if( $wc->website->baseUri != '/' ){
-                $witch->uri = $wc->website->baseUri;
-            }
-            $witch->uri .= $witch->url;
-        }
-        
         return $witch;
     }
     
-    function propertiesRead()
+    /**
+     * Update Object properties based of object var "properties"
+     * @return void
+     */
+    function propertiesRead(): void
     {
         if( !empty($this->properties['id']) ){
             $this->id = (int) $this->properties['id'];
@@ -133,29 +154,98 @@ class Witch
         return;
     }
     
+    /**
+     * Determine if the witch is associated with a craft (ie a content)
+     * @return bool
+     */
+    function hasCraft(): bool {
+        return !empty($this->properties[ 'craft_table' ]) && !empty($this->properties[ 'craft_fk' ]);
+    }
+    
+    /**
+     * Determine if the witch is associated with a invocation (ie a module)
+     * @return bool
+     */
+    function hasInvoke(): bool {
+        return !empty($this->properties[ 'invoke' ]);
+    }
+    
+    
+    /**
+     * Mother witch manipulation
+     * @param self $mother
+     * @return self
+     */
     function setMother( self $mother ): self
     {
         $this->unsetMother();
         
         $this->mother = $mother;
-        if( !in_array($this->id, array_keys($mother->daughters)) ){
+        if( !in_array($this->id, array_keys($mother->daughters ?? [])) ){
             $mother->addDaughter($this);
         }
         
         return $this;
     }
     
+    /**
+     * Mother witch manipulation
+     * @return self
+     */
     function unsetMother(): self
     {
         if( !empty($this->mother) && !empty($this->mother->daughters[ $this->id ]) ){
             unset($this->mother->daughters[ $this->id ]);
         }
         
-        $this->mother = NULL;
+        $this->mother = null;
         
         return $this;
     }
     
+    /**
+     * Mother witch test
+     * @param self $potentialDaughter
+     * @return bool
+     */
+    function isMotherOf( self $potentialDaughter ): bool
+    {
+        if( $potentialDaughter->depth != $this->depth + 1 ){
+            return false;
+        }
+        
+        $isDaughter = true;        
+        for( $i=1; $i<=$this->depth; $i++ ){
+            if( $this->{'level_'.$i} != $potentialDaughter->{'level_'.$i} )
+            {
+                $isDaughter = false;
+                break;
+            }
+        }
+        
+        return $isDaughter;
+    }
+    
+    /**
+     * Read mother witch (get it if needed), 
+     * return mother witch or false if witch is root
+     * @return mixed
+     */
+    function mother(): mixed
+    {
+        if( is_null($this->mother) ){
+            $this->setMother( WitchDA::fetchAncestors($this->wc, $this->id, true) );
+        }
+        
+        return $this->mother;
+    }
+    
+    
+    /**
+     * Sister witches manipulation
+     * @param self $sister
+     * @return self
+     */
     function addSister( self $sister ): self
     {
         if( empty($this->sisters) ){
@@ -169,6 +259,11 @@ class Witch
         return $this;
     }
     
+    /**
+     * Sister witches manipulation
+     * @param self $sister
+     * @return self
+     */
     function removeSister( self $sister ): self
     {
         if( !empty($this->sisters[ $sister->id ]) ){
@@ -182,6 +277,10 @@ class Witch
         return $this;
     }
     
+    /**
+     * Sister witches manipulation
+     * @return array
+     */
     function listSistersIds(): array
     {
         $list = [];
@@ -192,7 +291,116 @@ class Witch
         return $list;
     }
     
-    function reorderWitches( array $witchesList ): array
+    /**
+     * Read Sister witches (get them if needed), 
+     * return mother witch or false if witch is root
+     * @return mixed
+     */
+    function sisters( ?int $id=null ): mixed
+    {
+        if( is_null($this->sisters) && $this->mother() ){
+            foreach( WitchDA::fetchDescendants($this->wc, $this->mother()->id, true) as $sisterWitch ){
+                $this->addSister($sisterWitch);
+            }
+        }
+        elseif( is_null($this->sisters) ){
+            $this->sisters = false;
+        }
+        
+        if( !$id ){
+            return $this->sisters;
+        }
+        
+        return  $this->sisters[ $id ] 
+                    ?? Witch::createFromData($this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]);
+    }
+    
+    
+    /**
+     * Daughter witches manipulation
+     * @param self $daughter
+     * @return self
+     */
+    function addDaughter( self $daughter ): self
+    {
+        $this->daughters[ $daughter->id ]   = $daughter;
+        $daughter->mother                   = $this;
+        
+        return $this->reorderDaughters();
+    }
+    
+    /**
+     * Daughter witches manipulation
+     * @return self
+     */
+    function reorderDaughters(): self
+    {
+        $daughters                  = $this->daughters;
+        $this->daughters            = self::reorderWitches( $daughters );
+        
+        return $this;
+    }
+    
+    /**
+     * Daughter witches manipulation
+     * @param self $daughter
+     * @return self
+     */
+    function removeDaughter( self $daughter ): self
+    {
+        if( !empty($this->daughters[ $daughter->id ]) ){
+            unset($this->daughters[ $daughter->id ]);
+        }
+        
+        if( $daughter->mother->id == $this->id ){
+            $daughter->mother = null;
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * Daughter witches manipulation
+     * @return array
+     */
+    function listDaughtersIds(): array
+    {
+        $list = [];
+        if( !empty($this->daughters) ){
+            $list = array_keys($this->daughters);
+        }
+        
+        return $list;
+    }
+    
+    /**
+     * Read Daughter witches (get them if needed), 
+     * return mother witch or false if witch is root
+     * @return mixed
+     */
+    function daughters( ?int $id=null ): mixed
+    {
+        if( is_null($this->daughters) )
+        {
+            $this->daughters = WitchDA::fetchDescendants($this->wc, $this->id, true);
+            $this->reorderDaughters();
+        }
+        
+        if( !$id ){
+            return $this->daughters;
+        }
+        
+        return  $this->daughters[ $id ] 
+                    ?? Witch::createFromData($this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]);
+    }
+    
+    
+    /**
+     * Reorder a witch array based on priority
+     * @param array $witchesList
+     * @return array
+     */
+    static function reorderWitches( array $witchesList ): array
     {
         $orderedWitchesIds = [];
         foreach( $witchesList as $witchItem ) 
@@ -217,68 +425,13 @@ class Witch
         return $orderedWitches;
     }
     
-    function addDaughter( self $daughter ): self
-    {
-        $this->daughters[ $daughter->id ]   = $daughter;
-        $daughter->mother                   = $this;
-        
-        return $this->reorderDaughters();
-    }
     
-    function reorderDaughters(): self
-    {
-        $daughters                  = $this->daughters;
-        $this->daughters            = $this->reorderWitches( $daughters );
-        
-        return $this;
-    }
-    
-    function removeDaughter( self $daughter ): self
-    {
-        if( !empty($this->daughters[ $daughter->id ]) ){
-            unset($this->daughters[ $daughter->id ]);
-        }
-        
-        if( $daughter->mother->id == $this->id ){
-            $daughter->mother = NULL;
-        }
-        
-        return $this;
-    }
-    
-    function listDaughtersIds(): array
-    {
-        $list = [];
-        if( !empty($this->daughters) ){
-            $list = array_keys($this->daughters);
-        }
-        
-        return $list;
-    }
-    
-    
-    function isMotherOf( self $potentialDaughter ): bool
-    {
-        if( $potentialDaughter->depth != $this->depth + 1 ){
-            return false;
-        }
-        
-        $isDaughter = true;        
-        for( $i=1; $i<=$this->depth; $i++ ){
-            if( $this->{'level_'.$i} != $potentialDaughter->{'level_'.$i} )
-            {
-                $isDaughter = false;
-                break;
-            }
-        }
-        
-        return $isDaughter;
-    }
-    
-    function hasCraft(){
-        return !empty($this->properties[ 'craft_table' ]) && !empty($this->properties[ 'craft_fk' ]);
-    }
-    
+    /**
+     * Invoke the module 
+     * @param string|null $assignedModuleName
+     * @param bool $isRedirection
+     * @return string
+     */
     function invoke( ?string $assignedModuleName=null, bool $isRedirection=false ): string
     {
         if( !empty($assignedModuleName) ){
@@ -321,50 +474,14 @@ class Witch
         $this->modules[ $moduleName ]   = $module;
         
         return $module->execute();
-    }
+    }    
     
-    
-    function module( ?string $invoke=null )
-    {
-        $moduleInvoked  = $invoke ?? $this->properties["invoke"];
-        
-        if( !$moduleInvoked )
-        {
-            $this->wc->debug( "Try to reach unnamed module");
-            return false;
-        }        
-        
-        if( !isset($this->modules[ $moduleInvoked ]) ){
-            $this->invoke( $moduleInvoked );
-        }
-        
-        return $this->modules[ $moduleInvoked ];
-    }
-    
-    function result( ?string $invoke=null )
-    {
-        $module = $this->module( $invoke );
-        
-        if( !$module ){
-            return "";
-        }
-        
-        if( !$module->getResult() ){
-            $module->execute();
-        }
-        
-        return $module->getResult() ?? "";
-    }
-    
-    function craft()
-    {
-        if( !$this->hasCraft() ){
-            return false;
-        }
-        
-        return $this->wc->cairn->craft( $this->craft_table, $this->craft_fk );
-    }
-        
+    /**
+     * Is user allowed to execute the module
+     * @param Module $module
+     * @param User $user
+     * @return bool
+     */
     function isAllowed( Module $module, User $user=null ): bool
     {
         if( empty($user) ){
@@ -430,6 +547,67 @@ class Witch
         return $permission;
     }
     
+    /**
+     * Read witch module, invoke it if needed
+     * @param string|null $invoke
+     * @return boolean
+     */
+    function module( ?string $invoke=null )
+    {
+        $moduleInvoked  = $invoke ?? $this->properties["invoke"];
+        
+        if( !$moduleInvoked )
+        {
+            $this->wc->debug( "Try to reach unnamed module");
+            return false;
+        }        
+        
+        if( !isset($this->modules[ $moduleInvoked ]) ){
+            $this->invoke( $moduleInvoked );
+        }
+        
+        return $this->modules[ $moduleInvoked ];
+    }
+    
+    /**
+     * Read witch module result, invoke it if needed
+     * @param string|null $invoke
+     * @return string
+     */
+    function result( ?string $invoke=null )
+    {
+        $module = $this->module( $invoke );
+        
+        if( !$module ){
+            return "";
+        }
+        
+        if( !$module->getResult() ){
+            $module->execute();
+        }
+        
+        return $module->getResult() ?? "";
+    }
+    
+    /**
+     * Craft witch content, store it in the Cairn (if exists, only read it)
+     * @return mixed
+     */
+    function craft()
+    {
+        if( !$this->hasCraft() ){
+            return false;
+        }
+        
+        return $this->wc->cairn->craft( $this->craft_table, $this->craft_fk );
+    }
+    
+    
+    /**
+     * Update Witch
+     * @param array $params
+     * @return mixed
+     */
     function edit( array $params ): mixed
     {
         foreach( $params as $field => $value ){
@@ -500,6 +678,11 @@ class Witch
         return $updateResult;
     }
     
+    /**
+     * Usefull for cleaning up url strings
+     * @param string $urlRaw
+     * @return string
+     */
     static function urlCleanupString( string $urlRaw ): string
     {
         $url    = "";
@@ -519,7 +702,11 @@ class Witch
         return $url;
     }
 
-
+    /**
+     * Usefull for string standardisation (urls, names)
+     * @param string $string
+     * @return string
+     */
     static function cleanupString( string $string ): string
     {
         $characters =   array(
@@ -544,6 +731,11 @@ class Witch
     }
     
     
+    /**
+     * Add a new witch daughter 
+     * @param array $params 
+     * @return bool
+     */
     function createDaughter( array $params ): bool
     {
         $name   = trim($params['name'] ?? "");
@@ -599,6 +791,11 @@ class Witch
         return WitchDA::create($this->wc, $params);
     }
     
+    /**
+     * If with creation is at the top leaf of matriarcal arborescence,
+     * Add a new level to witches genealogical tree
+     * @return bool
+     */
     function addLevel(): bool
     {
         $depth = WitchDA::increasePlateformDepth($this->wc);
@@ -610,19 +807,25 @@ class Witch
         
         return true;
     }
-        
+    
+    
+    /**
+     * On automatic creation of new url, find the last logical parent url
+     * @param string $site
+     * @return string
+     */
     function findPreviousUrlForSite( string $site ): string
     {
         $url    = "";
         $mother = $this->mother;
+        if( is_null($mother) )
+        {
+            $this->setMother( WitchDA::fetchAncestors($this->wc, $this->id, true, [ $site, $this->site ]) );
+            $mother = $this->mother ?? false;
+        }
+        
         while( $mother !== false && $mother->depth > 0 )
         {
-            if( is_null($mother) )
-            {
-                $this->setMother( WitchDA::fetchAncestors($this->wc, $this->id, true, [ $site, $this->site ]) );
-                $mother = $this->mother ?? false;
-            }
-            
             if( $mother->site == $site ){
                 $url = $mother->url;
                 break;
@@ -630,10 +833,17 @@ class Witch
             
             $mother = $mother->mother;
         }
-                
+        
         return $url;
     }
     
+    
+    /**
+     * Check new url validity, add a suffix if it's not
+     * @param string $site
+     * @param string $url
+     * @return string
+     */
     function checkUrl( string $site, string $url ): string
     {
         $result = WitchDA::getUrlData($this->wc, $site, $url, (int) $this->id);
@@ -669,9 +879,16 @@ class Witch
         return $url;
     }
     
+    
+    /**
+     * Delete witch if it's not the root,
+     * Delete all descendants and their associated craft if this is their only witch association
+     * @param bool $fetchDescendants
+     * @return bool
+     */
     function delete( bool $fetchDescendants=true ): bool
     {
-        if( $this->mother === false || $this->depth == 0 ){
+        if( $this->mother() === false || $this->depth == 0 ){
             return false;
         }
         
@@ -681,8 +898,8 @@ class Witch
             }
         }
         
-        $deleteIds = array_keys($this->daughters);
-        foreach( $this->daughters as $daughter ){
+        $deleteIds = array_keys($this->daughters ?? []);
+        foreach( $this->daughters ?? [] as $daughter ){
             if( !$daughter->delete(false) ){
                 return false;
             }
@@ -696,6 +913,11 @@ class Witch
         return WitchDA::delete($this->wc, $deleteIds);
     }    
     
+    /**
+     * Delete associated craft if this is their only witch association,
+     * if not only remove this association
+     * @return bool
+     */
     function removeCraft(): bool
     {
         if( !$this->hasCraft() ){
@@ -709,6 +931,11 @@ class Witch
         return $this->edit(['craft_table' => null, 'craft_fk' => null]);
     }
     
+    /**
+     * Add new craft from past structure
+     * @param Structure $structure
+     * @return bool
+     */
     function addStructure( Structure $structure ): bool
     {
         $craftId = $structure->createCraft( $this->name );
@@ -724,6 +951,11 @@ class Witch
         return $this->edit([ 'craft_table' => $structure->table, 'craft_fk' => $craftId ]);
     }
     
+    /**
+     * Add craft
+     * @param Craft $craft
+     * @return bool
+     */
     function addCraft( Craft $craft ): bool
     {
         if( $this->hasCraft() && $this->craft()->countWitches() == 1 ){
@@ -734,7 +966,12 @@ class Witch
         
         return $this->edit([ 'craft_table' => $craft->structure->table, 'craft_fk' => $craft->id ]);
     }
-    
+        
+    /**
+     * Test if witch is a descendant
+     * @param self $potentialDescendant
+     * @return bool
+     */
     function isParent( self $potentialDescendant ): bool
     {
         $potentialDescendantPasition = $potentialDescendant->position;
@@ -747,11 +984,19 @@ class Witch
         return true;
     }
     
-    function getUrl( ?Website $forcedWebsite=null )
+    
+    /**
+     * Generate this witch url, 
+     * relative if no forcedWebsite is passed, full if there is one
+     * @param array|null $queryParams
+     * @param Website|null $forcedWebsite
+     * @return mixed
+     */
+    function getUrl( ?array $queryParams=null, ?Website $forcedWebsite=null ): mixed
     {
         $website = $forcedWebsite ?? $this->wc->website;
         
-        if( $this->site !== $website->site ){
+        if( $this->site !== $website->site || !$this->url ){
             return null;
         }
         
@@ -762,6 +1007,16 @@ class Witch
             $method = "getUrl";   
         }
         
-        return call_user_func([$website, $method], $this->url);
+        $queryString    = '';
+        $separator      = '?';
+        if( $queryParams ){
+            foreach( $queryParams as $paramKey => $paramValue )
+            {
+                $queryString    .=  $separator.$paramKey.'='.$paramValue;
+                $separator      =   '&';
+            }
+        }
+        
+        return call_user_func([$website, $method], $this->url.$queryString);
     }
 }

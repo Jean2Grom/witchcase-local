@@ -52,22 +52,14 @@ function recursiveTree( WC\Module $module, \WC\Witch $witch, $website, $currentI
         $daughters[ $subTree['id'] ]    = $subTree;
     }
     
-    $uri = $website->baseUri;
-    if( $witch->uri != $uri || $website->name != $witch->site ){
-        if( substr($uri, -1) !== '/'){
-            $uri .= '/';            
-        }
-        $uri .= "view?id=".$witch->id;
-    }
-    
     $tree   = [ 
         'id'                => $witch->id,
-        'uri'               => $uri,
+        'uri'               => $website->getUrl("view?id=".$witch->id),
         'name'              => $witch->name,
         'site'              => $witch->site ?? "",
         'description'       => $witch->data,
         'craft'             => $witch->hasCraft(),
-        'invoke'            => !empty($witch->invoke),
+        'invoke'            => $witch->hasInvoke(),
         'daughters'         => $daughters,
         'daughters_orders'  => array_keys( $daughters ),
         'path'              => $path,

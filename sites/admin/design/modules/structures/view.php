@@ -32,7 +32,7 @@
 <div id="action-controls">
     <form   method="post"
             style="width: auto; float: left; margin-right: 5px;"
-            action="<?=$baseUri?>">
+            action="<?=$this->witch->getUrl() ?>">
         <input  type="hidden"
                 name="structure"
                 value="<?=$structure->name?>" />
@@ -41,7 +41,7 @@
                 value="Supprimer Structure" />
     </form>
     
-    <a href="<?=$baseUri?>">
+    <a href="<?=$this->witch->getUrl() ?>">
         <input  type="button" 
                 title="Revenir à la liste des structures" 
                 value="Liste des structures" 

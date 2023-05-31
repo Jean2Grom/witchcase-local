@@ -85,14 +85,14 @@ $(document).ready(function()
                 newArborescenceLevelHtml    +=      '<i class="fas fa-folder" ';
                 newArborescenceLevelHtml    +=          'title="ID: ' + daughterData['id'] + '"></i>';
             }
-
+            
             newArborescenceLevelHtml    +=          '<a class="arborescence-level__witch__name" ';
             newArborescenceLevelHtml    +=              'href="' + daughterData['uri'] + '" ';
             newArborescenceLevelHtml    +=              'title="' + daughterData['description'] + '">';
             newArborescenceLevelHtml    +=              daughterData['name'];
             newArborescenceLevelHtml    +=              '&nbsp;&nbsp;';
             newArborescenceLevelHtml    +=          '</a>';
-
+            
             if( Object.keys(daughterData['daughters']).length > 0 ){
                 newArborescenceLevelHtml    +=          '<span class="arborescence-level__witch__daughters-display">';
                 newArborescenceLevelHtml    +=              '<i class="fas fa-chevron-down" title="Display daughters"></i>';

@@ -25,7 +25,7 @@ if( empty($menu) )
     {
         $menu[] =   [
             'name'  =>  $child->name,
-            'url'   =>  $baseUri.$child->url,
+            'url'   =>  $child->getUrl(),
         ];
     }
     

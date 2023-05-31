@@ -133,15 +133,7 @@ foreach( $sites as $site ){
     }
 }
 
-$statusGlobal = $this->wc->configuration->read("global", "status");
+$statusGlobal   = $this->wc->configuration->read("global", "status");
+$cancelHref     = $this->wc->website->getUrl("view?id=".$targetWitch->id);
 
-if( $targetWitch->invoke == 'root' ){
-    $cancelHref = $targetWitch->uri;
-}
-else {
-    $cancelHref = $this->wc->website->baseUri."/view?id=".$targetWitch->id;
-}
-
-$this->setContext('standard');
-
-include $this->getDesignFile();
+$this->view();

@@ -17,7 +17,7 @@ if( !in_array($action, $possibleActionsList) ){
 
 $targetWitch = $this->wc->witch("target");
 
-if( !$targetWitch ){
+if( !$targetWitch->id ){
     $alert = [
         'level'     =>  'error',
         'message'   =>  "L'élément devant être visualisé n'a pas été trouvé."
@@ -29,13 +29,8 @@ if( !$targetWitch ){
 }
 
 $upLink = false;
-if( !empty($targetWitch->mother) ){
-    if( $targetWitch->mother->invoke == 'root' ){
-        $upLink = $targetWitch->mother->uri;
-    }
-    else {
-        $upLink = $this->wc->website->baseUri."/view?id=".$targetWitch->mother->id;
-    }
+if( $targetWitch->mother() !== false ){
+    $upLink = $this->wc->website->getUrl("view?id=".$targetWitch->mother()->id);
 }
 
 $structuresList = [];
@@ -52,11 +47,11 @@ switch( $action )
         $errors     = [];
         $success    = [];
         foreach( $priorities as $witchId => $witchPriority ){
-            if( !$targetWitch->daughters[ $witchId ]->edit([ 'priority' => $witchPriority ]) ){
-                $errors[] = "La priorité de <strong>".$targetWitch->daughters[ $witchId ]->name."</strong> n'a pas été mise à jour.";
+            if( !$targetWitch->daughters( $witchId )->edit([ 'priority' => $witchPriority ]) ){
+                $errors[] = "La priorité de <strong>".$targetWitch->daughters( $witchId )->name."</strong> n'a pas été mise à jour.";
             }
             else {
-                $success[] = "La priorité de <strong>".$targetWitch->daughters[ $witchId ]->name."</strong> a été mise à jour.";
+                $success[] = "La priorité de <strong>".$targetWitch->daughters( $witchId )->name."</strong> a été mise à jour.";
             }
         }
         
@@ -183,9 +178,7 @@ $subTree = [
         'Type', 
         'Priorité',
     ],
-    'data'      =>  $targetWitch->daughters,
+    'data'      =>  $targetWitch->daughters(),
 ];
 
-$this->setContext('standard');
-
-include $this->getDesignFile();
+$this->view();

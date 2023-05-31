@@ -18,7 +18,7 @@ $breadcrumb = [
     ]
 ];
 
-$breadcrumbWitch    = $currentWitch->mother;
+$breadcrumbWitch    = $currentWitch->mother();
 while( !empty($breadcrumbWitch) )
 {
     $url = $breadcrumbWitch->getUrl();
@@ -31,7 +31,7 @@ while( !empty($breadcrumbWitch) )
         ];        
     }
     
-    $breadcrumbWitch    = $breadcrumbWitch->mother;
+    $breadcrumbWitch    = $breadcrumbWitch->mother();
 }
 $breadcrumb = array_reverse($breadcrumb);
 
