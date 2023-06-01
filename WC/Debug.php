@@ -403,9 +403,17 @@ class Debug
      * @return void
      * @throws \Exception
      */
-    function throwException( string $msg ): void
-    {
+    function throwException( string $msg ): void {
         throw new \Exception( $msg );
+    }
+    
+    /**
+     * Other name for throwException
+     * @param string $msg
+     * @return void
+     */
+    function die( string $msg ): void {
+        $this->throwException($msg);
     }
     
     /**
