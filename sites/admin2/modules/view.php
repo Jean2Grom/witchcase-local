@@ -1,6 +1,7 @@
 <?php
 use WC\Structure;
 use WC\Craft\Draft;
+use WC\Website;
 
 $possibleActionsList = [
     'edit-priorities',
@@ -180,5 +181,28 @@ $subTree = [
     ],
     'data'      =>  $targetWitch->daughters(),
 ];
+
+
+$sites  = [];
+if( $this->wc->website->sitesRestrictions ){
+    $sites = $this->wc->website->sitesRestrictions;
+}
+else {
+    $sites = array_keys($this->wc->configuration->sites);
+}
+
+$websitesList   = [];
+foreach( $sites as $site ){
+    if( $site == $this->wc->website->name ){
+        $website = $this->wc->website;
+    }
+    else {
+        $website = new Website( $this->wc, $site );
+    }
+    
+    if( $website->site == $website->name ) {
+        $websitesList[ $site ] = $website;
+    }
+}
 
 $this->view();

@@ -36,10 +36,6 @@
                 Supprimer
             </button>
         <?php endif; ?>
-        <button class="" 
-                data-href="<?=$editCraftWitchHref ?>"
-                id="witch__edit">
-            Modifier
-        </button>
+        <button class="view-edit-invoke-toggle">Edit</button>
     </div>
 </div>

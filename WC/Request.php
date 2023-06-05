@@ -59,7 +59,7 @@ class Request
         }
     }
     
-    function param( string $name, mixed $method=false, int $filter=FILTER_DEFAULT, int $secondaryFiler=FILTER_NULL_ON_FAILURE )
+    function param( string $name, mixed $method=false, int $filter=FILTER_DEFAULT, int $secondaryFiler=0 )
     {
         if( (!$method && $this->method == 'POST') || (strtolower( $method ) == 'post') ){
             $paramType = INPUT_POST;

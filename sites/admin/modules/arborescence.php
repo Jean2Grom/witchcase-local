@@ -1,6 +1,6 @@
 <?php
 
-$currentId = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT, 0) ?? $this->wc->witch()->id;
+$currentId = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT) ?? $this->wc->witch()->id;
 
 $root = recursiveTree( $this, $this->witch, $this->wc->website, $currentId );
 $tree = [ $this->witch->id => $root ];

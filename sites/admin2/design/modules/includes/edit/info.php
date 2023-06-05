@@ -21,6 +21,10 @@
         height: 100px;
         resize: none;
     }
+    input[type=checkbox], 
+    input[type=radio] {
+        width: auto;
+    } 
 </style>
 
 <div class="box edit__info">
@@ -29,11 +33,6 @@
             id="edit-witch-info">
         <h3>Edit Witch Info Form</h3>
 
-        <input  type="hidden" 
-                value="<?=$targetWitch->id ?>" 
-                name="witch-id" 
-                id="witch-id" />
-        
         <p class="alert-message error" style="display: none;">Mandatory field</p>
         <label for="witch-name">Name*</label>
         <input  type="text" 
@@ -56,7 +55,7 @@
     <div class="box__actions">
         <button class="trigger-action" 
                 data-target="edit-witch-info"
-                data-action="save-witch">
+                data-action="save-witch-info">
             Save
         </button>
         

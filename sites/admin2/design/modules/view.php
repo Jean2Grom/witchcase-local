@@ -57,6 +57,7 @@
     
     <div class="box-container">
         <div><?php include $this->getIncludeDesignFile('view/invoke.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('edit/invoke.php'); ?></div>
     </div>
 </div>
 
@@ -80,6 +81,12 @@ $(document).ready(function()
     $('button.view-edit-info-toggle').click(function(){
         $('.view__info').toggle();
         $('.edit__info').toggle();
+    });
+    
+    $('.edit__invoke').hide();
+    $('button.view-edit-invoke-toggle').click(function(){
+        $('.view__invoke').toggle();
+        $('.edit__invoke').toggle();
     });
     
     
