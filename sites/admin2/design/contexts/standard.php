@@ -54,7 +54,7 @@
                         404
                     </a>
                 <?php elseif( $this->standardContextTabs ): foreach( $this->standardContextTabs as $id => $tab ): ?>
-                    <a class="tabs__item <?=($tab['selected'] ?? null)? 'selected': 'nonono' ?>" 
+                    <a class="tabs__item <?=($tab['selected'] ?? null)? 'selected': '' ?>" 
                        href="#<?=$id ?>">
                         <?=($tab['iconClass'] ?? null)? '<i  class="'.$tab['iconClass'].'"></i>': '' ?>
                         <?=$tab['text'] ?? '' ?>
@@ -81,10 +81,6 @@
                         <?=$this->wc->witch("target").$this->wc->witch("mother")?>
                     </a>
                 <?php endif; ?>
-             
-                
-                
-                <div class="clear"></div>
             </div>
             
             <div class="tabs-target">

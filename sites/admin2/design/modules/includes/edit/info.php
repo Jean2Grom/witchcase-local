@@ -32,7 +32,7 @@
             action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
             id="edit-witch-info">
         <h3>Edit Witch Info Form</h3>
-
+        
         <p class="alert-message error" style="display: none;">Mandatory field</p>
         <label for="witch-name">Name*</label>
         <input  type="text" 
@@ -40,10 +40,12 @@
                 data-init="<?=$targetWitch->name ?>" 
                 name="witch-name" 
                 id="witch-name" />
-
+        
         <label for="witch-data">Description</label>
-        <textarea name="witch-data" id="witch-data" data-init="<?=$targetWitch->data ?>"><?=$targetWitch->data ?></textarea>
-
+        <textarea   name="witch-data" 
+                    id="witch-data" 
+                    data-init="<?=$targetWitch->data ?>"><?=$targetWitch->data ?></textarea>
+        
         <label for="witch-priority">Priority</label>
         <input  type="number" 
                 value="<?=$targetWitch->priority ?>" 

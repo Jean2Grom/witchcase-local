@@ -3,6 +3,7 @@ use WC\Website;
 
 $possibleActionsList = [
     'save-witch-info',
+    'save-witch-invoke',
 ];
 
 $action = $this->wc->request->param('action');
@@ -24,7 +25,7 @@ if( !$targetWitch )
 {
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Vous ne pouvez pas éditer d'élément inexistant."
+        'message'   =>  "Can't edit undefined witch"
     ];
     
     $this->wc->user->addAlerts($alerts);
@@ -33,7 +34,16 @@ if( !$targetWitch )
 }
 
 //$this->wc->dump($_POST);
-//$this->wc->debug->die("xxx");#tab-invoke-part
+//$autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+//$customUrl      = $this->wc->request->param('witch-url');
+//$customRootUrl  = $this->wc->request->param('witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+//$this->wc->dump($autoUrl);
+//$this->wc->dump($customRootUrl);
+//$this->wc->dump($customUrl);
+//$this->wc->dump( $this->wc->request->param('witch-invoke', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) );
+//$this->wc->dump( $this->wc->request->param('witch-url', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) );
+//    
+//$this->wc->debug->die("xxx");//#tab-invoke-part
 
 switch( $action )
 {
@@ -47,19 +57,19 @@ switch( $action )
         if( $witchNewData['name'] === "" ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Vous ne pouvez pas créér d'élément sans nom."
+                'message'   =>  "Witch name is missing"
             ];
         }
         else if( !$targetWitch->edit( $witchNewData ) ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, votre élément n'a pas été modifié."
+                'message'   =>  "Error, witch was not updated"
             ];
         }
         else{
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Votre élément a bien été modifié."
+                'message'   =>  "Witch updated"
             ];
             
         }
@@ -67,6 +77,90 @@ switch( $action )
         $this->wc->user->addAlerts($alerts);
 
         header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+        exit();
+    break;
+    
+    case 'save-witch-invoke':
+        $site       = trim($this->wc->request->param('witch-site') ?? "");
+        
+        if( empty($site) ){
+            $witchNewData   = [
+                'site'      => null,
+                'url'       => null,
+                'invoke'    => null,
+                'status'    => 0,
+                'context'   => null,
+            ];
+        }
+        else 
+        {
+            $witchNewData   = [
+                'site'      => $site,
+                'url'       => null,
+                'invoke'    => null,
+                'status'    => 0,
+                'context'   => null,
+            ];
+            
+            $invokeArray = $this->wc->request->param('witch-invoke', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+            if( $invokeArray && !empty($invokeArray[ $site ]) ){
+                $witchNewData['invoke'] = $invokeArray[ $site ];
+            }
+            
+            $statusArray = $this->wc->request->param('witch-status', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
+            if( $statusArray && !empty($statusArray[ $site ]) ){
+                $witchNewData['status'] = $statusArray[ $site ];
+            }
+            
+            $contextArray = $this->wc->request->param('witch-context', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+            if( $contextArray && !empty($contextArray[ $site ]) ){
+                $witchNewData['context'] = $contextArray[ $site ];
+            }
+            
+            $autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+            $customFullUrl  = $this->wc->request->param('witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+            $customUrl      = $this->wc->request->param('witch-url');
+            
+            if( !$autoUrl && $customFullUrl ){
+                $witchNewData['url'] = $customUrl;
+            }
+            elseif( !$autoUrl )
+            {
+                $url    =   $targetWitch->findPreviousUrlForSite( $site );
+                
+                if( substr($url, -1) != '/' && substr($customUrl, 0, 1) != '/'  ){
+                    $url    .=  '/';
+                }
+                
+                $url        .=  $customUrl;
+                
+                $witchNewData['url'] = $url;
+            }
+        }
+        
+        if( !empty($site) && empty($witchNewData['invoke']) ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Module to invoke is missing"
+            ];
+        }
+        elseif( !$targetWitch->edit( $witchNewData ) ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, witch was not updated"
+            ];
+        }
+        else {
+            $alerts[] = [
+                'level'     =>  'success',
+                'message'   =>  "Witch updated"
+            ];            
+        }
+        
+        $this->wc->user->addAlerts($alerts);
+
+        header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+        //header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id."#tab-invoke-part") );
         exit();
     break;
     

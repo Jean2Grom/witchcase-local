@@ -23,9 +23,9 @@
     }
     .tabs {
         margin-top: 15px;
+        display: flex;
     }
         .tabs__item {
-            float: left;
             border-top: 1px solid #ccc;
             border-left: 1px solid #ccc;
             border-right: 1px solid #ccc;

@@ -21,7 +21,7 @@ $targetWitch = $this->wc->witch("target");
 if( !$targetWitch ){
     $alert = [
         'level'     =>  'error',
-        'message'   =>  "L'élément devant être visualisé n'a pas été trouvé."
+        'message'   =>  "Witch not found"
     ];
     $this->wc->user->addAlerts([ $alert ]);
     
@@ -43,16 +43,16 @@ $alerts = $this->wc->user->getAlerts();
 switch( $action )
 {
     case 'edit-priorities':
-        $priorities = filter_input( INPUT_POST, 'priorities', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY );
+        $priorities = $this->wc->request->param('priorities', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY) ?? [];
         
         $errors     = [];
         $success    = [];
         foreach( $priorities as $witchId => $witchPriority ){
             if( !$targetWitch->daughters( $witchId )->edit([ 'priority' => $witchPriority ]) ){
-                $errors[] = "La priorité de <strong>".$targetWitch->daughters( $witchId )->name."</strong> n'a pas été mise à jour.";
+                $errors[] = "<strong>".$targetWitch->daughters( $witchId )->name."</strong> priority not updated";
             }
             else {
-                $success[] = "La priorité de <strong>".$targetWitch->daughters( $witchId )->name."</strong> a été mise à jour.";
+                $success[] = "<strong>".$targetWitch->daughters( $witchId )->name."</strong> priority updated";
             }
         }
         
@@ -61,13 +61,13 @@ switch( $action )
         if( empty($errors) ){
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Les priorités ont été mises à jour."
+                'message'   =>  "Priorities updated"
             ];
         }
         elseif( empty($success) ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, les priorités n'ont pas été mise à jour."
+                'message'   =>  "Error, priorities hasn't been updated"
             ];
         }
         else 
@@ -89,7 +89,7 @@ switch( $action )
         {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "L'élément a bien été supprimé."
+                'message'   =>  "Witch removed"
             ];
 
             $this->wc->user->addAlerts( $alerts );
@@ -100,7 +100,7 @@ switch( $action )
         
         $alerts[] = [
             'level'     =>  'error',
-            'message'   =>  "Une erreur est survenue, l'élément n'a pas été supprimé.",
+            'message'   =>  "Error, witch hasn't been removed",
         ];
     break;
     

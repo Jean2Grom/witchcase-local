@@ -7,13 +7,13 @@
             'iconClass' => "fas fa-info",
             'text'      => "Witch Info",
         ],
-        'tab-invoke-part'   => [
-            'iconClass' => "fas fa-hand-sparkles",
-            'text'      => "Invoke",
-        ],        
         'tab-craft-part'    => [
             'iconClass' => "fas fa-mortar-pestle",
             'text'      => "Craft",
+        ],        
+        'tab-invoke-part'   => [
+            'iconClass' => "fas fa-hand-sparkles",
+            'text'      => "Invoke",
         ],        
     ]);
 ?>
@@ -49,6 +49,17 @@
     </div>
 </div>
 
+<div class="tabs-target__item"  id="tab-craft-part">
+    <h2><em>Content craft for</em></h2>
+    
+    <h3><em><?=$targetWitch->name ?></em></h3>
+    <p><em><?=$targetWitch->data?></em></p>
+    
+    <div class="box-container">
+        <div><?php include $this->getIncludeDesignFile('view/craft.php'); ?></div>
+    </div>
+</div>
+
 <div class="tabs-target__item"  id="tab-invoke-part">
     <h2><em>Module invocation for</em></h2>
     
@@ -61,16 +72,6 @@
     </div>
 </div>
 
-<div class="tabs-target__item"  id="tab-craft-part">
-    <h2><em>Content craft for</em></h2>
-    
-    <h3><em><?=$targetWitch->name ?></em></h3>
-    <p><em><?=$targetWitch->data?></em></p>
-    
-    <div class="box-container">
-        <div><?php include $this->getIncludeDesignFile('view/craft.php'); ?></div>
-    </div>
-</div>
 
 <form method="post" id="view-action"></form>
 
@@ -89,63 +90,5 @@ $(document).ready(function()
         $('.edit__invoke').toggle();
     });
     
-    
-    
-    $('#daughters__edit-priorities').click(function()
-    {
-        $('.priorities-input').each(function(index, input){
-            $('#view-action').append( $(input).attr("type", "hidden") );
-        });
-        
-        let action = $("<input>").attr("type", "hidden")
-                        .attr("name", "action")
-                        .val( "edit-priorities" );
-        
-        $('#view-action').append( action );
-        $('#view-action').submit();
-    });
-    
-    $('#witch__edit, #content__edit').click(function(){
-        window.location.href = $(this).data('href');
-    });
-    
-    $('#witch__add-child').click(function(){
-        window.location.href = $(this).data('href');
-    });
-    
-    $('#witch__delete').click(function(){
-        if( confirm( $(this).data('confirm') ) )
-        {
-            let action = $("<input>").attr("type", "hidden")
-                            .attr("name", "action")
-                            .val( "delete-witch" );
-
-            $('#view-action').append( action );
-            $('#view-action').submit();
-        }
-    });
-    
-    $('#witch-content-structure').change(function(){
-        $('#witch__add-content').prop( 'disabled', ($(this).val() === '') );
-    });
-    
-    $('.trigger-action').click(function(){
-        let data = $(this).data();
-        if( data.action === undefined 
-            ||  data.target === undefined 
-            || (data.confirm !== undefined && !confirm( data.confirm ))
-        ){
-            return false;
-        }
-        
-        let action = $("<input>").attr("type", "hidden")
-                        .attr("name", "action")
-                        .val( data.action );
-        
-        $('#' + data.target).append( action );
-        $('#' + data.target).submit();
-        
-        return false;
-    });
 });
 </script>
