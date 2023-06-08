@@ -1,13 +1,27 @@
 <?php 
     $this->addJsFile('triggers.js');
 ?>
+<style>
+    .edit__invoke label {
+        display: flex;
+        justify-content: space-between;
+    }
+    .edit__invoke label em {
+        font-weight: normal;
+        font-size: 0.9em;
+        text-align: right;
+    }
+</style>
 <div class="box edit__invoke">
     <form   method="post"
             action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
             id="edit-witch-invoke">
         <h3>Edit Witch Invoke Form</h3>
         
-        <label for="witch-site">Site</label>
+        <label for="witch-site">
+            Site
+            <em>Choose site where url have to be applied</em>
+        </label>
         <select name="witch-site" 
                 id="witch-site"
                 data-init="<?=$targetWitch->site ?>">>
@@ -25,7 +39,11 @@
         <?php foreach( $websitesList as $site => $website ): ?>
             <div <?=($targetWitch->site !== $website->site)? 'style="display: none;"' :'' ?>
                 class="witch-invoke__part witch-invoke__part-<?=$site ?>">
-                <label for="witch-invoke-<?=$site ?>">Module to invoke</label>
+                
+                <label for="witch-invoke-<?=$site ?>">
+                    Module to invoke
+                    <em>Choose module to be executed</em>
+                </label>
                 <select name="witch-invoke[<?=$site ?>]" 
                         id="witch-invoke-<?=$site ?>"                                           
                         data-init="<?=$targetWitch->invoke ?>">
@@ -36,7 +54,10 @@
                     <?php endforeach; ?>
                 </select>
                 
-                <label for="witch-status-<?=$site ?>">Status limitation</label>
+                <label for="witch-status-<?=$site ?>">
+                    Status limitation
+                    <em>You can add a minimum status level access</em>
+                </label>
                 <select name="witch-status[<?=$site ?>]" 
                         id="witch-status-<?=$site ?>"  
                         data-init="<?=$targetWitch->statusLevel ?>">
@@ -46,7 +67,10 @@
                     <?php endforeach; ?>
                 </select>
                 
-                <label for="witch-context-<?=$site ?>">Forced Context</label>
+                <label for="witch-context-<?=$site ?>">
+                    Forced Context
+                    <em>You can force default context here</em>
+                </label>
                 <select name="witch-context[<?=$site ?>]" 
                         id="witch-context-<?=$site ?>" 
                         data-init="<?=$targetWitch->context?>">
@@ -64,7 +88,10 @@
              <?=!$targetWitch->site? 'style="display: none;"' :'' ?>>
             <div class="auto-url-disabled"
                  <?=!$targetWitch->url? 'style="display: none;"' :'' ?>>
-                <label for="witch-url">URL</label>
+                <label for="witch-url">
+                    URL
+                    <em>Relative to site access if "Full URL" is checked, <br/>to closest parent URL if not</em>
+                </label>
                 <input  type="text"
                         name="witch-url"
                         id="witch-url"
@@ -78,7 +105,10 @@
                        name="witch-full-url" />
             </div>
             
-            <label for="witch-auto-url">Auto URL</label>
+            <label for="witch-auto-url">
+                Auto URL
+                <em>To let witchcase automatic URL generation</em>
+            </label>
             <input type="checkbox" 
                    id="witch-auto-url" 
                    <?=$targetWitch->url ? '': 'checked' ?>

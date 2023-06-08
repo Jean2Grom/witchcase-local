@@ -33,13 +33,19 @@
     .box.edit__info {
         width: 350px;
     }
-    
+    .box.view__invoke,
+    .box.edit__invoke {
+        width: 400px;
+    }
 </style>
 
-<div class="tabs-target__item selected"  id="tab-current">
-    <h1><?=$this->witch->name ?></h1>
-    <p><em><?=$this->witch->data?></em></p>
+<h1 title="<?=$this->witch->data ?>">
+    [<?=$this->witch->name ?>]
+    <em><?=$targetWitch->name ?></em>
+</h1> 
+<p><em><?=$targetWitch->data ?></em></p>
 
+<div class="tabs-target__item selected"  id="tab-current">
     <?php include $this->getIncludeDesignFile('alerts.php'); ?>
     
     <div class="box-container">
@@ -50,22 +56,12 @@
 </div>
 
 <div class="tabs-target__item"  id="tab-craft-part">
-    <h2><em>Content craft for</em></h2>
-    
-    <h3><em><?=$targetWitch->name ?></em></h3>
-    <p><em><?=$targetWitch->data?></em></p>
-    
     <div class="box-container">
         <div><?php include $this->getIncludeDesignFile('view/craft.php'); ?></div>
     </div>
 </div>
 
 <div class="tabs-target__item"  id="tab-invoke-part">
-    <h2><em>Module invocation for</em></h2>
-    
-    <h3><em><?=$targetWitch->name ?></em></h3>
-    <p><em><?=$targetWitch->data?></em></p>
-    
     <div class="box-container">
         <div><?php include $this->getIncludeDesignFile('view/invoke.php'); ?></div>
         <div><?php include $this->getIncludeDesignFile('edit/invoke.php'); ?></div>

@@ -2,7 +2,8 @@
     $this->addJsFile('triggers.js');
 ?>
 <div class="box view__info">
-    <h3><?=$targetWitch->name ?></h3>
+    <h3>Info</h3>
+    <p><em>Wich global information</em></p>
     
     <table>
         <tr>
@@ -11,17 +12,13 @@
         </tr>
         <tr>
             <td class="label">Description</td>
-            <td class="value"><?=$targetWitch->data ?></td>
-        </tr>
-        <tr>
-            <td class="label">ID</td>
-            <td class="value"><?=$targetWitch->id ?></td>
+            <td class="value"><em><?=$targetWitch->data ?></em></td>
         </tr>
         <tr>
             <td class="label">Craft</td>
             <td class="value">
                 <a class="tabs__item__triggering" href="#tab-craft-part">
-                    <?=!$targetWitch->hasCraft()? 'no': $targetWitch->craft_table.": ".$targetWitch->craft_fk ?>
+                    <?=!$targetWitch->hasCraft()? 'no': $targetWitch->craft()->name ?>
                 </a>
             </td>
         </tr>
@@ -33,6 +30,21 @@
                 </a>
             </td>
         </tr>
+        <tr>
+            <td class="label">ID</td>
+            <td class="value"><?=$targetWitch->id ?></td>
+        </tr>
+        <?php if( $targetWitch->mother() ): ?>
+            <tr>
+                <td class="label">Mother</td>
+                <td class="value">
+                    <a href="<?=$this->wc->website->getUrl("view?id=".$targetWitch->mother()->id) ?>">
+                        <i class="fas fa-reply rotate-90"></i>
+                        <?=$targetWitch->mother() ?>
+                    </a>
+                </td>
+            </tr>
+        <?php endif; ?>
     </table>
 
     <div class="box__actions">
@@ -48,12 +60,3 @@
 
 <form method="post" id="view-info-action"></form>
 
-<script>
-$(document).ready(function()
-{
-    $('.tabs__item__triggering').click(function(){
-        triggerTabItem( $(this).attr('href') );
-        return false;
-    });
-});
-</script> 

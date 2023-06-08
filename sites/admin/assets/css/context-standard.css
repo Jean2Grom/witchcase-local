@@ -34,7 +34,6 @@
             margin-right: 5px;
             cursor: pointer;
             background-color: #f3f3f3;
-            /*background-color: #FFF;*/
         }
             .tabs__item.selected {
                 border-bottom: 1px solid #FFF;
@@ -47,12 +46,15 @@
         margin-top: -1px;
         box-shadow: 5px 5px 5px #ccc;
         background-color: #FFF;
+        padding: 15px;
 
     }
         .tabs-target__item {
             display: none;
-            padding: 15px;
         }
             .tabs-target__item.selected {
                 display: block;
             }
+    .rotate-90 {
+        transform: rotate(90deg);
+    }

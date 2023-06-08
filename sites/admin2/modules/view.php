@@ -18,7 +18,7 @@ if( !in_array($action, $possibleActionsList) ){
 
 $targetWitch = $this->wc->witch("target");
 
-if( !$targetWitch ){
+if( !$targetWitch->exist() ){
     $alert = [
         'level'     =>  'error',
         'message'   =>  "Witch not found"
@@ -27,11 +27,6 @@ if( !$targetWitch ){
     
     header('Location: '.$this->wc->website->getRootUrl() );
     exit();
-}
-
-$upLink = false;
-if( $targetWitch->mother() !== false ){
-    $upLink = $this->wc->website->getUrl("view?id=".$targetWitch->mother()->id);
 }
 
 $structuresList = [];
@@ -85,7 +80,7 @@ switch( $action )
     break;
     
     case 'delete-witch':
-        if( $upLink && $targetWitch->delete() )
+        if( $targetWitch->mother() && $targetWitch->delete() )
         {
             $alerts[] = [
                 'level'     =>  'success',
@@ -94,7 +89,7 @@ switch( $action )
 
             $this->wc->user->addAlerts( $alerts );
 
-            header('Location: '.$upLink );
+            header('Location: '.$this->wc->website->getFullUrl("view?id=".$targetWitch->mother()->id) );
             exit();
         }
         
@@ -108,20 +103,20 @@ switch( $action )
         if( !$targetWitch->hasCraft() ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Le contenu n'a pas été supprimé car il n'a pas été trouvé.",
+                'message'   =>  "Craft hasn't been found",
             ];
         }
         elseif( !$targetWitch->removeCraft() ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, le contenu n'a pas été supprimé.",
+                'message'   =>  "Error, craft hasn't been removed",
             ];
         }
         else 
         {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Le contenu a bien été supprimé."
+                'message'   =>  "Craft removed"
             ];
             
             $structuresList = Structure::listStructures( $this->wc );
@@ -147,7 +142,7 @@ switch( $action )
         ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, ajout annulé"
+                'message'   =>  "Error, addition cancelled"
             ];            
         }
         else
@@ -161,33 +156,15 @@ switch( $action )
         if( $targetWitch->craft()->archive() === false ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, archivage annulé"
+                'message'   =>  "Error, archiving cancelled"
             ];
         }      
     break;
     
 }
 
-$editCraftWitchHref    = $this->wc->website->getUrl("edit?id=".$targetWitch->id);
-$createElementHref     = $this->wc->website->getUrl("create?mother=".$targetWitch->id);
-$editCraftContentHref  = $this->wc->website->getUrl("edit-content?id=".$targetWitch->id);
-
-$subTree = [
-    'headers'   => [
-        'Nom', 
-        'Site', 
-        'Type', 
-        'Priorité',
-    ],
-    'data'      =>  $targetWitch->daughters(),
-];
-
-
-$sites  = [];
-if( $this->wc->website->sitesRestrictions ){
-    $sites = $this->wc->website->sitesRestrictions;
-}
-else {
+$sites  = $this->wc->website->sitesRestrictions;
+if( !$sites ){
     $sites = array_keys($this->wc->configuration->sites);
 }
 

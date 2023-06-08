@@ -1028,8 +1028,13 @@ class Witch
         if( $queryParams ){
             foreach( $queryParams as $paramKey => $paramValue )
             {
-                $queryString    .=  $separator.$paramKey.'='.$paramValue;
-                $separator      =   '&';
+                if( $paramKey != '#' )
+                {
+                    $queryString    .=  $separator;
+                    $separator      =   '&';
+                }
+                
+                $queryString    .=  $paramKey.'='.$paramValue;
             }
         }
         

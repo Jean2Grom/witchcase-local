@@ -1,88 +1,98 @@
 <?php 
     $this->addJsFile('triggers.js');
 ?>
+<style>
+    td a em {
+        font-size: 0.9em;        
+    }
+    .text-center {
+        display: flex;
+        justify-content: center;
+    }
+</style>
 <div class="box view__position">
-    <h3>
-        Witches matriarchy
-    </h3>
-    <p><em>Position in arborescence: mother and daughters</em></p>
-    <table>
-        <thead>
-            <tr>
-                <?php foreach( $subTree['headers'] as $header ): ?>
-                    <th>
-                        <?=$header?>
-                    </th>
-                <?php endforeach; ?>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if( $upLink ): ?>
+    <h3>Daughters</h3>
+    
+    <?php if( empty($targetWitch->daughters()) ): ?>
+        <p><em>No daughters for this witch</em></p>
+        
+    <?php else: ?>
+        <p><em>Witch daughters list in arborescence</em></p>
+        <table>
+            <thead>
                 <tr>
-                    <td>
-                        <a href="<?=$upLink ?>" 
-                           title="<?=$targetWitch->mother()->name ?>">
-                            <i class="fas fa-reply rotate-90"></i>
-                            <?=$targetWitch->mother()->name ?>
-                        </a>
-                    </td>
-                    <td>
-                        <?=$targetWitch->mother()->site ?>
-                    </td>
-                    <td>
-                        <?php if( !empty($targetWitch->mother()->invoke) && $targetWitch->mother()->hasCraft() ): ?>
-                            Module & Contenu
-                        <?php elseif( !empty($targetWitch->mother()->invoke) ): ?>
-                            Module
-                        <?php elseif( $targetWitch->mother()->hasCraft() ): ?>
-                            Contenu
-                        <?php else: ?>
-                            Répertoire
-                        <?php endif; ?>
-                    </td>
-                    <td class="text-right"></td>
+                    <th>Name</th>
+                    <th>Craft</th>
+                    <th>Invoke</th>
+                    <th>Direct Access</th>
+                    <th>Priority</th>
                 </tr>
-            <?php endif; ?>
-            
-            <form method="post" id="view-position-action">
-                <?php foreach( $subTree['data'] as $daughter ): ?>
-                    <tr>
-                        <td>
-                            <a href="<?=$this->wc->website->baseUri."/view?id=".$daughter->id ?>">
-                                <?=$daughter->name ?>
-                            </a>
-                        </td>
-                        <td>
-                            <?=$daughter->site ?>
-                        </td>
-                        <td>
-                            <?php if( !empty($daughter->invoke) && $daughter->hasCraft() ): ?>
-                                Module & Contenu
-                            <?php elseif( !empty($daughter->invoke) ): ?>
-                                Module
-                            <?php elseif( $daughter->hasCraft() ): ?>
-                                Contenu
-                            <?php else: ?>
-                                Répertoire
-                            <?php endif; ?>
-                        </td>
-                        <td class="text-right">
-                            <input  class="priorities-input" 
-                                    type="number"
-                                    name="priorities[<?=$daughter->id ?>]" 
-                                    value="<?=$daughter->priority ?>" />
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </form>
-        </tbody>
-    </table>
-
+            </thead>
+            <tbody>
+                <form method="post" id="view-position-action">
+                    <?php foreach( $targetWitch->daughters() as $daughter ): ?>
+                        <tr>
+                            <td>
+                                <a href="<?=$this->wc->website->getUrl("view?id=".$daughter->id) ?>">
+                                    <?=$daughter->name ?>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="<?=$this->wc->website->getUrl("view?id=".$daughter->id."#tab-craft-part") ?>"
+                                   class="text-center">
+                                    <?php if( $daughter->hasCraft() ): ?>
+                                        <em><?=$daughter->name ?></em>
+                                    <?php else: ?>
+                                        <i class="far fa-plus-square"></i>
+                                    <?php endif; ?>
+                                </a>
+                            </td>
+                            <td>
+                                <a  href="<?=$this->wc->website->getUrl("view?id=".$daughter->id."#tab-invoke-part") ?>"
+                                    class="text-center">
+                                    <?php if( $daughter->hasInvoke() ): ?>
+                                        <em><?=$daughter->invoke ?></em>
+                                    <?php else: ?>
+                                        <i class="far fa-plus-square"></i>
+                                    <?php endif; ?>
+                                </a>
+                            </td>
+                            <td>
+                                <?php if( !$daughter->hasInvoke() ): ?>
+                                <?php elseif( $daughter->site == $this->wc->website->site ): ?>
+                                    <a  target="_blank" href="<?=$daughter->getUrl() ?>" 
+                                        class="text-center"
+                                        title="<?='['.$daughter->site.'] '.$daughter->invoke ?>">
+                                        <i class="fas fa-hand-sparkles"></i>
+                                    </a>
+                                <?php else: 
+                                    $url = $daughter->getUrl( null, $websitesList[ $daughter->site ] ); ?>
+                                    <a target="_blank" href="<?=$url ?>" title="<?=$url ?>">
+                                        <em><?='['.$daughter->site.']' ?></em>
+                                        <i class="fas fa-hand-sparkles"></i>
+                                    </a>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-right">
+                                <input  class="priorities-input" 
+                                        type="number"
+                                        name="priorities[<?=$daughter->id ?>]" 
+                                        value="<?=$daughter->priority ?>" />
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </form>
+            </tbody>
+        </table>
+    <?php endif; ?>
+    
     <div class="box__actions">
-        <button class="trigger-href" 
-                data-href="<?=$createElementHref?>">Add Daughter</button>
-        <button class="trigger-action" 
-                data-action="edit-priorities"
-                data-target="view-position-action">Edit Priorities</button>
+        <button data-href="<?=$this->wc->website->getUrl("create?mother=".$targetWitch->id) ?>"
+                class="trigger-href">Add Daughter</button>
+        <?php if( !empty($targetWitch->daughters()) ): ?>
+            <button class="trigger-action" 
+                    data-action="edit-priorities"
+                    data-target="view-position-action">Edit Priorities</button>
+        <?php endif; ?>
     </div>
 </div>

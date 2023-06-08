@@ -1,6 +1,8 @@
 <div class="box view__invoke">
     <h3>Invoke</h3>
     
+    <p><em>Invocation allow a witch to be accessed with an URL, and lanch a module to create a response</em></p>
+    
     <?php if( $targetWitch->hasInvoke() ): ?>
         <table>
             <tr>
