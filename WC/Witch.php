@@ -80,6 +80,22 @@ class Witch
     }
     
     /**
+     * Name reading
+     * @return string
+     */
+    public function __toString(): string {
+        return ($this->id)? $this->name: "";
+    }
+    
+    /**
+     * Is this witch exist in database ?
+     * @return bool
+     */
+    function exist(): bool {
+        return !empty($this->id);
+    }
+    
+    /**
      * Witch factory class, reads witch data associated whith id
      * @param WitchCase $wc
      * @param int $id   witch id to create
@@ -734,9 +750,9 @@ class Witch
     /**
      * Add a new witch daughter 
      * @param array $params 
-     * @return bool
+     * @return mixed    
      */
-    function createDaughter( array $params ): bool
+    function createDaughter( array $params ): mixed
     {
         $name   = trim($params['name'] ?? "");
         if( empty($name) ){
@@ -1012,8 +1028,13 @@ class Witch
         if( $queryParams ){
             foreach( $queryParams as $paramKey => $paramValue )
             {
-                $queryString    .=  $separator.$paramKey.'='.$paramValue;
-                $separator      =   '&';
+                if( $paramKey != '#' )
+                {
+                    $queryString    .=  $separator;
+                    $separator      =   '&';
+                }
+                
+                $queryString    .=  $paramKey.'='.$paramValue;
             }
         }
         

@@ -193,4 +193,21 @@ class Module
         
         return $this;
     }    
+    
+    function addContextVar( string $name, mixed $value ){
+        return $this->wc->website->context->addVar( $name, $value );
+    }
+    
+    function addContextArrayItems( string $arrayName, mixed $itemValue )
+    {
+        if( !is_array($itemValue) ){
+            $value = [ $itemValue ];
+        }
+        else {
+            $value = $itemValue;
+        }
+        
+        return $this->wc->website->context->addArrayItems( $arrayName, $value );
+    }
+        
 }

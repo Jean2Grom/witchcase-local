@@ -1,6 +1,7 @@
 <?php
 use WC\Structure;
 use WC\Craft\Draft;
+use WC\Website;
 
 $possibleActionsList = [
     'edit-priorities',
@@ -17,20 +18,15 @@ if( !in_array($action, $possibleActionsList) ){
 
 $targetWitch = $this->wc->witch("target");
 
-if( !$targetWitch ){
+if( !$targetWitch->exist() ){
     $alert = [
         'level'     =>  'error',
-        'message'   =>  "L'élément devant être visualisé n'a pas été trouvé."
+        'message'   =>  "Witch not found"
     ];
     $this->wc->user->addAlerts([ $alert ]);
     
     header('Location: '.$this->wc->website->getRootUrl() );
     exit();
-}
-
-$upLink = false;
-if( $targetWitch->mother() !== false ){
-    $upLink = $this->wc->website->getUrl("view?id=".$targetWitch->mother()->id);
 }
 
 $structuresList = [];
@@ -42,16 +38,16 @@ $alerts = $this->wc->user->getAlerts();
 switch( $action )
 {
     case 'edit-priorities':
-        $priorities = filter_input( INPUT_POST, 'priorities', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY );
+        $priorities = $this->wc->request->param('priorities', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY) ?? [];
         
         $errors     = [];
         $success    = [];
         foreach( $priorities as $witchId => $witchPriority ){
             if( !$targetWitch->daughters( $witchId )->edit([ 'priority' => $witchPriority ]) ){
-                $errors[] = "La priorité de <strong>".$targetWitch->daughters( $witchId )->name."</strong> n'a pas été mise à jour.";
+                $errors[] = "<strong>".$targetWitch->daughters( $witchId )->name."</strong> priority not updated";
             }
             else {
-                $success[] = "La priorité de <strong>".$targetWitch->daughters( $witchId )->name."</strong> a été mise à jour.";
+                $success[] = "<strong>".$targetWitch->daughters( $witchId )->name."</strong> priority updated";
             }
         }
         
@@ -60,13 +56,13 @@ switch( $action )
         if( empty($errors) ){
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Les priorités ont été mises à jour."
+                'message'   =>  "Priorities updated"
             ];
         }
         elseif( empty($success) ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, les priorités n'ont pas été mise à jour."
+                'message'   =>  "Error, priorities hasn't been updated"
             ];
         }
         else 
@@ -84,22 +80,22 @@ switch( $action )
     break;
     
     case 'delete-witch':
-        if( $upLink && $targetWitch->delete() )
+        if( $targetWitch->mother() && $targetWitch->delete() )
         {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "L'élément a bien été supprimé."
+                'message'   =>  "Witch removed"
             ];
 
             $this->wc->user->addAlerts( $alerts );
 
-            header('Location: '.$upLink );
+            header('Location: '.$this->wc->website->getFullUrl("view?id=".$targetWitch->mother()->id) );
             exit();
         }
         
         $alerts[] = [
             'level'     =>  'error',
-            'message'   =>  "Une erreur est survenue, l'élément n'a pas été supprimé.",
+            'message'   =>  "Error, witch hasn't been removed",
         ];
     break;
     
@@ -107,20 +103,20 @@ switch( $action )
         if( !$targetWitch->hasCraft() ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Le contenu n'a pas été supprimé car il n'a pas été trouvé.",
+                'message'   =>  "Craft hasn't been found",
             ];
         }
         elseif( !$targetWitch->removeCraft() ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, le contenu n'a pas été supprimé.",
+                'message'   =>  "Error, craft hasn't been removed",
             ];
         }
         else 
         {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Le contenu a bien été supprimé."
+                'message'   =>  "Craft removed"
             ];
             
             $structuresList = Structure::listStructures( $this->wc );
@@ -146,7 +142,7 @@ switch( $action )
         ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, ajout annulé"
+                'message'   =>  "Error, addition cancelled"
             ];            
         }
         else
@@ -160,25 +156,30 @@ switch( $action )
         if( $targetWitch->craft()->archive() === false ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, archivage annulé"
+                'message'   =>  "Error, archiving cancelled"
             ];
         }      
     break;
     
 }
 
-$editCraftWitchHref    = $this->wc->website->getUrl("edit?id=".$targetWitch->id);
-$createElementHref     = $this->wc->website->getUrl("create?mother=".$targetWitch->id);
-$editCraftContentHref  = $this->wc->website->getUrl("edit-content?id=".$targetWitch->id);
+$sites  = $this->wc->website->sitesRestrictions;
+if( !$sites ){
+    $sites = array_keys($this->wc->configuration->sites);
+}
 
-$subTree = [
-    'headers'   => [
-        'Nom', 
-        'Site', 
-        'Type', 
-        'Priorité',
-    ],
-    'data'      =>  $targetWitch->daughters(),
-];
+$websitesList   = [];
+foreach( $sites as $site ){
+    if( $site == $this->wc->website->name ){
+        $website = $this->wc->website;
+    }
+    else {
+        $website = new Website( $this->wc, $site );
+    }
+    
+    if( $website->site == $website->name ) {
+        $websitesList[ $site ] = $website;
+    }
+}
 
 $this->view();

@@ -33,13 +33,17 @@ $(document).ready(function()
         tabs[i].addEventListener( 'click', selectTab, {passive: false} );
     }
 
-    if( window.top.location.hash !== undefined && window.top.location.hash !== '' )
+    window.triggerTabItem = function ( hash )
     {
-        let tabFired = document.querySelectorAll( "[href='"+window.top.location.hash+"']" );
+        let tabFired    = document.querySelectorAll(".tabs__item[href='" + hash + "']");
+        let evObj       = document.createEvent('Events');
         
-        let evObj = document.createEvent('Events');
         evObj.initEvent('click', true, false);
         tabFired[0].dispatchEvent(evObj);
-        console.log(tabFired[0]);
+        return;
+    };
+    
+    if( window.top.location.hash !== undefined && window.top.location.hash !== '' ){
+        triggerTabItem( window.top.location.hash );
     }
 });

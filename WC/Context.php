@@ -24,6 +24,8 @@ class Context
     private $js     = [];
     private $jsLib  = [];
     
+    private $customVars  = [];
+    
     /** @var WitchCase */
     var $wc;
     
@@ -201,6 +203,20 @@ class Context
         
         return $this;
     }
-
     
+    function addVar( string $name, mixed $value ): void {
+        $this->customVars[ $name ] = $value;
+    }
+    
+    function addArrayItems( string $arrayName, array $values ): void {
+        $this->customVars[ $arrayName ] = array_replace($this->customVars[ $arrayName ] ?? [], $values);
+    }
+    
+    function getVar( string $name ): mixed {
+        return $this->customVars[ $name ] ?? null;
+    }
+    
+    function __get( string $name ): mixed {
+        return $this->getVar($name);
+    }
 }

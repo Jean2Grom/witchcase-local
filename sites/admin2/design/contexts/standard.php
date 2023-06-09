@@ -48,10 +48,19 @@
                         <i class="fas fa-sitemap"></i>
                     </a>
                 <?php endif; ?>
-                <a class="tabs__item selected" href="#tab-current">                   
-                    <?php if( !$this->wc->witch() ): ?>
+                
+                <?php if( !$this->wc->witch() ): ?>
+                    <a class="tabs__item selected" href="#tab-current">                   
                         404
-                    <?php else: ?>
+                    </a>
+                <?php elseif( $this->standardContextTabs ): foreach( $this->standardContextTabs as $id => $tab ): ?>
+                    <a class="tabs__item <?=($tab['selected'] ?? null)? 'selected': '' ?>" 
+                       href="#<?=$id ?>">
+                        <?=($tab['iconClass'] ?? null)? '<i  class="'.$tab['iconClass'].'"></i>': '' ?>
+                        <?=$tab['text'] ?? '' ?>
+                    </a>
+                <?php endforeach; else: ?>
+                    <a class="tabs__item selected" href="#tab-current">
                         <?php if( $this->wc->witch()->hasCraft() && $this->wc->witch()->invoke ): ?>
                             <i  class="fas fa-hat-wizard"></i>
                         <?php elseif( $this->wc->witch()->hasCraft() ): ?>
@@ -61,28 +70,28 @@
                         <?php else: ?>
                             <i class="fas fa-folder"></i>
                         <?php endif; ?>
-                        
+
                         <?=$this->wc->witch()->name ?>
-                        
+
                         <?php if( $this->wc->witch("target")->exist() ): ?>
                             &nbsp;:
                         <?php elseif( $this->wc->witch("mother")->exist() ): ?>
                             from&nbsp;:
                         <?php endif; ?>
                         <?=$this->wc->witch("target").$this->wc->witch("mother")?>
-                    <?php endif; ?>
-                </a>
-                <div class="clear"></div>
+                    </a>
+                <?php endif; ?>
             </div>
             
             <div class="tabs-target">
-                <div class="tabs-target__item selected" id="tab-current">
-                    <?php if( !$this->wc->witch() ): ?>
-                        404
-                    <?php else: ?>
-                        <?=$this->wc->witch()->result() ?>
-                    <?php endif; ?>
-                </div>
+                <?php if( !$this->wc->witch() ): ?>
+                    <div class="tabs-target__item selected" id="tab-current">404</div>
+                <?php elseif( !$this->standardContextTabs ): ?>
+                    <div class="tabs-target__item selected" id="tab-current"><?=$this->wc->witch()->result() ?></div>
+                <?php else: ?>
+                    <?=$this->wc->witch()->result() ?>
+                <?php endif; ?>
+                
                 <?php if( $this->wc->witch("arborescence") ): ?>
                     <div class="tabs-target__item" id="tab-navigation">
                         <?=$this->wc->witch("arborescence")->result("arborescence") ?>
