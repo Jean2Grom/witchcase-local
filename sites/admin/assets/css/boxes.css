@@ -30,8 +30,6 @@
         margin: 20px 0px 10px 0;
         text-align: right;
     }
-
-    
     .box table th {
         min-width: 100px;
         background-color: #eee;
@@ -40,7 +38,53 @@
     .box table td {
         padding: 5px 10px;
     }
-    .box table input {
-        width: 60px;
+        .box table td a em {
+            font-size: 0.9em;        
+        }
+        .box table td .text-center {
+            display: flex;
+            justify-content: center;
+        }
+        .box table td input {
+            width: 60px;
+        }
+    .box table td.label {
+        min-width: 100px;
+        background-color: #eee;
+        font-weight: bold;
+        text-align: center;
+        padding: 5px;        
     }
+    .box .box__actions{
+        margin: 20px 0px 10px 0;
+        text-align: right;
+    }
+    .box label {
+        margin-top: 1em;
+        font-weight: bold;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+    }
+    .box label em {
+        font-weight: normal;
+        font-size: 0.9em;
+        text-align: right;
+    }    
+    .box input, 
+    .box textarea {
+        width: 100%;
+        width: -moz-available;          /* WebKit-based browsers will ignore this. */
+        width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+        width: fill-available;
+    }
+    .box textarea {
+        height: 100px;
+        resize: none;
+    }
+    .box input[type=checkbox], 
+    .box input[type=radio] {
+        width: auto;
+    } 
+    
     

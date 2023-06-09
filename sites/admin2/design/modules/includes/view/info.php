@@ -1,6 +1,3 @@
-<?php 
-    $this->addJsFile('triggers.js');
-?>
 <div class="box view__info">
     <h3>Info</h3>
     <p><em>Wich global information</em></p>

@@ -1,15 +1,3 @@
-<?php 
-    $this->addJsFile('triggers.js');
-?>
-<style>
-    td a em {
-        font-size: 0.9em;        
-    }
-    .text-center {
-        display: flex;
-        justify-content: center;
-    }
-</style>
 <div class="box view__position">
     <h3>Daughters</h3>
     
@@ -87,8 +75,7 @@
     <?php endif; ?>
     
     <div class="box__actions">
-        <button data-href="<?=$this->wc->website->getUrl("create?mother=".$targetWitch->id) ?>"
-                class="trigger-href">Add Daughter</button>
+        <button class="position-create-toggle">Add Daughter</button>
         <?php if( !empty($targetWitch->daughters()) ): ?>
             <button class="trigger-action" 
                     data-action="edit-priorities"

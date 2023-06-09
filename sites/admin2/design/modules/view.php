@@ -1,5 +1,8 @@
 <?php
+    $this->addCssFile('view.css');
     $this->addCssFile('boxes.css');
+    $this->addJsFile('triggers.js');
+    $this->addJsFile('view.js');
     
     $this->addContextArrayItems( 'standardContextTabs', [
         'tab-current'       => [
@@ -14,31 +17,9 @@
         'tab-invoke-part'   => [
             'iconClass' => "fas fa-hand-sparkles",
             'text'      => "Invoke",
-        ],        
+        ],
     ]);
 ?>
-<style>
-    .box table td.label {
-        min-width: 100px;
-        background-color: #eee;
-        font-weight: bold;
-        text-align: center;
-        padding: 5px;        
-    }
-    .box .box__actions{
-        margin: 20px 0px 10px 0;
-        text-align: right;
-    }
-    .box.view__info, 
-    .box.edit__info {
-        width: 350px;
-    }
-    .box.view__invoke,
-    .box.edit__invoke {
-        width: 400px;
-    }
-</style>
-
 <h1 title="<?=$this->witch->data ?>">
     [<?=$this->witch->name ?>]
     <em><?=$targetWitch->name ?></em>
@@ -52,6 +33,7 @@
         <div><?php include $this->getIncludeDesignFile('view/info.php'); ?></div>
         <div><?php include $this->getIncludeDesignFile('edit/info.php'); ?></div>
         <div><?php include $this->getIncludeDesignFile('view/position.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('create/info.php'); ?></div>
     </div>
 </div>
 
@@ -67,24 +49,3 @@
         <div><?php include $this->getIncludeDesignFile('edit/invoke.php'); ?></div>
     </div>
 </div>
-
-
-<form method="post" id="view-action"></form>
-
-<script>
-$(document).ready(function()
-{
-    $('.edit__info').hide();
-    $('button.view-edit-info-toggle').click(function(){
-        $('.view__info').toggle();
-        $('.edit__info').toggle();
-    });
-    
-    $('.edit__invoke').hide();
-    $('button.view-edit-invoke-toggle').click(function(){
-        $('.view__invoke').toggle();
-        $('.edit__invoke').toggle();
-    });
-    
-});
-</script>

@@ -21,10 +21,28 @@
                 <td class="label">Status</td>
                 <td class="value"><?=$targetWitch->status ?></td>
             </tr>
-
             <tr>
                 <td class="label">Context</td>
                 <td class="value"><?=$targetWitch->context ?></td>
+            </tr>
+            <tr>
+                <td class="label">Direct Access</td>
+                <td class="value">
+                    <?php if( !$targetWitch->hasInvoke() ): ?>
+                    <?php elseif( $targetWitch->site == $this->wc->website->site ): ?>
+                        <a  target="_blank" href="<?=$targetWitch->getUrl() ?>" 
+                            class="text-center"
+                            title="<?='['.$targetWitch->site.'] '.$targetWitch->invoke ?>">
+                            <i class="fas fa-hand-sparkles"></i>
+                        </a>
+                    <?php else: 
+                        $url = $targetWitch->getUrl( null, $websitesList[ $targetWitch->site ] ); ?>
+                        <a target="_blank" href="<?=$url ?>" title="<?=$url ?>">
+                            <em><?='['.$targetWitch->site.']' ?></em>
+                            <i class="fas fa-hand-sparkles"></i>
+                        </a>
+                    <?php endif; ?>
+                </td>
             </tr>
         </table>
 

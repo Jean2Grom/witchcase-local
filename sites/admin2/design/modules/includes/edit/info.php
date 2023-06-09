@@ -1,32 +1,3 @@
-<?php 
-    $this->addCssFile('alert-message.css');
-    $this->addJsFile('triggers.js');
-?>
-<style>
-    label {
-        margin-top: 1em;
-        font-weight: bold;
-        text-align: left;
-        display: block;
-    }
-    
-    input, 
-    textarea {
-        width: 100%;
-        width: -moz-available;          /* WebKit-based browsers will ignore this. */
-        width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
-        width: fill-available;
-    }
-    textarea {
-        height: 100px;
-        resize: none;
-    }
-    input[type=checkbox], 
-    input[type=radio] {
-        width: auto;
-    } 
-</style>
-
 <div class="box edit__info">
     <form   method="post"
             action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
@@ -65,16 +36,3 @@
         <button class="view-edit-info-toggle">Cancel</button>
     </div>
 </div>
-
-<script>
-$(document).ready(function()
-{
-    $('button.edit-info-reinit').click(function(){
-        $('.edit__info input, .edit__info textarea').each(function( i, input ){
-            if( $(input).data('init') !== undefined ){
-                $(input).val( $(input).data('init') );
-            }
-        });
-    });
-});
-</script> 

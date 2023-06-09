@@ -2,6 +2,7 @@
 $possibleActionsList = [
     'save-witch-info',
     'save-witch-invoke',
+    'create-new-witch',
 ];
 
 $action = $this->wc->request->param('action');
@@ -15,7 +16,7 @@ if( !$targetWitch )
 {
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Can't edit undefined witch"
+        'message'   =>  "Undefined Target Witch"
     ];
     
     $this->wc->user->addAlerts($alerts);
@@ -29,7 +30,7 @@ switch( $action )
         $witchNewData   = [
             'name'      =>  trim($this->wc->request->param('witch-name') ?? ""),
             'data'      =>  trim($this->wc->request->param('witch-data') ?? ""),
-            'priority'  =>  $this->wc->request->param('witch-priority', 'POST', FILTER_VALIDATE_INT) ?? 0,
+            'priority'  =>  $this->wc->request->param('witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
         ];
         
         if( $witchNewData['name'] === "" ){
@@ -54,6 +55,48 @@ switch( $action )
         
         $this->wc->user->addAlerts($alerts);
     break;
+    
+    case 'create-new-witch':
+        $newWitchData   = [
+            'name'      =>  trim($this->wc->request->param('new-witch-name') ?? ""),
+            'data'      =>  trim($this->wc->request->param('new-witch-data') ?? ""),
+            'priority'  =>  $this->wc->request->param('new-witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
+        ];
+        
+        if( $newWitchData['name'] === "" )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Witch name is missing"
+            ];
+            $this->wc->user->addAlerts($alerts);
+            break;
+        }
+        
+        $newWitchId = $targetWitch->createDaughter( $newWitchData );
+        
+        if( !$newWitchId )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, new witch wasn't created"
+            ];
+            $this->wc->user->addAlerts($alerts);
+            break;
+        }
+        else
+        {
+            $alerts[] = [
+                'level'     =>  'success',
+                'message'   =>  "New witch created"
+            ];
+            
+            $this->wc->user->addAlerts($alerts);
+            
+            header('Location: '.$this->wc->website->getFullUrl('view?id='.$newWitchId)  );
+            exit();
+        }
+    break;    
     
     case 'save-witch-invoke':
         $site       = trim($this->wc->request->param('witch-site') ?? "");
@@ -133,7 +176,7 @@ switch( $action )
         }
         
         $this->wc->user->addAlerts($alerts);
-
+        
         //header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id."#tab-invoke-part") );
         //exit();
     break;

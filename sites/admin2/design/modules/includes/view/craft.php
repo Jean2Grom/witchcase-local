@@ -1,12 +1,3 @@
-<?php 
-    $this->addJsFile('triggers.js');
-?>
-<style>
-    .view__craft fieldset {
-        border-radius: 5px;
-        margin-bottom: 10px;
-    }
-</style>
 <div class="box view__craft">
     <?php if( empty($targetWitch->craft()) ): ?>
         <h3>No craft</h3>
@@ -61,7 +52,7 @@
             <button class="trigger-action"
                     data-confirm="Warning ! You are about to remove this content"
                     data-action="delete-content"
-                    data-target="view-action">Delete</button>
+                    data-target="view-craft-action">Delete</button>
             <?php if( $targetWitch->craft()->structure->type === WC\Craft\Content::TYPE ): ?>
                 <button class="trigger-action"
                         data-confirm="Are you sure to archive this content ?"
@@ -76,13 +67,3 @@
 </div>
 
 <form method="post" id="view-craft-action"></form>
-
-
-<script>
-$(document).ready(function()
-{
-    $('#witch-content-structure').change(function(){
-        $('#witch__add-content').prop( 'disabled', ($(this).val() === '') );
-    });
-});
-</script>
