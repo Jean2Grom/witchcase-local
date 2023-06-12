@@ -30,8 +30,12 @@ if( !$targetWitch->exist() ){
 }
 
 $structuresList = [];
+$crafWitches    = null;
 if( !$targetWitch->hasCraft() ){
     $structuresList = Structure::listStructures( $this->wc );
+}
+else {
+    $crafWitches = $targetWitch->craft()->getWitches();
 }
 
 $alerts = $this->wc->user->getAlerts();
@@ -181,5 +185,27 @@ foreach( $sites as $site ){
         $websitesList[ $site ] = $website;
     }
 }
+
+$breadcrumb = [
+    [
+        "name"  => $targetWitch->name,
+        "data"  => $targetWitch->data,
+        "href"  => $this->witch->getUrl([ 'id' => $targetWitch->id ]),
+    ]
+];
+
+$breadcrumbWitch    = $targetWitch->mother();
+while( !empty($breadcrumbWitch) )
+{
+    $breadcrumb[]   = [
+        "name"  => $breadcrumbWitch->name,
+        "data"  => $breadcrumbWitch->data,
+        "href"  => $this->witch->getUrl([ 'id' => $targetWitch->id ]),
+    ];
+    
+    $breadcrumbWitch    = $breadcrumbWitch->mother();
+}
+
+$this->addContextVar( 'breadcrumb', array_reverse($breadcrumb) );
 
 $this->view();

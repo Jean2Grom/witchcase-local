@@ -4,7 +4,7 @@
     $this->addJsFile('triggers.js');
     $this->addJsFile('view.js');
     
-    $this->addContextArrayItems( 'standardContextTabs', [
+    $this->addContextArrayItems( 'tabs', [
         'tab-current'       => [
             'selected'  => true,
             'iconClass' => "fas fa-info",
@@ -20,10 +20,7 @@
         ],
     ]);
 ?>
-<h1 title="<?=$this->witch->data ?>">
-    [<?=$this->witch->name ?>]
-    <em><?=$targetWitch->name ?></em>
-</h1> 
+<h2 title="<?=$this->witch->data ?>"><?=$targetWitch->name ?></h2> 
 <p><em><?=$targetWitch->data ?></em></p>
 
 <div class="tabs-target__item selected"  id="tab-current">
@@ -40,6 +37,7 @@
 <div class="tabs-target__item"  id="tab-craft-part">
     <div class="box-container">
         <div><?php include $this->getIncludeDesignFile('view/craft.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('view/craft/positions.php'); ?></div>
     </div>
 </div>
 
