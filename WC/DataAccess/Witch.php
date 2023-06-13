@@ -174,7 +174,7 @@ class Witch
             return false;
         }
         
-        return $witches['fetchAncestors'];
+        return $witches['fetchAncestors']->mother;
     }
     
     static function fetchDescendants(  WitchCase $wc, int $witchId, bool $completeSubtree=true, ?array $sitesRestriction=null ): array

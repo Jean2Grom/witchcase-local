@@ -30,12 +30,32 @@ if( !$targetWitch->exist() ){
 }
 
 $structuresList = [];
-$crafWitches    = null;
+$craftWitches    = null;
 if( !$targetWitch->hasCraft() ){
     $structuresList = Structure::listStructures( $this->wc );
 }
-else {
-    $crafWitches = $targetWitch->craft()->getWitches();
+else 
+{
+    $craftWitches = $targetWitch->craft()->getWitches();
+    
+    foreach( $craftWitches as $key => $craftWitch )
+    {
+        $breadcrumb = [];
+        $breadcrumbWitch    = $craftWitch->mother();
+        while( !empty($breadcrumbWitch) )
+        {
+            $breadcrumb[]   = [
+                "name"  => $breadcrumbWitch->name,
+                "data"  => $breadcrumbWitch->data,
+                "href"  => $this->witch->getUrl([ 'id' => $targetWitch->id ]),
+            ];
+
+            $breadcrumbWitch    = $breadcrumbWitch->mother();
+        }
+        
+        $craftWitches[ $key ]->breadcrumb = array_reverse($breadcrumb);
+        
+    }
 }
 
 $alerts = $this->wc->user->getAlerts();

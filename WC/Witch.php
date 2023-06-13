@@ -249,7 +249,10 @@ class Witch
      */
     function mother(): mixed
     {
-        if( is_null($this->mother) ){
+        if( is_null($this->mother) )        
+        {
+            $this->wc->dump( 'TODO try to locate from other witches in cairn and position', $this->name );
+            
             $this->setMother( WitchDA::fetchAncestors($this->wc, $this->id, true) );
         }
         
