@@ -75,7 +75,9 @@ const ArborescenceMenu = function ( key ) {
                 }
 
                 newArborescenceLevelHtml    +=          '<a class="arborescence-level__witch__name" ';
-                newArborescenceLevelHtml    +=              'href="' + daughterData['uri'] + '" ';
+                if( daughterData['href'] !== undefined ){
+                    newArborescenceLevelHtml+=              'href="' + daughterData['href'] + '" ';
+                }
                 newArborescenceLevelHtml    +=              'title="' + daughterData['description'] + '">';
                 newArborescenceLevelHtml    +=              daughterData['name'];
                 newArborescenceLevelHtml    +=              '&nbsp;&nbsp;';
@@ -150,13 +152,15 @@ const ArborescenceMenu = function ( key ) {
 
 $(document).ready(function()
 {
+    var arborescenceMenuArray = [];
+    
     for( let [key, data] of Object.entries(arborescencesInputs) ) 
     {
-        document.key = ArborescenceMenu( key );
-        document.key.init( data ); 
+        arborescenceMenuArray[ key ] = ArborescenceMenu( key );
+        arborescenceMenuArray[ key ].init( data ); 
         
         $('#'+key+'.arborescence-menu-container').on('click', '.arborescence-level__witch__daughters-display', function( e ){
-            document.key.toggle( e );
+            arborescenceMenuArray[ key ].toggle( e );
         });         
     }
 });

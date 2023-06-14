@@ -3,6 +3,7 @@ namespace WC;
 
 use WC\DataAccess\Witch as WitchDA;
 use WC\Datatype\ExtendedDateTime;
+use WC\Structure;
 
 /**
  * Description of Witch
@@ -601,9 +602,9 @@ class Witch
             return "";
         }
         
-        if( !$module->getResult() ){
-            $module->execute();
-        }
+//        if( !$module->getResult() ){
+//            $module->execute();
+//        }
         
         return $module->getResult() ?? "";
     }
@@ -619,6 +620,19 @@ class Witch
         }
         
         return $this->wc->cairn->craft( $this->craft_table, $this->craft_fk );
+    }
+    
+    /**
+     * Generate Craft witch structure
+     * @return mixed
+     */
+    function getCraftStructure()
+    {
+        if( !$this->hasCraft() ){
+            return false;
+        }
+        
+        return new Structure( $this->wc, $this->craft_table );
     }
     
     
@@ -1042,5 +1056,56 @@ class Witch
         }
         
         return call_user_func([$website, $method], $this->url.$queryString);
+    }
+    
+    static function recursiveTree( self $witch, $sitesRestrictions=false, $currentId=false, $maxStatus=false, ?array $hrefCallBack=null )
+    {
+        if( !is_null($witch->site) 
+            && $sitesRestrictions !== false
+            && !in_array($witch->site, $sitesRestrictions) ){
+            return false;
+        }
+
+        $path       = false;
+        if( $currentId && $currentId == $witch->id ){
+            $path = true;
+        }
+
+        $daughters  = [];
+        foreach( $witch->daughters() as $daughterWitch )
+        {
+            if( $maxStatus !== false && $daughterWitch->statusLevel > $maxStatus ){
+                continue;
+            }
+
+            $subTree        = self::recursiveTree( $daughterWitch, $sitesRestrictions, $currentId, $maxStatus, $hrefCallBack );
+            if( $subTree === false ){
+                continue;
+            }
+
+            if( $subTree['path'] ){
+                $path = true;
+            }
+
+            $daughters[ $subTree['id'] ]    = $subTree;
+        }
+
+        $tree   = [ 
+            'id'                => $witch->id,
+            'name'              => $witch->name,
+            'site'              => $witch->site ?? "",
+            'description'       => $witch->data,
+            'craft'             => $witch->hasCraft(),
+            'invoke'            => $witch->hasInvoke(),
+            'daughters'         => $daughters,
+            'daughters_orders'  => array_keys( $daughters ),
+            'path'              => $path,
+        ];
+        
+        if( $hrefCallBack ){
+            $tree['href'] = call_user_func( $hrefCallBack, $witch );
+        }
+        
+        return $tree;
     }
 }

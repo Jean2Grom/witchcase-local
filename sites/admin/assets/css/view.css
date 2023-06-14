@@ -7,4 +7,12 @@
 .box.edit__invoke {
     width: 400px;
 }
+.hover-hide,
+*:hover > .hover-show {
+    display: block !important;
+}
+.hover-show,
+*:hover > .hover-hide {
+    display: none !important;
+}
 

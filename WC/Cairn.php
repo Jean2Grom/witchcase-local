@@ -19,6 +19,8 @@ class Cairn
     private $crafts;
     private $override;
     
+    var $invokations;
+    
     var $configuration;
     
     function __construct( WitchCase $wc, array $summoningConfiguration, ?Website $forcedWebsite=null )
@@ -30,6 +32,8 @@ class Cairn
         $this->cauldron = [];
         $this->crafts   = [];
         $this->override = [];
+        
+        $this->invokations  = [];
         
         $this->configuration    = self::prepareConfiguration($this->website, $summoningConfiguration);
     }
@@ -106,12 +110,11 @@ class Cairn
                     continue;
                 }
                 
-                if( is_string($witchConf['invoke']) 
-                        && empty($this->witch($refWitch)->modules[ $witchConf['invoke'] ]) ){
-                    $this->witch($refWitch)->invoke( $witchConf['invoke'] );
+                if( is_string($witchConf['invoke']) ){
+                    $this->invokations[ $refWitch ] = $this->witch($refWitch)->invoke( $witchConf['invoke'] );
                 }
-                elseif( empty($this->witch($refWitch)->result()) ){
-                    $this->witch($refWitch)->invoke();
+                else {
+                    $this->invokations[ $refWitch ] = $this->witch($refWitch)->invoke();
                 }
             }
         }
@@ -119,6 +122,12 @@ class Cairn
         return true;
     }
     
+    function invokation( ?string $witchConfRef=null ): string
+    {
+        $ref = $witchConfRef ?? self::DEFAULT_WITCH;
+        
+        return  $this->invokations[ $ref ] ?? "";
+    }
     
     function addWitches( array $witches ): self
     {

@@ -54,7 +54,7 @@ function recursiveTree( WC\Module $module, \WC\Witch $witch, $website, $currentI
     
     $tree   = [ 
         'id'                => $witch->id,
-        'uri'               => $website->getUrl("view?id=".$witch->id),
+        'href'              => $website->getUrl("view?id=".$witch->id),
         'name'              => $witch->name,
         'site'              => $witch->site ?? "",
         'description'       => $witch->data,

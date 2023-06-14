@@ -28,20 +28,20 @@
                             <td>
                                 <a href="<?=$this->wc->website->getUrl("view?id=".$daughter->id."#tab-craft-part") ?>"
                                    class="text-center">
-                                    <?php if( $daughter->hasCraft() ): ?>
-                                        <em><?=$daughter->name ?></em>
-                                    <?php else: ?>
-                                        <i class="far fa-plus-square"></i>
+                                    <em><?=$daughter->getCraftStructure() ?></em>
+                                    <?php if( !$daughter->hasCraft() ): ?>
+                                        <em class="hover-hide">no</em>
+                                        <i class="far fa-plus-square hover-show"></i>
                                     <?php endif; ?>
                                 </a>
                             </td>
                             <td>
                                 <a  href="<?=$this->wc->website->getUrl("view?id=".$daughter->id."#tab-invoke-part") ?>"
                                     class="text-center">
-                                    <?php if( $daughter->hasInvoke() ): ?>
-                                        <em><?=$daughter->invoke ?></em>
-                                    <?php else: ?>
-                                        <i class="far fa-plus-square"></i>
+                                    <em><?=$daughter->invoke ?></em>
+                                    <?php if( !$daughter->hasInvoke() ): ?>
+                                        <em class="hover-hide">no</em>
+                                        <i class="far fa-plus-square hover-show"></i>
                                     <?php endif; ?>
                                 </a>
                             </td>

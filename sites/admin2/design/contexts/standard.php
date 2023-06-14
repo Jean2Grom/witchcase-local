@@ -88,21 +88,27 @@
                 <?php if( !$this->wc->witch() ): ?>
                     <div class="tabs-target__item selected" id="tab-current">404</div>
                 <?php elseif( !$this->tabs ): ?>
-                    <div class="tabs-target__item selected" id="tab-current"><?=$this->wc->witch()->result() ?></div>
+                    <div class="tabs-target__item selected" id="tab-current"><?=$this->wc->cairn->invokation() ?></div>
                 <?php else: ?>
-                    <?=$this->wc->witch()->result() ?>
+                    <?=$this->wc->cairn->invokation() ?>
                 <?php endif; ?>
                 
                 <?php if( $this->wc->witch("arborescence") ): ?>
                     <div class="tabs-target__item" id="tab-navigation">
-                        <?=$this->wc->witch("arborescence")->result("arborescence") ?>
+                        <?=$this->wc->cairn->invokation("arborescence") ?>
+                        <?=$this->wc->cairn->invokation("chooseWitch") ?>
                     </div>
                 <?php endif; ?>
             </div>
         </section>
         
+<?php if( $this->wc->witch("chooseWitch") ): ?>
+    <?php //=$this->wc->witch("chooseWitch")->result("chooseWitch") ?>
+<?php endif; ?>        
+        
         <!-- footer -->
         <?php include $this->getIncludeDesignFile('footer.php'); ?>
+       
         
 <style>
 
@@ -124,6 +130,9 @@
         }
 
 </style>
+
+
+
 <div id="choose-witch">
     <h3>
         Choisir un emplacement
