@@ -9,6 +9,7 @@ $possibleActionsList = [
     'delete-content',
     'add-content',
     'archive-content',
+    'add-position',
 ];
 
 $action = $this->wc->request->param('action');
@@ -185,6 +186,9 @@ switch( $action )
         }      
     break;
     
+    case 'add-position':
+        $this->wc->dump($_POST);
+    break;
 }
 
 $sites  = $this->wc->website->sitesRestrictions;

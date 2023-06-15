@@ -15,7 +15,29 @@ const ArborescenceMenu = function ( key ) {
             this.breadcrumb     = entries.breadcrumb;            
             
             this.addArborescenceLevel( this.treeData );
+            
             this.open( this.initPath );
+            
+            $('#' + this.key + '.arborescence-menu-container.module').animate({
+                scrollLeft: 999999, behavior: "instant"
+            });
+            
+            /*
+            document.getElementById(this.key).scrollTo(99999);
+                console.log(document.getElementById(this.key));
+            document.getElementById(this.key).scrollLeft({
+                top: 0,
+                left: 99999999,
+                behavior: "instant"
+            });
+            /*
+            $('#' + this.key + '.arborescence-menu-container.module').scrollTo({
+                top: 0,
+                left: 99999,
+                behavior: "instant"
+            });*/
+            
+
         },        
         open: function( initPath )
         {
@@ -159,7 +181,7 @@ $(document).ready(function()
         arborescenceMenuArray[ key ] = ArborescenceMenu( key );
         arborescenceMenuArray[ key ].init( data ); 
         
-        $('#'+key+'.arborescence-menu-container').on('click', '.arborescence-level__witch__daughters-display', function( e ){
+        $('#'+key+'.arborescence-menu-container').on('click', '.arborescence-level__witch__daughters-display', function(e){
             arborescenceMenuArray[ key ].toggle( e );
         });         
     }

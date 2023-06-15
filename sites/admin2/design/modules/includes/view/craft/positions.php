@@ -47,15 +47,36 @@
                                 </td>
                             </tr>
                         <?php endforeach; ?>
+                        <input type="hidden" id="new-mother-witch-id" name="new-mother-witch-id" value="" />
+                            
                     </form>
                 </tbody>
             </table>
         <?php endif; ?>
         
         <div class="box__actions">
-            <button class="trigger-action" 
+            <button class="trigger-action"
+                    id="add-position-action"
+                    style="display: none;"
                     data-action="add-position"
                     data-target="view-craft-positions-action">Add position</button>
+            <button id="add-craft-position">Add position</button>
         </div>
     </div>
+    <script>
+    $(document).ready(function()
+    {
+        $('#add-craft-position').on('click', function(){
+            
+            chooseWitch().then( (witchId) => { 
+                if( witchId === false ){
+                    return;
+                }
+                
+                $('#new-mother-witch-id').val( witchId );
+                $('#add-position-action').trigger('click');
+            });
+        });
+    });
+    </script>
 <?php endif; ?>
