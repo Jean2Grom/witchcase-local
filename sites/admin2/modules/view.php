@@ -2,6 +2,7 @@
 use WC\Structure;
 use WC\Craft\Draft;
 use WC\Website;
+use WC\Witch;
 
 $possibleActionsList = [
     'edit-priorities',
@@ -187,7 +188,71 @@ switch( $action )
     break;
     
     case 'add-position':
-        $this->wc->dump($_POST);
+$this->wc->dump($_POST);
+        
+        if( !$targetWitch->hasCraft() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no craft identified"
+            ];
+            break;
+        }
+        
+        $id = $this->wc->request->param('new-mother-witch-id', 'post', FILTER_VALIDATE_INT);
+        if( !$id )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no witch identified"
+            ];
+            break;
+        }
+        
+        $motherWitch = Witch::createFromId( $this->wc, $id);
+        if( !$motherWitch )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no witch identified"
+            ];
+            break;
+        }
+        
+        $newWitchData   = [
+            'name'          =>  $targetWitch->name,
+            'data'          =>  $targetWitch->data,
+            'priority'      =>  0,
+            'craft_table'   =>  $targetWitch->craft_table,
+            'craft_fk'      =>  $targetWitch->craft_fk,
+            'is_main'       =>  0,
+        ];
+        
+        $newWitchId = $motherWitch->createDaughter( $newWitchData );
+        
+        if( !$newWitchId )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, new witch wasn't created"
+            ];
+            $this->wc->user->addAlerts($alerts);
+            break;
+        }
+        else
+        {
+            $alerts[] = [
+                'level'     =>  'success',
+                'message'   =>  "New craft position's witch created"
+            ];
+            
+            $this->wc->user->addAlerts($alerts);
+            
+            header('Location: '.$this->wc->website->getFullUrl('view?id='.$newWitchId)  );
+            exit();
+        }        
+        
+        
     break;
 }
 
