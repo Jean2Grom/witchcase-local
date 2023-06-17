@@ -23,9 +23,15 @@
                                 <td>
                                     <div class="text-center">
                                     <input type="radio" 
-                                           name="main[<?=$craftPositionWitch->id ?>]"
-                                           class="main-selector" 
-                                           <?=$craftPositionWitch->is_main? 'checked': ''?> />
+                                           name="main"
+                                           value="<?=$craftPositionWitch->id ?>"
+                                           <?php if($craftPositionWitch->is_main): ?>
+                                                checked
+                                           <?php else: ?>
+                                                class="trigger-action" 
+                                                data-action="switch-main" 
+                                                data-target="view-craft-positions-action" 
+                                           <?php endif; ?> />
                                     </div>
                                 </td>
                                 <td>

@@ -85,6 +85,7 @@
     .box input[type=checkbox], 
     .box input[type=radio] {
         width: auto;
+        cursor: pointer;
     } 
     
     

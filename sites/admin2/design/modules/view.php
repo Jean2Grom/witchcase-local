@@ -23,9 +23,9 @@
 <h2 title="<?=$this->witch->data ?>"><?=$targetWitch->name ?></h2> 
 <p><em><?=$targetWitch->data ?></em></p>
 
+<?php include $this->getIncludeDesignFile('alerts.php'); ?>
+
 <div class="tabs-target__item selected"  id="tab-current">
-    <?php include $this->getIncludeDesignFile('alerts.php'); ?>
-    
     <div class="box-container">
         <div><?php include $this->getIncludeDesignFile('view/info.php'); ?></div>
         <div><?php include $this->getIncludeDesignFile('edit/info.php'); ?></div>

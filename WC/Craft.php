@@ -240,7 +240,7 @@ class Craft
         
         $this->witches[ $table ] = [];
         foreach( $dataArray as $data ){
-            $this->witches[ $table ][] = Witch::createFromData($this->wc, $data);
+            $this->witches[ $table ][ $data['id'] ] = Witch::createFromData($this->wc, $data);
         }
         
         return $this->witches[ $table ];

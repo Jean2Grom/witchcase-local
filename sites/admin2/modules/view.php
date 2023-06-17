@@ -11,6 +11,7 @@ $possibleActionsList = [
     'add-content',
     'archive-content',
     'add-position',
+    'switch-main',
 ];
 
 $action = $this->wc->request->param('action');
@@ -188,8 +189,6 @@ switch( $action )
     break;
     
     case 'add-position':
-$this->wc->dump($_POST);
-        
         if( !$targetWitch->hasCraft() )
         {
             $alerts[] = [
@@ -250,9 +249,42 @@ $this->wc->dump($_POST);
             
             header('Location: '.$this->wc->website->getFullUrl('view?id='.$newWitchId)  );
             exit();
-        }        
+        }
+    break;
+    
+    case 'switch-main':
+        if( !$targetWitch->hasCraft() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no craft identified"
+            ];
+            break;
+        }
         
+        $id = $this->wc->request->param('main', 'post', FILTER_VALIDATE_INT);
+        if( !$id || !in_array($id, array_keys($craftWitches)) )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no main witch identified"
+            ];
+            break;
+        }
         
+        foreach( $craftWitches as $witchId =>  $craftWitch ){
+            $craftWitch->edit([ 'is_main' =>  ($witchId == $id? 1: 0) ]);
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Craft main position updated"
+        ];
+
+        $this->wc->user->addAlerts($alerts);
+
+        header('Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id.'#tab-craft-part')  );
+        exit();
     break;
 }
 

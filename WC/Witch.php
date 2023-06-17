@@ -957,8 +957,19 @@ class Witch
             return false;
         }
         
-        if( $this->craft()->countWitches() == 1 ){
+        $countCraftWitch = $this->craft()->countWitches();
+        
+        if( $countCraftWitch == 1 ){
             $this->craft()->delete();
+        }
+        elseif( $this->properties['is_main'] == 1 && $countCraftWitch > 1  ){
+            foreach( $this->craft()->getWitches() as $id => $craftWitch ){
+                if( $id != $this->id )
+                {
+                    $craftWitch->edit([ 'is_main' => 1 ]);
+                    break;
+                }
+            }
         }
         
         return $this->edit(['craft_table' => null, 'craft_fk' => null]);
