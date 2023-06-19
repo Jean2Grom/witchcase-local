@@ -12,6 +12,7 @@ $possibleActionsList = [
     'archive-content',
     'add-position',
     'switch-main',
+    'import-craft',
 ];
 
 $action = $this->wc->request->param('action');
@@ -286,6 +287,53 @@ switch( $action )
         header('Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id.'#tab-craft-part')  );
         exit();
     break;
+    
+    case 'import-craft':
+        if( $targetWitch->hasCraft() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Witch already has craft"
+            ];
+            break;
+        }
+        
+        $id = $this->wc->request->param('imported-craft-witch', 'post', FILTER_VALIDATE_INT);
+        if( !$id )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no craft identified"
+            ];
+            break;
+        }
+        
+        $importCraftWitch = Witch::createFromId( $this->wc, $id);
+        if( !$importCraftWitch || !$importCraftWitch->hasCraft() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no craft identified"
+            ];
+            break;
+        }
+        
+        $targetWitch->edit([ 
+            'craft_table'   =>  $importCraftWitch->craft_table,
+            'craft_fk'      =>  $importCraftWitch->craft_fk,
+            'is_main'       =>  0,
+        ]);
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Craft imported"
+        ];
+
+        $this->wc->user->addAlerts($alerts);
+
+        header('Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id.'#tab-craft-part')  );
+        exit();    
+    break;    
 }
 
 $sites  = $this->wc->website->sitesRestrictions;

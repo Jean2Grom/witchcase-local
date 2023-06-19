@@ -69,20 +69,4 @@
             <button id="add-craft-position">Add position</button>
         </div>
     </div>
-    <script>
-    $(document).ready(function()
-    {
-        $('#add-craft-position').on('click', function(){
-            
-            chooseWitch().then( (witchId) => { 
-                if( witchId === false ){
-                    return;
-                }
-                
-                $('#new-mother-witch-id').val( witchId );
-                $('#add-position-action').trigger('click');
-            });
-        });
-    });
-    </script>
 <?php endif; ?>

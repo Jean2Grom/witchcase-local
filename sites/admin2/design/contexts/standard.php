@@ -103,7 +103,7 @@
         
         <?php if( $this->wc->witch("chooseWitch") ): ?>
             <?=$this->wc->cairn->invokation("chooseWitch") ?>
-        <?php endif; ?>        
+        <?php endif; ?>
         
         <!-- footer -->
         <?php include $this->getIncludeDesignFile('footer.php'); ?>

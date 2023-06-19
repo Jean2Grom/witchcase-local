@@ -7,8 +7,8 @@
     $this->addContextArrayItems( 'tabs', [
         'tab-current'       => [
             'selected'  => true,
-            'iconClass' => "fas fa-info",
-            'text'      => "Witch Info",
+            'iconClass' => "fas fa-hat-wizard",
+            'text'      => "Witch",
         ],
         'tab-craft-part'    => [
             'iconClass' => "fas fa-mortar-pestle",

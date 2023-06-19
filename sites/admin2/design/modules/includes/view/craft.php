@@ -4,7 +4,7 @@
         <form method="post" id="witch-add-new-content">
             <select name="witch-content-structure" id="witch-content-structure">
                 <option value="">
-                    Choose structure
+                    Select new craft structure
                 </option>
                 <?php foreach( $structuresList as $structureData ): ?>
                     <option value="<?=$structureData['name']?>">
@@ -12,9 +12,17 @@
                     </option>
                 <?php endforeach; ?>
             </select>
+            
+            <input type="hidden" id="imported-craft-witch" name="imported-craft-witch" value="" />
         </form>
         
         <div class="box__actions">
+            <button id="import-craft-action" 
+                    class="trigger-action"
+                    style="display: none;"
+                    data-action="import-craft"
+                    data-target="witch-add-new-content">Import craft</button>
+            <button id="get-existing-craft">Get existing craft</button>
             <button id="witch__add-content" disabled
                     class="trigger-action"
                     data-action="add-content"

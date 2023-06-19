@@ -74,7 +74,11 @@ const ArborescenceMenu = function ( key ) {
                 if( daughterId === current ){
                     newArborescenceLevelHtml    +=              'current ';
                 }
-                newArborescenceLevelHtml    +=              '" data-id="' + daughterId + '"> ';
+                //newArborescenceLevelHtml    +=              '" data-id="' + daughterId + '"> ';
+                
+                newArborescenceLevelHtml    +=              '" data-id="' + daughterId + '" ';                
+                newArborescenceLevelHtml    +=              'data-craft="' + daughterData['craft'] + '" ';
+                newArborescenceLevelHtml    +=              'data-invoke="' + daughterData['invoke'] + '" >';
 
                 if( this.currentSite !== daughterData['site'] && daughterData['site'] !== '' ){
                     newArborescenceLevelHtml    +=      '<span class="arborescence-level__witch__website">';

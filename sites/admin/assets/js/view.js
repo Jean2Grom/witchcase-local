@@ -34,5 +34,31 @@ $(document).ready(function()
     
     $('#witch-content-structure').change(function(){
         $('#witch__add-content').prop( 'disabled', ($(this).val() === '') );
+        $('#get-existing-craft').prop( 'disabled', ($(this).val() !== '') );
     });
+    
+    
+    $('#get-existing-craft').on('click', function()
+    {
+        chooseWitch({ craft: true }, "Choose importing craft witch").then( (witchId) => { 
+            if( witchId === false ){
+                return;
+            }
+
+            $('#imported-craft-witch').val( witchId );
+            $('#import-craft-action').trigger('click');
+        });
+    });
+    
+    $('#add-craft-position').on('click', function(){
+
+        chooseWitch().then( (witchId) => { 
+            if( witchId === false ){
+                return;
+            }
+
+            $('#new-mother-witch-id').val( witchId );
+            $('#add-position-action').trigger('click');
+        });
+    });    
 });
