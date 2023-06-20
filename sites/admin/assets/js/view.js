@@ -50,8 +50,8 @@ $(document).ready(function()
         });
     });
     
-    $('#add-craft-position').on('click', function(){
-
+    $('#add-craft-position').on('click', function()
+    {
         chooseWitch().then( (witchId) => { 
             if( witchId === false ){
                 return;
@@ -59,6 +59,18 @@ $(document).ready(function()
 
             $('#new-mother-witch-id').val( witchId );
             $('#add-position-action').trigger('click');
+        });
+    });    
+    
+    $('.cut-descendants').on('click', function()
+    {
+        chooseWitch({}, "Choose moving destination witch").then( (witchId) => { 
+            if( witchId === false ){
+                return;
+            }
+
+            //$('#new-mother-witch-id').val( witchId );
+            //$('#add-position-action').trigger('click');
         });
     });    
 });

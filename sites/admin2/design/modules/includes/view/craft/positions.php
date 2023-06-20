@@ -1,6 +1,9 @@
 <?php if( $targetWitch->craft() ): ?>
     <div class="box view__craft__positions">
-        <h3>Craft Witches</h3>
+        <h3>
+            <i class="fa fa-project-diagram"></i>
+            Craft Witches
+        </h3>
 
         <?php if( !$craftWitches ): ?>
             <p><em>No daughters for this witch</em></p>

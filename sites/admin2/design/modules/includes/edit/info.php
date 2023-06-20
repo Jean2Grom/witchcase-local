@@ -2,7 +2,10 @@
     <form   method="post"
             action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
             id="edit-witch-info">
-        <h3>Edit Witch Info Form</h3>
+        <h3>
+            <i class="fa fa-info-circle"></i>
+            Edit Witch Info Form
+        </h3>
         
         <p class="alert-message error" style="display: none;">Mandatory field</p>
         <label for="witch-name">Name*</label>

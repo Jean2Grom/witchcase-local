@@ -27,6 +27,7 @@
             color: #424242;
             font-weight: bold;
             text-decoration: none;
+            cursor: pointer;
         }
             body a:hover {
                 /*color: #999999;*/

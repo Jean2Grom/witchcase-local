@@ -1,6 +1,9 @@
 <div class="box view__craft">
     <?php if( empty($targetWitch->craft()) ): ?>
-        <h3>No craft</h3>
+        <h3>
+            <i class="fa fa-feather-alt"></i>
+            No craft
+        </h3>
         <form method="post" id="witch-add-new-content">
             <select name="witch-content-structure" id="witch-content-structure">
                 <option value="">
@@ -30,7 +33,10 @@
         </div>
 
     <?php else: ?>
-        <h3><?=$targetWitch->craft()->name ?></h3>        
+        <h3>
+            <i class="fa fa-feather-alt"></i>
+            <?=$targetWitch->craft()->name ?>
+        </h3>        
         <h4>
             <?=ucfirst($targetWitch->craft()->structure->name) ?>
             <em>[<?=$targetWitch->craft()->structure->type ?> <?=$targetWitch->craft()->id ?>]</em>

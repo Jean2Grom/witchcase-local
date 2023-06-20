@@ -5,7 +5,10 @@
     <form   method="post"
             action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
             id="edit-witch-invoke">
-        <h3>Edit Witch Invoke Form</h3>
+        <h3>
+            <i class="fa fa-dragon"></i>
+            Edit Witch Invoke Form
+        </h3>
         
         <label for="witch-site">
             Site

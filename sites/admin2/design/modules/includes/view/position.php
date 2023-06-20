@@ -1,5 +1,8 @@
 <div class="box view__position">
-    <h3>Daughters</h3>
+    <h3>
+        <i class="fa fa-folder-open"></i>
+        Daughters
+    </h3>
     
     <?php if( empty($targetWitch->daughters()) ): ?>
         <p><em>No daughters for this witch</em></p>
@@ -13,6 +16,7 @@
                     <th>Craft</th>
                     <th>Invoke</th>
                     <th>Direct Access</th>
+                    <th>Actions</th>
                     <th>Priority</th>
                 </tr>
             </thead>
@@ -60,6 +64,16 @@
                                         <i class="fas fa-hand-sparkles"></i>
                                     </a>
                                 <?php endif; ?>
+                            </td>
+                            <td class="icons-container">
+                                <a class="cut-descendants" data-id="<?=$daughter->id ?>">
+                                    <!--i class="fa fa-scissors"></i-->
+                                    <i class="fas fa-arrows-alt"></i>
+                                </a>
+                                
+                                <a class="copy-descendants" data-id="<?=$daughter->id ?>">
+                                    <i class="fa fa-copy"></i>
+                                </a>
                             </td>
                             <td class="text-right">
                                 <input  class="priorities-input" 

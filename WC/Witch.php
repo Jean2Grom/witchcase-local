@@ -250,6 +250,10 @@ class Witch
      */
     function mother(): mixed
     {
+        if( is_null($this->id) ){
+            return false;
+        }
+        
         if( is_null($this->mother) )        
         {
             $this->wc->dump( 'TODO try to locate from other witches in cairn and position', $this->name );
@@ -318,6 +322,10 @@ class Witch
      */
     function sisters( ?int $id=null ): mixed
     {
+        if( is_null($this->id) ){
+            return false;
+        }
+        
         if( is_null($this->sisters) && $this->mother() ){
             foreach( WitchDA::fetchDescendants($this->wc, $this->mother()->id, true) as $sisterWitch ){
                 $this->addSister($sisterWitch);
@@ -400,6 +408,10 @@ class Witch
      */
     function daughters( ?int $id=null ): mixed
     {
+        if( is_null($this->id) ){
+            return false;
+        }
+        
         if( is_null($this->daughters) )
         {
             $this->daughters = WitchDA::fetchDescendants($this->wc, $this->id, true);
@@ -921,7 +933,7 @@ class Witch
      */
     function delete( bool $fetchDescendants=true ): bool
     {
-        if( $this->mother() === false || $this->depth == 0 ){
+        if( is_null($this->id) || $this->mother() === false || $this->depth == 0 ){
             return false;
         }
         

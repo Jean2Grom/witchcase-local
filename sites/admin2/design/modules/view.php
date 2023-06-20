@@ -7,15 +7,19 @@
     $this->addContextArrayItems( 'tabs', [
         'tab-current'       => [
             'selected'  => true,
-            'iconClass' => "fas fa-hat-wizard",
+            //'iconClass' => "fas fa-sitemap",
+            'iconClass' => ($targetWitch->hasCraft() && $targetWitch->hasInvoke())? "fas fa-hat-wizard"
+                                : ($targetWitch->hasCraft()? "fas fa-mortar-pestle"
+                                : ($targetWitch->hasInvoke()? "fas fa-hand-sparkles"
+                                : "fas fa-folder")),
             'text'      => "Witch",
         ],
         'tab-craft-part'    => [
-            'iconClass' => "fas fa-mortar-pestle",
+            'iconClass' => !$targetWitch->hasCraft()? "far fa-plus-square": ($targetWitch->hasInvoke()? "fas fa-mortar-pestle": ""),
             'text'      => "Craft",
         ],        
         'tab-invoke-part'   => [
-            'iconClass' => "fas fa-hand-sparkles",
+            'iconClass' => !$targetWitch->hasInvoke()? "far fa-plus-square": ($targetWitch->hasCraft()? "fas fa-hand-sparkles": ""),
             'text'      => "Invoke",
         ],
     ]);

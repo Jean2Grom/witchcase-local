@@ -46,6 +46,7 @@
                 <?php if( $this->wc->witch("arborescence") ): ?>
                     <a class="tabs__item" href="#tab-navigation">
                         <i class="fas fa-sitemap"></i>
+                        <!--i class="fas fa-broom"></i-->
                         Navigation
                     </a>
                 <?php endif; ?>

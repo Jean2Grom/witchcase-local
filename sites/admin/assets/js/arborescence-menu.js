@@ -74,30 +74,23 @@ const ArborescenceMenu = function ( key ) {
                 if( daughterId === current ){
                     newArborescenceLevelHtml    +=              'current ';
                 }
-                //newArborescenceLevelHtml    +=              '" data-id="' + daughterId + '"> ';
                 
                 newArborescenceLevelHtml    +=              '" data-id="' + daughterId + '" ';                
                 newArborescenceLevelHtml    +=              'data-craft="' + daughterData['craft'] + '" ';
                 newArborescenceLevelHtml    +=              'data-invoke="' + daughterData['invoke'] + '" >';
-
-                if( this.currentSite !== daughterData['site'] && daughterData['site'] !== '' ){
-                    newArborescenceLevelHtml    +=      '<span class="arborescence-level__witch__website">';
-                    newArborescenceLevelHtml    +=          daughterData['site'];
-                    newArborescenceLevelHtml    +=      '</span>';
-                }
-
+                
                 if( daughterData['craft'] && daughterData['invoke'] ){
                     newArborescenceLevelHtml    +=      '<i  class="fas fa-hat-wizard" ';
-                    newArborescenceLevelHtml    +=          'title="ID: ' + daughterData['id'] + ', content & executable"></i>';
+                    newArborescenceLevelHtml    +=          'title="craft & invoke"></i>';
                 } else if( daughterData['craft'] ){
                     newArborescenceLevelHtml    +=      '<i  class="fas fa-mortar-pestle" ';
-                    newArborescenceLevelHtml    +=          'title="ID: ' + daughterData['id'] + ', content"></i>';
+                    newArborescenceLevelHtml    +=          'title="craft"></i>';                 
                 } else if( daughterData['invoke'] ){    
                     newArborescenceLevelHtml    +=      '<i  class="fas fa-hand-sparkles" ';
-                    newArborescenceLevelHtml    +=          'title="ID: ' + daughterData['id'] + ', executable"></i>';
+                    newArborescenceLevelHtml    +=          'title="invoke"></i>';
                 } else {
-                    newArborescenceLevelHtml    +=      '<i class="fas fa-folder" ';
-                    newArborescenceLevelHtml    +=          'title="ID: ' + daughterData['id'] + '"></i>';
+                    newArborescenceLevelHtml    +=      '<i class="fa fa-folder" ';
+                    newArborescenceLevelHtml    +=          'title="simple folder witch"></i>';
                 }
 
                 newArborescenceLevelHtml    +=          '<a class="arborescence-level__witch__name" ';
