@@ -614,10 +614,6 @@ class Witch
             return "";
         }
         
-//        if( !$module->getResult() ){
-//            $module->execute();
-//        }
-        
         return $module->getResult() ?? "";
     }
     
@@ -1131,4 +1127,102 @@ class Witch
         
         return $tree;
     }
+    
+    function moveTo( self $witch )
+    {
+        $this->wc->db->begin();
+        try {
+            $this->innerTransactionMoveTo( $witch->position );
+        } 
+        catch( \Exception $e ) 
+        {
+            $this->wc->log->error($e->getMessage());
+            $this->wc->db->rollback();
+            return false;
+        }
+        $this->wc->db->commit();
+        
+        return true;        
+    }
+    
+    private function innerTransactionMoveTo( array $position )
+    {
+        $depth = count($position);
+        
+        if( $depth == $this->wc->depth + 1 ){
+            $this->addLevel();
+        }
+        
+        $newPosition                    = $position;
+        $newPosition[ ($depth + 1) ]    = WitchDA::getNewDaughterIndex($this->wc, $position);
+        
+        $params = [];
+        for( $i=1; $i <= $this->wc->depth; $i++ ){
+            $params[ "level_".$i ] = NULL;
+        }
+        
+        foreach( $newPosition as $level => $levelPosition ){
+            $params[ "level_".$level ] = $levelPosition;
+        }
+        
+        $daughters      = $this->daughters();
+        WitchDA::update($this->wc, $params, ['id' => $this->id]);
+
+        if( !empty($daughters) ){
+            foreach( $daughters as $daughterWitch )
+            {
+                $daughterWitch->innerTransactionMoveTo( $newPosition );
+            }
+        }
+        
+        return;
+    }
+
+    function copyTo( self $witch )
+    {
+        $this->wc->db->begin();
+        try {
+            $this->innerTransactionCopyTo( $witch );
+        } 
+        catch( \Exception $e ) 
+        {
+            $this->wc->log->error($e->getMessage());
+            $this->wc->db->rollback();
+            return false;
+        }
+        $this->wc->db->commit();
+        
+        return true;        
+    }
+
+    private function innerTransactionCopyTo( self $witch )
+    {
+        $params = [
+            "name"          => $this->name,
+            "data"          => $this->data,
+            "status"        => $this->statusLevel,
+            "priority"      => $this->priority,
+            "craft_table"   => $this->craft_table,
+            "craft_fk"      => $this->craft_fk,
+            "is_main"       => 0,
+            "site"          => $this->site,
+            "url"           => $this->url,
+            "invoke"        => $this->invoke,
+            "context"       => $this->context,
+        ];
+        
+        $newWitch = self::createFromId($this->wc, $witch->createDaughter( $params ));
+        
+        $daughters      = $this->daughters();
+        
+        if( !empty($daughters) ){
+            foreach( $daughters as $daughterWitch )
+            {
+                $daughterWitch->innerTransactionCopyTo( $newWitch );
+            }
+        }
+        
+        return;
+    }
+    
 }

@@ -9,19 +9,19 @@
         
     <?php else: ?>
         <p><em>Witch daughters list in arborescence</em></p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Craft</th>
-                    <th>Invoke</th>
-                    <th>Direct Access</th>
-                    <th>Actions</th>
-                    <th>Priority</th>
-                </tr>
-            </thead>
-            <tbody>
-                <form method="post" id="view-position-action">
+        <form method="post" id="view-position-action">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Craft</th>
+                        <th>Invoke</th>
+                        <th>Direct Access</th>
+                        <th>Actions</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
                     <?php foreach( $targetWitch->daughters() as $daughter ): ?>
                         <tr>
                             <td>
@@ -66,7 +66,7 @@
                                 <?php endif; ?>
                             </td>
                             <td class="icons-container">
-                                <a class="cut-descendants" data-id="<?=$daughter->id ?>">
+                                <a class="cut-descendants" data-id="<?=$daughter->id ?>" >
                                     <!--i class="fa fa-scissors"></i-->
                                     <i class="fas fa-arrows-alt"></i>
                                 </a>
@@ -83,12 +83,24 @@
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                </form>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+            <input type="hidden" id="origin-witch" name="origin-witch" value="" />
+            <input type="hidden" id="destination-witch" name="destination-witch" value="" />
+        </form>
     <?php endif; ?>
     
     <div class="box__actions">
+        <button id="move-witch-action" 
+                class="trigger-action"
+                style="display: none;"
+                data-action="move-witch"
+                data-target="view-position-action">Move witch</button>
+        <button id="copy-witch-action" 
+                class="trigger-action"
+                style="display: none;"
+                data-action="copy-witch"
+                data-target="view-position-action">Copy witch</button>
         <button class="position-create-toggle">Add Daughter</button>
         <?php if( !empty($targetWitch->daughters()) ): ?>
             <button class="trigger-action" 

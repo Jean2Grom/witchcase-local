@@ -14,9 +14,9 @@
                 <thead>
                     <tr>
                         <th>Main</th>
-                        <th>Name</th>
                         <th>ID</th>
                         <th>Path</th>
+                        <th>Name</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,21 +38,21 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <a href="<?=$this->wc->website->getUrl("view?id=".$craftPositionWitch->id) ?>">
-                                        <?=$craftPositionWitch->name ?>
-                                        <em><?=$craftPositionWitch->id == $targetWitch->id? "(this witch)": '' ?></em>
-                                    </a>
-                                </td>
-                                <td>
                                     <div class="text-center"><?=$craftPositionWitch->id ?></div>
                                 </td>
                                 <td>
                                     <?php foreach( $craftPositionWitch->breadcrumb as $i => $breadcrumbItem ): ?>
-                                        <?=($i == 0)? '': '>' ?>
                                         <a href="<?=$breadcrumbItem['href'] ?>" 
                                            target="_blank" 
                                            title="<?=$breadcrumbItem['data'] ?>"><em><?=$breadcrumbItem['name'] ?></em></a>
+                                        &nbsp;&gt;
                                     <?php endforeach; ?>
+                                </td>
+                                <td>
+                                    <a href="<?=$this->wc->website->getUrl("view?id=".$craftPositionWitch->id) ?>">
+                                        <?=$craftPositionWitch->name ?>
+                                        <em><?=$craftPositionWitch->id == $targetWitch->id? "(this witch)": '' ?></em>
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

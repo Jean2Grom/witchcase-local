@@ -64,13 +64,29 @@ $(document).ready(function()
     
     $('.cut-descendants').on('click', function()
     {
+        $('#origin-witch').val( $(this).data('id') );
+        
         chooseWitch({}, "Choose moving destination witch").then( (witchId) => { 
             if( witchId === false ){
                 return;
             }
-
-            //$('#new-mother-witch-id').val( witchId );
-            //$('#add-position-action').trigger('click');
+            
+            $('#destination-witch').val( witchId );
+            $('#move-witch-action').trigger('click');
+        });
+    });
+    
+    $('.copy-descendants').on('click', function()
+    {
+        $('#origin-witch').val( $(this).data('id') );
+        
+        chooseWitch({}, "Choose copy destination witch").then( (witchId) => { 
+            if( witchId === false ){
+                return;
+            }
+            
+            $('#destination-witch').val( witchId );
+            $('#copy-witch-action').trigger('click');
         });
     });    
 });

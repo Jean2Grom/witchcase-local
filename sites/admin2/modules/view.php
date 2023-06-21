@@ -13,6 +13,8 @@ $possibleActionsList = [
     'add-position',
     'switch-main',
     'import-craft',
+    'move-witch',
+    'copy-witch',
 ];
 
 $action = $this->wc->request->param('action');
@@ -333,7 +335,93 @@ switch( $action )
 
         header('Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id.'#tab-craft-part')  );
         exit();    
-    break;    
+    break;
+    
+    case 'move-witch':
+        $originWitchId      = $this->wc->request->param('origin-witch', 'post', FILTER_VALIDATE_INT);
+        $destinationWitchId = $this->wc->request->param('destination-witch', 'post', FILTER_VALIDATE_INT);
+        if( !$originWitchId || !$destinationWitchId )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, data missing"
+            ];
+            break;
+        }
+        
+        $originWitch        = Witch::createFromId( $this->wc, $originWitchId);
+        $destinationWitch   = Witch::createFromId( $this->wc, $destinationWitchId);        
+        if( !$originWitch || !$destinationWitch )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, witch unidentified"
+            ];
+            break;
+        }
+        
+        if( !$originWitch->moveTo($destinationWitch) )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, move canceled"
+            ];
+            break;
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Witch was moved"
+        ];
+        
+        $this->wc->user->addAlerts($alerts);
+        
+        header('Location: '.$this->wc->website->getFullUrl('view?id='.$destinationWitch->id)  );
+        exit();    
+    break;
+    
+    case 'copy-witch':
+        $originWitchId      = $this->wc->request->param('origin-witch', 'post', FILTER_VALIDATE_INT);
+        $destinationWitchId = $this->wc->request->param('destination-witch', 'post', FILTER_VALIDATE_INT);
+        if( !$originWitchId || !$destinationWitchId )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, data missing"
+            ];
+            break;
+        }
+        
+        $originWitch        = Witch::createFromId( $this->wc, $originWitchId);
+        $destinationWitch   = Witch::createFromId( $this->wc, $destinationWitchId);        
+        if( !$originWitch || !$destinationWitch )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, witch unidentified"
+            ];
+            break;
+        }
+        
+        if( !$originWitch->copyTo($destinationWitch) )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, copy canceled"
+            ];
+            break;
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Witch was copied"
+        ];
+        
+        $this->wc->user->addAlerts($alerts);
+        
+        header('Location: '.$this->wc->website->getFullUrl('view?id='.$destinationWitch->id)  );
+        exit();    
+    break;
 }
 
 $sites  = $this->wc->website->sitesRestrictions;
@@ -369,7 +457,7 @@ while( !empty($breadcrumbWitch) )
     $breadcrumb[]   = [
         "name"  => $breadcrumbWitch->name,
         "data"  => $breadcrumbWitch->data,
-        "href"  => $this->witch->getUrl([ 'id' => $targetWitch->id ]),
+        "href"  => $this->witch->getUrl([ 'id' => $breadcrumbWitch->id ]),
     ];
     
     $breadcrumbWitch    = $breadcrumbWitch->mother();
