@@ -661,6 +661,7 @@ class Witch
         $site   = trim($params['site'] ?? "");
         $url    = trim($params['url'] ?? "");
         
+        // Generate URL
         if( !empty($site) && empty($url) )
         {
             $url    =   $this->findPreviousUrlForSite( $site );
@@ -673,7 +674,12 @@ class Witch
                 if( substr($url, -1) != '/' ){
                     $url .= '/';
                 }
-                $url    .=  self::cleanupString($name);
+                if( !empty($name) ){
+                    $url    .=  self::cleanupString($name);
+                }
+                else {
+                    $url    .=  self::cleanupString($this->name);
+                }
             }
         }
         elseif( !empty($site) && !empty($url) ){
@@ -730,7 +736,10 @@ class Witch
         $buffer = explode('/', $urlRaw);
         foreach( $buffer as $bufferElement )
         {
-            $urlPart = self::cleanupString( $bufferElement );
+            $prefix = substr($bufferElement, 0, 1) == '-'? '-': '';
+            $suffix = substr($bufferElement, -1) == '-'? '-': '';
+            
+            $urlPart = $prefix.self::cleanupString( $bufferElement ).$suffix;
             if( !empty($bufferElement) ){
                 $url .= "/".$urlPart;
             }
@@ -790,6 +799,7 @@ class Witch
             $this->addLevel();
         }
         
+        // Generate URL
         if( !empty($site) && empty($url) )
         {
             if( $this->site == $site ){
@@ -887,37 +897,55 @@ class Witch
      */
     function checkUrl( string $site, string $url ): string
     {
-        $result = WitchDA::getUrlData($this->wc, $site, $url, (int) $this->id);
-        
-        if( empty($result) ){
-            return $url;
+        $urlArray = [ $url ];
+        if( $url == '/' ){
+            $urlArray[] = '/'.self::cleanupString($this->name);
         }
         
-        $regex = '/^'. str_replace('/', '\/', $url).'(?:-\d+)?$/';
+        $result = WitchDA::getUrlsData($this->wc, $site, $urlArray, (int) $this->id);
         
-        $lastIndice = 0;
-        foreach( $result as $row )
+        $usages         = [];
+        $returnedUrl    = [];
+        foreach( $urlArray as $url  )
         {
-            $match = [];
-            preg_match($regex, $row['url'], $match);
-            
-            if( !empty($match) )
-            {
-                $indice = (int) substr($row['url'], (1 + strrpos($row['url'], '-') ) );
-                
-                if( $indice > $lastIndice )
-                {
-                    $lastIndice = $indice;
-                    $url        = substr($row['url'], 0, strrpos($row['url'], '-') ).'-'.($indice + 1);
+            $usages[ $url ] = 0;
+            foreach( $result as $row ){                
+                if(str_starts_with($row['url'], $url) ){
+                    $usages[ $url ]++;
                 }
             }
+            
+            if( $usages[ $url ] == 0 ){
+                return $url;
+            }
+            
+            $regex = '/^'. str_replace('/', '\/', $url).'(?:-\d+)?$/';
+            
+            $returnedUrl[ $url ]    = $url;
+            $lastIndice             = 0;
+            foreach( $result as $row )
+            {
+                $match = [];
+                preg_match($regex, $row['url'], $match);
+
+                if( !empty($match) )
+                {
+                    $indice = (int) substr($row['url'], (1 + strrpos($row['url'], '-') ) );
+
+                    if( $indice > $lastIndice )
+                    {
+                        $lastIndice             = $indice;
+                        $returnedUrl[ $url ]    = substr($row['url'], 0, strrpos($row['url'], '-') ).'-'.($indice + 1);
+                    }
+                }
+            }
+
+            if( $lastIndice == 0 ){
+                $returnedUrl[ $url ] .= '-2';
+            }            
         }
         
-        if( $lastIndice == 0 ){
-            $url .= '-2';
-        }
-        
-        return $url;
+        return array_values($returnedUrl)[0];
     }
     
     
@@ -1132,7 +1160,7 @@ class Witch
     {
         $this->wc->db->begin();
         try {
-            $this->innerTransactionMoveTo( $witch->position );
+            $this->innerTransactionMoveTo( $witch );
         } 
         catch( \Exception $e ) 
         {
@@ -1145,8 +1173,10 @@ class Witch
         return true;        
     }
     
-    private function innerTransactionMoveTo( array $position )
+    private function innerTransactionMoveTo( self $witch, array $urlSiteRewrite=[] )
     {
+        $position = $witch->position;
+        
         $depth = count($position);
         
         if( $depth == $this->wc->depth + 1 ){
@@ -1164,14 +1194,27 @@ class Witch
         foreach( $newPosition as $level => $levelPosition ){
             $params[ "level_".$level ] = $levelPosition;
         }
+
+        if( !empty($this->properties['url']) && !empty($this->properties['site']) )
+        {
+            $previousUrl = $this->findPreviousUrlForSite( $this->site );
+            if( str_starts_with($this->url, $previousUrl) )
+            {
+                $url            = substr( $this->url, strlen($previousUrl) );
+                $destinationUrl = $urlSiteRewrite[ $this->site ] ?? $witch->findPreviousUrlForSite( $this->site );
+                $params['url']  = $destinationUrl.$url;
+                $urlSiteRewrite[ $this->site ] = $params['url'];
+            }
+        }
         
         $daughters      = $this->daughters();
         WitchDA::update($this->wc, $params, ['id' => $this->id]);
+        $this->position = $newPosition;
 
         if( !empty($daughters) ){
             foreach( $daughters as $daughterWitch )
             {
-                $daughterWitch->innerTransactionMoveTo( $newPosition );
+                $daughterWitch->innerTransactionMoveTo( $this, $urlSiteRewrite );
             }
         }
         
@@ -1195,7 +1238,7 @@ class Witch
         return true;        
     }
 
-    private function innerTransactionCopyTo( self $witch )
+    private function innerTransactionCopyTo( self $witch, array $urlSiteRewrite=[] )
     {
         $params = [
             "name"          => $this->name,
@@ -1211,14 +1254,25 @@ class Witch
             "context"       => $this->context,
         ];
         
-        $newWitch = self::createFromId($this->wc, $witch->createDaughter( $params ));
+        if( !empty($params['url']) && !empty($params['site']) )
+        {
+            $previousUrl = $this->findPreviousUrlForSite( $this->site );
+            if( str_starts_with($params['url'], $previousUrl) )
+            {
+                $url            = substr( $params['url'], strlen($previousUrl) );
+                $destinationUrl = $urlSiteRewrite[ $this->site ] ?? $witch->findPreviousUrlForSite( $this->site );
+                $params['url']  = $destinationUrl.$url;
+                $urlSiteRewrite[ $this->site ] = $params['url'];
+            }
+        }
         
-        $daughters      = $this->daughters();
+        $newWitch   = self::createFromId($this->wc, $witch->createDaughter( $params ));        
+        $daughters  = $this->daughters();
         
         if( !empty($daughters) ){
             foreach( $daughters as $daughterWitch )
             {
-                $daughterWitch->innerTransactionCopyTo( $newWitch );
+                $daughterWitch->innerTransactionCopyTo( $newWitch, $urlSiteRewrite );
             }
         }
         

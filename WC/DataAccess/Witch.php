@@ -119,14 +119,18 @@ class Witch
         
         return $max + 1;
     }
-    
-    static function getUrlData(  WitchCase $wc, string $site, string $url, int $excludedId=null )
+        
+    static function getUrlsData(  WitchCase $wc, string $site, array $urls, int $excludedId=null )
     {
         $params = [ 
             'site'      => $site,
-            'url'       => $url,
-            'regexp'    => '^'. $url.'-[0-9]+$',
         ];
+        
+        foreach( $urls as $i => $url )
+        {
+            $params['url_'.$i]      = $url;
+            $params['regexp_'.$i]   = '^'. $url.'-[0-9]+$';            
+        }
         
         $query = "";
         $query  .=  "SELECT `url` ";
@@ -138,8 +142,14 @@ class Witch
             $params['excludedId'] = $excludedId;
         }
         $query  .=  "AND ( ";
-        $query  .=      "`url` = :url ";
-        $query  .=      "OR `url` REGEXP :regexp ";
+        
+        $separator = "";
+        foreach( array_keys($urls) as $i )
+        {
+            $query  .=      $separator."`url` = :url_".$i." ";
+            $query  .=      "OR `url` REGEXP :regexp_".$i." ";
+            $separator =  "OR ";
+        }
         $query  .=  ") ";
         
         return $wc->db->selectQuery($query, $params);

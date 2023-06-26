@@ -125,6 +125,16 @@ switch( $action )
                 $witchNewData['invoke'] = $invokeArray[ $site ];
             }
             
+            if( !empty($witchNewData['invoke']) 
+                    && empty($witchNewData['invoke']) 
+            ){
+                $alerts[] = [
+                    'level'     =>  'error',
+                    'message'   =>  "Module to invoke is missing"
+                ];
+                break;
+            }
+            
             $statusArray = $this->wc->request->param('witch-status', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
             if( $statusArray && !empty($statusArray[ $site ]) ){
                 $witchNewData['status'] = $statusArray[ $site ];
@@ -139,30 +149,27 @@ switch( $action )
             $customFullUrl  = $this->wc->request->param('witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
             $customUrl      = $this->wc->request->param('witch-url');
             
-            if( !$autoUrl && $customFullUrl ){
-                $witchNewData['url'] = $customUrl;
-            }
-            elseif( !$autoUrl )
+            if( !$autoUrl )
             {
-                $url    =   $targetWitch->findPreviousUrlForSite( $site );
-                
-                if( substr($url, -1) != '/' && substr($customUrl, 0, 1) != '/'  ){
-                    $url    .=  '/';
+                $url    =   "";
+                if( !$customFullUrl )
+                {
+                    $url .= $targetWitch->findPreviousUrlForSite( $site );
+                    
+                    if( substr($url, -1) != '/' 
+                            && substr($customUrl, 0, 1) != '/'  
+                    ){
+                        $url .= '/';
+                    }
                 }
                 
-                $url        .=  $customUrl;
+                $url    .=  $customUrl;
                 
                 $witchNewData['url'] = $url;
             }
         }
         
-        if( !empty($site) && empty($witchNewData['invoke']) ){
-            $alerts[] = [
-                'level'     =>  'error',
-                'message'   =>  "Module to invoke is missing"
-            ];
-        }
-        elseif( !$targetWitch->edit( $witchNewData ) ){
+        if( !$targetWitch->edit( $witchNewData ) ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Error, witch was not updated"
@@ -176,7 +183,7 @@ switch( $action )
         }
         
         $this->wc->user->addAlerts($alerts);
-        
+                
         //header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id."#tab-invoke-part") );
         //exit();
     break;
