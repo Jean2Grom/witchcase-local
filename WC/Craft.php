@@ -63,9 +63,10 @@ class Craft
     var $created;
     var $modified;
     
-    private $properties     = [];
+    private $properties         = [];
+    private $relatedCraftsIds   = [];
     
-    private $relatedCraftsIds = [];
+    private $witches;
     
     
     /** @var WitchCase */
@@ -224,6 +225,10 @@ class Craft
             $table = $this->structure->table;
         }
         
+        if( isset($this->witches[ $table ]) ){
+            return $this->witches[ $table ];
+        }
+        
         if( $type && $type !== static::TYPE 
             && property_exists($this, 'content_key') && $this->content_key
         ){
@@ -233,12 +238,12 @@ class Craft
             $dataArray = CraftDA::getWitches($this->wc, $table, $this->id) ?? [];
         }
         
-        $witches = [];
+        $this->witches[ $table ] = [];
         foreach( $dataArray as $data ){
-            $witches[] = Witch::createFromData($this->wc, $data);
+            $this->witches[ $table ][ $data['id'] ] = Witch::createFromData($this->wc, $data);
         }
         
-        return $witches;
+        return $this->witches[ $table ];
     }
     
     function delete( bool $deleteAttributes=true )

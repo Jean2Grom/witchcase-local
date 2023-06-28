@@ -370,14 +370,12 @@ class WitchSummoning
             return [];
         }
         
-        //$result     = $this->initialWitchesRequest( $userConnexionJointure );
         $result     = self::witchesRequest($wc, $configuration, $userConnexionJointure);
         
         if( $result === false ){
             return false;
         }
         
-        //return $this->initialWitchesInstanciate( $result );
         return self::witchesInstanciate($wc, $configuration, $result);
     }
     

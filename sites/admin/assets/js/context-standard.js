@@ -46,4 +46,9 @@ $(document).ready(function()
     if( window.top.location.hash !== undefined && window.top.location.hash !== '' ){
         triggerTabItem( window.top.location.hash );
     }
+    
+    $('.tabs__item__triggering').click(function(){
+        triggerTabItem( $(this).attr('href') );
+        return false;
+    });    
 });

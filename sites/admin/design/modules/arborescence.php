@@ -3,15 +3,22 @@
     $this->addJsFile('fontawesome.js');
     $this->addCssFile('arborescence-menu.css');
     $this->addJsFile('arborescence-menu.js');
+    
+    $key = "arborescence_".md5(microtime().rand());
 ?>
-<div class="arborescence-menu-container module"></div>
+<div id="<?=$key ?>" class="arborescence-menu-container module"></div>
 
 <script type="text/javascript">
-    var treeData    = <?=json_encode($tree)?>;
-    var currentId   = <?=$currentId?>;
-    var currentSite = "<?=$this->wc->website->name?>";
-    var breadcrumb  = <?=json_encode($breadcrumb)?>;
-    var initPath    = false;
+    if( arborescencesInputs === undefined ){
+        var arborescencesInputs = {};
+    }
+    
+    arborescencesInputs[ "<?=$key ?>" ] = {
+        "treeData": <?=json_encode($tree)?>,
+        "currentId": <?=$currentId?>,
+        "currentSite": "<?=$this->wc->website->name?>",
+        "breadcrumb": <?=json_encode($breadcrumb)?>
+    };
 </script>
 
 

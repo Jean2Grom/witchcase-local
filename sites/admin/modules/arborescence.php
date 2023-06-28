@@ -1,10 +1,21 @@
 <?php
+use WC\Witch;
 
 $currentId = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT) ?? $this->wc->witch()->id;
 
-$root = recursiveTree( $this, $this->witch, $this->wc->website, $currentId );
-$tree = [ $this->witch->id => $root ];
+$obj = new class {
+    public $baseUrl;
 
+    public function href( $witch ) { 
+        return $this->baseUrl.'?id='.$witch->id;
+    }
+};
+
+$obj->baseUrl = $this->wc->website->getUrl("view");
+        
+$root   = Witch::recursiveTree( $this->witch, $this->wc->website->sitesRestrictions, $currentId, $this->maxStatus, [$obj, "href"] );
+
+$tree       = [ $this->witch->id => $root ];
 $breadcrumb = [ $this->witch->id ];
 $pathFound  = true;
 $daughters  = $root["daughters"];
@@ -22,50 +33,6 @@ while( $pathFound )
             break;
         }
     }
-}
-
-function recursiveTree( WC\Module $module, \WC\Witch $witch, $website, $currentId=false )
-{
-    if( !is_null($witch->site) 
-        && $website->sitesRestrictions 
-        && !in_array($witch->site, $website->sitesRestrictions) ){
-        return false;
-    }
-    
-    $path       = false;
-    if( $currentId && $currentId == $witch->id ){
-        $path = true;
-    }
-    
-    $daughters  = [];
-    foreach( $module->getDaughters($witch) as $daughterWitch )
-    {
-        $subTree        = recursiveTree( $module, $daughterWitch, $website, $currentId );
-        if( $subTree === false ){
-            continue;
-        }
-        
-        if( $subTree['path'] ){
-            $path = true;
-        }
-        
-        $daughters[ $subTree['id'] ]    = $subTree;
-    }
-    
-    $tree   = [ 
-        'id'                => $witch->id,
-        'uri'               => $website->getUrl("view?id=".$witch->id),
-        'name'              => $witch->name,
-        'site'              => $witch->site ?? "",
-        'description'       => $witch->data,
-        'craft'             => $witch->hasCraft(),
-        'invoke'            => $witch->hasInvoke(),
-        'daughters'         => $daughters,
-        'daughters_orders'  => array_keys( $daughters ),
-        'path'              => $path,
-    ];
-    
-    return $tree;
 }
 
 $this->view();

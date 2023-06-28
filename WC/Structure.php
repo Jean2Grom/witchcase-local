@@ -48,6 +48,11 @@ class Structure
         }
     }
                 
+    function __toString() {
+        return $this->name.($this->type !==  Craft::TYPES[0]? ' ['.$this->type.']': '' );
+    }
+    
+    
     function attributes( string $requiredType=null, bool $forceReading=false )
     {
         $type = $requiredType ?? $this->type;

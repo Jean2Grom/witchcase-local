@@ -27,13 +27,13 @@
         <!-- content -->
         <section>
             <div class="breadcrumb">
-                <span class="breadcrumb__label">
-                    Breadcrumb&nbsp;:
-                </span>
+                <h1 class="breadcrumb__label" title="<?=$this->wc->witch()->data ?>">
+                    <a href="javascript: location.reload();"><?=$this->wc->witch()->name ?></a>
+                </h1>
                 
                 <?php foreach( $breadcrumb as $i => $breadcrumbItem ): ?>
                     <?=( $i > 0 )? "&nbsp;>&nbsp": "" ?>
-                    <span class="breadcrumb__item">
+                    <span class="breadcrumb__item" title="<?=$breadcrumbItem['data'] ?>">
                         <a href="<?=$breadcrumbItem['href'] ?>">
                             <?=$breadcrumbItem['name'] ?>
                         </a>
@@ -46,6 +46,8 @@
                 <?php if( $this->wc->witch("arborescence") ): ?>
                     <a class="tabs__item" href="#tab-navigation">
                         <i class="fas fa-sitemap"></i>
+                        <!--i class="fas fa-broom"></i-->
+                        Navigation
                     </a>
                 <?php endif; ?>
                 
@@ -53,7 +55,7 @@
                     <a class="tabs__item selected" href="#tab-current">                   
                         404
                     </a>
-                <?php elseif( $this->standardContextTabs ): foreach( $this->standardContextTabs as $id => $tab ): ?>
+                <?php elseif( $this->tabs ): foreach( $this->tabs as $id => $tab ): ?>
                     <a class="tabs__item <?=($tab['selected'] ?? null)? 'selected': '' ?>" 
                        href="#<?=$id ?>">
                         <?=($tab['iconClass'] ?? null)? '<i  class="'.$tab['iconClass'].'"></i>': '' ?>
@@ -86,21 +88,25 @@
             <div class="tabs-target">
                 <?php if( !$this->wc->witch() ): ?>
                     <div class="tabs-target__item selected" id="tab-current">404</div>
-                <?php elseif( !$this->standardContextTabs ): ?>
-                    <div class="tabs-target__item selected" id="tab-current"><?=$this->wc->witch()->result() ?></div>
+                <?php elseif( !$this->tabs ): ?>
+                    <div class="tabs-target__item selected" id="tab-current"><?=$this->wc->cairn->invokation() ?></div>
                 <?php else: ?>
-                    <?=$this->wc->witch()->result() ?>
+                    <?=$this->wc->cairn->invokation() ?>
                 <?php endif; ?>
                 
                 <?php if( $this->wc->witch("arborescence") ): ?>
                     <div class="tabs-target__item" id="tab-navigation">
-                        <?=$this->wc->witch("arborescence")->result("arborescence") ?>
+                        <?=$this->wc->cairn->invokation("arborescence") ?>
                     </div>
                 <?php endif; ?>
             </div>
         </section>
         
+        <?php if( $this->wc->witch("chooseWitch") ): ?>
+            <?=$this->wc->cairn->invokation("chooseWitch") ?>
+        <?php endif; ?>
+        
         <!-- footer -->
-        <?php include $this->getIncludeDesignFile('footer.php'); ?>                
+        <?php include $this->getIncludeDesignFile('footer.php'); ?>
     </body>
 </html>

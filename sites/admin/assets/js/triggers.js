@@ -23,9 +23,4 @@ $(document).ready(function()
         
         return false;
     });
-    
-    $('.tabs__item__triggering').click(function(){
-        triggerTabItem( $(this).attr('href') );
-        return false;
-    });
 });

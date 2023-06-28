@@ -45,6 +45,11 @@
             display: flex;
             justify-content: center;
         }
+        .box table td.icons-container {
+            display: flex;
+            justify-content: space-around;
+            
+        }
         .box table td input {
             width: 60px;
         }
@@ -85,6 +90,7 @@
     .box input[type=checkbox], 
     .box input[type=radio] {
         width: auto;
+        cursor: pointer;
     } 
     
     

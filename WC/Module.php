@@ -46,9 +46,9 @@ class Module
         foreach( $this->wc->user->policies as $policy ){
             if( $policy["module"] == $this->name || $policy["module"] == '*' ){
                 if( $policy["status"] == '*' ){
-                    $this->maxStatus = 999999999;
+                    $this->maxStatus = false;
                 }
-                elseif( $policy["status"] > $this->maxStatus ){
+                elseif( $this->maxStatus !== false && $policy["status"] > $this->maxStatus ){
                     $this->maxStatus = (int) $policy["status"];
                 }
             }
@@ -179,7 +179,7 @@ class Module
         
         $daughters = [];
         foreach( $witch->daughters() as $daughterKey => $daughterWitch ){
-            if( $daughterWitch->statusLevel <= $this->maxStatus ){
+            if( $this->maxStatus === false || $daughterWitch->statusLevel <= $this->maxStatus ){
                 $daughters[ $daughterKey ] = $daughterWitch;
             }
         }

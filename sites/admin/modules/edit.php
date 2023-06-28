@@ -87,7 +87,10 @@ switch( $action )
             }
             else 
             {
-                $url    =   $targetWitch->findPreviousUrlForSite( $site );
+                $url = "";
+                if( $targetWitch->mother() ){
+                    $url .= $targetWitch->mother()->getClosestUrl( $site );
+                }
                 
                 if( substr($url, -1) != '/' && substr($customUrl, 0, 1) != '/'  ){
                     $url    .=  '/';

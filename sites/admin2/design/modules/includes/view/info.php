@@ -1,5 +1,8 @@
 <div class="box view__info">
-    <h3>Info</h3>
+    <h3>
+        <i class="fa fa-info-circle"></i>
+        Info
+    </h3>
     <p><em>Wich global information</em></p>
     
     <table>
@@ -15,7 +18,11 @@
             <td class="label">Craft</td>
             <td class="value">
                 <a class="tabs__item__triggering" href="#tab-craft-part">
-                    <?=!$targetWitch->hasCraft()? 'no': $targetWitch->craft()->name ?>
+                    <em><?=$targetWitch->getCraftStructure() ?></em>
+                    <?php if( !$targetWitch->hasCraft() ): ?>
+                        <em class="hover-hide">no</em>
+                        <i class="far fa-plus-square hover-show"></i>
+                    <?php endif; ?>
                 </a>
             </td>
         </tr>
@@ -23,7 +30,11 @@
             <td class="label">Invoke</td>
             <td class="value">
                 <a class="tabs__item__triggering" href="#tab-invoke-part">
-                    <?=!$targetWitch->hasInvoke()? 'no': $targetWitch->invoke ?>
+                    <em><?=$targetWitch->invoke ?></em>
+                    <?php if( !$targetWitch->hasInvoke() ): ?>
+                        <em class="hover-hide">no</em>
+                        <i class="far fa-plus-square hover-show"></i>
+                    <?php endif; ?>
                 </a>
             </td>
         </tr>
