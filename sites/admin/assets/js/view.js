@@ -33,12 +33,12 @@ $(document).ready(function()
     });
     
     $('#witch-content-structure').change(function(){
-        $('#witch__add-content').prop( 'disabled', ($(this).val() === '') );
-        $('#get-existing-craft').prop( 'disabled', ($(this).val() !== '') );
+        $('#witch-create-craft').prop( 'disabled', ($(this).val() === '') );
+        $('#witch-get-existing-craft').prop( 'disabled', ($(this).val() !== '') );
     });
     
     
-    $('#get-existing-craft').on('click', function()
+    $('#witch-get-existing-craft').on('click', function()
     {
         chooseWitch({ craft: true }, "Choose importing craft witch").then( (witchId) => { 
             if( witchId === false ){
@@ -58,7 +58,7 @@ $(document).ready(function()
             }
 
             $('#new-mother-witch-id').val( witchId );
-            $('#add-position-action').trigger('click');
+            $('#add-craft-position-action').trigger('click');
         });
     });    
     

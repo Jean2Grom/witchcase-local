@@ -1019,7 +1019,7 @@ class Witch
             $this->craft()->delete();
         }
         
-        return $this->edit([ 'craft_table' => $structure->table, 'craft_fk' => $craftId ]);
+        return $this->edit([ 'craft_table' => $structure->table, 'craft_fk' => $craftId, 'is_main' => 1 ]);
     }
     
     /**

@@ -1,10 +1,23 @@
 <?php
-
-use WC\Website;
+use WC\Witch;
+use WC\Structure;
+use WC\Craft\Draft;
 
 $possibleActionsList = [
-    'save-witch',
-    'save-witch-and-return',
+    'copy-witch',
+    'move-witch',
+    'edit-priorities',
+    'create-new-witch',
+    'delete-witch',
+    'save-witch-info',
+    'save-witch-invoke',
+    'create-craft',
+    'import-craft',
+    'remove-craft',
+    'archive-craft',
+    'add-craft-position',
+    'switch-craft-main-position',
+    
 ];
 
 $action = $this->wc->request->param('action');
@@ -12,21 +25,13 @@ if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$sites  = [];
-if( $this->wc->website->sitesRestrictions ){
-    $sites = $this->wc->website->sitesRestrictions;
-}
-else {
-    $sites = array_keys($this->wc->configuration->sites);
-}
-
-$alerts         = $this->wc->user->getAlerts();
+$alerts         = [];
 $targetWitch    = $this->wc->witch("target");
 if( !$targetWitch )
 {
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Vous ne pouvez pas éditer d'élément inexistant."
+        'message'   =>  "Undefined Target Witch"
     ];
     
     $this->wc->user->addAlerts($alerts);
@@ -34,69 +39,289 @@ if( !$targetWitch )
     exit();
 }
 
+$urlHash = "";
 switch( $action )
 {
-    case 'save-witch-and-return':
-        $return = true;
-    case 'save-witch':
-        $return = $return ?? false;
-        
-        $name   = trim( $this->wc->request->param('witch-name') );
-        if( empty($name) )
+    case 'copy-witch':
+        $originWitchId      = $this->wc->request->param('origin-witch', 'post', FILTER_VALIDATE_INT);
+        $destinationWitchId = $this->wc->request->param('destination-witch', 'post', FILTER_VALIDATE_INT);
+        if( !$originWitchId || !$destinationWitchId )
         {
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Vous ne pouvez pas créér d'élément sans nom."
+                'message'   =>  "Error, data missing"
             ];
             break;
         }
         
-        $site           = trim( $this->wc->request->param('witch-site') );
-        if( !empty($site) && !in_array($site, $sites) )
+        $originWitch        = Witch::createFromId( $this->wc, $originWitchId);
+        $destinationWitch   = Witch::createFromId( $this->wc, $destinationWitchId);        
+        if( !$originWitch || !$destinationWitch )
         {
-            $site       = "";
-            $alerts[]   = [
-                'level'     =>  'warning',
-                'message'   =>  "Le site envoyé n'est pas dans la liste des sites possibles."
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, witch unidentified"
             ];
+            break;
         }
         
-        $data           = trim( $this->wc->request->param('witch-data') );
-        $priority       = $this->wc->request->param('witch-priority', 'POST', FILTER_VALIDATE_INT );
-        $invoke         = trim( $this->wc->request->param('witch-invoke') );
-        $context        = trim( $this->wc->request->param('witch-context') );
-        $status         = $this->wc->request->param('witch-status', 'POST', FILTER_VALIDATE_INT );
+        if( !$originWitch->copyTo($destinationWitch) )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, copy canceled"
+            ];
+            break;
+        }
         
-        $autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL);
-        $customUrl      = trim( $this->wc->request->param('witch-custom-url') );
-        $customRootUrl  = $this->wc->request->param('witch-custom-url-from-root', 'POST', FILTER_VALIDATE_BOOL);
-        
-        $witchNewData   = [
-            'name'      =>  $name,
-            'site'      =>  $site,
-            'data'      =>  $data,
-            'priority'  =>  $priority,
-            'invoke'    =>  $invoke,
-            'context'   =>  $context,
-            'status'    =>  $status,
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Witch was copied"
         ];
         
-        if( !empty($site) && !$autoUrl ){
-            if( $customRootUrl ){
-                $witchNewData['url'] = $customUrl;
+        $this->wc->user->addAlerts($alerts);        
+        header('Location: '.$this->wc->website->getFullUrl('view?id='.$destinationWitch->id)  );
+        exit();    
+    break;    
+    
+    case 'move-witch':
+        $originWitchId      = $this->wc->request->param('origin-witch', 'post', FILTER_VALIDATE_INT);
+        $destinationWitchId = $this->wc->request->param('destination-witch', 'post', FILTER_VALIDATE_INT);
+        if( !$originWitchId || !$destinationWitchId )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, data missing"
+            ];            
+            break;
+        }
+        
+        $originWitch        = Witch::createFromId( $this->wc, $originWitchId);
+        $destinationWitch   = Witch::createFromId( $this->wc, $destinationWitchId);        
+        if( !$originWitch || !$destinationWitch )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, witch unidentified"
+            ];
+            break;
+        }
+        
+        if( !$originWitch->moveTo($destinationWitch) )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, move canceled"
+            ];
+            break;
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Witch was moved"
+        ];
+        
+        $this->wc->user->addAlerts($alerts);
+        header('Location: '.$this->wc->website->getFullUrl('view?id='.$destinationWitch->id)  );
+        exit();    
+    break;
+    
+    case 'edit-priorities':
+        $priorities = $this->wc->request->param('priorities', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY) ?? [];
+        
+        $errors     = [];
+        $success    = [];
+        foreach( $priorities as $witchId => $witchPriority ){
+            if( !$targetWitch->daughters( $witchId )->edit([ 'priority' => $witchPriority ]) ){
+                $errors[] = "<strong>".$targetWitch->daughters( $witchId )->name."</strong> priority not updated";
             }
-            else 
+            else {
+                $success[] = "<strong>".$targetWitch->daughters( $witchId )->name."</strong> priority updated";
+            }
+        }
+        
+        $targetWitch->reorderDaughters();
+        
+        if( empty($errors) ){
+            $alerts[] = [
+                'level'     =>  'success',
+                'message'   =>  "Priorities updated"
+            ];
+        }
+        elseif( empty($success) ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, priorities hasn't been updated"
+            ];
+        }
+        else 
+        {
+            $alerts[] = [
+                'level'     =>  'warning',
+                'message'   => implode('<br/>', $errors),
+            ];
+            
+            $alerts[] = [
+                'level'     =>  'notice',
+                'message'   => implode('<br/>', $success),
+            ];
+        }
+    break;
+    
+    case 'create-new-witch':
+        $newWitchData   = [
+            'name'      =>  trim($this->wc->request->param('new-witch-name') ?? ""),
+            'data'      =>  trim($this->wc->request->param('new-witch-data') ?? ""),
+            'priority'  =>  $this->wc->request->param('new-witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
+        ];
+        
+        if( $newWitchData['name'] === "" )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Witch name is missing"
+            ];
+            break;
+        }
+        
+        $newWitchId = $targetWitch->createDaughter( $newWitchData );
+        
+        if( !$newWitchId )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, new witch wasn't created"
+            ];
+            break;
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "New witch created"
+        ];
+        
+        $this->wc->user->addAlerts($alerts);
+        header('Location: '.$this->wc->website->getFullUrl('view?id='.$newWitchId)  );
+        exit();
+    break;    
+    
+    case 'delete-witch':
+        if( $targetWitch->mother() && $targetWitch->delete() )
+        {
+            $alerts[] = [
+                'level'     =>  'success',
+                'message'   =>  "Witch removed"
+            ];
+
+            $this->wc->user->addAlerts( $alerts );
+            header('Location: '.$this->wc->website->getFullUrl("view?id=".$targetWitch->mother()->id) );
+            exit();
+        }
+        
+        $alerts[] = [
+            'level'     =>  'error',
+            'message'   =>  "Error, witch hasn't been removed",
+        ];
+    break;
+    
+    case 'save-witch-info':        
+        $witchNewData   = [
+            'name'      =>  trim($this->wc->request->param('witch-name') ?? ""),
+            'data'      =>  trim($this->wc->request->param('witch-data') ?? ""),
+            'priority'  =>  $this->wc->request->param('witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
+        ];
+        
+        if( $witchNewData['name'] === "" ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Witch name is missing"
+            ];
+        }
+        else if( !$targetWitch->edit( $witchNewData ) ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, witch was not updated"
+            ];
+        }
+        else{
+            $alerts[] = [
+                'level'     =>  'success',
+                'message'   =>  "Witch updated"
+            ];
+            
+        }
+    break;
+        
+    case 'save-witch-invoke':
+        $urlHash = "#tab-invoke-part";
+        
+        $site       = trim($this->wc->request->param('witch-site') ?? "");
+        
+        if( empty($site) ){
+            $witchNewData   = [
+                'site'      => null,
+                'url'       => null,
+                'invoke'    => null,
+                'status'    => 0,
+                'context'   => null,
+            ];
+        }
+        else 
+        {
+            $witchNewData   = [
+                'site'      => $site,
+                'url'       => null,
+                'invoke'    => null,
+                'status'    => 0,
+                'context'   => null,
+            ];
+            
+            $invokeArray = $this->wc->request->param('witch-invoke', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+            if( $invokeArray && !empty($invokeArray[ $site ]) ){
+                $witchNewData['invoke'] = $invokeArray[ $site ];
+            }
+            
+            if( !empty($witchNewData['invoke']) 
+                    && empty($witchNewData['invoke']) 
+            ){
+                $alerts[] = [
+                    'level'     =>  'error',
+                    'message'   =>  "Module to invoke is missing"
+                ];
+                break;
+            }
+            
+            $statusArray = $this->wc->request->param('witch-status', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
+            if( $statusArray && !empty($statusArray[ $site ]) ){
+                $witchNewData['status'] = $statusArray[ $site ];
+            }
+            
+            $contextArray = $this->wc->request->param('witch-context', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+            if( $contextArray && !empty($contextArray[ $site ]) ){
+                $witchNewData['context'] = $contextArray[ $site ];
+            }
+            
+            $autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+            $customFullUrl  = $this->wc->request->param('witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+            $customUrl      = $this->wc->request->param('witch-url');
+            
+            if( !$autoUrl )
             {
-                $url = "";
-                if( $targetWitch->mother() ){
-                    $url .= $targetWitch->mother()->getClosestUrl( $site );
+                $url    =   "";
+                if( !$customFullUrl )
+                {
+                    if( $targetWitch->mother() ){
+                        $url .= $targetWitch->mother()->getClosestUrl( $site );
+                    }
+                    
+                    if( substr($url, -1) != '/' 
+                            && substr($customUrl, 0, 1) != '/'  
+                    ){
+                        $url .= '/';
+                    }
                 }
                 
-                if( substr($url, -1) != '/' && substr($customUrl, 0, 1) != '/'  ){
-                    $url    .=  '/';
-                }
-                
-                $url        .=  $customUrl;
+                $url    .=  $customUrl;
                 
                 $witchNewData['url'] = $url;
             }
@@ -105,38 +330,233 @@ switch( $action )
         if( !$targetWitch->edit( $witchNewData ) ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, votre élément n'a pas été modifié."
+                'message'   =>  "Error, witch was not updated"
             ];
         }
-        else
-        {
+        else {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Votre élément a bien été modifié."
-            ];
-            
-            if( $return )
-            {
-                $this->wc->user->addAlerts($alerts);
-                
-                header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
-                exit();
-            }
+                'message'   =>  "Witch updated"
+            ];            
         }
     break;
+    
+    case 'create-craft':
+        $urlHash = "#tab-craft-part";
+        
+        $structure          = $this->wc->request->param('witch-content-structure');
+        $isValidStructure   = false;
+        
+        if( !empty($structure) ){
+            foreach( Structure::listStructures( $this->wc ) as $structuresData ){
+                if( $structuresData['name'] == $structure )
+                {
+                    $isValidStructure = true;
+                    break;
+                }
+            }
+        }
+        
+        if( !$isValidStructure 
+            || !$targetWitch->addStructure(new Structure( $this->wc, $structure, Draft::TYPE )) 
+        ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, addition cancelled"
+            ];
+            break;
+        }
+        
+        header( 'Location: '.$this->wc->website->getFullUrl('edit-content?id='.$targetWitch->id) );
+        exit();
+    break;
+    
+    case 'import-craft':
+        $urlHash = "#tab-craft-part";
+        
+        if( $targetWitch->hasCraft() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Witch already has craft"
+            ];
+            break;
+        }
+        
+        $id = $this->wc->request->param('imported-craft-witch', 'post', FILTER_VALIDATE_INT);
+        if( !$id )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no craft identified"
+            ];
+            break;
+        }
+        
+        $importCraftWitch = Witch::createFromId( $this->wc, $id);
+        if( !$importCraftWitch || !$importCraftWitch->hasCraft() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no craft identified"
+            ];
+            break;
+        }
+        
+        $targetWitch->edit([ 
+            'craft_table'   =>  $importCraftWitch->craft_table,
+            'craft_fk'      =>  $importCraftWitch->craft_fk,
+            'is_main'       =>  0,
+        ]);
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Craft imported"
+        ];
+    break;
+
+
+    case 'remove-craft':
+        $urlHash = "#tab-craft-part";
+        
+        if( !$targetWitch->hasCraft() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Craft hasn't been found",
+            ];
+            break;
+        }
+        elseif( !$targetWitch->removeCraft() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, craft hasn't been removed",
+            ];
+            break;
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Craft removed"
+        ];
+    break;
+    
+    case 'archive-craft':
+        $urlHash = "#tab-craft-part";
+        
+        if( $targetWitch->craft()->archive() === false )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, archiving cancelled"
+            ];
+            break;
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Craft archived"
+        ];        
+    break;
+    
+    case 'add-craft-position':
+        $urlHash = "#tab-craft-part";
+        
+        if( !$targetWitch->hasCraft() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no craft identified"
+            ];
+            break;
+        }
+        
+        $id = $this->wc->request->param('new-mother-witch-id', 'post', FILTER_VALIDATE_INT);
+        if( !$id )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no witch identified"
+            ];
+            break;
+        }
+        
+        $motherWitch = Witch::createFromId( $this->wc, $id);
+        if( !$motherWitch )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no witch identified"
+            ];
+            break;
+        }
+        
+        $newWitchData   = [
+            'name'          =>  $targetWitch->name,
+            'data'          =>  $targetWitch->data,
+            'priority'      =>  0,
+            'craft_table'   =>  $targetWitch->craft_table,
+            'craft_fk'      =>  $targetWitch->craft_fk,
+            'is_main'       =>  0,
+        ];
+        
+        $newWitchId = $motherWitch->createDaughter( $newWitchData );
+        
+        if( !$newWitchId )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, new witch wasn't created"
+            ];
+            break;
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "New craft position's witch created"
+        ];
+        
+        $this->wc->user->addAlerts($alerts);
+        header('Location: '.$this->wc->website->getFullUrl('view?id='.$newWitchId.$urlHash) );
+        exit();
+    break;
+    
+    case 'switch-craft-main-position':
+        $urlHash = "#tab-craft-part";
+        
+        if( !$targetWitch->hasCraft() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no craft identified"
+            ];
+            break;
+        }
+        
+        $craftWitches = $targetWitch->craft()->getWitches();
+        
+        $id = $this->wc->request->param('main', 'post', FILTER_VALIDATE_INT);
+        if( !$id || !in_array($id, array_keys($craftWitches)) )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, no main witch identified"
+            ];
+            break;
+        }
+        
+        foreach( $craftWitches as $witchId =>  $craftWitch ){
+            $craftWitch->edit([ 'is_main' =>  ($witchId == $id? 1: 0) ]);
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Craft main position updated"
+        ];
+    break;    
 }
 
-$websitesList   = [];
-foreach( $sites as $site ){
-    if( $site == $this->wc->website->name ){
-        $websitesList[ $site ] = $this->wc->website;
-    }
-    else {
-        $websitesList[ $site ] = new Website( $this->wc, $site );
-    }
-}
-
-$statusGlobal   = $this->wc->configuration->read("global", "status");
-$cancelHref     = $this->wc->website->getUrl("view?id=".$targetWitch->id);
-
-$this->view();
+$this->wc->user->addAlerts($alerts);
+header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id.$urlHash) );
+exit();

@@ -20,8 +20,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <form method="post" id="view-craft-positions-action">
-                        <?php foreach( $craftWitches as $craftPositionWitch ): ?>
+                    <form method="post" 
+                          action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
+                          id="view-craft-positions-action">
+                        <?php foreach( $craftWitchesTargetFirst as $craftPositionWitch ): ?>
                             <tr>
                                 <td>
                                     <div class="text-center">
@@ -32,7 +34,7 @@
                                                 checked
                                            <?php else: ?>
                                                 class="trigger-action" 
-                                                data-action="switch-main" 
+                                                data-action="switch-craft-main-position" 
                                                 data-target="view-craft-positions-action" 
                                            <?php endif; ?> />
                                     </div>
@@ -49,7 +51,7 @@
                                     <?php endforeach; ?>
                                 </td>
                                 <td>
-                                    <a href="<?=$this->wc->website->getUrl("view?id=".$craftPositionWitch->id) ?>">
+                                    <a href="<?=$this->wc->website->getUrl("view?id=".$craftPositionWitch->id."#tab-craft-part") ?>">
                                         <?=$craftPositionWitch->name ?>
                                         <em><?=$craftPositionWitch->id == $targetWitch->id? "(this witch)": '' ?></em>
                                     </a>
@@ -65,9 +67,9 @@
         
         <div class="box__actions">
             <button class="trigger-action"
-                    id="add-position-action"
+                    id="add-craft-position-action"
                     style="display: none;"
-                    data-action="add-position"
+                    data-action="add-craft-position"
                     data-target="view-craft-positions-action">Add position</button>
             <button id="add-craft-position">Add position</button>
         </div>

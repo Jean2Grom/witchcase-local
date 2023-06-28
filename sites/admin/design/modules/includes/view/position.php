@@ -9,7 +9,9 @@
         
     <?php else: ?>
         <p><em>Witch daughters list in arborescence</em></p>
-        <form method="post" id="view-position-action">
+        <form method="post" 
+              id="view-position-action" 
+              action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>">
             <table>
                 <thead>
                     <tr>

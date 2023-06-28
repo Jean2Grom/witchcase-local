@@ -4,7 +4,9 @@
             <i class="fa fa-feather-alt"></i>
             No craft
         </h3>
-        <form method="post" id="witch-add-new-content">
+        <form method="post" 
+              action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
+              id="witch-add-new-content">
             <select name="witch-content-structure" id="witch-content-structure">
                 <option value="">
                     Select new craft structure
@@ -25,10 +27,10 @@
                     style="display: none;"
                     data-action="import-craft"
                     data-target="witch-add-new-content">Import craft</button>
-            <button id="get-existing-craft">Get existing craft</button>
-            <button id="witch__add-content" disabled
+            <button id="witch-get-existing-craft">Get existing craft</button>
+            <button id="witch-create-craft" disabled
                     class="trigger-action"
-                    data-action="add-content"
+                    data-action="create-craft"
                     data-target="witch-add-new-content">Create craft</button>
         </div>
 
@@ -65,12 +67,12 @@
         <div class="box__actions">
             <button class="trigger-action"
                     data-confirm="Warning ! You are about to remove this content"
-                    data-action="delete-content"
-                    data-target="view-craft-action">Delete</button>
+                    data-action="remove-craft"
+                    data-target="view-craft-action"><?=count($craftWitches) == 1? "Delete": "Remove" ?></button>
             <?php if( $targetWitch->craft()->structure->type === WC\Craft\Content::TYPE ): ?>
                 <button class="trigger-action"
                         data-confirm="Are you sure to archive this content ?"
-                        data-action="archive-content"
+                        data-action="archive-craft"
                         data-target="view-craft-action">Archive</button>
             <?php endif; ?>
             <button class="trigger-href" 
@@ -80,4 +82,6 @@
     <?php endif; ?>
 </div>
 
-<form method="post" id="view-craft-action"></form>
+<form method="post" 
+      action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
+      id="view-craft-action"></form>

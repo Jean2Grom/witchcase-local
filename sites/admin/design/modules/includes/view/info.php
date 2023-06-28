@@ -66,5 +66,7 @@
     </div>
 </div>
 
-<form method="post" id="view-info-action"></form>
+<form method="post" 
+      action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
+      id="view-info-action"></form>
 
