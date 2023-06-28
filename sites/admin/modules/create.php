@@ -101,12 +101,7 @@ switch( $action )
             }
             else 
             {
-                if( $motherWitch->site == $site ){
-                    $url    =   $motherWitch->url;
-                }
-                else {
-                    $url    =   $motherWitch->findPreviousUrlForSite( $site );
-                }
+                $url = $motherWitch->getClosestUrl( $site );
                 
                 if( substr($url, -1) != '/' && substr($customUrl, 0, 1) != '/'  ){
                     $url    .=  '/';

@@ -664,32 +664,39 @@ class Witch
         // Generate URL
         if( !empty($site) && empty($url) )
         {
-            $url    =   $this->findPreviousUrlForSite( $site );
+            if( $this->mother() ){
+                $rootUrl    = $this->mother()->getClosestUrl( $site );
+            }
+            else {
+                $rootUrl    = ""; 
+            }
             
-            if( empty($url) ){
-                $url = "/";
+            $witchName  = !empty($name)? $name: $this->name;
+            $urlArray   = [];
+            
+            if( empty($rootUrl) ){
+                $urlArray[] = '/';
             }
-            else
-            {
-                if( substr($url, -1) != '/' ){
-                    $url .= '/';
-                }
-                if( !empty($name) ){
-                    $url    .=  self::cleanupString($name);
-                }
-                else {
-                    $url    .=  self::cleanupString($this->name);
-                }
+            
+            if( substr($rootUrl, -1) != '/' ){
+                $rootUrl .= '/';
             }
+            
+            $rootUrl    .=  self::cleanupString($witchName);
+            $urlArray[] =   $rootUrl;
         }
         elseif( !empty($site) && !empty($url) ){
-            $url    =   self::urlCleanupString($url);
+            $urlArray = [ self::urlCleanupString($url) ];
         }
+        
+        if( !empty($urlArray) ){
+            $url = $this->checkUrls($site, $urlArray);
+        }            
         
         if( !empty($site) && !empty($url) )
         {
             $params['site'] = $site;
-            $params['url']  = $this->checkUrl( $site, $url );
+            $params['url']  = $url;
         }
         elseif( (isset( $params['site'] ) && empty( $params['site'] ))
                 || (isset( $params['url'] ) && empty( $params['url'] ))
@@ -701,7 +708,6 @@ class Witch
         if( empty($params) ){
             return false;
         }
-        
         
         if( !empty($name) ){
             $params['name'] = $name;
@@ -802,32 +808,28 @@ class Witch
         // Generate URL
         if( !empty($site) && empty($url) )
         {
-            if( $this->site == $site ){
-                $url    =   $this->url;
-            }
-            else {
-                $url    =   $this->findPreviousUrlForSite( $site );
+            $rootUrl    = $this->getClosestUrl( $site );
+            
+            $urlArray   = [];
+            if( empty($rootUrl) ){
+                $urlArray[] = '/';
             }
             
-            if( empty($url) ){
-                $url = "/";
+            if( substr($rootUrl, -1) != '/' ){
+                $rootUrl .= '/';
             }
-            else
-            {
-                if( substr($url, -1) != '/' ){
-                    $url .= '/';
-                }
-                $url    .=  self::cleanupString($name);
-            }
+            
+            $rootUrl    .=  self::cleanupString($name);
+            $urlArray[] =   $rootUrl;
         }
         elseif( !empty($site) && !empty($url) ){
-            $url    =   self::urlCleanupString($url);
+            $urlArray = [ self::urlCleanupString($url) ];
         }
-                
-        if( !empty($url) ){
-            $url = $this->checkUrl( $site, $url );
+        
+        if( !empty($urlArray) ){
+            $url = $this->checkUrls($site, $urlArray);
         }
-                
+        
         $newDaughterPosition                        = $this->position;
         $newDaughterPosition[ ($this->depth + 1) ]  = WitchDA::getNewDaughterIndex($this->wc, $this->position);
         
@@ -861,28 +863,24 @@ class Witch
     
     
     /**
-     * On automatic creation of new url, find the last logical parent url
-     * @param string $site
+     * Get closest ancestor url for a given site
+     * @param string|null $forSite
      * @return string
      */
-    function findPreviousUrlForSite( string $site ): string
+    function getClosestUrl( ?string $forSite=null ): string
     {
         $url    = "";
-        $mother = $this->mother;
-        if( is_null($mother) )
-        {
-            $this->setMother( WitchDA::fetchAncestors($this->wc, $this->id, true, [ $site, $this->site ]) );
-            $mother = $this->mother ?? false;
-        }
+        $site   = $forSite ?? $this->site;
         
-        while( $mother !== false && $mother->depth > 0 )
+        $ancestorWitch = $this;
+        while( $ancestorWitch !== false && $ancestorWitch->depth > 0 )
         {
-            if( $mother->site == $site ){
-                $url = $mother->url;
+            if( $ancestorWitch->site == $site ){
+                $url = $ancestorWitch->url;
                 break;
             }
             
-            $mother = $mother->mother;
+            $ancestorWitch = $ancestorWitch->mother();
         }
         
         return $url;
@@ -890,44 +888,33 @@ class Witch
     
     
     /**
-     * Check new url validity, add a suffix if it's not
+     * Check new urls validity, add a suffix if it's not
      * @param string $site
-     * @param string $url
+     * @param array $urlArray
      * @return string
      */
-    function checkUrl( string $site, string $url ): string
+    function checkUrls( string $site, array $urlArray ): string
     {
-        $urlArray = [ $url ];
-        if( $url == '/' ){
-            $urlArray[] = '/'.self::cleanupString($this->name);
-        }
-        
         $result = WitchDA::getUrlsData($this->wc, $site, $urlArray, (int) $this->id);
         
         $usages         = [];
         $returnedUrl    = [];
-        foreach( $urlArray as $url  )
+        foreach( $urlArray as $key => $url  )
         {
-            $usages[ $url ] = 0;
-            foreach( $result as $row ){                
-                if(str_starts_with($row['url'], $url) ){
-                    $usages[ $url ]++;
-                }
-            }
+            $usages[ $key ] = 0;            
+            $regex          = '/^'. str_replace('/', '\/', $url).'(?:-\d+)?$/';
             
-            if( $usages[ $url ] == 0 ){
-                return $url;
-            }
-            
-            $regex = '/^'. str_replace('/', '\/', $url).'(?:-\d+)?$/';
-            
-            $returnedUrl[ $url ]    = $url;
+            $returnedUrl[ $key ]    = $url;
             $lastIndice             = 0;
             foreach( $result as $row )
             {
                 $match = [];
                 preg_match($regex, $row['url'], $match);
 
+                if( $row['url'] === $url || !empty($match) ){
+                    $usages[ $key ]++;
+                }
+                
                 if( !empty($match) )
                 {
                     $indice = (int) substr($row['url'], (1 + strrpos($row['url'], '-') ) );
@@ -939,10 +926,14 @@ class Witch
                     }
                 }
             }
-
-            if( $lastIndice == 0 ){
-                $returnedUrl[ $url ] .= '-2';
-            }            
+            
+            if( $usages[ $key ] == 1 && $lastIndice == 0 ){
+                $returnedUrl[ $key ] .= '-2';
+            }
+            
+            if( $usages[ $key ] == 0 ){
+                return $returnedUrl[ $key ];
+            }
         }
         
         return array_values($returnedUrl)[0];
@@ -1195,13 +1186,13 @@ class Witch
             $params[ "level_".$level ] = $levelPosition;
         }
 
-        if( !empty($this->properties['url']) && !empty($this->properties['site']) )
+        if( $this->mother() && !empty($this->properties['url']) && !empty($this->properties['site']) )
         {
-            $previousUrl = $this->findPreviousUrlForSite( $this->site );
+            $previousUrl = $this->mother()->getClosestUrl();
             if( str_starts_with($this->url, $previousUrl) )
             {
                 $url            = substr( $this->url, strlen($previousUrl) );
-                $destinationUrl = $urlSiteRewrite[ $this->site ] ?? $witch->findPreviousUrlForSite( $this->site );
+                $destinationUrl = $urlSiteRewrite[ $this->site ] ?? $witch->getClosestUrl( $this->site );
                 $params['url']  = $destinationUrl.$url;
                 $urlSiteRewrite[ $this->site ] = $params['url'];
             }
@@ -1254,13 +1245,13 @@ class Witch
             "context"       => $this->context,
         ];
         
-        if( !empty($params['url']) && !empty($params['site']) )
+        if( $this->mother() && !empty($params['url']) && !empty($params['site']) )
         {
-            $previousUrl = $this->findPreviousUrlForSite( $this->site );
+            $previousUrl = $this->mother()->getClosestUrl();
             if( str_starts_with($params['url'], $previousUrl) )
             {
                 $url            = substr( $params['url'], strlen($previousUrl) );
-                $destinationUrl = $urlSiteRewrite[ $this->site ] ?? $witch->findPreviousUrlForSite( $this->site );
+                $destinationUrl = $urlSiteRewrite[ $this->site ] ?? $witch->getClosestUrl( $this->site );
                 $params['url']  = $destinationUrl.$url;
                 $urlSiteRewrite[ $this->site ] = $params['url'];
             }

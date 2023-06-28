@@ -154,7 +154,9 @@ switch( $action )
                 $url    =   "";
                 if( !$customFullUrl )
                 {
-                    $url .= $targetWitch->findPreviousUrlForSite( $site );
+                    if( $targetWitch->mother() ){
+                        $url .= $targetWitch->mother()->getClosestUrl( $site );
+                    }
                     
                     if( substr($url, -1) != '/' 
                             && substr($customUrl, 0, 1) != '/'  
