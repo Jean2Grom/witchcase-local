@@ -1,160 +1,146 @@
-<style>
-    .list-profiles-content, 
-    .profile-content {
-        float: left;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        margin: 15px 15px 5px 0;
-        padding: 10px;
-        box-shadow: 5px 5px 5px #ccc;
+<?php
+    $this->addCssFile('boxes.css');
+    $this->addJsFile('triggers.js');
+    
+    $this->addContextArrayItems( 'tabs', [
+        'tab-current'       => [
+            'selected'  => true,
+            'iconClass' => "fas fa-list",
+            'text'      => "List",
+        ],
+    ]);
+    
+    foreach( $profiles as $id => $profile ){
+        $this->addContextArrayItems( 'tabs', [
+            'tab-profile-'.$id       => [
+                'text'      => $profile->name,
+                'close'     => true,
+            ],
+        ]);
     }
-        .list-profiles-content table th, 
-        .profile-content table th {
-            min-width: 100px;
-            background-color: #eee;
-        }    
-        .list-profiles-content table td, 
-        .profile-content table td {
-            padding: 0 10px;
-        }    
-        .list-profiles-content__actions,
-        .profile-content__actions {
-            margin: 20px 0px 10px 0;
-            text-align: right;
-        }
-        .list-profiles-content h2,
-        .profile-content h2 {
-            font-size: 1.1em;
-            margin-top: 5px;
-        }
-    .profile-content {
-        display: none;
-    }
-        .profile-content .close {
-            cursor: pointer;
-            float: right;
-            margin-right: 5px;
-        }
-    .show-details {
-        cursor: pointer;
-    }
-</style>
+    
+?>
 
-<h1>Profils Utilisateurs</h1>
+<h2>User Profiles</h2> 
+<p><em>Here you can manage permissions by handeling user profiles</em></p>
 
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
-<p>
-    Voici la liste des profiles utilisateurs utilisés pour gérer les droits
-</p>
 
-<div class="list-profiles-content">
-    <h2>Liste des profils</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Site</th>
-                <th>Nom</th>
-                <th>&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach( $profiles as $profile ): ?>
-                <tr>
-                    <td>
-                        <?=$profile->site?>
-                    </td>
-                    <td>
-                        <a class="show-details" data-id="<?=$profile->id?>" >
-                            <?=$profile->name?>
-                        </a>
-                    </td>
-                    <td class="text-right">
-                        <a href="<?=$editProfileHref.$profile->id?>">
-                            <i class="fa fa-pencil"></i>
-                            &nbsp;
-                        </a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    
-    <div class="list-profiles-content__actions">
-        <button class="" 
-                id="create-profile-action"
-                data-href="<?=$createProfileHref ?>">
-            Ajouter un profil
-        </button>
+<div class="tabs-target__item selected"  id="tab-current">
+    <div class="box-container">
+        <div><div class="box ">
+            <h3>
+                <i class="fas fa-users"></i> Profiles List
+            </h3>
+            <p><em>Filter by site here</em></p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Site</th>
+                        <th>Name</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach( $profiles as $profile ): ?>
+                        <tr>
+                            <td>
+                                <?=$profile->site?>
+                            </td>
+                            <td>
+                                <a class="show-details" data-id="<?=$profile->id?>" >
+                                    <?=$profile->name?>
+                                </a>
+                            </td>
+                            <td class="text-right">
+                                <a href="<?=$editProfileHref.$profile->id?>">
+                                    <i class="fa fa-pencil"></i>
+                                    &nbsp;
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            
+            <div class="box__actions">
+                <button class="" 
+                        id="create-profile-action"
+                        data-href="<?=$createProfileHref ?>">
+                    Create new profile
+                </button>
+            </div>
+        </div></div>
     </div>
 </div>
-<div class="clear"></div>
 
-<?php foreach( $profiles as $profile ): ?>
-    <div class="profile-content" id="profile_<?=$profile->id?>">
-        <h2>
-            <?=$profile->name?> / <?=$profile->site?>
-            <a class="close">
-                <i class="fa fa-times"></i>
-            </a>
-        </h2>
-                    
+<?php foreach( $profiles as $id => $profile ): ?>
+    <div class="tabs-target__item"  id="tab-profile-<?=$id ?>">
+        <div class="box-container">
+            <div><div class="box ">
+                <h3>
+                    <i class="fas fa-user"></i> <?=$profile->name?>
+                </h3>
+                <p><em><?=$profile->site != '*'? $profile->site: "All sites" ?></em></p>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Module</th>
-                    <th>Status</th>
-                    <th>Position</th>
-                    <th>Règles position</th>
-                    <th>Spécifique</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach( $profile->policies as $policy ): ?>
-                    <tr>
-                        <td>
-                            <?=$policy->module ?>
-                        </td>
-                        <td>
-                            <?=$policy->statusLabel ?>
-                        </td>
-                        <td>
-                            <?php if( !empty($policy->positionId) ): ?>
-                                <a href="<?=$this->wc->website->baseUri."/view?id=".$policy->positionId ?>"
-                                   target="_blank">
-                                    <?=$policy->positionName ?? $policy->positionId ?>
-                                </a>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?=$policy->position_rules['ancestors']? "Parents": "" ?>
-                            <?=$policy->position_rules['self']? "Incluse": "" ?>
-                            <?=$policy->position_rules['descendants']? "Enfants": "" ?>
-                        </td>
-                        <td>
-                            <?=$policy->custom_limitation ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Module</th>
+                            <th>Status</th>
+                            <th>Position</th>
+                            <th>Règles position</th>
+                            <th>Spécifique</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach( $profile->policies as $policy ): ?>
+                            <tr>
+                                <td>
+                                    <?=$policy->module ?>
+                                </td>
+                                <td>
+                                    <?=$policy->statusLabel ?>
+                                </td>
+                                <td>
+                                    <?php if( !empty($policy->positionId) ): ?>
+                                        <a href="<?=$this->wc->website->baseUri."/view?id=".$policy->positionId ?>"
+                                           target="_blank">
+                                            <?=$policy->positionName ?? $policy->positionId ?>
+                                        </a>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?=$policy->position_rules['ancestors']? "Parents": "" ?>
+                                    <?=$policy->position_rules['self']? "Incluse": "" ?>
+                                    <?=$policy->position_rules['descendants']? "Enfants": "" ?>
+                                </td>
+                                <td>
+                                    <?=$policy->custom_limitation ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
 
-        <div class="profile-content__actions">
-            <button data-id="<?=$profile->id ?>" 
-                    class="delete-profile-action">
-                Supprimer
-            </button>
-            <button data-href="<?=$editProfileHref.$profile->id ?>" 
-                    class="edit-profile-action">
-                Modifier
-            </button>
+                <div class="box__actions">
+                   <button data-id="<?=$profile->id ?>" 
+                           class="delete-profile-action">
+                       Supprimer
+                   </button>
+                   <button data-href="<?=$editProfileHref.$profile->id ?>" 
+                           class="edit-profile-action">
+                       Modifier
+                   </button>
+               </div>
+           
+            </div></div>
         </div>
-        
     </div>
 <?php endforeach; ?>
 
-<div class="clear"></div>
 
 <form id="delete-profile-form" method="post" >
     <input type="hidden" name="profile-id" value="" />

@@ -16,6 +16,8 @@ if( filter_has_var(INPUT_POST, "action") ){
 
 $profiles = Profile::listProfiles( $this->wc );
 
+$this->wc->dump( $profiles );
+
 $alerts = $this->wc->user->getAlerts();
 switch( $action )
 {
@@ -46,9 +48,10 @@ switch( $action )
     break;
 }
 
-$createProfileHref  = $this->wc->website->baseUri."/profiles/create";
-$editProfileHref    = $this->wc->website->baseUri."/profiles/edit?profile=";
+$createProfileHref  = $this->wc->website->getUrl("/profiles/create");
+$editProfileHref    = $this->wc->website->getUrl("/profiles/edit?profile=");
 
-$this->setContext('standard');
+$this->wc->debug( $createProfileHref );
+$this->wc->debug( $editProfileHref );
 
-include $this->getDesignFile();
+$this->view();

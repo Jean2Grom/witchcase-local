@@ -44,23 +44,31 @@
             
             <div class="tabs">
                 <?php if( $this->wc->witch("arborescence") ): ?>
-                    <a class="tabs__item" href="#tab-navigation">
-                        <i class="fas fa-sitemap"></i>
-                        <!--i class="fas fa-broom"></i-->
-                        Navigation
-                    </a>
+                    <div class="tabs__item">
+                       <a href="#tab-navigation">
+                           <i class="fas fa-sitemap"></i> Navigation
+                       </a>
+                     </div>
                 <?php endif; ?>
                 
                 <?php if( !$this->wc->witch() ): ?>
-                    <a class="tabs__item selected" href="#tab-current">                   
-                        404
-                    </a>
+                    <div class="tabs__item selected">
+                        <a href="#tab-current">
+                            <i class="fas fa-bomb"></i> 404
+                        </a>
+                    </div>
                 <?php elseif( $this->tabs ): foreach( $this->tabs as $id => $tab ): ?>
-                    <a class="tabs__item <?=($tab['selected'] ?? null)? 'selected': '' ?>" 
-                       href="#<?=$id ?>">
-                        <?=($tab['iconClass'] ?? null)? '<i  class="'.$tab['iconClass'].'"></i>': '' ?>
-                        <?=$tab['text'] ?? '' ?>
-                    </a>
+                    <div class="tabs__item <?=($tab['selected'] ?? null)? 'selected': '' ?>">
+                        <a href="#<?=$id ?>">
+                            <?=($tab['iconClass'] ?? null)? '<i  class="'.$tab['iconClass'].'"></i>': '' ?>
+                            <?=$tab['text'] ?? '' ?>
+                        </a>
+                        <?php if( !empty($tab['close']) ): ?>
+                            <a class="tabs__item__close" data-target="<?=$id ?>">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        <?php endif; ?>
+                    </div>
                 <?php endforeach; else: ?>
                     <a class="tabs__item selected" href="#tab-current">
                         <?php if( $this->wc->witch()->hasCraft() && $this->wc->witch()->invoke ): ?>

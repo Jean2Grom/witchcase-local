@@ -7,7 +7,7 @@ abstract class Attribute
 {
     const ATTRIBUTE_TYPE        = null;
     const DIR                   = "attributes";
-    const DESIGN_SUBFOLDER              = "design/attributes";
+    const DESIGN_SUBFOLDER      = "design/attributes";
 
     var $parameters     = [];
     var $dbFields       = [];

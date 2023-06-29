@@ -1,9 +1,11 @@
 <?php
 namespace WC\User;
 
+
 use WC\WitchCase;
+use WC\DataAccess\User as UserDA;
+
 use WC\Website;
-use WC\Witch;
 
 class Profile 
 {
@@ -98,91 +100,8 @@ class Profile
     
     static function listProfiles( WitchCase $wc, array $conditions=[] )
     {
-        $query = "";
-        $query  .=  "SELECT  profile.id AS profile_id ";
-        $query  .=  ", profile.name AS profile_name ";
-        $query  .=  ", profile.site AS profile_site ";
-        
-        $query  .=  ", policy.id AS policy_id ";
-        $query  .=  ", policy.module AS policy_module ";
-        $query  .=  ", policy.status AS policy_status ";
-        $query  .=  ", policy.position_ancestors AS policy_position_ancestors ";
-        $query  .=  ", policy.position_included AS policy_position_included ";
-        $query  .=  ", policy.position_descendants AS policy_position_descendants ";
-        $query  .=  ", policy.custom_limitation AS policy_custom_limitation ";
-        
-        foreach( Witch::FIELDS as $field ){
-            $query      .=  ", witch.".$field." ";
-        }
-        for( $i=1; $i<=$wc->depth; $i++ ){
-            $query      .=  ", witch.level_".$i." ";
-        }
-        
-        $query  .=  "FROM user__profile AS profile ";
-        $query  .=  "LEFT JOIN user__rel__connexion__profile ";
-        $query  .=      "ON user__rel__connexion__profile.fk_profile = profile.id ";
-        $query  .=  "LEFT JOIN user__policy AS policy ";
-        $query  .=      "ON policy.fk_profile = profile.id ";
-        $query  .=  "LEFT JOIN witch ";
-        $query  .=      "ON witch.id = policy.fk_witch ";
-        
-        if( !empty($conditions) )
-        {
-            $separator = "WHERE ";
-            foreach( $conditions as $field => $conditionItem )
-            {
-                $query .= $separator.$field." = '".$conditionItem."' ";
-                $separator = "AND ";
-            }
-        }
-        
-        $query  .=  "ORDER BY profile_site ASC, profile_name ASC ";
-        
-        $result = $wc->db->multipleRowsQuery($query);
-        
-        $profilesData = [];
-        foreach( $result as $row )
-        {
-            $userProfileId = $row['profile_id'];
-            if( empty($profilesData[ $userProfileId ]) ){
-                $profilesData[ $userProfileId ] = [
-                    'id'        =>  $userProfileId,
-                    'name'      =>  $row['profile_name'],
-                    'site'      =>  $row['profile_site'],
-                    'policies'  =>  [],
-                ];
-            }
-            
-            $userPolicyId = $row['policy_id'];
-            if( empty($profilesData[ $userProfileId ]['policies'][ $userPolicyId ]) )
-            {
-                $position       = false;
-                $positionWitch  = false;
-                if( !empty($row['id']) )
-                {
-                    $positionWitch  = Witch::createFromData($wc, $row);
-                    $position       = $positionWitch->position;
-                }
-
-                $profilesData[ $userProfileId ]['policies'][ $userPolicyId ] = [
-                    'id'                =>  $userPolicyId,
-                    'module'            => $row['policy_module'],
-                    'status'            => $row['policy_status'],
-                    'custom_limitation' => $row['policy_custom_limitation'],
-                    'position'          => $position,
-                    'position_rules'    => [
-                        'ancestors'         => (boolean) $row['policy_position_ancestors'],
-                        'self'              => (boolean) $row['policy_position_included'],
-                        'descendants'       => (boolean) $row['policy_position_descendants'],
-                    ],
-                    'positionName'      => $positionWitch->name ?? '',
-                    'positionId'        => $positionWitch->id ?? '',
-                ];
-            }
-        }
-        
         $profiles = [];
-        foreach( $profilesData as $profileDataItem ){
+        foreach( UserDA::getProfiles($wc, $conditions) as $profileDataItem ){
             $profiles[ $profileDataItem['id'] ] = self::createFromData( $wc, $profileDataItem );
         }
         
