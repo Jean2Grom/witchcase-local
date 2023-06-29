@@ -1,4 +1,4 @@
-<div class="box view__position">
+<div class="box view__daughters">
     <h3>
         <i class="fa fa-folder-open"></i>
         Daughters
@@ -10,7 +10,7 @@
     <?php else: ?>
         <p><em>Witch daughters list in arborescence</em></p>
         <form method="post" 
-              id="view-position-action" 
+              id="view-daughters-action" 
               action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>">
             <table>
                 <thead>
@@ -97,17 +97,17 @@
                 class="trigger-action"
                 style="display: none;"
                 data-action="move-witch"
-                data-target="view-position-action">Move witch</button>
+                data-target="view-daughters-action">Move witch</button>
         <button id="copy-witch-action" 
                 class="trigger-action"
                 style="display: none;"
                 data-action="copy-witch"
-                data-target="view-position-action">Copy witch</button>
-        <button class="position-create-toggle">Add Daughter</button>
+                data-target="view-daughters-action">Copy witch</button>
+        <button class="view-daughters__create-witch__toggle">Add Daughter</button>
         <?php if( !empty($targetWitch->daughters()) ): ?>
             <button class="trigger-action" 
                     data-action="edit-priorities"
-                    data-target="view-position-action">Edit Priorities</button>
+                    data-target="view-daughters-action">Edit Priorities</button>
         <?php endif; ?>
     </div>
 </div>

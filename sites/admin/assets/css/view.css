@@ -1,10 +1,10 @@
-.box.view__info, 
-.box.create__info, 
-.box.edit__info {
+.box.view__witch-info, 
+.box.create__witch, 
+.box.edit__witch-info {
     width: 350px;
 }
-.box.view__invoke,
-.box.edit__invoke {
+.box.view__witch-invoke,
+.box.edit__witch-invoke {
     width: 400px;
 }
 .hover-hide,

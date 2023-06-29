@@ -1,7 +1,7 @@
 <?php 
     $this->addJsFile('edit-invoke.js');
 ?>
-<div class="box edit__invoke">
+<div class="box edit__witch-invoke">
     <form   method="post"
             action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
             id="edit-witch-invoke">
@@ -113,6 +113,6 @@
                 data-target="edit-witch-invoke"
                 data-action="save-witch-invoke">Save</button>        
         <button class="edit-invoke-reinit">Reinit Form</button>        
-        <button class="view-edit-invoke-toggle">Cancel</button>
+        <button class="view-witch-invoke__edit-witch-invoke__toggle">Cancel</button>
     </div>
 </div>

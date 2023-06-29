@@ -15,8 +15,8 @@ $possibleActionsList = [
     'import-craft',
     'remove-craft',
     'archive-craft',
-    'add-craft-position',
-    'switch-craft-main-position',
+    'add-craft-witch',
+    'switch-craft-main-witch',
     
 ];
 
@@ -460,7 +460,7 @@ switch( $action )
         ];        
     break;
     
-    case 'add-craft-position':
+    case 'add-craft-witch':
         $urlHash = "#tab-craft-part";
         
         if( !$targetWitch->hasCraft() )
@@ -522,7 +522,7 @@ switch( $action )
         exit();
     break;
     
-    case 'switch-craft-main-position':
+    case 'switch-craft-main-witch':
         $urlHash = "#tab-craft-part";
         
         if( !$targetWitch->hasCraft() )

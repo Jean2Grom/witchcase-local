@@ -1,4 +1,4 @@
-<div class="box edit__info">
+<div class="box edit__witch-info">
     <form   method="post"
             action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
             id="edit-witch-info">

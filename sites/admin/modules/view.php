@@ -15,8 +15,9 @@ if( !$targetWitch->exist() ){
     exit();
 }
 
+$alerts         = $this->wc->user->getAlerts();
 $structuresList = [];
-$craftWitches    = null;
+$craftWitches   = null;
 if( !$targetWitch->hasCraft() ){
     $structuresList = Structure::listStructures( $this->wc );
 }

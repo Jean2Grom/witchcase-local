@@ -31,23 +31,23 @@
 
 <div class="tabs-target__item selected"  id="tab-current">
     <div class="box-container">
-        <div><?php include $this->getIncludeDesignFile('view/info.php'); ?></div>
-        <div><?php include $this->getIncludeDesignFile('edit/info.php'); ?></div>
-        <div><?php include $this->getIncludeDesignFile('view/position.php'); ?></div>
-        <div><?php include $this->getIncludeDesignFile('create/info.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('view/witch-info.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('edit/witch-info.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('view/daughters.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('create/witch.php'); ?></div>
     </div>
 </div>
 
 <div class="tabs-target__item"  id="tab-craft-part">
     <div class="box-container">
         <div><?php include $this->getIncludeDesignFile('view/craft.php'); ?></div>
-        <div><?php include $this->getIncludeDesignFile('view/craft/positions.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('view/craft-witches.php'); ?></div>
     </div>
 </div>
 
 <div class="tabs-target__item"  id="tab-invoke-part">
     <div class="box-container">
-        <div><?php include $this->getIncludeDesignFile('view/invoke.php'); ?></div>
-        <div><?php include $this->getIncludeDesignFile('edit/invoke.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('view/witch-invoke.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('edit/witch-invoke.php'); ?></div>
     </div>
 </div>

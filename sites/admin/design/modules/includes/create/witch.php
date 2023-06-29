@@ -1,4 +1,4 @@
-<div class="box create__info">
+<div class="box create__witch">
     <form   method="post"
             action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
             id="create-witch-info">
@@ -34,6 +34,6 @@
             Create
         </button>
         
-        <button class="position-create-toggle">Cancel</button>
+        <button class="view-daughters__create-witch__toggle">Cancel</button>
     </div>
 </div>

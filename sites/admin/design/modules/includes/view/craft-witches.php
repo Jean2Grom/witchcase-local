@@ -1,5 +1,5 @@
 <?php if( $targetWitch->craft() ): ?>
-    <div class="box view__craft__positions">
+    <div class="box view__craft-witches">
         <h3>
             <i class="fa fa-project-diagram"></i>
             Craft Witches
@@ -22,7 +22,7 @@
                 <tbody>
                     <form method="post" 
                           action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
-                          id="view-craft-positions-action">
+                          id="view-craft-witches-action">
                         <?php foreach( $craftWitchesTargetFirst as $craftPositionWitch ): ?>
                             <tr>
                                 <td>
@@ -34,8 +34,8 @@
                                                 checked
                                            <?php else: ?>
                                                 class="trigger-action" 
-                                                data-action="switch-craft-main-position" 
-                                                data-target="view-craft-positions-action" 
+                                                data-action="switch-craft-main-witch" 
+                                                data-target="view-craft-witches-action" 
                                            <?php endif; ?> />
                                     </div>
                                 </td>
@@ -67,11 +67,11 @@
         
         <div class="box__actions">
             <button class="trigger-action"
-                    id="add-craft-position-action"
+                    id="add-craft-witch-action"
                     style="display: none;"
-                    data-action="add-craft-position"
-                    data-target="view-craft-positions-action">Add position</button>
-            <button id="add-craft-position">Add position</button>
+                    data-action="add-craft-witch"
+                    data-target="view-craft-witches-action">Add craft witch action</button>
+            <button id="add-craft-witch">Add craft witch</button>
         </div>
     </div>
 <?php endif; ?>

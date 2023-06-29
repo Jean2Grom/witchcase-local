@@ -1,4 +1,4 @@
-<div class="box view__info">
+<div class="box view__witch-info">
     <h3>
         <i class="fa fa-info-circle"></i>
         Info
