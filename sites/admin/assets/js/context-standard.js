@@ -5,6 +5,29 @@ $(document).ready(function()
     var selectTab = function( event ){
         event.preventDefault();
         
+        if( this.className.includes("tabs__item__close") )
+        {
+            if( this.parentNode.className.includes("selected") )
+            {
+                let tabContainer = this.parentNode.parentNode;
+                let newSelectTab = '#tab-current';
+                
+                for( let tabIterator of tabContainer.children ){
+                    if( !tabIterator.className.includes("selected") 
+                            && tabIterator.style.display !== "none"
+                            && tabIterator.querySelectorAll('a.tabs__item__close').length > 0
+                    ){
+                        newSelectTab = tabIterator.querySelectorAll('a')[0].getAttribute('href');
+                    }
+                }
+                
+                triggerTabItem( newSelectTab );
+            }
+            
+            this.parentNode.style.display = "none";            
+            return false;
+        }
+        
         if( this.parentNode.className.includes("selected") ){
             return false;
         }
@@ -21,13 +44,10 @@ $(document).ready(function()
         
         this.parentNode.classList.add("selected");
         
-console.log(this);
         let targetId    = this.getAttribute("href").substring(1);
-console.log(targetId);
         let target      = document.getElementById( targetId );
-console.log(target);        
-        target.classList.add("selected");
         
+        target.classList.add("selected");        
         return false;
     };
 
@@ -52,8 +72,16 @@ console.log(target);
         triggerTabItem( window.top.location.hash );
     }
     
-    $('.tabs__item__triggering').click(function(){
-        triggerTabItem( $(this).attr('href') );
-        return false;
-    });    
+    
+    for( let triggerElemt of document.querySelectorAll(".tabs__item__triggering") ){
+        triggerElemt.addEventListener( 'click', function(){ 
+            triggerTabItem( $(this).attr('href') );
+            return false;
+        });
+    }
+    
+//    $('.tabs__item__triggering').click(function(){
+//        triggerTabItem( $(this).attr('href') );
+//        return false;
+//    });    
 });

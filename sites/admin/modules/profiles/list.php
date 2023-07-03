@@ -1,5 +1,6 @@
 <?php
 use WC\User\Profile;
+use WC\Website;
 
 $possibleActionsList = [
     'delete-profile',
@@ -16,6 +17,38 @@ if( filter_has_var(INPUT_POST, "action") ){
 
 $profiles = Profile::listProfiles( $this->wc );
 
+$sites  = $this->wc->website->sitesRestrictions;
+if( !$sites ){
+    $sites = array_keys($this->wc->configuration->sites);
+}
+
+$websitesList   = [];
+foreach( $sites as $site ){
+    if( $site == $this->wc->website->name ){
+        $website = $this->wc->website;
+    }
+    else {
+        $website = new Website( $this->wc, $site );
+    }
+    
+    if( $website->site == $website->name ) {
+        $websitesList[ $site ] = $website;
+    }
+}
+ksort($websitesList);
+
+$allSitesModulesListBuffer = [];
+foreach( $websitesList as $website ){
+    $allSitesModulesListBuffer = array_merge( $allSitesModulesListBuffer, $website->listModules() );
+}
+
+$allSitesModulesList = array_unique($allSitesModulesListBuffer);
+asort( $allSitesModulesList );
+
+$statusGlobal = $this->wc->configuration->read("global", "status");
+
+//$this->wc->dump( $statusGlobal );
+//$this->wc->debug( $websitesList );
 $this->wc->dump( $profiles );
 
 $alerts = $this->wc->user->getAlerts();

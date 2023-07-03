@@ -876,7 +876,7 @@ class Witch
         while( $ancestorWitch !== false && $ancestorWitch->depth > 0 )
         {
             if( $ancestorWitch->site == $site ){
-                $url = $ancestorWitch->url;
+                $url = $ancestorWitch->url ?? "";
                 break;
             }
             

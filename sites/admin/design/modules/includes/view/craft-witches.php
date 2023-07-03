@@ -27,16 +27,16 @@
                             <tr>
                                 <td>
                                     <div class="text-center">
-                                    <input type="radio" 
-                                           name="main"
-                                           value="<?=$craftPositionWitch->id ?>"
-                                           <?php if($craftPositionWitch->is_main): ?>
-                                                checked
-                                           <?php else: ?>
-                                                class="trigger-action" 
-                                                data-action="switch-craft-main-witch" 
-                                                data-target="view-craft-witches-action" 
-                                           <?php endif; ?> />
+                                        <input type="radio" 
+                                               name="main"
+                                               value="<?=$craftPositionWitch->id ?>"
+                                               <?php if($craftPositionWitch->is_main): ?>
+                                                    checked
+                                               <?php else: ?>
+                                                    class="trigger-action" 
+                                                    data-action="switch-craft-main-witch" 
+                                                    data-target="view-craft-witches-action" 
+                                               <?php endif; ?> />
                                     </div>
                                 </td>
                                 <td>

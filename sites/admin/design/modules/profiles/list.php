@@ -15,9 +15,17 @@
             'tab-profile-'.$id       => [
                 'text'      => $profile->name,
                 'close'     => true,
+                'hidden'    => true,
             ],
         ]);
     }
+    
+    $this->addContextArrayItems( 'tabs', [
+        'tab-profile-add'       => [
+            'iconClass' => "fas fa-plus",
+            'text'      => "New",
+        ],
+    ]);
     
 ?>
 
@@ -79,66 +87,11 @@
 <?php foreach( $profiles as $id => $profile ): ?>
     <div class="tabs-target__item"  id="tab-profile-<?=$id ?>">
         <div class="box-container">
-            <div><div class="box ">
-                <h3>
-                    <i class="fas fa-user"></i> <?=$profile->name?>
-                </h3>
-                <p><em><?=$profile->site != '*'? $profile->site: "All sites" ?></em></p>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Module</th>
-                            <th>Status</th>
-                            <th>Position</th>
-                            <th>Règles position</th>
-                            <th>Spécifique</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach( $profile->policies as $policy ): ?>
-                            <tr>
-                                <td>
-                                    <?=$policy->module ?>
-                                </td>
-                                <td>
-                                    <?=$policy->statusLabel ?>
-                                </td>
-                                <td>
-                                    <?php if( !empty($policy->positionId) ): ?>
-                                        <a href="<?=$this->wc->website->baseUri."/view?id=".$policy->positionId ?>"
-                                           target="_blank">
-                                            <?=$policy->positionName ?? $policy->positionId ?>
-                                        </a>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?=$policy->position_rules['ancestors']? "Parents": "" ?>
-                                    <?=$policy->position_rules['self']? "Incluse": "" ?>
-                                    <?=$policy->position_rules['descendants']? "Enfants": "" ?>
-                                </td>
-                                <td>
-                                    <?=$policy->custom_limitation ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-
-                <div class="box__actions">
-                   <button data-id="<?=$profile->id ?>" 
-                           class="delete-profile-action">
-                       Supprimer
-                   </button>
-                   <button data-href="<?=$editProfileHref.$profile->id ?>" 
-                           class="edit-profile-action">
-                       Modifier
-                   </button>
-               </div>
-           
-            </div></div>
+            <div><?php include $this->getIncludeDesignFile('view/profile.php'); ?></div>
+            <div><?php include $this->getIncludeDesignFile('edit/profile.php'); ?></div>
         </div>
     </div>
+
 <?php endforeach; ?>
 
 
@@ -152,10 +105,30 @@ $(document).ready(function()
 {
     $('.show-details').click(function()
     {
-        let profileId = $(this).data('id');
+        let hash = '#tab-profile-'+ $(this).data('id');
         
-        $('#profile_' + profileId).toggle();
+        $('a[href="'+hash+'"]').parent().show();
+        triggerTabItem( hash );
     });
+    
+    
+    $('button.policy-witch').on('click', function()
+    {
+        chooseWitch().then( (witchId) => { 
+            if( witchId === false ){
+                return;
+            }
+            
+            $(this).html( readWitchName(witchId) );
+
+            $('#new-mother-witch-id').val( witchId );
+            $('#add-craft-witch-action').trigger('click');
+        });
+        
+        return false;
+    });    
+    
+    
     
     $('.profile-content a.close').click(function(){
         $(this).parents('.profile-content').toggle();

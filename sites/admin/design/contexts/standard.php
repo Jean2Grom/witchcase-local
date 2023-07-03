@@ -57,8 +57,10 @@
                             <i class="fas fa-bomb"></i> 404
                         </a>
                     </div>
+                
                 <?php elseif( $this->tabs ): foreach( $this->tabs as $id => $tab ): ?>
-                    <div class="tabs__item <?=($tab['selected'] ?? null)? 'selected': '' ?>">
+                    <div    <?=($tab['hidden'] ?? null)? 'style="display: none;"': '' ?>
+                            class="tabs__item <?=($tab['selected'] ?? null)? 'selected': '' ?>">
                         <a href="#<?=$id ?>">
                             <?=($tab['iconClass'] ?? null)? '<i  class="'.$tab['iconClass'].'"></i>': '' ?>
                             <?=$tab['text'] ?? '' ?>

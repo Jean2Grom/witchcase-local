@@ -33,3 +33,19 @@ async function chooseWitch( conditions={}, label="Choose witch" )
     });
 }
 
+function readWitchName( witchId )
+{
+    let witchDom = $('#choose-witch .arborescence-level__witch[data-id='+witchId+']');
+    
+    if( witchDom.length === 0 ){
+        return false;
+    }
+    
+    let label = $(witchDom).find( ".arborescence-level__witch__name").html().trim();
+    
+    if( label === "" ){
+        return witchId;
+    }
+    
+    return label;
+}
