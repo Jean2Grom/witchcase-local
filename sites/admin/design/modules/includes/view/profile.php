@@ -1,4 +1,4 @@
-<div class="box ">
+<div class="box view__profile" data-profile="<?=$profile->id?>">
     <h3>
         <i class="fas fa-user"></i> <?=$profile->name?>
     </h3>
@@ -18,10 +18,10 @@
             <?php foreach( $profile->policies as $policy ): ?>
                 <tr>
                     <td>
-                        <?=$policy->module ?>
+                        <span class="text-center"><?=$policy->module ?></span>
                     </td>
                     <td>
-                        <?=$policy->statusLabel ?>
+                        <span class="text-center"><?=$policy->statusLabel ?></span>
                     </td>
                     <td>
                         <?php if( !empty($policy->positionId) ): ?>
@@ -47,11 +47,12 @@
     <div class="box__actions">
        <button data-id="<?=$profile->id ?>" 
                class="delete-profile-action">
-           Supprimer
+            <i class="fa fa-trash"></i>
+            Delete
        </button>
-       <button data-href="<?=$editProfileHref.$profile->id ?>" 
-               class="edit-profile-action">
-           Modifier
+       <button class="view-edit-profile-toggle">
+           <i class="fa fa-pencil"></i>
+           Edit
        </button>
    </div>
 

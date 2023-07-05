@@ -16,7 +16,7 @@
         </label>
         <select name="witch-site" 
                 id="witch-site"
-                data-init="<?=$targetWitch->site ?>">>
+                data-init="<?=$targetWitch->site ?>">
             <option value="">
                 Unreachable
             </option>
