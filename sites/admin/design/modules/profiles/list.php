@@ -249,14 +249,16 @@ $(document).ready(function()
     {
         let formDom         = $(this).parents('form.edit-profile-form');
         
-        $(formDom).find('input, select, textarea').each(function( i, input ){
+        $(formDom).find('.unset-policy-witch').trigger('click');
+        
+        $(formDom).find('input, select, textarea').each(function( i, input )
+        {
             if( $(input).data('init') !== undefined ){
                 $(input).val( $(input).data('init') );
             }
         });
         
-        $(formDom).find('.profile-site').trigger('change');
-        
+        $(formDom).find('.profile-site').trigger('change');        
         $(formDom).find('.new-policy').remove();
         
         $(formDom).find('.policy-deleted').each(function( i, input ){
@@ -268,10 +270,33 @@ $(document).ready(function()
             
         });
         
+        $(formDom).find('.policy-witch-id').each(function( i, input )
+        {
+            let witchId = $(this).val();
+            
+            if( witchId !== "" )
+            {
+                let witchName       = readWitchName(witchId);
+                let policyDom       = $(this).parents('.policy-container');
+                let witchBaseHref   = $(policyDom).find('.policy-witch-display').attr('href').split('?')[0];
+                
+                $(policyDom).find('button.policy-witch').hide();
+                $(policyDom).find('.policy-witch-display').html( witchName ).attr('href', witchBaseHref + '?id=' + witchId).show();
+                $(policyDom).find('.unset-policy-witch').show();
+                $(policyDom).find('.policy-witch-set').show();                
+            }
+        });
+        
+        $(formDom).find('.policy-witch-set input[type="checkbox"]').each(function( i, input ){
+            if( $(this).parents('.policy-pattern').length === 0 ){
+                $(this).prop('checked', ( $(this).data('init') === 1 ) );
+            }
+        });
+        
         return false;
     });
     
-    // Add / Remove on Create profile
+    // Add/ Remove on Create profile
     $('.create-profile-form').on('click', '.add-policy-action',  function()
     {
         let formDom         = $(this).parents('form');

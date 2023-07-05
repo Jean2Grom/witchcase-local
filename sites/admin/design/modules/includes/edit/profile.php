@@ -289,6 +289,7 @@
                                     <input type="checkbox" 
                                            name="policy-witch-rules[]"
                                            value="ancestors"
+                                           data-init="<?=$policy->position_rules['ancestors']? 1: 0 ?>"
                                            <?=$policy->position_rules['ancestors']? "checked": "" ?> />
                                     <label>Parents</label>
                                 </li>
@@ -296,6 +297,7 @@
                                     <input type="checkbox" 
                                            name="policy-witch-rules[]"
                                            value="self"
+                                           data-init="<?=$policy->position_rules['self']? 1: 0 ?>"
                                            <?=$policy->position_rules['self']? "checked": "" ?> />
                                     <label>Self</label>
                                 </li>
@@ -303,6 +305,7 @@
                                     <input type="checkbox" 
                                            name="policy-witch-rules[]"
                                            value="descendants"
+                                           data-init="<?=$policy->position_rules['descendants']? 1: 0 ?>"
                                            <?=$policy->position_rules['descendants']? "checked": "" ?> />
                                     <label>Descendants</label>
                                 </li>
