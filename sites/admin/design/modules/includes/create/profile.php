@@ -23,19 +23,19 @@
     }
 </style>
 <div class="box create__profile">
-   <form class="create-profile-form" method="post" >
+   <form id="create-profile-form" method="post" >
         <h3>
             <i class="fas fa-user"></i>
             <input type="text" 
                    class="profile-name"
-                   name="profile-name[]" 
+                   name="profile-name" 
                    placeholder="enter new profile name"
                    value="" />
         </h3>
         <p>
             <em>
                 Scope 
-                <select name="profile-site[]" 
+                <select name="profile-site" 
                         class="profile-site">
                     <option value="*">
                         All sites
@@ -110,7 +110,7 @@
                         
                         <?php foreach( $websitesList as $site => $website ): ?>
                             <div style="display: none;" class="profile-site-displayed profile-site-<?=$site ?>">
-                                <select name="profile-status[<?=$site ?>][]" data-init="*">
+                                <select name="policy-status[<?=$site ?>][]" data-init="*">
                                     <option value="*">
                                         All status
                                     </option>
@@ -147,28 +147,28 @@
                         <ul class="policy-witch-set" style="display: none;">
                             <li>
                                 <input type="checkbox" 
-                                       name="policy-witch-rules[]"
-                                       value="ancestors" />
+                                       name="policy-witch-rules-ancestors[]"
+                                       value="-1" />
                                 <label>Parents</label>
                             </li>
                             <li>
                                 <input type="checkbox" 
-                                       name="policy-witch-rules[]"
-                                       value="self"
+                                       name="policy-witch-rules-self[]"
+                                       value="-1"
                                        checked />
                                 <label>Self</label>
                             </li>
                             <li>
                                 <input type="checkbox" 
-                                       name="policy-witch-rules[]"
-                                       value="descendants"
+                                       name="policy-witch-rules-descendants[]"
+                                       value="-1"
                                        checked />
                                 <label>Descendants</label>
                             </li>
                         </ul>
                     </td>
                     <td>
-                        <textarea name="policy-witch-custom[]"></textarea>
+                        <textarea name="policy-custom[]"></textarea>
                     </td>
                     <td>
                         <a class="text-center policy-remove">
@@ -189,8 +189,9 @@
                <i class="fa fa-plus"></i>
                Add new policy
            </button>
-           <button data-href="<?=$editProfileHref.$profile->id ?>" 
-                   class="edit-profile-action">
+           <button class="trigger-action"
+                   data-action="create-profile"
+                   data-target="create-profile-form">
                <i class="fas fa-save"></i>
                Create
            </button>

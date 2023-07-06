@@ -297,13 +297,14 @@ $(document).ready(function()
     });
     
     // Add/ Remove on Create profile
-    $('.create-profile-form').on('click', '.add-policy-action',  function()
+    $('#create-profile-form').on('click', '.add-policy-action',  function()
     {
         let formDom         = $(this).parents('form');
         let newPolicy       = $(formDom).find('.policy-container').first().clone();
         let newPolicyIndex  = $(formDom).find('.policy-container.new-policy').length;
         
         $(newPolicy).find('.policy-id').val('new-' + newPolicyIndex);
+        $(newPolicy).find('.policy-witch-set input[type="checkbox"]').val('new-' + newPolicyIndex);
         
         $(formDom).find('tbody').append( newPolicy );
         $(formDom).find('.policy-container').last().addClass('new-policy').show();
@@ -311,16 +312,16 @@ $(document).ready(function()
         return false;
     });
     
-    $('.create-profile-form').on('click', '.policy-remove',  function()
+    $('#create-profile-form').on('click', '.policy-remove',  function()
     {
         let policyDom       = $(this).parents('.policy-container');
-        $(policyDom).hide();
+        $(policyDom).remove();
         
         return false;
     });
 
     
-    $('.create-profile-form').on('click', 'button.policy-witch',  function()
+    $('#create-profile-form').on('click', 'button.policy-witch',  function()
     {
         chooseWitch().then( (witchId) => {
             if( witchId === false ){
@@ -342,7 +343,7 @@ $(document).ready(function()
         return false;
     });
     
-    $('.create-profile-form').on('click', '.unset-policy-witch',  function()
+    $('#create-profile-form').on('click', '.unset-policy-witch',  function()
     {
         let policyDom       = $(this).parents('.policy-container');
         
@@ -358,7 +359,7 @@ $(document).ready(function()
     
     $('.reset-profile-action').click(function()
     {
-        let formDom         = $(this).parents('form.create-profile-form');
+        let formDom         = $(this).parents('form#create-profile-form');
         
         $(formDom).find('.profile-name').val('');
         $(formDom).find('.profile-site').val('*');

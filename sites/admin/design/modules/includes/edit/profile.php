@@ -23,21 +23,21 @@
     }
 </style>
 <div class="box edit__profile" data-profile="<?=$profile->id?>">
-   <form class="edit-profile-form" method="post" >
+   <form class="edit-profile-form" id="edit-profile-form-<?=$profile->id?>"  method="post" >
         <input type="hidden" name="profile-id[]" value="<?=$profile->id ?>" />
         
         <h3>
             <i class="fas fa-user"></i>
             <input type="text" 
                    class="profile-name"
-                   name="profile-name[]" 
+                   name="profile-name" 
                    value="<?=$profile->name ?>" 
                    data-init="<?=$profile->name ?>" />
         </h3>
         <p>
             <em>
                 Scope 
-                <select name="profile-site[]" 
+                <select name="profile-site" 
                         class="profile-site"
                         data-init="<?=$profile->site ?>">
                     <option value="*" <?=($profile->site == "*")? 'selected': '' ?>>
@@ -114,7 +114,7 @@
                         
                         <?php foreach( $websitesList as $site => $website ): ?>
                             <div style="display: none;" class="profile-site-displayed profile-site-<?=$site ?>">
-                                <select name="profile-status[<?=$site ?>][]" data-init="*">
+                                <select name="policy-status[<?=$site ?>][]" data-init="*">
                                     <option value="*">
                                         All status
                                     </option>
@@ -151,21 +151,21 @@
                         <ul class="policy-witch-set" style="display: none;">
                             <li>
                                 <input type="checkbox" 
-                                       name="policy-witch-rules[]"
-                                       value="ancestors" />
+                                       name="policy-witch-rules-ancestors[]"
+                                       value="-1" />
                                 <label>Parents</label>
                             </li>
                             <li>
                                 <input type="checkbox" 
-                                       name="policy-witch-rules[]"
-                                       value="self"
+                                       name="policy-witch-rules-self[]"
+                                       value="-1"
                                        checked />
                                 <label>Self</label>
                             </li>
                             <li>
                                 <input type="checkbox" 
-                                       name="policy-witch-rules[]"
-                                       value="descendants"
+                                       name="policy-witch-rules-descendants[]"
+                                       value="-1"
                                        checked />
                                 <label>Descendants</label>
                             </li>
@@ -245,7 +245,7 @@
                             <?php foreach( $websitesList as $site => $website ): ?>
                                 <div <?=($profile->site !== $website->site)? 'style="display: none;"' :'' ?>
                                     class="profile-site-displayed profile-site-<?=$site ?>">
-                                    <select name="profile-status[<?=$site ?>][]" 
+                                    <select name="policy-status[<?=$site ?>][]" 
                                             data-init="<?=$policy->status ?? '*' ?>">
                                         <option value="*">
                                             All status
@@ -286,25 +286,25 @@
                         <td>
                             <ul class="policy-witch-set" <?=empty($policy->positionId)? 'style="display: none;"': '' ?>>
                                 <li>
-                                    <input type="checkbox" 
-                                           name="policy-witch-rules[]"
-                                           value="ancestors"
-                                           data-init="<?=$policy->position_rules['ancestors']? 1: 0 ?>"
+                                    <input  type="checkbox" 
+                                            name="policy-witch-rules-ancestors[]"
+                                            value="<?=$policy->id ?>"
+                                            data-init="<?=$policy->position_rules['ancestors']? 1: 0 ?>"
                                            <?=$policy->position_rules['ancestors']? "checked": "" ?> />
                                     <label>Parents</label>
                                 </li>
                                 <li>
                                     <input type="checkbox" 
-                                           name="policy-witch-rules[]"
-                                           value="self"
+                                           name="policy-witch-rules-self[]"
+                                           value="<?=$policy->id ?>"
                                            data-init="<?=$policy->position_rules['self']? 1: 0 ?>"
                                            <?=$policy->position_rules['self']? "checked": "" ?> />
                                     <label>Self</label>
                                 </li>
                                 <li>
                                     <input type="checkbox" 
-                                           name="policy-witch-rules[]"
-                                           value="descendants"
+                                           name="policy-witch-rules-descendants[]"
+                                           value="<?=$policy->id ?>"
                                            data-init="<?=$policy->position_rules['descendants']? 1: 0 ?>"
                                            <?=$policy->position_rules['descendants']? "checked": "" ?> />
                                     <label>Descendants</label>
@@ -343,8 +343,9 @@
                <i class="fa fa-plus"></i>
                Add new policy
            </button>
-           <button data-href="<?=$editProfileHref.$profile->id ?>" 
-                   class="edit-profile-action">
+           <button class="trigger-action"
+                   data-action="edit-profile"
+                   data-target="edit-profile-form-<?=$profile->id?>">
                <i class="fas fa-save"></i>
                Save
            </button>
