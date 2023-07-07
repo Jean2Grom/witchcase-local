@@ -237,6 +237,7 @@ $(document).ready(function()
         let newPolicyIndex  = $(formDom).find('.policy-container.new-policy').length;
         
         $(newPolicy).find('.policy-id').val('new-' + newPolicyIndex);
+        $(newPolicy).find('.policy-witch-set input[type="checkbox"]').val('new-' + newPolicyIndex);
         
         $(formDom).find('tbody').append( newPolicy );
         $(formDom).find('.policy-container').last().addClass('new-policy').show();

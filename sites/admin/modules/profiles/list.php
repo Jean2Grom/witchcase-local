@@ -4,6 +4,7 @@ use WC\Website;
 
 $possibleActionsList = [
     'create-profile',
+    'edit-profile',
     //'delete-profile',
 ];
 
@@ -48,16 +49,13 @@ foreach( $websitesList as $website ){
 $allSitesModulesList = array_unique($allSitesModulesListBuffer);
 asort( $allSitesModulesList );
 
+
 $statusGlobal = $this->wc->configuration->read("global", "status");
 
-$this->wc->dump( $_POST );
-
-
-$profiles = Profile::listProfiles( $this->wc );
-
+//$this->wc->dump( $_POST );
 //$this->wc->dump( $statusGlobal );
 //$this->wc->debug( $websitesList );
-$this->wc->dump( $profiles );
+//$this->wc->dump( $profiles );
 
 $alerts = $this->wc->user->getAlerts();
 switch( $action )
@@ -129,10 +127,105 @@ switch( $action )
             break;
         }
         
-        // INSERT!!!
+        $newProfileId = Profile::createNew( $this->wc, $profileData );
+        if( !$newProfileId )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Creation failed"
+            ];
+            break;
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Creation succeed"
+        ];
+    break;
+    
+    case 'edit-profile':
+        
+        $profileData = [
+            'id'      =>  $this->wc->request->param('profile-id', 'post', FILTER_VALIDATE_INT),
+        ];
+        
+        
+        if( empty($profileData['id']) )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Unidentified profile, edition canceled"
+            ];
+            break;
+        }
+        
+        $profileData['name']    = trim($this->wc->request->param('profile-name') ?? "");
+        $site                   = trim($this->wc->request->param('profile-site') ?? "");
+        $profileData['site']    = $site;
+        
+        $policyIds  = $this->wc->request->param('policy-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
+        $witches    = $this->wc->request->param('policy-witch-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $custom     = $this->wc->request->param('policy-custom', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        
+        $modulesRaw = $this->wc->request->param('policy-module', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
+        $modules    = $modulesRaw[ $site ] ?? [];
+        
+        $statusRaw  = $this->wc->request->param('policy-status', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
+        $status     = $statusRaw[ $site ] ?? [];        
+        
+        $witchesRulesAncestor       = $this->wc->request->param('policy-witch-rules-ancestors', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $witchesRulesSelf           = $this->wc->request->param('policy-witch-rules-self', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $witchesRulesDescendants    = $this->wc->request->param('policy-witch-rules-descendants', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        
+        $profileData['policiesToDelete'] = array_filter($this->wc->request->param('policy-deleted', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []);
+        
+        $profileData['policies'] = [];
+        foreach( $policyIds as $key => $pId )
+        {
+            if( $pId == -1 || in_array($pId, $profileData['policiesToDelete'])){
+                continue;
+            }
+            
+            $data = [
+                'module' => $modules[ $key ],
+                'status' => $status[ $key ],
+                'status' => $status[ $key ],
+                'witch'  => $witches[ $key ],
+                'custom' => $custom[ $key ],
+            ];
+            
+            if( is_numeric($pId) ){
+                $data['id'] = $pId;
+            }
+            
+            if( !empty($data['witch']) ){
+                $data['witchRules'] = [
+                    'ancestors'     => in_array($pId, $witchesRulesAncestor)? true: false,
+                    'self'          => in_array($pId, $witchesRulesSelf)? true: false,
+                    'descendants'   => in_array($pId, $witchesRulesDescendants)? true: false,
+                ];
+            }
+            
+            $profileData['policies'][] = $data;
+        }
+        
+$this->wc->dump($profileData);
+        
+        if( !Profile::edit( $this->wc, $profileData ) )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Edition failed"
+            ];
+            break;
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Profile updated"
+        ];
         
     break;
-
 
     case 'delete-profile':
         $profileId = filter_input(INPUT_POST, "profile-id", FILTER_VALIDATE_INT);
@@ -161,10 +254,7 @@ switch( $action )
     break;
 }
 
-$createProfileHref  = $this->wc->website->getUrl("/profiles/create");
-$editProfileHref    = $this->wc->website->getUrl("/profiles/edit?profile=");
+$profiles = Profile::listProfiles( $this->wc );
 
-$this->wc->debug( $createProfileHref );
-$this->wc->debug( $editProfileHref );
 
 $this->view();

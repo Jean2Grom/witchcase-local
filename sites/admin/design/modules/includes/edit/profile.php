@@ -24,7 +24,7 @@
 </style>
 <div class="box edit__profile" data-profile="<?=$profile->id?>">
    <form class="edit-profile-form" id="edit-profile-form-<?=$profile->id?>"  method="post" >
-        <input type="hidden" name="profile-id[]" value="<?=$profile->id ?>" />
+        <input type="hidden" name="profile-id" value="<?=$profile->id ?>" />
         
         <h3>
             <i class="fas fa-user"></i>
@@ -69,7 +69,8 @@
                     <td>
                         <input type="hidden" name="policy-id[]" class="policy-id" value="-1" />
                         
-                        <div  class="profile-site-displayed profile-site-all">
+                        <div    <?=($profile->site !== "*")? 'style="display: none;"' :'' ?>
+                                class="profile-site-displayed profile-site-all">
                             <select name="policy-module[all][]" data-init="*">
                                 <option value="*">
                                     All modules
@@ -83,9 +84,11 @@
                         </div>
                         
                         <?php foreach( $websitesList as $site => $website ): ?>
-                            <div style="display: none;" class="profile-site-displayed profile-site-<?=$site ?>">
+                            <div    <?=($profile->site !== $website->site)? 'style="display: none;"' :'' ?>
+                                    class="profile-site-displayed profile-site-<?=$site ?>">
                                 <select name="policy-module[<?=$site ?>][]" data-init="*">
-                                    <option value="*">
+                                    <option <?=($profile->site !== "*")? 'style="display: none;"' :'' ?>
+                                            value="*">
                                         All modules
                                     </option>
                                     <?php foreach( $website->listModules() as $moduleItem ): ?>
@@ -99,7 +102,8 @@
                     </td>
                     
                     <td>
-                        <div class="profile-site-displayed profile-site-all">
+                        <div    <?=($profile->site !== "*")? 'style="display: none;"' :'' ?>
+                                class="profile-site-displayed profile-site-all">
                             <select name="policy-status[all][]" data-init="*">
                                 <option value="*">
                                     All status
@@ -113,7 +117,8 @@
                         </div>
                         
                         <?php foreach( $websitesList as $site => $website ): ?>
-                            <div style="display: none;" class="profile-site-displayed profile-site-<?=$site ?>">
+                            <div    <?=($profile->site !== $website->site)? 'style="display: none;"' :'' ?>
+                                    class="profile-site-displayed profile-site-<?=$site ?>">
                                 <select name="policy-status[<?=$site ?>][]" data-init="*">
                                     <option value="*">
                                         All status
@@ -172,7 +177,7 @@
                         </ul>
                     </td>
                     <td>
-                        <textarea name="policy-witch-custom[]"></textarea>
+                        <textarea name="policy-custom[]"></textarea>
                     </td>
                     <td>
                         <input  type="hidden" 
@@ -313,7 +318,7 @@
                         </td>
                         <td>
                             <textarea   data-init="<?=$policy->custom_limitation ?>"
-                                        name="policy-witch-custom[]"><?=$policy->custom_limitation ?></textarea>                            
+                                        name="policy-custom[]"><?=$policy->custom_limitation ?></textarea>                            
                         </td>
                         <td>
                             <input  type="hidden" 

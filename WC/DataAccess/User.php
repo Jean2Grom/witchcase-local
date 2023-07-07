@@ -299,5 +299,103 @@ class User
         return $profilesData;
     }
     
+    static function insertProfile( WitchCase $wc, string $name, string $site )
+    {
+        if( empty($name) || empty($site) ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "INSERT INTO user__profile (name, site) ";
+        $query  .=  "VALUES ( :name, :site ) ";     
+        
+        return $wc->db->insertQuery($query, [ 'name' => $name, 'site' => $site ]);
+    }
+    
+    static function insertPolicies( WitchCase $wc, int $profileId, array $data )
+    {
+        if( empty($profileId) || empty($data) ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "INSERT INTO `user__policy` ";
+        $query  .=  "(`fk_profile` ";
+        $query  .=  ", `module` ";
+        $query  .=  ", `status` ";
+        $query  .=  ", `fk_witch` ";
+        $query  .=  ", `position_ancestors` ";
+        $query  .=  ", `position_included` ";
+        $query  .=  ", `position_descendants` ";
+        $query  .=  ", `custom_limitation` ";
+        $query  .=  ") ";
+        
+        $query  .=  "VALUES ";
+        $query  .=  "( :profile_id ";
+        $query  .=  ", :module ";
+        $query  .=  ", :status ";
+        $query  .=  ", :fk_witch ";
+        $query  .=  ", :position_ancestors ";
+        $query  .=  ", :position_included ";
+        $query  .=  ", :position_descendants ";
+        $query  .=  ", :custom_limitation ";
+        $query  .=  ") ";
+        
+        $params = [];
+        foreach( $data as $policyData )
+        {
+            $policyParams = [ 'profile_id' => $profileId ];
+            foreach( $policyData as $policyField => $policyFieldValue )
+            {
+                if( $policyField == 'module' ){
+                    $policyParams['module'] = $policyFieldValue;
+                }
+                elseif( $policyField == 'status' ){
+                    $policyParams[ 'status' ] = ($policyFieldValue  != '*')? $policyFieldValue: null;
+                }
+                elseif( $policyField == 'witch' ){
+                    $policyParams['fk_witch'] = $policyFieldValue;
+                }
+                elseif( $policyField == 'custom' ){
+                    $policyParams['custom_limitation'] = $policyFieldValue;
+                }
+                elseif( $policyField == 'witchRules' )
+                {
+                    $policyParams['position_ancestors']     = $policyFieldValue["ancestors"]? 1: 0;
+                    $policyParams['position_included']      = $policyFieldValue["self"]? 1: 0;
+                    $policyParams['position_descendants']   = $policyFieldValue["descendants"]? 1: 0;
+                }
+            }
+            $params[] = $policyParams;
+        }
+        
+        return $wc->db->insertQuery($query, $params, true);
+    }
+    
+    static function updateProfile( WitchCase $wc, int $profileId, array $data )
+    {
+        if( empty($profileId) || empty($data['name']) || empty($data['site']) ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "UPDATE `user__profile` ";
+        
+        $separator  = "SET ";
+        $params     = [ 'id' => $profileId ];
+        foreach( ['name', 'site'] as $field ){
+            if( !empty($data[ $field ]) )
+            {
+                $query  .=  $separator." `".$field."` = :".$field." ";
+                $params[ $field ] = $data[ $field ];
+                $separator  = ", ";                
+            }
+        }
+        
+        $query  .=  "WHERE `id` = :id ";
+        
+        return $wc->db->updateQuery($query, $params);
+    }
+    
     
 }

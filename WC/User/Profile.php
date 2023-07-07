@@ -109,27 +109,58 @@ class Profile
     }
     
     
-    static function insert( WitchCase $wc, array $newProfileData=[] )
+    static function createNew( WitchCase $wc, array $newProfileData=[] )
     {
-        if( empty($newProfileData['name']) ){
+        if( empty($newProfileData['name']) || empty($newProfileData['site']) ){
             return false;
         }
         
-        $query = "";
-        $query  .=  "INSERT INTO user__profile (name, site) ";
-        $query  .=  "VALUES ('".$wc->db->escape_string($newProfileData['name'])."', '".$wc->db->escape_string($newProfileData['site'])."') ";     
-        
-        $profileID = $wc->db->insertQuery($query);
-        
-        if( !empty($newProfileData['policies']) ){
-            Police::insert($wc, $profileID, $newProfileData);
+        $wc->db->begin();
+        try {
+            $profileId = UserDA::insertProfile($wc, $newProfileData['name'], $newProfileData['site']);
+            
+            if( !empty($newProfileData['policies']) ){
+                UserDA::insertPolicies($wc, $profileId, $newProfileData['policies']);
+            }
+        } 
+        catch( \Exception $e ) 
+        {
+            $wc->log->error($e->getMessage());
+            $wc->db->rollback();
+            return false;
         }
+        $wc->db->commit();
         
-        return $profileID;
+        return $profileId;
     }
     
     
-    public function edit( array $profileData=[] )
+    static function edit( WitchCase $wc, array $profileData=[] )
+    {
+        if( empty($profileData['id']) ){
+            return false;
+        }
+        
+        $wc->db->begin();
+        try {
+            UserDA::updateProfile( $wc, $profileData['id'], $profileData );
+            
+    //            if( !empty($newProfileData['policies']) ){
+    //                UserDA::insertPolicies($wc, $profileId, $newProfileData['policies']);
+    //            }
+        } 
+        catch( \Exception $e ) 
+        {
+            $wc->log->error($e->getMessage());
+            $wc->db->rollback();
+            return false;
+        }
+        $wc->db->commit();
+        
+        return true;
+    }
+    
+    public function editOld( array $profileData=[] )
     {
         if( empty($profileData['name']) ){
             return false;
@@ -152,7 +183,7 @@ class Profile
         $this->wc->db->deleteQuery($query);
 
         if( !empty($profileData['policies']) ){
-            Police::insert($this->wc, $this->id, $profileData);
+            Policy::insert($this->wc, $this->id, $profileData);
         }
         
         return $this;
