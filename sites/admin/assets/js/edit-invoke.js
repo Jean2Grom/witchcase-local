@@ -27,7 +27,7 @@ $(document).ready(function()
     }
     
     $('button.edit-invoke-reinit').click(function(){
-        $('.edit__invoke input, .edit__invoke select').each(function( i, input ){
+        $('.edit__witch-invoke input, .edit__witch-invoke select').each(function( i, input ){
 
             if( $(input).data('init') !== undefined ){
                 $(input).val( $(input).data('init') );

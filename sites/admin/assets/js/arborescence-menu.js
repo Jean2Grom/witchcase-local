@@ -21,23 +21,6 @@ const ArborescenceMenu = function ( key ) {
             $('#' + this.key + '.arborescence-menu-container.module').animate({
                 scrollLeft: 999999, behavior: "instant"
             });
-            
-            /*
-            document.getElementById(this.key).scrollTo(99999);
-                console.log(document.getElementById(this.key));
-            document.getElementById(this.key).scrollLeft({
-                top: 0,
-                left: 99999999,
-                behavior: "instant"
-            });
-            /*
-            $('#' + this.key + '.arborescence-menu-container.module').scrollTo({
-                top: 0,
-                left: 99999,
-                behavior: "instant"
-            });*/
-            
-
         },        
         open: function( initPath )
         {
@@ -98,10 +81,10 @@ const ArborescenceMenu = function ( key ) {
                     newArborescenceLevelHtml+=              'href="' + daughterData['href'] + '" ';
                 }
                 newArborescenceLevelHtml    +=              'title="' + daughterData['description'] + '">';
-                newArborescenceLevelHtml    +=              daughterData['name'];
-                newArborescenceLevelHtml    +=              '&nbsp;&nbsp;';
+                newArborescenceLevelHtml    +=              daughterData['name'];                
                 newArborescenceLevelHtml    +=          '</a>';
-
+                newArborescenceLevelHtml    +=          '&nbsp;&nbsp;';
+                
                 if( Object.keys(daughterData['daughters']).length > 0 ){
                     newArborescenceLevelHtml    +=          '<span class="arborescence-level__witch__daughters-display">';
                     newArborescenceLevelHtml    +=              '<i class="fas fa-chevron-down" title="Display daughters"></i>';

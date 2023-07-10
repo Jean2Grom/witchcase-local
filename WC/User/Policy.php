@@ -2,6 +2,7 @@
 namespace WC\User;
 
 use WC\WitchCase;
+use WC\Website;
 
 class Policy 
 {
@@ -27,7 +28,7 @@ class Policy
         $this->profile  = $profile;
     }
     
-    static function createFromData(  Profile $profile, array $data )
+    static function createFromData(  Profile $profile, array $data, ?Website $website=null )
     {
         $police = new self( $profile->wc, $profile );
         
@@ -39,81 +40,14 @@ class Policy
         $police->custom_limitation = $data['custom_limitation'];
         $police->positionName      = $data['positionName'];
         $police->positionId        = $data['positionId'];
+        
+        if( $website )
+        {
+            $profile->wc->dump( $police->status );
+        }  
+        
         $police->statusLabel       = $data['statusLabel'] ?? '*';
         
-        
-        //$profile->wc->dump($profile);
-        //$profile->wc->dump($police);
         return $police;
-    }
-
-    static function insert( WitchCase $wc, int $profileID, array $data )
-    {
-        $query = "";
-        $query  .=  "INSERT INTO `user__policy` ";
-        $query  .=  "(`fk_profile` ";
-        $query  .=  ", `module` ";
-        $query  .=  ", `status` ";
-        $query  .=  ", `fk_witch` ";
-        $query  .=  ", `position_ancestors` ";
-        $query  .=  ", `position_included` ";
-        $query  .=  ", `position_descendants` ";
-        $query  .=  ", `custom_limitation` ";
-        $query  .=  ") ";
-
-        $separator = "VALUES ";
-        foreach( $data['policies'] as $policyData )
-        {
-            $query  .=  $separator;
-            $query  .=  "( ".$profileID;
-            $query  .=  ", \"".( $policyData['module'] ?? '*' )."\" ";
-            $query  .=  ", ".( $policyData['status'] ?? 'NULL' )." ";
-            $query  .=  ", ".( $policyData['witchId'] ?? 'NULL' );
-            $query  .=  ", ".($policyData['parents']? 1: 0);
-            $query  .=  ", ".($policyData['included']? 1: 0);
-            $query  .=  ", ".($policyData['children']? 1: 0);
-            $query  .=  ", \"".($policyData['custom_limitation'] ?? "")."\" ";
-            $query  .=  ") ";
-            $separator = ", ";
-        }
-        
-        $wc->db->insertQuery($query);
-        
-        return true;
-    }
-        
-    
-    function formArray()
-    {
-        if( !isset($this->localisation) )
-        {
-            if( !isset($this->position) ){
-                $this->position = explode(',', $this->positionString);
-            }
-            
-            $localisationPosition   = [];
-            $this->inherit_subtree  = false;
-            foreach( $this->position as $i => $levelValue ){
-                if( strcmp($levelValue, '*') == 0 ){
-                    $this->inherit_subtree = true;
-                }
-                else {
-                    $localisationPosition[$i+1] = $levelValue;
-                }
-            }
-            
-            //$this->localisation = Localisation::getFromPosition( $this->wc, $localisationPosition );
-        }
-        
-        $return =   array(
-                        "id"            => $this->id,
-                        "module"        => $this->module." - ".$this->action,
-                        "localisation"  => $this->localisation,
-                        "inherit"       => $this->inherit_subtree,
-                        "limitation"    => $this->rigths_limitation,
-                        "inherit"       => $this->inherit_subtree,
-                    );
-        
-        return $return;
     }
 }

@@ -1,31 +1,31 @@
 $(document).ready(function()
 {
-    $('.edit__info').hide();
+    $('.edit__witch-info').hide();
     $('button.view-edit-info-toggle').click(function(){
-        $('.view__info').toggle();
-        $('.edit__info').toggle();
+        $('.view__witch-info').toggle();
+        $('.edit__witch-info').toggle();
         
-        $('.create__info').hide();
-        $('.view__position').show();        
+        $('.create__witch').hide();
+        $('.view__daughters').show();        
     });
     
-    $('.create__info').hide();
-    $('button.position-create-toggle').click(function(){
-        $('.view__info').show();
-        $('.edit__info').hide();
+    $('.create__witch').hide();
+    $('button.view-daughters__create-witch__toggle').click(function(){
+        $('.view__witch-info').show();
+        $('.edit__witch-info').hide();
         
-        $('.create__info').toggle();
-        $('.view__position').toggle();
+        $('.create__witch').toggle();
+        $('.view__daughters').toggle();
     });
     
-    $('.edit__invoke').hide();
-    $('button.view-edit-invoke-toggle').click(function(){
-        $('.view__invoke').toggle();
-        $('.edit__invoke').toggle();
+    $('.edit__witch-invoke').hide();
+    $('button.view-witch-invoke__edit-witch-invoke__toggle').click(function(){
+        $('.view__witch-invoke').toggle();
+        $('.edit__witch-invoke').toggle();
     });
     
     $('button.edit-info-reinit').click(function(){
-        $('.edit__info input, .edit__info textarea').each(function( i, input ){
+        $('.edit__witch-info input, .edit__witch-info textarea').each(function( i, input ){
             if( $(input).data('init') !== undefined ){
                 $(input).val( $(input).data('init') );
             }
@@ -33,12 +33,12 @@ $(document).ready(function()
     });
     
     $('#witch-content-structure').change(function(){
-        $('#witch__add-content').prop( 'disabled', ($(this).val() === '') );
-        $('#get-existing-craft').prop( 'disabled', ($(this).val() !== '') );
+        $('#witch-create-craft').prop( 'disabled', ($(this).val() === '') );
+        $('#witch-get-existing-craft').prop( 'disabled', ($(this).val() !== '') );
     });
     
     
-    $('#get-existing-craft').on('click', function()
+    $('#witch-get-existing-craft').on('click', function()
     {
         chooseWitch({ craft: true }, "Choose importing craft witch").then( (witchId) => { 
             if( witchId === false ){
@@ -50,7 +50,7 @@ $(document).ready(function()
         });
     });
     
-    $('#add-craft-position').on('click', function()
+    $('#add-craft-witch').on('click', function()
     {
         chooseWitch().then( (witchId) => { 
             if( witchId === false ){
@@ -58,7 +58,7 @@ $(document).ready(function()
             }
 
             $('#new-mother-witch-id').val( witchId );
-            $('#add-position-action').trigger('click');
+            $('#add-craft-witch-action').trigger('click');
         });
     });    
     

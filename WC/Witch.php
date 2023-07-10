@@ -876,7 +876,7 @@ class Witch
         while( $ancestorWitch !== false && $ancestorWitch->depth > 0 )
         {
             if( $ancestorWitch->site == $site ){
-                $url = $ancestorWitch->url;
+                $url = $ancestorWitch->url ?? "";
                 break;
             }
             
@@ -1019,7 +1019,7 @@ class Witch
             $this->craft()->delete();
         }
         
-        return $this->edit([ 'craft_table' => $structure->table, 'craft_fk' => $craftId ]);
+        return $this->edit([ 'craft_table' => $structure->table, 'craft_fk' => $craftId, 'is_main' => 1 ]);
     }
     
     /**
