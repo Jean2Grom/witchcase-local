@@ -22,7 +22,7 @@ $obj = new class {
 };
 
 $obj->baseUrl       = $this->wc->website->getUrl("view");
-$obj->unSafeMode    = $this->config['navigationUnSafeMode'] ?? true;
+$obj->unSafeMode    = $this->config['navigationUnSafeMode'] ?? false;
 $obj->currentSite   = $this->wc->website->site;
         
 $root   = Witch::recursiveTree( $this->witch, $this->wc->website->sitesRestrictions, $currentId, $this->maxStatus, [$obj, "href"] );
