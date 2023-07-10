@@ -5,13 +5,25 @@ $currentId = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT) ?? $thi
 
 $obj = new class {
     public $baseUrl;
+    public $unSafeMode;
+    public $currentSite;
 
-    public function href( $witch ) { 
+    public function href( $witch ) 
+    {
+        if( !$this->unSafeMode 
+            && $witch->invoke 
+            && $witch->site === $this->currentSite 
+        ){
+            return $witch->getUrl();
+        }
+        
         return $this->baseUrl.'?id='.$witch->id;
     }
 };
 
-$obj->baseUrl = $this->wc->website->getUrl("view");
+$obj->baseUrl       = $this->wc->website->getUrl("view");
+$obj->unSafeMode    = $this->config['navigationUnSafeMode'] ?? false;
+$obj->currentSite   = $this->wc->website->site;
         
 $root   = Witch::recursiveTree( $this->witch, $this->wc->website->sitesRestrictions, $currentId, $this->maxStatus, [$obj, "href"] );
 
