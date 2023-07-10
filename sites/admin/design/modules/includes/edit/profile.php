@@ -1,27 +1,3 @@
-<style>
-    .policy-pattern {
-        display: none;
-    }
-    input.profile-name {
-        width: auto;
-        font-weight: bold;
-    }
-    .policy-witch-set {
-        padding: 0;
-    }
-        .policy-witch-set li {
-            display: flex;
-            align-items: center
-        }
-        .policy-witch-set label {
-            font-size: 0.9em;
-            font-weight: normal;
-            margin: 0;
-        }
-    .policy-container textarea {
-        height: 70px;
-    }
-</style>
 <div class="box edit__profile" data-profile="<?=$profile->id?>">
    <form class="edit-profile-form" id="edit-profile-form-<?=$profile->id?>"  method="post" >
         <input type="hidden" name="profile-id" value="<?=$profile->id ?>" />

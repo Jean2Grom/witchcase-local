@@ -1,63 +1,22 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 1 févr. 2016, 20:24:17
-    Author     : Jean
-*/
-
-.errorMessages {
-        color: #ff9900; 
-        font-style: italic;
+.policy-pattern {
+    display: none;
 }
-
-#navHeader {
-        width: 330px;
-float: left;
-        margin-top: 5px;
+input.profile-name {
+    width: auto;
+    font-weight: bold;
 }
-
-#navHeader span {
-        text-decoration: underline;
+.policy-witch-set {
+    padding: 0;
 }
-
-#profiles-navHeader-table {
-        width: 100%;
-        padding-bottom: 6px;
-}
-
-#profiles-navHeader-table td {
-        line-height: 24px;
-}
-
-#profiles-navHeader-table tr:hover {
-        background-color: #ececec;
-}
-
-.pagination {
-        text-align: center;
-}
-
-.pagination ul {
-        padding: 0;
-        margin-top: 0;
-}
-
-#first-li-pagination {
-        display: inline;
-        margin: 0 10px;
-}
-
-#second-li-pagination {
-        display: inline;
-}
-
-.attributeField {
-    margin: 10px 0;
-}
-
-#limitation_profile {
-    margin: 10px;
+    .policy-witch-set li {
+        display: flex;
+        align-items: center
+    }
+    .policy-witch-set label {
+        font-size: 0.9em;
+        font-weight: normal;
+        margin: 0;
+    }
+.policy-container textarea {
+    height: 70px;
 }
