@@ -5,7 +5,7 @@ use WC\Website;
 $possibleActionsList = [
     'create-profile',
     'edit-profile',
-    //'delete-profile',
+    'delete-profile',
 ];
 
 $action = false;
@@ -16,46 +16,6 @@ if( filter_has_var(INPUT_POST, "action") ){
         }
     }
 }
-
-
-
-
-
-$sites  = $this->wc->website->sitesRestrictions;
-if( !$sites ){
-    $sites = array_keys($this->wc->configuration->sites);
-}
-
-$websitesList   = [];
-foreach( $sites as $site ){
-    if( $site == $this->wc->website->name ){
-        $website = $this->wc->website;
-    }
-    else {
-        $website = new Website( $this->wc, $site );
-    }
-    
-    if( $website->site == $website->name ) {
-        $websitesList[ $site ] = $website;
-    }
-}
-ksort($websitesList);
-
-$allSitesModulesListBuffer = [];
-foreach( $websitesList as $website ){
-    $allSitesModulesListBuffer = array_merge( $allSitesModulesListBuffer, $website->listModules() );
-}
-
-$allSitesModulesList = array_unique($allSitesModulesListBuffer);
-asort( $allSitesModulesList );
-
-
-$statusGlobal = $this->wc->configuration->read("global", "status");
-
-//$this->wc->dump( $_POST );
-//$this->wc->dump( $statusGlobal );
-//$this->wc->debug( $websitesList );
-//$this->wc->dump( $profiles );
 
 $alerts = $this->wc->user->getAlerts();
 switch( $action )
@@ -143,8 +103,7 @@ switch( $action )
         ];
     break;
     
-    case 'edit-profile':
-        
+    case 'edit-profile': 
         $profileData = [
             'id'      =>  $this->wc->request->param('profile-id', 'post', FILTER_VALIDATE_INT),
         ];
@@ -160,8 +119,9 @@ switch( $action )
         }
         
         $profileData['name']    = trim($this->wc->request->param('profile-name') ?? "");
-        $site                   = trim($this->wc->request->param('profile-site') ?? "");
-        $profileData['site']    = $site;
+        $profileData['site']    = trim($this->wc->request->param('profile-site') ?? "");
+        
+        $site                   = $profileData['site'] !== '*'? $profileData['site']: 'all';
         
         $policyIds  = $this->wc->request->param('policy-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
         $witches    = $this->wc->request->param('policy-witch-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
@@ -209,8 +169,6 @@ switch( $action )
             $profileData['policies'][] = $data;
         }
         
-$this->wc->dump($profileData);
-        
         if( !Profile::edit( $this->wc, $profileData ) )
         {
             $alerts[] = [
@@ -228,33 +186,72 @@ $this->wc->dump($profileData);
     break;
 
     case 'delete-profile':
-        $profileId = filter_input(INPUT_POST, "profile-id", FILTER_VALIDATE_INT);
-        if( empty($profileId) || empty($profiles[ $profileId ]) ){
-            $alerts[] = [
-                'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, le profil a supprimer n'a pas été identifié."
-            ];
-        }
-        elseif( !$profiles[ $profileId ]->delete() ){
-            $alerts[] = [
-                'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, le profil n'a pas été supprimé."
-            ];
-        }
-        else 
+        $profileId = $this->wc->request->param('profile-id', 'post', FILTER_VALIDATE_INT);
+        if( empty($profileId) )
         {
             $alerts[] = [
-                'level'     =>  'success',
-                'message'   =>  "Le profile \"".$profiles[ $profileId ]->name."\" a bien été supprimé."
+                'level'     =>  'error',
+                'message'   =>  "Unidentified profile, deletion canceled"
             ];
-            
-            unset($profiles[ $profileId ]);
+            break;
         }
         
+        $profile = Profile::createFromId($this->wc, $profileId);
+        if( !$profile )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Unidentified profile, deletion canceled"
+            ];
+            break;
+        }
+
+        if( !$profile->delete() )
+        {
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Deletion failed"
+            ];
+            break;
+        }
+        
+        $alerts[] = [
+            'level'     =>  'success',
+            'message'   =>  "Profile ".$profile->name." deleted"
+        ];
     break;
 }
 
 $profiles = Profile::listProfiles( $this->wc );
 
+$sites  = $this->wc->website->sitesRestrictions;
+if( !$sites ){
+    $sites = array_keys($this->wc->configuration->sites);
+}
+
+$websitesList   = [];
+foreach( $sites as $site ){
+    if( $site == $this->wc->website->name ){
+        $website = $this->wc->website;
+    }
+    else {
+        $website = new Website( $this->wc, $site );
+    }
+    
+    if( $website->site == $website->name ) {
+        $websitesList[ $site ] = $website;
+    }
+}
+ksort($websitesList);
+
+$allSitesModulesListBuffer = [];
+foreach( $websitesList as $website ){
+    $allSitesModulesListBuffer = array_merge( $allSitesModulesListBuffer, $website->listModules() );
+}
+
+$allSitesModulesList = array_unique($allSitesModulesListBuffer);
+asort( $allSitesModulesList );
+
+$statusGlobal = $this->wc->configuration->read("global", "status");
 
 $this->view();

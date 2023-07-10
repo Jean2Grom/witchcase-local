@@ -45,8 +45,10 @@
     </table>
 
     <div class="box__actions">
-       <button data-id="<?=$profile->id ?>" 
-               class="delete-profile-action">
+       <button  class="trigger-action" 
+                data-confirm="Warning ! You are about to delete this profile"
+                data-target="view-profile-form-<?=$profile->id?>"
+                data-action="delete-profile">
             <i class="fa fa-trash"></i>
             Delete
        </button>
@@ -55,5 +57,8 @@
            Edit
        </button>
    </div>
-
 </div>
+
+<form method="post" id="view-profile-form-<?=$profile->id?>">
+    <input type="hidden" name="profile-id" value="<?=$profile->id?>" />
+</form>

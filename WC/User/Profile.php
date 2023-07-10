@@ -28,9 +28,9 @@ class Profile
     
     static function createFromId( WitchCase $wc, int $id )
     {
-        $profiles = self::listProfiles( $wc, [ 'profile_id' => $id ] );
+        $profiles = self::listProfiles( $wc, [ '`profile`.`id`' => $id ] );
         
-        return $profiles[0];
+        return $profiles[ $id ] ?? false;
     }
     
     static function createFromData(  WitchCase $wc, array $data )
@@ -50,7 +50,7 @@ class Profile
         else
         {
             $website = new Website( $wc, $profile->site );
-            $statusLabels = $website->status;
+            $statusLabels = $website->get('status');
         }
         
         foreach( $data['policies'] as $policyData )
@@ -68,32 +68,21 @@ class Profile
     
     function delete()
     {
-        $this->wc->cache->delete('profiles', $this->name);
-        
-        $query  =   "DELETE FROM `user__profile` ";
-        $query  .=  "WHERE id='".$this->wc->db->escape_string($this->id)."' ";
-        
-        if( !$this->wc->db->deleteQuery( $query ) )
+        $this->wc->db->begin();
+        try {
+            if( !empty($this->policies) ){
+                UserDA::deletePolicies( $this->wc, array_keys($this->policies) );
+            }
+            
+            UserDA::deleteProfile( $this->wc, $this->id );
+        } 
+        catch( \Exception $e ) 
         {
-            $this->wc->log->error("Can't delete profile ".$this->name." with ID ".$this->id);
+            $this->wc->log->error($e->getMessage());
+            $this->wc->db->rollback();
             return false;
         }
-        
-        $query  =   "DELETE FROM `user__rel__connexion__profile` ";
-        $query  .=  "WHERE `fk_profile`='".$this->wc->db->escape_string($this->id)."' ";
-        
-        if( !$this->wc->db->deleteQuery( $query ) )
-        {
-            $this->wc->log->error("Can't delete profile ".$this->name." with ID ".$this->id);
-            return false;
-        }
-        
-        $query  =   "DELETE FROM `police` ";
-        $query  .=  "WHERE fk_profile='".$this->wc->db->escape_string($this->id)."' ";
-        
-        if( !$this->wc->db->deleteQuery( $query ) ){
-            $this->wc->log->error("Can't delete policies for profile ".$this->name." with ID ".$this->id);
-        }
+        $this->wc->db->commit();
         
         return true;
     }
@@ -145,9 +134,28 @@ class Profile
         try {
             UserDA::updateProfile( $wc, $profileData['id'], $profileData );
             
-    //            if( !empty($newProfileData['policies']) ){
-    //                UserDA::insertPolicies($wc, $profileId, $newProfileData['policies']);
-    //            }
+            if( !empty($profileData["policiesToDelete"]) ){
+                UserDA::deletePolicies( $wc, $profileData["policiesToDelete"] );
+            }
+            
+            $newPolicies        = [];
+            $updatedPolicies    = [];
+            foreach( $profileData["policies"] as $policyData ){
+                if( !empty($policyData['id']) ){
+                    $updatedPolicies[] = $policyData;
+                }
+                else {
+                    $newPolicies[] = $policyData;
+                }
+            }
+            
+            if( !empty($newPolicies) ){
+                UserDA::insertPolicies($wc, $profileData['id'], $newPolicies);
+            }
+            
+            if( !empty($updatedPolicies) ){
+                UserDA::updatePolicies($wc, $profileData['id'], $updatedPolicies);
+            }
         } 
         catch( \Exception $e ) 
         {
@@ -158,34 +166,5 @@ class Profile
         $wc->db->commit();
         
         return true;
-    }
-    
-    public function editOld( array $profileData=[] )
-    {
-        if( empty($profileData['name']) ){
-            return false;
-        }
-        
-        $this->name = $profileData['name'];
-        
-        $query = "";
-        $query  .=  "UPDATE `user__profile` ";
-        $query  .=  "SET `name` = '".$this->wc->db->escape_string($profileData['name'])."' ";
-        $query  .=  ", `site` = '".$this->wc->db->escape_string($profileData['site'])."' ";
-        $query  .=  "WHERE `id` = ".$this->id." ";
-        
-        $this->wc->db->updateQuery($query);
-        
-        $query = "";
-        $query  .=  "DELETE FROM `user__policy` ";
-        $query  .=  "WHERE `fk_profile` = ".$this->id." ";
-        
-        $this->wc->db->deleteQuery($query);
-
-        if( !empty($profileData['policies']) ){
-            Policy::insert($this->wc, $this->id, $profileData);
-        }
-        
-        return $this;
     }
 }

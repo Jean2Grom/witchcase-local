@@ -241,19 +241,23 @@ class User
         $query  .=  "LEFT JOIN `witch` ";
         $query  .=      "ON `witch`.`id` = `policy`.`fk_witch` ";
         
+        $params = [];
         if( !empty($conditions) )
         {
             $separator = "WHERE ";
             foreach( $conditions as $field => $conditionItem )
             {
-                $query .= $separator.$field." = '".$conditionItem."' ";
+                $key = md5($field.$conditionItem);
+                $params[ $key ] = $conditionItem;
+                
+                $query .= $separator.$field." = :".$key." ";
                 $separator = "AND ";
             }
         }
         
         $query  .=  "ORDER BY `profile_site` ASC, `profile_name` ASC ";
         
-        $result = $wc->db->multipleRowsQuery($query);
+        $result = $wc->db->multipleRowsQuery($query, $params);
         
         $profilesData = [];
         foreach( $result as $row )
@@ -295,7 +299,7 @@ class User
                 ];
             }
         }
-                
+        
         return $profilesData;
     }
     
@@ -395,6 +399,90 @@ class User
         $query  .=  "WHERE `id` = :id ";
         
         return $wc->db->updateQuery($query, $params);
+    }
+    
+    static function deletePolicies( WitchCase $wc, array $policiesToDelete ) 
+    {
+        if( empty($policiesToDelete) ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "DELETE FROM `user__policy` ";
+        $query  .=  "WHERE `id` = :id ";
+        
+        $params = [];
+        foreach( $policiesToDelete as $policyId ){
+            $params[] = [ 'id' => (int) $policyId ];
+        }
+        
+        return $wc->db->deleteQuery($query, $params, true);
+    }
+    
+    static function updatePolicies( WitchCase $wc, int $profileId, array $data )
+    {
+        if( empty($profileId) || empty($data) ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "UPDATE `user__policy` ";
+        
+        $query  .=  "SET `fk_profile` = :fk_profile ";
+        $query  .=  ", `module` = :module ";
+        $query  .=  ", `status` = :status ";
+        $query  .=  ", `fk_witch` = :fk_witch ";
+        $query  .=  ", `position_ancestors` = :position_ancestors ";
+        $query  .=  ", `position_included`  = :position_included ";
+        $query  .=  ", `position_descendants` = :position_descendants ";
+        $query  .=  ", `custom_limitation` = :custom_limitation ";
+        
+        $query  .=  "WHERE `id` = :id ";
+        
+        $params = [];
+        foreach( $data as $policyData )
+        {
+            if( !empty($policyData['witchRules']) )
+            {
+                $ancestors      = $policyData['witchRules']['ancestors']? 1: 0;
+                $self           = $policyData['witchRules']['self']? 1: 0;
+                $descendants    = $policyData['witchRules']['descendants']? 1: 0;
+            }
+            else 
+            {
+                $ancestors      = 0;
+                $self           = 0;
+                $descendants    = 0;
+            }
+            
+            $params[] = [ 
+                'id'                    => $policyData['id'],
+                'fk_profile'            => $profileId,
+                'module'                => $policyData['module'] ?? '*',
+                'status'                => ( isset($policyData['status']) && $policyData['status'] != '*' )? $policyData['status']: null,
+                'fk_witch'              => !empty($policyData['witch'])? $policyData['witch']: null,
+                'position_ancestors'    => $ancestors,
+                'position_included'     => $self,
+                'position_descendants'  => $descendants,
+                'custom_limitation'     => $policyData['custom'] ?? null,
+            ];
+        }
+        
+        return $wc->db->updateQuery($query, $params, true);
+    }
+    
+    
+    static function deleteProfile( WitchCase $wc, int $profileId ) 
+    {
+        if( empty($profileId) ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "DELETE FROM `user__profile` ";
+        $query  .=  "WHERE `id` = :id ";
+        
+        return $wc->db->deleteQuery($query, [ 'id' => $profileId ]);
     }
     
     

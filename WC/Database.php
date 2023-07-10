@@ -151,7 +151,8 @@ class Database
         $paramsKeys     = [];
         $paramsValues   = [];
         
-        foreach( $params as $key => $value )
+        $replaceParams  = ( count($params) > 0 && is_array( array_values($params)[0] ) )?  array_values($params)[0]: $params;
+        foreach( $replaceParams as $key => $value )
         {
             if( str_starts_with( $key, ':' ) ){
                 $paramsKeys[] = $key;
@@ -176,7 +177,7 @@ class Database
         ) && $this->wc->debug->dump( 
             $params, 
             'DEBUG SQL PARAMS',
-            1, 
+            2, 
             [
                 'file' => $caller['file'], 
                 'line' => $caller['line']
