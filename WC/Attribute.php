@@ -66,7 +66,9 @@ abstract class Attribute
     
     function setValue( $key, $value )
     {
-        $this->values[ $key ] = $value;
+        if( in_array($key, array_keys($this->values) ) ){
+            $this->values[ $key ] = $value;
+        }
         
         return $this;
     }
@@ -284,9 +286,8 @@ abstract class Attribute
             
             if( $data['type'] == $this->type 
                 && $data['name'] == $this->name 
-                && in_array($data['element'], array_keys($this->values)) 
             ){
-                $this->values[ $data['element'] ] = $value;
+                $this->setValue( $data['element'], $value );
             }            
         }
     }

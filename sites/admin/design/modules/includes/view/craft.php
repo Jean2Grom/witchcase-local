@@ -44,7 +44,7 @@
             <em>[<?=$targetWitch->craft()->structure->type ?> <?=$targetWitch->craft()->id ?>]</em>
         </h4>
         
-        <p><em>Craft (content) associated with this witch, can have more than one association</em></p>
+        <p><em>Craft (content) associated with this witch</em></p>
         
         <?php foreach( $targetWitch->craft()->attributes as $attribute ): ?>
             <fieldset>

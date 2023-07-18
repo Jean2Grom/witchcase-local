@@ -1,5 +1,5 @@
 <p>
-    <strong>nom&nbsp;:</strong>
+    <strong>name&nbsp;:</strong>
     <?=$this->values['name']?>
 </p>
 <p>
@@ -11,16 +11,16 @@
     <?=$this->values['login']?>
 </p>
 
-<strong>profile(s)&nbsp;:</strong>
+<strong>profiles&nbsp;:</strong>
 <ul>
-    <?php foreach( $sitesProfiles as $site => $siteProfileList ): ?>
-        <?php foreach( $siteProfileList as $profile ): ?>
-            <?php if( in_array($profile->id, $this->values['profiles']) ): ?>
-                <li>
-                    [<?=$site?>]
-                    <?=$profile->name ?>
-                </li>
-            <?php endif; ?>
-        <?php endforeach; ?>
+    <?php foreach($profiles as $profile): ?>
+        <li>
+            [<?=$profile->site == '*'? 'all sites': $profile->site ?>]
+            <?=$profile->name ?>
+        </li>
     <?php endforeach; ?>
 </ul>
+<p>
+    <strong>ID&nbsp;:</strong>
+    <?=$this->values['id']?>
+</p>

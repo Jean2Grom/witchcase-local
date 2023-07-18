@@ -17,7 +17,7 @@ if( !$targetWitch )
 {
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Vous ne pouvez pas éditer d'élément inexistant."
+        'message'   =>  "Craft not found"
     ];
     
     $this->wc->user->addAlerts($alerts);
@@ -30,7 +30,7 @@ if( !$craft )
 {
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Vous ne pouvez pas éditer de contenu inexistant."
+        'message'   =>  "Craft not found"
     ];
     
     $this->wc->user->addAlerts($alerts);
@@ -44,7 +44,7 @@ $draft = $craft->getDraft();
 if( empty($draft) ){
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Impossible de lire le brouillon"
+        'message'   =>  "Draft can't be read"
     ];
 }
 
@@ -59,16 +59,17 @@ switch( $action )
         $return     = $return ?? false;
         
         $params = [];
-        foreach( $draft->getEditParams() as $key )
+        foreach( $draft->getEditParams() as $param )
         {
-            $value = $this->wc->request->param($key);
+            $value = $this->wc->request->param($param['name'] ?? $param, 'post', $param['filter'] ??  FILTER_DEFAULT, $param['option'] ??  0 );                
+            
             if( isset($value) ){
-                $params[ $key ] = $value;
+                $params[ $param['name'] ?? $param ] = $value;
             }
         }
         
         $saved = $draft->update( $params );
-        
+
         if( $saved === false )
         {
             $alerts[] = [

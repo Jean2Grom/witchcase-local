@@ -3,6 +3,8 @@ namespace WC\Attribute;
 
 use WC\Attribute;
 use WC\WitchCase;
+use WC\Craft;
+use WC\DataAccess\User;
 
 class ConnexionAttribute extends Attribute 
 {
@@ -11,6 +13,9 @@ class ConnexionAttribute extends Attribute
         "id" => "INT(11) DEFAULT NULL",
     ];
     const PARAMETERS        = [];
+    
+    var $password;
+    var $password_confirm;
     
     function __construct( WitchCase $wc, string $attributeName, array $params=[] )
     {
@@ -47,21 +52,19 @@ class ConnexionAttribute extends Attribute
     
     function getEditParams(): array
     {
-        $editParams = array_values($this->tableColumns);
-        $postedVarSearchArray = [
-            'name',
-            'login',
-            'email',
-            'password',
-            'password_confirm',
+        return [
+            self::getColumnName( $this->type, $this->name, 'id' ),
+            self::getColumnName( $this->type, $this->name, 'name' ),
+            self::getColumnName( $this->type, $this->name, 'login' ),
+            self::getColumnName( $this->type, $this->name, 'email' ),
+            self::getColumnName( $this->type, $this->name, 'password' ),
+            self::getColumnName( $this->type, $this->name, 'password_confirm' ),
+            [
+                'name'      => self::getColumnName( $this->type, $this->name, 'profiles' ), 
+                'option'    => FILTER_REQUIRE_ARRAY 
+            ],
         ];
-        
-        foreach( $postedVarSearchArray as $postedVarSearchItem ){
-            $editParams[] = self::getColumnName( $this->type, $this->name, $postedVarSearchItem );
-        }
-        
-        return $editParams;
-    }    
+    }
     
     
     function set( $args )
@@ -90,7 +93,38 @@ class ConnexionAttribute extends Attribute
     
     function setValue( $key, $value )
     {
-        if( $key == 'id' )
+        if( in_array($key, array_keys($this->values) ) ){
+            $this->values[ $key ] = $value;
+        }
+        
+        if( $key == 'password' ){
+            $this->password = $value;
+        }
+        elseif( $key == 'password_confirm' ){
+            $this->password_confirm = $value;
+        }
+        
+        if( $this->password && $this->password_confirm )
+        {
+            if( $this->password !== $this->password_confirm ){
+                $this->wc->user->addAlerts([[
+                    'level'     =>  'warning',
+                    'message'   =>  "Password mismatch"
+                ]]);
+            }
+            else 
+            {
+                $this->values[ 'pass_hash' ] = $this->generate_hash( $this->password );
+                $this->wc->user->addAlerts([[
+                    'level'     =>  'success',
+                    'message'   =>  "Password changed"
+                ]]);
+            }
+        }
+
+        
+        
+        if( $key == 'idXXX' )
         {
             $postedVarSearchArray = [
                 'name',
@@ -179,51 +213,31 @@ class ConnexionAttribute extends Attribute
             }
         }
         
-        $this->values[ $key ] = $value;
         
         return $this;
     }
     
     function save( $craft ) 
     {
-        $query = "";
         if( empty($this->values['id']) )
         {
-            $query .=   "INSERT INTO `user__connexion` ";
-            $query .=   "( `name`, `email`, `login`, `pass_hash`, ";
-            $query .=   "`craft_table`, `craft_attribute`, `craft_attribute_var`, ";
+            $craftAttributeData = [
+                'table' => $craft->structure->table,
+                'type'  => $this->type,
+                'var'   => 'id',
+                'name'  => $this->name,
+            ];
             
-            if( !empty($this->wc->user->id) ){
-                $query .=   "`creator`, `modifier`, ";
-            }
-            
-            $query .=   "`attribute_name`) ";
-            
-            $query .=   "VALUES ('".$this->wc->db->escape_string($this->values['name'])."' ";
-            $query .=   ", '".$this->wc->db->escape_string($this->values['email'])."' ";
-            $query .=   ", '".$this->wc->db->escape_string($this->values['login'])."' ";
-            $query .=   ", '".$this->values['pass_hash']."' ";
-            
-            $query .=   ", '".$craft->structure->table."' ";
-            $query .=   ", '".$this->type."' ";
-            $query .=   ", 'id' ";
-
-            if( !empty($this->wc->user->id) ){
-                $query .=   ", '".$this->wc->user->id."' ";
-                $query .=   ", '".$this->wc->user->id."' ";
-            }
-            
-            $query .=   ", '".$this->wc->db->escape_string($this->name)."') ";
-            
-            $this->values['id'] = $this->wc->db->insertQuery($query);
+            $this->values['id'] = User::insertConnexion( $this->wc, $this->values, $craftAttributeData );
         }
         else
         {
+            $query = "";            
             $query  .=  "UPDATE `user__connexion` ";
             $query  .=  "SET `name` = '".$this->wc->db->escape_string($this->values['name'])."' ";
             $query  .=  ", `email` = '".$this->wc->db->escape_string($this->values['email'])."' ";
             $query  .=  ", `login` = '".$this->wc->db->escape_string($this->values['login'])."' ";
-            $query  .=  ", `pass_hash` = '".$this->wc->db->escape_string($this->values['pass_hash'])."' ";
+            $query  .=  ", `pass_hash` = '".$this->wc->db->escape_string($this->values['pass_hash'] ?? "")."' ";
             $query  .=  ", `craft_table` = '".$this->wc->db->escape_string($craft->structure->table)."' ";
             $query  .=  ", `craft_attribute` = '".$this->wc->db->escape_string($this->type)."' ";
             $query  .=  ", `craft_attribute_var` = 'id' ";
@@ -292,5 +306,15 @@ class ConnexionAttribute extends Attribute
         //now do the actual hashing
         return crypt( $password, $param );
     }
+    
+    function clone( Craft $craft )
+    {
+        $clonedAttribute = clone $this;
+        
+        unset($clonedAttribute->values['id']);
+        
+        return $clonedAttribute;
+    }
+
     
 }

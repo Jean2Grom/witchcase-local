@@ -195,7 +195,7 @@ class Structure
         if( empty($table) ){
             return false;
         }
-                
+        
         $userId = $wc->user->id;
         $params = [];
         if( $userId )

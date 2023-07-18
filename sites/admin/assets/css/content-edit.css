@@ -22,7 +22,10 @@ fieldset {
         margin-top: 20px;
     }
     fieldset input[type=text],
-    fieldset textarea {
+    fieldset input[type=email],
+    fieldset input[type=password],
+    fieldset textarea,
+    fieldset select {
         width: 95%;
     }
 .fieldsets-container {

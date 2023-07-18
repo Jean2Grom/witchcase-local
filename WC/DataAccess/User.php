@@ -4,6 +4,7 @@ namespace WC\DataAccess;
 use WC\WitchCase;
 use WC\Witch;
 use WC\Cairn;
+use WC\Craft;
 
 class User
 {    
@@ -54,6 +55,7 @@ class User
         $query  .=      "ON `witch`.`id` = `policy`.`fk_witch` ";
 
         $query  .=  "WHERE ( `email`= :login OR `login`= :login ) ";
+        $query  .=  "AND `user__connexion`.`craft_table` LIKE '".Craft::TYPES[0]."__%' ";
         
         $result = $wc->db->multipleRowsQuery($query, [ 'login' => $login ]);
         
@@ -214,7 +216,7 @@ class User
     static function getProfiles( WitchCase $wc, array $conditions=[] )
     {
         $query = "";
-        $query  .=  "SELECT  `profile`.`id` AS `profile_id` ";
+        $query  .=  "SELECT `profile`.`id` AS `profile_id` ";
         $query  .=  ", `profile`.`name` AS `profile_name` ";
         $query  .=  ", `profile`.`site` AS `profile_site` ";
         
@@ -244,14 +246,31 @@ class User
         $params = [];
         if( !empty($conditions) )
         {
-            $separator = "WHERE ";
+            $query .= "WHERE ";
+            $separator = "";
             foreach( $conditions as $field => $conditionItem )
             {
-                $key = md5($field.$conditionItem);
-                $params[ $key ] = $conditionItem;
-                
-                $query .= $separator.$field." = :".$key." ";
+                $query .= $separator;
                 $separator = "AND ";
+                
+                if( is_array($conditionItem) ){
+                    $values = $conditionItem;
+                }
+                else {
+                    $values = [ $conditionItem ];
+                }
+                
+                $query .= "( ";
+                $innerSeparator = "";
+                foreach( $values as $i => $value )
+                {
+                    $key = md5($field.$i.$value);
+                    $params[ $key ] = $value;
+
+                    $query .= $innerSeparator.$field." = :".$key." ";
+                    $innerSeparator = "OR ";
+                }
+                $query .= ") ";
             }
         }
         
@@ -324,7 +343,7 @@ class User
         
         $query = "";
         $query  .=  "INSERT INTO `user__policy` ";
-        $query  .=  "(`fk_profile` ";
+        $query  .=  "( `fk_profile` ";
         $query  .=  ", `module` ";
         $query  .=  ", `status` ";
         $query  .=  ", `fk_witch` ";
@@ -485,5 +504,63 @@ class User
         return $wc->db->deleteQuery($query, [ 'id' => $profileId ]);
     }
     
+    
+    static function insertConnexion( WitchCase $wc, array $data, array $craftAttributeData )
+    {
+        if( empty($data['login']) || empty($data['email']) ){
+            return false;
+        }
+        
+        if( empty($craftAttributeData['table']) 
+            || empty($craftAttributeData['name'])
+            || empty($craftAttributeData['type'])
+            || empty($craftAttributeData['var']) ){
+            return false;
+        }
+        
+        $userId = $wc->user->id;
+        $params = [];
+        if( $userId )
+        {
+            $params["creator"]  = $userId;
+            $params["modifier"] = $userId;
+        }
+        
+        $params["name"]         = $data['name'] ?? $data['login'];
+        $params["email"]        = $data['email'];
+        $params["login"]        = $data['login'];
+        $params["pass_hash"]    = $data['pass_hash'] ?? "";
+        
+        $params["craft_table"]          = $craftAttributeData['table'];
+        $params["craft_attribute"]      = $craftAttributeData['type'];
+        $params["craft_attribute_var"]  = $craftAttributeData['var'];
+        $params["attribute_name"]       = $craftAttributeData['name'];
+        
+        $query = "";
+        $query .=   "INSERT INTO `user__connexion` ";
+        $query .=   "( `name`, `email`, `login`, `pass_hash`, ";
+        
+        if( $userId ){
+            $query .=   "`creator`, `modifier`, ";
+        }
+        
+        $query .=   "`craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name` ) ";
+        
+        $query .=   "VALUES ( :name ";
+        $query .=   ", :email ";
+        $query .=   ", :login ";
+        $query .=   ", :pass_hash ";
+        
+        if( $userId ){
+            $query .=   ", :creator, :modifier ";
+        }
+        
+        $query .=   ", :craft_table ";
+        $query .=   ", :craft_attribute ";
+        $query .=   ", :craft_attribute_var ";
+        $query .=   ", :attribute_name ) ";
+        
+        return $wc->db->insertQuery($query, $params);
+    }
     
 }

@@ -296,7 +296,7 @@ class Craft
             foreach( $this->attributes as $attribute ){
                 $updated += $attribute->save( $this );
             }
-
+            
             $fields = [ 'name' => $this->name ];
             
             if( $contentKey ){
