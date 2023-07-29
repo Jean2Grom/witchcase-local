@@ -32,10 +32,17 @@
         <button class="trigger-action" 
                 data-target="edit-witch-info"
                 data-action="save-witch-info">
+            <i class="fas fa-save"></i>
             Save
         </button>
         
-        <button class="edit-info-reinit">Reinit Form</button>        
-        <button class="view-edit-info-toggle">Cancel</button>
+        <button class="edit-info-reinit">
+            <i class="fa fa-undo"></i>
+            Reinit Form
+        </button>        
+        <button class="view-edit-info-toggle">
+            <i class="fa fa-times"></i>
+            Cancel
+        </button>
     </div>
 </div>

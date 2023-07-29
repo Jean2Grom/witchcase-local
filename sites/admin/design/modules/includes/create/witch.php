@@ -31,9 +31,13 @@
         <button class="trigger-action" 
                 data-target="create-witch-info"
                 data-action="create-new-witch">
+            <i class="fa fa-plus"></i>
             Create
         </button>
         
-        <button class="view-daughters__create-witch__toggle">Cancel</button>
+        <button class="view-daughters__create-witch__toggle">
+            <i class="fa fa-times"></i>
+            Cancel
+        </button>
     </div>
 </div>

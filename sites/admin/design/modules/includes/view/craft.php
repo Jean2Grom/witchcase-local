@@ -27,11 +27,17 @@
                     style="display: none;"
                     data-action="import-craft"
                     data-target="witch-add-new-content">Import craft</button>
-            <button id="witch-get-existing-craft">Get existing craft</button>
+            <button id="witch-get-existing-craft">
+                <i class="fa fa-project-diagram"></i>
+                Get existing craft
+            </button>
             <button id="witch-create-craft" disabled
                     class="trigger-action"
                     data-action="create-craft"
-                    data-target="witch-add-new-content">Create craft</button>
+                    data-target="witch-add-new-content">
+                <i class="fa fa-plus"></i>
+                Create craft
+            </button>
         </div>
 
     <?php else: ?>
@@ -68,16 +74,30 @@
             <button class="trigger-action"
                     data-confirm="Warning ! You are about to remove this content"
                     data-action="remove-craft"
-                    data-target="view-craft-action"><?=count($craftWitches) == 1? "Delete": "Remove" ?></button>
+                    data-target="view-craft-action">
+                <?php if( count($craftWitches) == 1 ): ?>
+                    <i class="fa fa-trash"></i>
+                    Delete
+                <?php else: ?>
+                    <i class="fa fa-times"></i>
+                    Remove
+                <?php endif;?>
+            </button>
             <?php if( $targetWitch->craft()->structure->type === WC\Craft\Content::TYPE ): ?>
                 <button class="trigger-action"
                         data-confirm="Are you sure to archive this content ?"
                         data-action="archive-craft"
-                        data-target="view-craft-action">Archive</button>
+                        data-target="view-craft-action">
+                    <i class="fa fa-archive"></i>
+                    Archive
+                </button>
             <?php endif; ?>
             <button class="trigger-href" 
                     data-href="<?=$this->wc->website->getUrl("edit-content?id=".$targetWitch->id) ?>"
-                    id="content__edit">Edit</button>
+                    id="content__edit">
+                <i class="fa fa-pencil"></i>
+                Edit
+            </button>
         </div>
     <?php endif; ?>
 </div>
