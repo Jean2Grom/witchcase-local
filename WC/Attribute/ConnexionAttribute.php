@@ -120,6 +120,8 @@ class ConnexionAttribute extends Attribute
                     'message'   =>  "Password changed"
                 ]]);
             }
+            
+            $this->password = false;
         }
 
         

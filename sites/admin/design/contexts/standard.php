@@ -72,26 +72,28 @@
                         <?php endif; ?>
                     </div>
                 <?php endforeach; else: ?>
-                    <a class="tabs__item selected" href="#tab-current">
-                        <?php if( $this->wc->witch()->hasCraft() && $this->wc->witch()->invoke ): ?>
-                            <i  class="fas fa-hat-wizard"></i>
-                        <?php elseif( $this->wc->witch()->hasCraft() ): ?>
-                            <i  class="fas fa-mortar-pestle"></i>
-                        <?php elseif( $this->wc->witch()->invoke ): ?>
-                            <i  class="fas fa-hand-sparkles"></i>
-                        <?php else: ?>
-                            <i class="fas fa-folder"></i>
-                        <?php endif; ?>
+                    <div class="tabs__item selected">
+                        <a href="#tab-current">
+                            <?php if( $this->wc->witch()->hasCraft() && $this->wc->witch()->invoke ): ?>
+                                <i  class="fas fa-hat-wizard"></i>
+                            <?php elseif( $this->wc->witch()->hasCraft() ): ?>
+                                <i  class="fas fa-mortar-pestle"></i>
+                            <?php elseif( $this->wc->witch()->invoke ): ?>
+                                <i  class="fas fa-hand-sparkles"></i>
+                            <?php else: ?>
+                                <i class="fas fa-folder"></i>
+                            <?php endif; ?>
 
-                        <?=$this->wc->witch()->name ?>
+                            <?=$this->wc->witch()->name ?>
 
-                        <?php if( $this->wc->witch("target")->exist() ): ?>
-                            &nbsp;:
-                        <?php elseif( $this->wc->witch("mother")->exist() ): ?>
-                            from&nbsp;:
-                        <?php endif; ?>
-                        <?=$this->wc->witch("target").$this->wc->witch("mother")?>
-                    </a>
+                            <?php if( $this->wc->witch("target")->exist() ): ?>
+                                &nbsp;:
+                            <?php elseif( $this->wc->witch("mother")->exist() ): ?>
+                                from&nbsp;:
+                            <?php endif; ?>
+                            <?=$this->wc->witch("target").$this->wc->witch("mother")?>
+                        </a>
+                    </div>
                 <?php endif; ?>
             </div>
             

@@ -74,7 +74,7 @@ switch( $action )
         {
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, modification annulée"
+                'message'   =>  "Error, update canceled"
             ];
             
             $return = false;
@@ -82,7 +82,7 @@ switch( $action )
         elseif( $saved === 0 && !$publish ){
             $alerts[] = [
                 'level'     =>  'warning',
-                'message'   =>  "Aucune modification"
+                'message'   =>  "No update"
             ];
         }
         elseif( $publish )
@@ -91,7 +91,7 @@ switch( $action )
             {
                 $alerts[] = [
                     'level'     =>  'error',
-                    'message'   =>  "Une erreur est survenue, publication annulée"
+                    'message'   =>  "Error, publication canceled"
                 ];
                 
                 $return = false;
@@ -99,14 +99,14 @@ switch( $action )
             else {
                 $alerts[] = [
                     'level'     =>  'success',
-                    'message'   =>  "Publié"
+                    'message'   =>  "Published"
                 ];                
             }
         }
         else {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Modifié"
+                'message'   =>  "Updated"
             ];
         }
         
@@ -123,14 +123,14 @@ switch( $action )
         if( !$draft->remove() ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, suppression annulée",
+                'message'   =>  "Error, remove canceled",
             ];
         }
         else 
         {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Brouillon supprimé"
+                'message'   =>  "Draft removed"
             ];
             
             $this->wc->user->addAlerts($alerts);
@@ -142,5 +142,9 @@ switch( $action )
 }
 
 $cancelHref = $this->wc->website->getUrl("view?id=".$targetWitch->id);
+
+foreach( $this->wc->user->getAlerts() as $treatmentAlert ){
+    $alerts[] = $treatmentAlert;
+}
 
 $this->view();

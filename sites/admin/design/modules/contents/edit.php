@@ -2,7 +2,10 @@
     $this->addCssFile('content-edit.css');
     $this->addJsFile('triggers.js');
 ?>
-<h1><?=$this->witch->name ?></h1>
+<h1>
+    <i class="fa fa-feather-alt"></i>
+    <?=$this->witch->name ?>
+</h1>
 <p><em><?=$this->witch->data?></em></p>
     
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
@@ -20,7 +23,7 @@
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
     <fieldset>
-        <legend>Name</legend>
+        <legend>Craft Name</legend>
         <input type="text" name="name" value="<?=$draft->name ?>" />
     </fieldset>
     <div class="clear"></div>
@@ -37,21 +40,25 @@
         <button class="trigger-action" 
                 data-action="publish"
                 data-target="edit-action">
+            <i class="fa fa-gavel"></i>
             Publish
         </button>
         <button class="trigger-action"
                 data-action="save-and-return"
                 data-target="edit-action">
+            <i class="fa fa-share"></i>
             Save and Quit
         </button>
         <button class="trigger-action"
                 data-action="save"
                 data-target="edit-action">
+            <i class="fa fa-save"></i>
             Save
         </button>
         <button class="trigger-action"
                 data-action="delete"
                 data-target="edit-action">
+            <i class="fa fa-trash"></i>
             Delete draft
         </button>
     <?php endif; ?>
@@ -59,6 +66,7 @@
     <?php if( $cancelHref ): ?>
         <button class="trigger-href" 
                 data-href="<?=$cancelHref ?>">
+            <i class="fa fa-times"></i>
             Cancel
         </button>
     <?php endif; ?>
