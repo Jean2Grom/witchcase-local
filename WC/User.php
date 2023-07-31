@@ -31,7 +31,7 @@ class User
         $this->policies     = [];
         
         // If previous page is login page
-        if( $this->wc->request->param('login') === 'login' )
+        if( $this->wc->request->param('action') === 'login' )
         {
             $loginFailure       = false;
             $userName           = $this->wc->request->param('username');
@@ -54,9 +54,8 @@ class User
             if( !$loginFailure )
             {
                 $connexionData  = array_values($userConnexionData)[0];                
-                $hash           = crypt( $this->wc->request->param('password'), $connexionData['pass_hash'] );
                 
-                if( $hash !== $connexionData['pass_hash'] )
+                if( !password_verify( $this->wc->request->param('password'), $connexionData['pass_hash'] ) )
                 {
                     $loginFailure           = true;
                     $this->loginMessages[]  = "Wrong password, please try again";

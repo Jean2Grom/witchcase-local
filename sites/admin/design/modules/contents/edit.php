@@ -40,7 +40,7 @@
         <button class="trigger-action" 
                 data-action="publish"
                 data-target="edit-action">
-            <i class="fa fa-gavel"></i>
+            <i class="fa fa-check"></i>
             Publish
         </button>
         <button class="trigger-action"
