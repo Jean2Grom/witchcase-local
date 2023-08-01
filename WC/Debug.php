@@ -395,8 +395,11 @@ class Debug
             echo "</pre></div>";
             
             echo "<script>";
-            echo    "function closeWcDebug(){ document.getElementById('wc-debug').style.display = 'none'; }";
-            echo    "document.addEventListener('keyup', (event) => { if( event.key === 'Escape' ){ closeWcDebug(); } });";
+            echo    "function closeWcDebug(){ document.getElementById('wc-debug').style.display = 'none'; } ";
+            echo    "document.addEventListener('keyup', (event) => { ";
+            echo        "if( event.key === 'Escape' ){ closeWcDebug(); } ";
+            echo        "else if( event.key.toLowerCase() === 'd' ){ document.getElementById('wc-debug').style.display = 'block'; } ";
+            echo    "}); ";
             echo "</script>";
         }
     }
