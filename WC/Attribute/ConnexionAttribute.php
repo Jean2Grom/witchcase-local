@@ -70,10 +70,7 @@ class ConnexionAttribute extends Attribute
     function set( $args )
     {
         foreach( $args as $key => $value ){
-            if( $key == 'profile_name' ){
-                continue;
-            }
-            elseif( $key == 'profile_id' && is_array($value) ){
+            if( $key == 'profile_id' && is_array($value) ){
                 foreach( $value as $profileId ){
                     if( !in_array($profileId, $this->values['profiles']) ){
                         $this->values['profiles'][] = $profileId;
@@ -114,18 +111,18 @@ class ConnexionAttribute extends Attribute
             }
             else 
             {
-                $this->values[ 'pass_hash' ] = $this->generate_hash( $this->password );
+                $this->values[ 'pass_hash' ] = password_hash( $this->password, PASSWORD_DEFAULT );
                 $this->wc->user->addAlerts([[
-                    'level'     =>  'success',
+                    'level'     =>  'info',
                     'message'   =>  "Password changed"
                 ]]);
             }
             
             $this->password = false;
         }
-
         
         
+        // TODO check availability
         if( $key == 'idXXX' )
         {
             $postedVarSearchArray = [
@@ -221,62 +218,20 @@ class ConnexionAttribute extends Attribute
     
     function save( $craft ) 
     {
-        if( empty($this->values['id']) )
-        {
-            $craftAttributeData = [
-                'table' => $craft->structure->table,
-                'type'  => $this->type,
-                'var'   => 'id',
-                'name'  => $this->name,
-            ];
-            
-            $this->values['id'] = User::insertConnexion( $this->wc, $this->values, $craftAttributeData );
-        }
-        else
-        {
-            $query = "";            
-            $query  .=  "UPDATE `user__connexion` ";
-            $query  .=  "SET `name` = '".$this->wc->db->escape_string($this->values['name'])."' ";
-            $query  .=  ", `email` = '".$this->wc->db->escape_string($this->values['email'])."' ";
-            $query  .=  ", `login` = '".$this->wc->db->escape_string($this->values['login'])."' ";
-            $query  .=  ", `pass_hash` = '".$this->wc->db->escape_string($this->values['pass_hash'] ?? "")."' ";
-            $query  .=  ", `craft_table` = '".$this->wc->db->escape_string($craft->structure->table)."' ";
-            $query  .=  ", `craft_attribute` = '".$this->wc->db->escape_string($this->type)."' ";
-            $query  .=  ", `craft_attribute_var` = 'id' ";
-            $query  .=  ", `attribute_name` = '".$this->wc->db->escape_string($this->name)."' ";
-            if( !empty($this->wc->user->id) ){
-                $query  .=  ", `modifier` = '".$this->wc->user->id."' ";
-            }
-            
-            $query  .=  "WHERE `id` = '".$this->wc->db->escape_string($this->values['id'])."' ";
-            
-            $this->wc->db->updateQuery($query);
-            
-            $query = "";
-            $query  .=  "DELETE FROM `user__rel__connexion__profile` ";
-            $query  .=  "WHERE `fk_connexion` = '".$this->wc->db->escape_string($this->values['id'])."' ";
-            
-            $this->wc->db->deleteQuery($query);
+        $craftAttributeData = [
+            'table' => $craft->structure->table,
+            'type'  => $this->type,
+            'var'   => 'id',
+            'name'  => $this->name,
+        ];
+        
+        if( !empty($this->values['id']) ){
+            return User::updateConnexion( $this->wc, $this->values['id'], $this->values, $craftAttributeData );
         }
         
-        if( !empty($this->values['profiles']) )
-        {
-            $query = "";
-            $query  .=  "INSERT INTO `user__rel__connexion__profile` ";
-            $query  .=  "( `fk_connexion`, `fk_profile`) ";
-            $separator = "VALUES ";
-            foreach( $this->values['profiles'] as $profileId )
-            {
-                $query  .=   $separator;
-                $separator = ", ";
-                $query  .=   "('".$this->wc->db->escape_string($this->values['id'])."' ";
-                $query  .=   ", '".$profileId."' ) ";
-            }
-            
-            $this->wc->db->insertQuery($query);
-        }
+        $this->values['id'] = User::insertConnexion( $this->wc, $this->values, $craftAttributeData );
         
-        return 1;
+        return 1;            
     }
     
     function generate_hash($password, $cost=11)

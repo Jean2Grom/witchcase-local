@@ -560,7 +560,141 @@ class User
         $query .=   ", :craft_attribute_var ";
         $query .=   ", :attribute_name ) ";
         
-        return $wc->db->insertQuery($query, $params);
+        $newConnexionId = $wc->db->insertQuery($query, $params);
+        
+        self::insertConnexionProfilesIds( $wc, $newConnexionId, $data['profiles'] ?? [] );
+        
+        return $newConnexionId;
     }
+    
+    
+    static function updateConnexion( WitchCase $wc, int $connexionId, array $data, array $craftAttributeData )
+    {
+        if( empty($connexionId) || empty($data) ){
+            return false;
+        }
+        
+        if( empty($craftAttributeData['table']) 
+            || empty($craftAttributeData['name'])
+            || empty($craftAttributeData['type'])
+            || empty($craftAttributeData['var']) ){
+            return false;
+        }
+        
+        $params = [];
+        foreach( ["name", "login", "email", "pass_hash"] as $field ){
+            if( isset($data[ $field ]) ){
+                $params[ $field ] = $data[ $field ];
+            }
+        }
+        
+        if( empty($params) ){
+            return false;
+        }
+        
+        $userId = $wc->user->id;
+        if( $userId ){
+            $params["modifier"] = $userId;
+        }
+        
+        $params["craft_table"]          = $craftAttributeData['table'];
+        $params["craft_attribute"]      = $craftAttributeData['type'];
+        $params["craft_attribute_var"]  = $craftAttributeData['var'];
+        $params["attribute_name"]       = $craftAttributeData['name'];
+        
+        
+        $query = "";            
+        $query  .=  "UPDATE `user__connexion` ";
+        $query  .=  "SET ";
+        
+        $separator = "";
+        foreach( array_keys($params) as $field )
+        {
+            $query  .=  $separator."`".$field."` = :".$field." ";
+            $separator = ", ";
+        }
+
+        $params['id'] = $connexionId;
+        
+        $query  .=  "WHERE `id` = :id ";
+        
+        $updateCounter = $wc->db->updateQuery($query, $params);
+        
+        $newProfilesIds = $data['profiles'] ?? [];
+        $profilesIds    = self::selectConnexionProfilesIds($wc, $connexionId);
+        
+        $updateCounter += self::deleteConnexionProfilesIds( $wc, $connexionId, array_diff($profilesIds, $newProfilesIds) );
+        $updateCounter += self::insertConnexionProfilesIds( $wc, $connexionId, array_diff($newProfilesIds, $profilesIds) );
+        
+        return $updateCounter;
+    }
+    
+    static private function selectConnexionProfilesIds( WitchCase $wc, int $connexionId ): array
+    {
+        $query = "";
+        $query  .=  "SELECT fk_profile ";
+        $query  .=  "FROM user__rel__connexion__profile ";
+        $query  .=  "WHERE fk_connexion = :fk_connexion ";
+        
+        $result = $wc->db->selectQuery($query, [ 'fk_connexion' => $connexionId ]);
+        
+        $return = [];
+        foreach( $result as $row ){
+            $return[] = $row['fk_profile'];
+        }
+        
+        return $return;
+    }
+    
+    static private function deleteConnexionProfilesIds( WitchCase $wc, int $connexionId, array $profilesIds )
+    {
+        if( empty($connexionId) ){
+            return false;
+        }
+        
+        $params = [];
+        foreach( $profilesIds as $profileId ){
+            if(is_numeric($profileId) ){
+                $params[] = [ 'fk_connexion' => $connexionId, 'fk_profile' => $profileId ];
+            }
+        }
+        
+        if( empty($params) ){
+            return 0;
+        }
+        
+        $query = "";
+        $query  .=  "DELETE FROM `user__rel__connexion__profile` ";
+        $query  .=  "WHERE `fk_connexion` = :fk_connexion ";
+        $query  .=  "AND `fk_profile` = :fk_profile ";
+        
+        return $wc->db->deleteQuery($query, $params, true);
+    }
+    
+    static private function insertConnexionProfilesIds( WitchCase $wc, int $connexionId, array $profilesIds )
+    {
+        if( empty($connexionId) ){
+            return false;
+        }
+        
+        $params = [];
+        foreach( $profilesIds as $profileId ){
+            if(is_numeric($profileId) ){
+                $params[] = [ 'fk_connexion' => $connexionId, 'fk_profile' => $profileId ];
+            }
+        }
+        
+        if( empty($params) ){
+            return 0;
+        }
+        
+        $query = "";
+        $query  .=  "INSERT INTO `user__rel__connexion__profile` ";
+        $query  .=  "( `fk_connexion`, `fk_profile`) ";
+        $query  .=  "VALUES ( :fk_connexion, :fk_profile ) ";
+        
+        return count( $wc->db->insertQuery($query, $params, true) );
+    }
+    
     
 }
