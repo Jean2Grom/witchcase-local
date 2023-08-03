@@ -374,7 +374,7 @@ class Debug
             ob_end_clean();
         }
         
-        if( $this->buffer )
+        if( !empty($this->buffer) )
         {
             $style = self::CSS_STYLE;
             
@@ -386,13 +386,21 @@ class Debug
             echo "<div id=\"wc-debug\" style=\"".$styleAttribute."\">";
             
             echo "<div style=\"color: red;position: fixed;cursor: pointer\" ";
-            echo "onclick=\"document.getElementById('wc-debug').style.display = 'none';\">[X]</div>";
+            echo "onclick=\"closeWcDebug();\">[X]</div>";
             
             echo "<pre style=\"margin-top: 25px;\">";
             foreach( $this->buffer as $buffer ){
                 echo $buffer."\n\n\n";
             }
             echo "</pre></div>";
+            
+            echo "<script>";
+            echo    "function closeWcDebug(){ document.getElementById('wc-debug').style.display = 'none'; } ";
+            echo    "document.addEventListener('keyup', (event) => { ";
+            echo        "if( event.key === 'Escape' ){ closeWcDebug(); } ";
+            echo        "else if( event.key.toLowerCase() === 'd' ){ document.getElementById('wc-debug').style.display = 'block'; } ";
+            echo    "}); ";
+            echo "</script>";
         }
     }
     

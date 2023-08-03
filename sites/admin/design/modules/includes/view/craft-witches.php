@@ -71,7 +71,10 @@
                     style="display: none;"
                     data-action="add-craft-witch"
                     data-target="view-craft-witches-action">Add craft witch action</button>
-            <button id="add-craft-witch">Add craft witch</button>
+            <button id="add-craft-witch">
+                <i class="fa fa-plus"></i>
+                Add craft witch
+            </button>
         </div>
     </div>
 <?php endif; ?>

@@ -4,6 +4,8 @@ namespace WC\DataAccess;
 use WC\WitchCase;
 use WC\Witch;
 use WC\Cairn;
+use WC\Craft;
+use WC\Attribute;
 
 class User
 {    
@@ -54,8 +56,9 @@ class User
         $query  .=      "ON `witch`.`id` = `policy`.`fk_witch` ";
 
         $query  .=  "WHERE ( `email`= :login OR `login`= :login ) ";
+        $query  .=  "AND `user__connexion`.`craft_table` LIKE '".Craft::TYPES[0]."__%' ";
         
-        $result = $wc->db->multipleRowsQuery($query, [ 'login' => $login ]);
+        $result = $wc->db->multipleRowsQuery($query, [ 'login' => trim($login) ]);
         
         $userConnexionData = [];
         foreach( $result as $row )
@@ -63,9 +66,11 @@ class User
             $userConnexionId = $row['connexion_id'];
             if( empty($userConnexionData[ $userConnexionId ]) )
             {
-                $craftColumn =     $row['connexion_attribute_name'];
-                $craftColumn .=    '@'.$row['connexion_craft_attribute'];
-                $craftColumn .=    '#'.$row['connexion_craft_attribute_var'];
+                $craftColumn = Attribute::getColumnName(
+                    $row['connexion_craft_attribute'],  
+                    $row['connexion_attribute_name'], 
+                    $row['connexion_craft_attribute_var']
+                );
                 
                 $userConnexionData[ $userConnexionId ] = [
                     'id'            => $userConnexionId,
@@ -214,7 +219,7 @@ class User
     static function getProfiles( WitchCase $wc, array $conditions=[] )
     {
         $query = "";
-        $query  .=  "SELECT  `profile`.`id` AS `profile_id` ";
+        $query  .=  "SELECT `profile`.`id` AS `profile_id` ";
         $query  .=  ", `profile`.`name` AS `profile_name` ";
         $query  .=  ", `profile`.`site` AS `profile_site` ";
         
@@ -244,14 +249,31 @@ class User
         $params = [];
         if( !empty($conditions) )
         {
-            $separator = "WHERE ";
+            $query .= "WHERE ";
+            $separator = "";
             foreach( $conditions as $field => $conditionItem )
             {
-                $key = md5($field.$conditionItem);
-                $params[ $key ] = $conditionItem;
-                
-                $query .= $separator.$field." = :".$key." ";
+                $query .= $separator;
                 $separator = "AND ";
+                
+                if( is_array($conditionItem) ){
+                    $values = $conditionItem;
+                }
+                else {
+                    $values = [ $conditionItem ];
+                }
+                
+                $query .= "( ";
+                $innerSeparator = "";
+                foreach( $values as $i => $value )
+                {
+                    $key = md5($field.$i.$value);
+                    $params[ $key ] = $value;
+
+                    $query .= $innerSeparator.$field." = :".$key." ";
+                    $innerSeparator = "OR ";
+                }
+                $query .= ") ";
             }
         }
         
@@ -324,7 +346,7 @@ class User
         
         $query = "";
         $query  .=  "INSERT INTO `user__policy` ";
-        $query  .=  "(`fk_profile` ";
+        $query  .=  "( `fk_profile` ";
         $query  .=  ", `module` ";
         $query  .=  ", `status` ";
         $query  .=  ", `fk_witch` ";
@@ -485,5 +507,255 @@ class User
         return $wc->db->deleteQuery($query, [ 'id' => $profileId ]);
     }
     
+    
+    static function insertConnexion( WitchCase $wc, array $data, array $craftAttributeData )
+    {
+        if( empty($data['login']) || empty($data['email']) ){
+            return false;
+        }
+        
+        if( empty($craftAttributeData['table']) 
+            || empty($craftAttributeData['name'])
+            || empty($craftAttributeData['type'])
+            || empty($craftAttributeData['var']) ){
+            return false;
+        }
+        
+        $userId = $wc->user->id;
+        $params = [];
+        if( $userId )
+        {
+            $params["creator"]  = $userId;
+            $params["modifier"] = $userId;
+        }
+        
+        $params["name"]         = $data['name'] ?? $data['login'];
+        $params["email"]        = $data['email'];
+        $params["login"]        = $data['login'];
+        $params["pass_hash"]    = $data['pass_hash'] ?? "";
+        
+        $params["craft_table"]          = $craftAttributeData['table'];
+        $params["craft_attribute"]      = $craftAttributeData['type'];
+        $params["craft_attribute_var"]  = $craftAttributeData['var'];
+        $params["attribute_name"]       = $craftAttributeData['name'];
+        
+        $query = "";
+        $query .=   "INSERT INTO `user__connexion` ";
+        $query .=   "( `name`, `email`, `login`, `pass_hash`, ";
+        
+        if( $userId ){
+            $query .=   "`creator`, `modifier`, ";
+        }
+        
+        $query .=   "`craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name` ) ";
+        
+        $query .=   "VALUES ( :name ";
+        $query .=   ", :email ";
+        $query .=   ", :login ";
+        $query .=   ", :pass_hash ";
+        
+        if( $userId ){
+            $query .=   ", :creator, :modifier ";
+        }
+        
+        $query .=   ", :craft_table ";
+        $query .=   ", :craft_attribute ";
+        $query .=   ", :craft_attribute_var ";
+        $query .=   ", :attribute_name ) ";
+        
+        $newConnexionId = $wc->db->insertQuery($query, $params);
+        
+        self::insertConnexionProfilesIds( $wc, $newConnexionId, $data['profiles'] ?? [] );
+        
+        return $newConnexionId;
+    }
+    
+    
+    static function updateConnexion( WitchCase $wc, int $connexionId, array $data, array $craftAttributeData )
+    {
+        if( empty($connexionId) || empty($data) ){
+            return false;
+        }
+        
+        if( empty($craftAttributeData['table']) 
+            || empty($craftAttributeData['name'])
+            || empty($craftAttributeData['type'])
+            || empty($craftAttributeData['var']) ){
+            return false;
+        }
+        
+        $params = [];
+        foreach( ["name", "login", "email", "pass_hash"] as $field ){
+            if( isset($data[ $field ]) ){
+                $params[ $field ] = $data[ $field ];
+            }
+        }
+        
+        if( empty($params) ){
+            return false;
+        }
+        
+        $userId = $wc->user->id;
+        if( $userId ){
+            $params["modifier"] = $userId;
+        }
+        
+        $params["craft_table"]          = $craftAttributeData['table'];
+        $params["craft_attribute"]      = $craftAttributeData['type'];
+        $params["craft_attribute_var"]  = $craftAttributeData['var'];
+        $params["attribute_name"]       = $craftAttributeData['name'];
+        
+        
+        $query = "";            
+        $query  .=  "UPDATE `user__connexion` ";
+        $query  .=  "SET ";
+        
+        $separator = "";
+        foreach( array_keys($params) as $field )
+        {
+            $query  .=  $separator."`".$field."` = :".$field." ";
+            $separator = ", ";
+        }
+
+        $params['id'] = $connexionId;
+        
+        $query  .=  "WHERE `id` = :id ";
+        
+        $updateCounter = $wc->db->updateQuery($query, $params);
+        
+        $newProfilesIds = $data['profiles'] ?? [];
+        $profilesIds    = self::selectConnexionProfilesIds($wc, $connexionId);
+        
+        $updateCounter += self::deleteConnexionProfilesIds( $wc, $connexionId, array_diff($profilesIds, $newProfilesIds) );
+        $updateCounter += self::insertConnexionProfilesIds( $wc, $connexionId, array_diff($newProfilesIds, $profilesIds) );
+        
+        return $updateCounter;
+    }
+    
+    static private function selectConnexionProfilesIds( WitchCase $wc, int $connexionId ): array
+    {
+        $query = "";
+        $query  .=  "SELECT fk_profile ";
+        $query  .=  "FROM user__rel__connexion__profile ";
+        $query  .=  "WHERE fk_connexion = :fk_connexion ";
+        
+        $result = $wc->db->selectQuery($query, [ 'fk_connexion' => $connexionId ]);
+        
+        $return = [];
+        foreach( $result as $row ){
+            $return[] = $row['fk_profile'];
+        }
+        
+        return $return;
+    }
+    
+    static private function deleteConnexionProfilesIds( WitchCase $wc, int $connexionId, array $profilesIds )
+    {
+        if( empty($connexionId) ){
+            return false;
+        }
+        
+        $params = [];
+        foreach( $profilesIds as $profileId ){
+            if(is_numeric($profileId) ){
+                $params[] = [ 'fk_connexion' => $connexionId, 'fk_profile' => $profileId ];
+            }
+        }
+        
+        if( empty($params) ){
+            return 0;
+        }
+        
+        $query = "";
+        $query  .=  "DELETE FROM `user__rel__connexion__profile` ";
+        $query  .=  "WHERE `fk_connexion` = :fk_connexion ";
+        $query  .=  "AND `fk_profile` = :fk_profile ";
+        
+        return $wc->db->deleteQuery($query, $params, true);
+    }
+    
+    static private function insertConnexionProfilesIds( WitchCase $wc, int $connexionId, array $profilesIds )
+    {
+        if( empty($connexionId) ){
+            return false;
+        }
+        
+        $params = [];
+        foreach( $profilesIds as $profileId ){
+            if(is_numeric($profileId) ){
+                $params[] = [ 'fk_connexion' => $connexionId, 'fk_profile' => $profileId ];
+            }
+        }
+        
+        if( empty($params) ){
+            return 0;
+        }
+        
+        $query = "";
+        $query  .=  "INSERT INTO `user__rel__connexion__profile` ";
+        $query  .=  "( `fk_connexion`, `fk_profile`) ";
+        $query  .=  "VALUES ( :fk_connexion, :fk_profile ) ";
+        
+        return count( $wc->db->insertQuery($query, $params, true) );
+    }
+    
+    
+    static function checkEmailLoginValidity( WitchCase $wc, string $login, string $email, ?int $contentKeyId=null )
+    {
+        if( empty($login) && empty($email) ){
+            return false;
+        }
+        
+        $params = [ 'login' => $login, 'email' => $email ];
+        
+        $query = "";
+        $query  .=  "SELECT `id` ";
+        $query  .=  ", `name` ";
+        $query  .=  ", `login` ";
+        $query  .=  ", `email` ";
+        $query  .=  ", `craft_table` ";
+        $query  .=  ", `craft_attribute` ";
+        $query  .=  ", `craft_attribute_var` ";
+        $query  .=  ", `attribute_name` ";
+        $query  .=  "FROM `user__connexion` ";
+        $query  .=  "WHERE `craft_table` LIKE 'content_%' ";
+        $query  .=  "AND ( `login` = :login ";
+        $query  .=      "OR `email` = :email ) ";
+        
+        $result = $wc->db->selectQuery($query, $params);
+        
+        $loginCounter = 0;
+        $emailCounter = 0;
+        foreach( $result as $row )
+        {
+            $column =   Attribute::getColumnName($row['craft_attribute'], $row['attribute_name'], $row['craft_attribute_var']);
+            $params =   [ 'connexion_id' => $row['id'] ];
+            
+            $query = "";
+            $query  .=  "SELECT count(`id`) ";
+            $query  .=  "FROM `".$wc->db->escape_string($row['craft_table'])."` ";
+            $query  .=  "WHERE `".$wc->db->escape_string($column)."` = :connexion_id ";
+            
+            if( $contentKeyId )
+            {
+                $query              .=  "AND `id` <> :self_id ";
+                $params['self_id']  =   $contentKeyId;
+            }
+            
+            $result = $wc->db->countQuery($query, $params);
+            
+            if( $result && $login == $row['login'] ){
+                $loginCounter++; 
+            }
+            if( $result && $email == $row['email'] ){
+                $emailCounter++; 
+            }
+        }
+        
+        return [
+            'login' => $loginCounter, 
+            'email' => $emailCounter, 
+        ];
+    }
     
 }

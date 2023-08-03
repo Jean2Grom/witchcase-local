@@ -60,9 +60,15 @@
             <button class="trigger-action" 
                     data-confirm="Warning ! You are about to remove the witch whith all descendancy"
                     data-target="view-info-action"
-                    data-action="delete-witch">Delete</button>
+                    data-action="delete-witch">
+                <i class="fa fa-trash"></i>
+                Delete
+            </button>
         <?php endif; ?>
-        <button class="view-edit-info-toggle">Edit</button>
+        <button class="view-edit-info-toggle">
+            <i class="fa fa-pencil"></i>
+            Edit
+        </button>
     </div>
 </div>
 

@@ -2,25 +2,25 @@
     $this->addCssFile('basic.css');
 ?>
 <div class="content">
-    <h1>Identification</h1>
+    <h1>Login</h1>
     
     <?php include $this->getIncludeDesignFile('alerts.php'); ?>
     
     <?php if( $this->isRedirection ): ?>
-        <p>Vous devez vous identifier pour accéder à cette page.</p>
+        <p><em>Login requested</em></p>
     <?php endif; ?>
     
     <form method="POST">
-        <input type="hidden" name="login" value="login" />
+        <input type="hidden" name="action" value="login" />
         
-        <label for="username">Nom d'utilisateur ou email</label>
+        <label for="username">Username or email</label>
         <input type="text" name="username" id="username"/>
         
-        <label for="password">Mot de passe</label>
+        <label for="password">Password</label>
         <input type="password" name="password" id="password" />
         
         <button class="">
-            Se connecter
+            Sign in
         </button>
     </form>
 </div>

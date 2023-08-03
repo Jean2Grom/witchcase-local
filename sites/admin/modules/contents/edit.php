@@ -17,7 +17,7 @@ if( !$targetWitch )
 {
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Vous ne pouvez pas éditer d'élément inexistant."
+        'message'   =>  "Craft not found"
     ];
     
     $this->wc->user->addAlerts($alerts);
@@ -30,7 +30,7 @@ if( !$craft )
 {
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Vous ne pouvez pas éditer de contenu inexistant."
+        'message'   =>  "Craft not found"
     ];
     
     $this->wc->user->addAlerts($alerts);
@@ -44,7 +44,7 @@ $draft = $craft->getDraft();
 if( empty($draft) ){
     $alerts[] = [
         'level'     =>  'error',
-        'message'   =>  "Impossible de lire le brouillon"
+        'message'   =>  "Draft can't be read"
     ];
 }
 
@@ -59,21 +59,22 @@ switch( $action )
         $return     = $return ?? false;
         
         $params = [];
-        foreach( $draft->getEditParams() as $key )
+        foreach( $draft->getEditParams() as $param )
         {
-            $value = $this->wc->request->param($key);
+            $value = $this->wc->request->param($param['name'] ?? $param, 'post', $param['filter'] ??  FILTER_DEFAULT, $param['option'] ??  0 );                
+            
             if( isset($value) ){
-                $params[ $key ] = $value;
+                $params[ $param['name'] ?? $param ] = $value;
             }
         }
         
         $saved = $draft->update( $params );
-        
+
         if( $saved === false )
         {
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, modification annulée"
+                'message'   =>  "Error, update canceled"
             ];
             
             $return = false;
@@ -81,7 +82,7 @@ switch( $action )
         elseif( $saved === 0 && !$publish ){
             $alerts[] = [
                 'level'     =>  'warning',
-                'message'   =>  "Aucune modification"
+                'message'   =>  "No update"
             ];
         }
         elseif( $publish )
@@ -90,7 +91,7 @@ switch( $action )
             {
                 $alerts[] = [
                     'level'     =>  'error',
-                    'message'   =>  "Une erreur est survenue, publication annulée"
+                    'message'   =>  "Error, publication canceled"
                 ];
                 
                 $return = false;
@@ -98,14 +99,14 @@ switch( $action )
             else {
                 $alerts[] = [
                     'level'     =>  'success',
-                    'message'   =>  "Publié"
+                    'message'   =>  "Published"
                 ];                
             }
         }
         else {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Modifié"
+                'message'   =>  "Updated"
             ];
         }
         
@@ -122,14 +123,14 @@ switch( $action )
         if( !$draft->remove() ){
             $alerts[] = [
                 'level'     =>  'error',
-                'message'   =>  "Une erreur est survenue, suppression annulée",
+                'message'   =>  "Error, remove canceled",
             ];
         }
         else 
         {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Brouillon supprimé"
+                'message'   =>  "Draft removed"
             ];
             
             $this->wc->user->addAlerts($alerts);
@@ -141,5 +142,9 @@ switch( $action )
 }
 
 $cancelHref = $this->wc->website->getUrl("view?id=".$targetWitch->id);
+
+foreach( $this->wc->user->getAlerts() as $treatmentAlert ){
+    $alerts[] = $treatmentAlert;
+}
 
 $this->view();

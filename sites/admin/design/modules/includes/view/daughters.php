@@ -103,11 +103,17 @@
                 style="display: none;"
                 data-action="copy-witch"
                 data-target="view-daughters-action">Copy witch</button>
-        <button class="view-daughters__create-witch__toggle">Add Daughter</button>
+        <button class="view-daughters__create-witch__toggle">
+            <i class="fa fa-plus"></i>
+            Add Daughter
+        </button>
         <?php if( !empty($targetWitch->daughters()) ): ?>
             <button class="trigger-action" 
                     data-action="edit-priorities"
-                    data-target="view-daughters-action">Edit Priorities</button>
+                    data-target="view-daughters-action">
+                <i class="fa fa-sort-numeric-up-alt"></i>
+                Edit Priorities
+            </button>
         <?php endif; ?>
     </div>
 </div>

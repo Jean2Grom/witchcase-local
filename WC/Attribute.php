@@ -25,9 +25,13 @@ abstract class Attribute
     /** WitchCase */
     var $wc;
     
-    function __construct( WitchCase $wc, string $name, array $parameters=[] )
+    /** Craft */
+    var $craft;
+    
+    function __construct( WitchCase $wc, string $name, array $parameters=[], ?Craft $craft=null )
     {
         $this->wc                   = $wc;
+        $this->craft                = $craft;
         $this->name                 = $name;
         $this->parameters           = $parameters;
         
@@ -51,22 +55,20 @@ abstract class Attribute
         return $this;
     }
     
-    function content()
+    function content() 
     {
-        if( !is_array($this->values) ){
-            return $this->values;
-        }
-        elseif( count($this->values) == 1 ){
+        if( is_array($this->values) && count($this->values) == 1 ){
             return array_values($this->values)[0];
         }
-        else {
-            return $this->values;
-        }
+        
+        return $this->values;
     }
     
     function setValue( $key, $value )
     {
-        $this->values[ $key ] = $value;
+        if( in_array($key, array_keys($this->values) ) ){
+            $this->values[ $key ] = $value;
+        }
         
         return $this;
     }
@@ -109,18 +111,24 @@ abstract class Attribute
         return true;
     }
     
-    function save( Craft $craft )
+    function save( ?Craft $craft=null ) 
     {
+        if( $craft ){
+            $this->craft = $craft;
+        }
+        
         return 0;
     }
     
     function clone( Craft $craft )
     {
-        return clone $this;
+        $clonedAttribute        = clone $this;        
+        $clonedAttribute->craft = $craft;
+        
+        return $clonedAttribute;
     }
     
-    function delete()
-    {
+    function delete() {
         return true;
     }
     
@@ -271,22 +279,19 @@ abstract class Attribute
         return false;
     }
     
-    function getEditParams(): array
-    {
+    function getEditParams(): array {
         return array_values($this->tableColumns);
     }
     
-    function update( array $params )
-    {
+    function update( array $params ) {
         foreach( $params as $key => $value )
         {
             $data = self::splitColumn($key);
             
             if( $data['type'] == $this->type 
                 && $data['name'] == $this->name 
-                && in_array($data['element'], array_keys($this->values)) 
             ){
-                $this->values[ $data['element'] ] = $value;
+                $this->setValue( $data['element'], $value );
             }            
         }
     }

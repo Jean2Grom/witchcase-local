@@ -2,25 +2,28 @@
     $this->addCssFile('content-edit.css');
     $this->addJsFile('triggers.js');
 ?>
-<h1><?=$this->witch->name ?></h1>
+<h1>
+    <i class="fa fa-feather-alt"></i>
+    <?=$this->witch->name ?>
+</h1>
 <p><em><?=$this->witch->data?></em></p>
+    
+<?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
 <h3>[<?=$draft->structure->name ?>] <em><?=$draft->name ?></em></h3>
 <p>
     <?php if( $draft->created ): ?>
-        <em>Créé le <?=$draft->created->frenchFormat( true )?> par <?=$draft->created->actor?></em>
-        <?php if( $draft->modified && $draft->created != $draft->modified ): ?>
-            <br/> 
-            <em>Modifié le <?=$draft->modified->frenchFormat( true )?> par <?=$draft->modified->actor?></em>
-        <?php endif; ?>
-    <?php endif; ?>    
+        <em>Draft created by <?=$draft->created->actor?>: <?=$draft->created->format( \DateTimeInterface::RFC2822 )?></em>
+    <?php endif; ?>
+    <?php if( $draft->modified && $draft->created != $draft->modified ): ?>
+        <br/> 
+        <em>Draft modified by <?=$draft->modified->actor?>: <?=$draft->modified->format( \DateTimeInterface::RFC2822 )?></em>
+    <?php endif; ?>
 </p>
-    
-<?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
     <fieldset>
-        <legend>Nom</legend>
+        <legend>Craft Name</legend>
         <input type="text" name="name" value="<?=$draft->name ?>" />
     </fieldset>
     <div class="clear"></div>
@@ -37,29 +40,34 @@
         <button class="trigger-action" 
                 data-action="publish"
                 data-target="edit-action">
-            Publier
+            <i class="fa fa-check"></i>
+            Publish
         </button>
         <button class="trigger-action"
                 data-action="save-and-return"
                 data-target="edit-action">
-            Sauvegarder et Quitter
+            <i class="fa fa-share"></i>
+            Save and Quit
         </button>
         <button class="trigger-action"
                 data-action="save"
                 data-target="edit-action">
-            Sauvegarder
+            <i class="fa fa-save"></i>
+            Save
         </button>
         <button class="trigger-action"
                 data-action="delete"
                 data-target="edit-action">
-            Supprimer le brouillon
+            <i class="fa fa-trash"></i>
+            Delete draft
         </button>
     <?php endif; ?>
     
     <?php if( $cancelHref ): ?>
         <button class="trigger-href" 
                 data-href="<?=$cancelHref ?>">
-            Annuler
+            <i class="fa fa-times"></i>
+            Cancel
         </button>
     <?php endif; ?>
 </form>

@@ -50,14 +50,20 @@
         </table>
 
         <div class="box__actions">
-            <button class="view-witch-invoke__edit-witch-invoke__toggle">Edit</button>
+            <button class="view-witch-invoke__edit-witch-invoke__toggle">
+                <i class="fa fa-pencil"></i>
+                Edit
+            </button>
         </div>
     
     <?php else: ?>
         <p>No module to invoke</p>
         
         <div class="box__actions">
-            <button class="view-witch-invoke__edit-witch-invoke__toggle">Add</button>
+            <button class="view-witch-invoke__edit-witch-invoke__toggle">
+                <i class="fa fa-plus"></i>
+                Add
+            </button>
         </div>        
     <?php endif; ?>    
 </div>

@@ -3,10 +3,10 @@
 ?>
 <div class="content">
     <h1>404</h1>
-    <p>Cette page n'existe pas ou plus</p>
+    <p>Not Found</p>
     <p>
         <a href="<?=$this->wc->website->getRootUrl() ?>">
-            Retour sur la page d'accueil
+            Back Home
         </a>
     </p>
 </div>

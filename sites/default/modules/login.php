@@ -1,5 +1,5 @@
 <?php
-if( $this->wc->request->param("login") == "login" && $this->wc->user->connexion )
+if( $this->wc->request->param("action") == "login" && $this->wc->user->connexion )
 {
     header( 'Location: '.$this->wc->website->getFullUrl() );
     exit();

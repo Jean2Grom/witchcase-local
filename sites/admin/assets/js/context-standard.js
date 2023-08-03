@@ -52,7 +52,6 @@ $(document).ready(function()
     };
 
     for( let i = 0; i < tabs.length; i++ ){
-        //tabs[i].addEventListener( 'click', selectTab, {passive: false} );
         for( let anchor of tabs[i].children ){
             anchor.addEventListener( 'click', selectTab, {passive: false} );
         }
@@ -79,9 +78,4 @@ $(document).ready(function()
             return false;
         });
     }
-    
-//    $('.tabs__item__triggering').click(function(){
-//        triggerTabItem( $(this).attr('href') );
-//        return false;
-//    });    
 });

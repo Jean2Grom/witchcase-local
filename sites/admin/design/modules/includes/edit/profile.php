@@ -110,7 +110,10 @@
                     </td>
                     
                     <td>
-                        <button class="policy-witch">Choose Witch</button>
+                        <button class="policy-witch">
+                            <i class="fa fa-sitemap"></i>
+                            Choose Witch
+                        </button>
 
                         <a  style="display: none;"
                             href="<?=$this->wc->website->getUrl("/view?id=") ?>"
@@ -244,7 +247,10 @@
                         
                         <td>
                             <button <?=!empty($policy->positionId)? 'style="display: none;"': '' ?>
-                                    class="policy-witch">Choose Witch</button>
+                                    class="policy-witch">
+                                <i class="fa fa-sitemap"></i>
+                                Choose Witch
+                            </button>
                             
                             <a  <?=empty($policy->positionId)? 'style="display: none;"': '' ?>
                                 href="<?=$this->wc->website->getUrl("/view?id=".$policy->positionId) ?>"
@@ -332,8 +338,4 @@
            </button>
        </div>
    </form>
-    
-    
-    
-    
 </div>

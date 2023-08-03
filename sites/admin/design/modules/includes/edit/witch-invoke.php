@@ -111,8 +111,17 @@
     <div class="box__actions">
         <button class="trigger-action" 
                 data-target="edit-witch-invoke"
-                data-action="save-witch-invoke">Save</button>        
-        <button class="edit-invoke-reinit">Reinit Form</button>        
-        <button class="view-witch-invoke__edit-witch-invoke__toggle">Cancel</button>
+                data-action="save-witch-invoke">
+            <i class="fas fa-save"></i>
+            Save
+        </button>        
+        <button class="edit-invoke-reinit">
+            <i class="fa fa-undo"></i>
+            Reinit Form
+        </button>        
+        <button class="view-witch-invoke__edit-witch-invoke__toggle">
+            <i class="fa fa-times"></i>
+            Cancel
+        </button>
     </div>
 </div>
