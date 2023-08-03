@@ -5,6 +5,7 @@ use WC\WitchCase;
 use WC\Witch;
 use WC\Cairn;
 use WC\Craft;
+use WC\Attribute;
 
 class User
 {    
@@ -57,7 +58,7 @@ class User
         $query  .=  "WHERE ( `email`= :login OR `login`= :login ) ";
         $query  .=  "AND `user__connexion`.`craft_table` LIKE '".Craft::TYPES[0]."__%' ";
         
-        $result = $wc->db->multipleRowsQuery($query, [ 'login' => $login ]);
+        $result = $wc->db->multipleRowsQuery($query, [ 'login' => trim($login) ]);
         
         $userConnexionData = [];
         foreach( $result as $row )
@@ -65,9 +66,11 @@ class User
             $userConnexionId = $row['connexion_id'];
             if( empty($userConnexionData[ $userConnexionId ]) )
             {
-                $craftColumn =     $row['connexion_attribute_name'];
-                $craftColumn .=    '@'.$row['connexion_craft_attribute'];
-                $craftColumn .=    '#'.$row['connexion_craft_attribute_var'];
+                $craftColumn = Attribute::getColumnName(
+                    $row['connexion_craft_attribute'],  
+                    $row['connexion_attribute_name'], 
+                    $row['connexion_craft_attribute_var']
+                );
                 
                 $userConnexionData[ $userConnexionId ] = [
                     'id'            => $userConnexionId,
@@ -696,5 +699,63 @@ class User
         return count( $wc->db->insertQuery($query, $params, true) );
     }
     
+    
+    static function checkEmailLoginValidity( WitchCase $wc, string $login, string $email, ?int $contentKeyId=null )
+    {
+        if( empty($login) && empty($email) ){
+            return false;
+        }
+        
+        $params = [ 'login' => $login, 'email' => $email ];
+        
+        $query = "";
+        $query  .=  "SELECT `id` ";
+        $query  .=  ", `name` ";
+        $query  .=  ", `login` ";
+        $query  .=  ", `email` ";
+        $query  .=  ", `craft_table` ";
+        $query  .=  ", `craft_attribute` ";
+        $query  .=  ", `craft_attribute_var` ";
+        $query  .=  ", `attribute_name` ";
+        $query  .=  "FROM `user__connexion` ";
+        $query  .=  "WHERE `craft_table` LIKE 'content_%' ";
+        $query  .=  "AND ( `login` = :login ";
+        $query  .=      "OR `email` = :email ) ";
+        
+        $result = $wc->db->selectQuery($query, $params);
+        
+        $loginCounter = 0;
+        $emailCounter = 0;
+        foreach( $result as $row )
+        {
+            $column =   Attribute::getColumnName($row['craft_attribute'], $row['attribute_name'], $row['craft_attribute_var']);
+            $params =   [ 'connexion_id' => $row['id'] ];
+            
+            $query = "";
+            $query  .=  "SELECT count(`id`) ";
+            $query  .=  "FROM `".$wc->db->escape_string($row['craft_table'])."` ";
+            $query  .=  "WHERE `".$wc->db->escape_string($column)."` = :connexion_id ";
+            
+            if( $contentKeyId )
+            {
+                $query              .=  "AND `id` <> :self_id ";
+                $params['self_id']  =   $contentKeyId;
+            }
+            
+            $result = $wc->db->countQuery($query, $params);
+            
+            if( $result && $login == $row['login'] ){
+                $loginCounter++; 
+            }
+            if( $result && $email == $row['email'] ){
+                $emailCounter++; 
+            }
+        }
+        
+        return [
+            'login' => $loginCounter, 
+            'email' => $emailCounter, 
+        ];
+    }
     
 }

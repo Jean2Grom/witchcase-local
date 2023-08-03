@@ -109,8 +109,9 @@ class Craft
             
             foreach( $structure->attributes() as $attributeName => $attributeData )
             {
-                $className = $attributeData["class"];
-                $attribute = new $className( $this->wc, $attributeName );
+                $className          = $attributeData["class"];
+                $attributeParams    = [];
+                $attribute = new $className( $this->wc, $attributeName, $attributeParams, $this );
                 $attribute->set($data[ $attributeName ]);
                 
                 $this->attributes[ $attributeName ] = $attribute;
