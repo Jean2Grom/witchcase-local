@@ -1194,6 +1194,9 @@ class Witch
                 $url            = substr( $this->url, strlen($previousUrl) );
                 $destinationUrl = $urlSiteRewrite[ $this->site ] ?? $witch->getClosestUrl( $this->site );
                 $params['url']  = $destinationUrl.$url;
+                if( substr($params['url'], 0, 1) === '/' && substr($params['url'], 1, 1) === '/' ){
+                    $params['url']  = substr($params['url'], 1);
+                }
                 $urlSiteRewrite[ $this->site ] = $params['url'];
             }
         }

@@ -104,6 +104,47 @@ class WitchSummoning
             }
         }
         
+        foreach( $configuration as $witchRef => $witchRefConf ){
+            if( !empty($witchRefConf['children']) && !empty($witchRefConf['children']['depth']) )
+            {
+                $depthLimit = $wc->depth - $witches[ $witchRef ]->depth;
+                if( $witchRefConf['children']['depth'] !== '*' 
+                        && (int) $witchRefConf['children']['depth'] < $depthLimit 
+                ){
+                    $depthLimit = (int) $witchRefConf['children']['depth'];
+                }
+                
+                self::initChildren( $witches[ $witchRef ], $depthLimit );
+            }
+        }
+
+        foreach( $configuration as $witchRef => $witchRefConf ){
+            if( !empty($witchRefConf['sisters']) && !empty($witchRefConf['sisters']['depth']) )
+            {
+                $depthLimit = $wc->depth - $witches[ $witchRef ]->depth;
+                if( $witchRefConf['sisters']['depth'] !== '*' 
+                        && (int) $witchRefConf['sisters']['depth'] < $depthLimit 
+                ){
+                    $depthLimit = (int) $witchRefConf['sisters']['depth'];
+                }
+                
+                if( is_null($witches[ $witchRef ]->sisters) ){
+                    $witches[ $witchRef ]->sisters = [];
+                }
+                
+                if( !empty($witches[ $witchRef ]->mother) && !empty($witches[ $witchRef ]->mother->daughters) ){
+                    foreach( $witches[ $witchRef ]->mother->daughters as $daughterWitch )
+                    {
+                        if( $witches[ $witchRef ]->id !== $daughterWitch->id ){
+                            $witches[ $witchRef ]->addSister($daughterWitch);
+                        }
+                        self::initChildren( $daughterWitch, $depthLimit );
+                    }
+                }
+            }
+        }
+
+        
         foreach( $urlRefWiches as $urlRefWichItem ){
             if( empty($witches[ $urlRefWichItem ]) ){
                 $witches[ $urlRefWichItem ] = Witch::createFromData( $wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ] );
@@ -112,6 +153,26 @@ class WitchSummoning
         
         return $witches;
     }
+    
+    
+    private static function initChildren( Witch $witch, int $depthLimit )
+    {
+        if( $depthLimit == 0 ){
+            return;
+        }
+        
+        if( is_null($witch->daughters) ){
+            $witch->daughters = [];
+        }
+        else {
+            foreach( $witch->daughters as $daughterWitch ){
+                self::initChildren( $daughterWitch, $depthLimit-1 );
+            }
+        }
+        
+        return;
+    }
+    
     
     private static function witchesRequest( WitchCase $wc, $configuration, $userConnexionJointure=false )
     {
