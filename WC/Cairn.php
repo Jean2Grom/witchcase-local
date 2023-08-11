@@ -230,5 +230,94 @@ class Cairn
         $this->override[ $table ][ $id ]  = $craft;
         
         return $this;
-    }    
+    }
+    
+    
+    function searchFromPosition( array $position ): ?Witch
+    {
+$this->wc->debug( $position, "searchFromPosition");
+//$this->wc->debug( count($position), "murf", 2 );
+//$this->wc->debug( $this->witches, "xxx", 2 );
+        
+        foreach( $this->witches as $entry => $witch )
+        {
+            if( $witch->position == $position ){
+                return $witch;
+            }
+            elseif( count($position) > count($witch->position) )
+            {
+                /*
+$this->wc->debug( "Descendant" );
+                $descendant = true;
+                foreach( $witch->position as $level => $value ){
+                    if( $position[ $level ] != $value )
+                    {
+                        $descendant = false;
+                        break;
+                    }
+                }
+                
+                if( $descendant )
+                {
+                    $witchBuffer = $witch;
+                    for( $level=$witch->depth+1; $level <= count($position); $level++ )
+                    {
+                        if( $witchBuffer->depth >= $level ){
+                            break;
+                        }
+                        
+                        foreach( $witchBuffer->daughters as $daughter )
+                        {
+                            if( $daughter->position == $position ){
+                                return $daughter;
+                            }
+                            elseif($daughter->position[ $level ] == $position[ $level ])
+                            {
+                                $witchBuffer = $daughter;
+                                break;
+                            }
+                        }
+                    }
+                }
+                */
+            }
+            elseif( count($position) < count($witch->position) )
+            {
+$this->wc->debug( $witch->name, $entry);
+$this->wc->debug( "Ancestor" );
+$this->wc->debug( $witch->position, "Witch Position");
+            
+                
+                $ancestor = true;
+                foreach( $position as $level => $value ){
+                    if( $witch->position[ $level ] != $value )
+                    {
+                        $ancestor = false;
+                        break;
+                    }
+                }
+                
+                if( $ancestor )
+                {
+                    $witchBuffer = $witch->mother;
+                    for( $level=$witch->depth-1; $level > 0; $level-- )
+                    {
+                        if( $witchBuffer->position == $position ){
+                            return $witchBuffer;
+                        }
+                        
+                        if( !$witchBuffer->mother || $witchBuffer->mother->position[ $level ] !== $position[ $level ] ){
+                            break;
+                        }
+                        else {
+                            $witchBuffer = $witchBuffer->mother;
+                        }
+                    }
+                }                
+            }
+        }
+        
+        
+        return null;
+    }
 }
