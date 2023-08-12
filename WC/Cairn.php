@@ -235,88 +235,54 @@ class Cairn
     
     function searchFromPosition( array $position ): ?Witch
     {
-$this->wc->debug( $position, "searchFromPosition");
-//$this->wc->debug( count($position), "murf", 2 );
-//$this->wc->debug( $this->witches, "xxx", 2 );
-        
-        foreach( $this->witches as $entry => $witch )
+        foreach( $this->witches as $witch )
         {
             if( $witch->position == $position ){
                 return $witch;
             }
-            elseif( count($position) > count($witch->position) )
-            {
-                /*
-$this->wc->debug( "Descendant" );
-                $descendant = true;
-                foreach( $witch->position as $level => $value ){
-                    if( $position[ $level ] != $value )
-                    {
-                        $descendant = false;
-                        break;
-                    }
-                }
-                
-                if( $descendant )
-                {
-                    $witchBuffer = $witch;
-                    for( $level=$witch->depth+1; $level <= count($position); $level++ )
-                    {
-                        if( $witchBuffer->depth >= $level ){
-                            break;
-                        }
-                        
-                        foreach( $witchBuffer->daughters as $daughter )
-                        {
-                            if( $daughter->position == $position ){
-                                return $daughter;
-                            }
-                            elseif($daughter->position[ $level ] == $position[ $level ])
-                            {
-                                $witchBuffer = $daughter;
-                                break;
-                            }
-                        }
-                    }
-                }
-                */
-            }
-            elseif( count($position) < count($witch->position) )
-            {
-$this->wc->debug( $witch->name, $entry);
-$this->wc->debug( "Ancestor" );
-$this->wc->debug( $witch->position, "Witch Position");
             
-                
-                $ancestor = true;
-                foreach( $position as $level => $value ){
-                    if( $witch->position[ $level ] != $value )
+            $witchBuffer    = $witch;
+            $continue       = true;
+            while( $continue && $witchBuffer )
+            {
+                $continue = false;
+                foreach( $witchBuffer->position as $level => $value ){
+                    if( !isset($position[ $level ]) || $position[ $level ] != $value )
                     {
-                        $ancestor = false;
+                        $witchBuffer    = $witchBuffer->mother;
+                        $continue       = true;
                         break;
                     }
                 }
                 
-                if( $ancestor )
-                {
-                    $witchBuffer = $witch->mother;
-                    for( $level=$witch->depth-1; $level > 0; $level-- )
+                if( $witchBuffer->position == $position ){
+                    return $witchBuffer;
+                }
+                elseif( $continue ){
+                    continue;
+                }                
+                
+                foreach( $witchBuffer->daughters as $daughter ){
+                    if( $daughter->position == $position ){
+                        return $daughter;
+                    }
+                    else
                     {
-                        if( $witchBuffer->position == $position ){
-                            return $witchBuffer;
-                        }
-                        
-                        if( !$witchBuffer->mother || $witchBuffer->mother->position[ $level ] !== $position[ $level ] ){
+                        $level = $witchBuffer->depth + 1;
+                        if( $daughter->position[ $level ] == $position[ $level ] ) 
+                        {
+                            $witchBuffer    = $daughter;
+                            $continue       = true;
                             break;
                         }
-                        else {
-                            $witchBuffer = $witchBuffer->mother;
-                        }
                     }
-                }                
+                }
+                
+                if( $witchBuffer->position == $position ){
+                    return $witchBuffer;
+                }
             }
         }
-        
         
         return null;
     }

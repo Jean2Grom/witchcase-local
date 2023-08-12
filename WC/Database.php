@@ -51,6 +51,7 @@ class Database
     function selectQuery( string $query, array $bindParams=[] )
     {
         $this->wc->debug->databaseAnalysePrepare( 'SELECT' );
+        $result = $this->debugQuery( $query, $bindParams );
         $result = $this->ressource->selectQuery( $query, $bindParams );
         $this->wc->debug->databaseAnalyse( 'SELECT' );
         

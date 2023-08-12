@@ -256,23 +256,17 @@ class Witch
         
         if( is_null($this->mother) )
         {
-            $this->wc->dump( 'TODO try to locate from other witches in cairn and position', $this->name );
-            
             $motherPosition = $this->position;
-            
             unset( $motherPosition[array_key_last( $motherPosition )] );
             
-
             $mother = $this->wc->cairn->searchFromPosition($motherPosition);
             if( $mother ){
                 $this->setMother( $mother );
             }
-$this->wc->debug( $mother, "mother" );
         }
         
         if( is_null($this->mother) ){
             $this->setMother( WitchDA::fetchAncestors($this->wc, $this->id, true) );
-$this->wc->debug( $this->mother, "mother 2" );
         }
         
         return $this->mother;
