@@ -254,10 +254,18 @@ class Witch
             return false;
         }
         
-        if( is_null($this->mother) )        
+        if( is_null($this->mother) )
         {
-            $this->wc->dump( 'TODO try to locate from other witches in cairn and position', $this->name );
+            $motherPosition = $this->position;
+            unset( $motherPosition[array_key_last( $motherPosition )] );
             
+            $mother = $this->wc->cairn->searchFromPosition($motherPosition);
+            if( $mother ){
+                $this->setMother( $mother );
+            }
+        }
+        
+        if( is_null($this->mother) ){
             $this->setMother( WitchDA::fetchAncestors($this->wc, $this->id, true) );
         }
         
@@ -1194,6 +1202,9 @@ class Witch
                 $url            = substr( $this->url, strlen($previousUrl) );
                 $destinationUrl = $urlSiteRewrite[ $this->site ] ?? $witch->getClosestUrl( $this->site );
                 $params['url']  = $destinationUrl.$url;
+                if( substr($params['url'], 0, 1) === '/' && substr($params['url'], 1, 1) === '/' ){
+                    $params['url']  = substr($params['url'], 1);
+                }
                 $urlSiteRewrite[ $this->site ] = $params['url'];
             }
         }
@@ -1201,6 +1212,7 @@ class Witch
         $daughters      = $this->daughters();
         WitchDA::update($this->wc, $params, ['id' => $this->id]);
         $this->position = $newPosition;
+        $this->depth    = count( $this->position );
 
         if( !empty($daughters) ){
             foreach( $daughters as $daughterWitch )

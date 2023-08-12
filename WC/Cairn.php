@@ -230,5 +230,60 @@ class Cairn
         $this->override[ $table ][ $id ]  = $craft;
         
         return $this;
-    }    
+    }
+    
+    
+    function searchFromPosition( array $position ): ?Witch
+    {
+        foreach( $this->witches as $witch )
+        {
+            if( $witch->position == $position ){
+                return $witch;
+            }
+            
+            $witchBuffer    = $witch;
+            $continue       = true;
+            while( $continue && $witchBuffer )
+            {
+                $continue = false;
+                foreach( $witchBuffer->position as $level => $value ){
+                    if( !isset($position[ $level ]) || $position[ $level ] != $value )
+                    {
+                        $witchBuffer    = $witchBuffer->mother;
+                        $continue       = true;
+                        break;
+                    }
+                }
+                
+                if( $witchBuffer->position == $position ){
+                    return $witchBuffer;
+                }
+                elseif( $continue ){
+                    continue;
+                }                
+                
+                foreach( $witchBuffer->daughters as $daughter ){
+                    if( $daughter->position == $position ){
+                        return $daughter;
+                    }
+                    else
+                    {
+                        $level = $witchBuffer->depth + 1;
+                        if( $daughter->position[ $level ] == $position[ $level ] ) 
+                        {
+                            $witchBuffer    = $daughter;
+                            $continue       = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if( $witchBuffer->position == $position ){
+                    return $witchBuffer;
+                }
+            }
+        }
+        
+        return null;
+    }
 }

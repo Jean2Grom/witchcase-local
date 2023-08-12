@@ -386,7 +386,7 @@ class Debug
             echo "<div id=\"wc-debug\" style=\"".$styleAttribute."\">";
             
             echo "<div style=\"color: red;position: fixed;cursor: pointer\" ";
-            echo "onclick=\"closeWcDebug();\">[X]</div>";
+            echo "onclick=\"toggleWcDebug();\">[X]</div>";
             
             echo "<pre style=\"margin-top: 25px;\">";
             foreach( $this->buffer as $buffer ){
@@ -395,10 +395,12 @@ class Debug
             echo "</pre></div>";
             
             echo "<script>";
-            echo    "function closeWcDebug(){ document.getElementById('wc-debug').style.display = 'none'; } ";
+            echo    "function toggleWcDebug(){ ";
+            echo        "if( document.getElementById('wc-debug').style.display !== 'none' ){ document.getElementById('wc-debug').style.display = 'none' } ";
+            echo        "else { document.getElementById('wc-debug').style.display = 'block'; } ";
+            echo    "} ";
             echo    "document.addEventListener('keyup', (event) => { ";
-            echo        "if( event.key === 'Escape' ){ closeWcDebug(); } ";
-            echo        "else if( event.key.toLowerCase() === 'd' ){ document.getElementById('wc-debug').style.display = 'block'; } ";
+            echo        "if( event.key === 'Escape' ){ toggleWcDebug(); } ";
             echo    "}); ";
             echo "</script>";
         }

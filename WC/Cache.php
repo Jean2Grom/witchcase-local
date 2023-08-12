@@ -6,10 +6,12 @@ class Cache
     const DEFAULT_DIRECTORY     = "cache";
     const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
     const DEFAULT_DURATION      = 86400;    // 24h
+    const DEFAULT_UNIT          = "s";    // 24h
     
     var string $dir;
     var $createFolderRights;
-    var int $defaultDuration;
+    var $defaultUnit;
+    var $defaultDuration;
     var $folders = [];
     
     /** @var WitchCase */
@@ -21,15 +23,58 @@ class Cache
         
         $this->createFolderRights   = $this->wc->configuration->read('system','createFolderRights') ?? self::DEFAULT_DIR_RIGHTS;
         $this->dir                  = $this->wc->configuration->read('cache','directory') ?? self::DEFAULT_DIRECTORY;
-        $this->defaultDuration      = $this->wc->configuration->read('cache','duration') ?? self::DEFAULT_DURATION;
+        $this->defaultUnit          = $this->wc->configuration->read('cache','durationUnit') ?? self::DEFAULT_UNIT;
+        $this->defaultDuration      = self::getDuration($this->wc->configuration->read('cache','duration') ?? self::DEFAULT_DURATION, $this->defaultUnit);
         
-        foreach( $this->wc->configuration->read('cache','folders') as $cacheConf => $cacheData )
-        {
+        foreach( $this->wc->configuration->read('cache','folders') as $cacheConf => $cacheData ){
             $this->folders[ $cacheConf ] = [
                 'directory' =>  $cacheData['directory'] ?? $cacheConf,
-                'duration'  =>  $cacheData['duration'] ?? $this->defaultDuration,
+                'duration'  =>  self::getDuration($cacheData['duration'] ?? $this->defaultDuration, $cacheData['durationUnit'] ?? $this->defaultUnit),
             ];
         }
+    }
+    
+    private static function getDuration( mixed $value, string $unit )
+    {
+        if( $value === '*' ){
+            return '*';
+        }
+        
+        switch( $unit )
+        {
+            case "weeks":
+            case "week":
+            case "w":
+                $multiplier = 604800;
+            break;
+            
+            case "days":
+            case "day":
+            case "d":
+                $multiplier = 86400;
+            break;
+            
+            case "hours":
+            case "hour":
+            case "H":
+            case "h":
+                $multiplier = 3600;
+            break;
+            
+            case "minutes":
+            case "minute":
+            case "min":
+            case "i":
+                $multiplier = 60;
+            break;
+            
+            case "s":
+            default :
+                $multiplier = 1;
+            break;
+        }
+        
+        return floor( $value * $multiplier );
     }
     
     function read( string $folder, string $filebasename ): mixed
