@@ -135,7 +135,7 @@ class User
                 'craft' => true,
             ]
         ];
-                
+        
         $witches        = WitchSummoning::summon($wc, Cairn::prepareConfiguration($wc->website, $configuration) );
         
         $wc->user->connexionData    = $savedConnexionData;
