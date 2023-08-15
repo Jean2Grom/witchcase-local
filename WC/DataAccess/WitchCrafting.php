@@ -110,6 +110,124 @@ class WitchCrafting
         return $craftedData;
     }
 
+    static function readCraftData2( WitchCase $wc, array $summoningConfiguration, array $witches )
+    {
+//return $summoningConfiguration;
+        
+        $targetsToCraft = [];
+        foreach( $summoningConfiguration as $type => $typeConfiguration )
+        {
+            if( $type === 'user' ){
+                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
+            }
+            else {
+                $witchRefConfJoins = $typeConfiguration;
+            }
+            
+            foreach( $witchRefConfJoins as $witchConfKey => $witchConf )
+            {
+                $refWitch = array_keys($witchConf['entries'])[0];
+                if( empty($witches[ $refWitch ]) ){
+                    continue;
+                }
+                
+                $permission = false;
+                foreach( $witchConf['entries'] as $invoke )
+                {
+                    if( $invoke == true && $witches[ $refWitch ]->hasInvoke() ){
+                        $moduleName = $witches[ $refWitch ]->invoke;
+                    }
+                    else {
+                        $moduleName = $invoke;
+                    }
+                    
+                    if( !empty($moduleName) )
+                    {
+                        $module     = new Module( $witches[ $refWitch ], $moduleName );
+                        $permission = $witches[ $refWitch ]->isAllowed( $module );
+                    }
+                    
+                    if( $permission ){
+                        break;
+                    }
+                }
+                
+                if( !$permission ){
+                    continue;
+                }
+                
+                if( !isset($witchConf['craft']) || !empty($witchConf['craft']) )
+                {
+                    $table  = $witches[ $refWitch ]->craft_table;
+                    $fk     = (int) $witches[ $refWitch ]->craft_fk;
+
+                    if( !empty($table) && !empty($fk) )
+                    {
+                        if( empty($targetsToCraft[ $table ]) ){
+                            $targetsToCraft[ $table ] = [];
+                        }
+
+                        if( !in_array($fk, $targetsToCraft[ $table ]) ){
+                            $targetsToCraft[ $table ][] = $fk;
+                        }
+                    }
+                }
+
+                if( !empty($witchConf['parents']['craft']) ){
+                    $targetsToCraft = array_merge_recursive( 
+                        $targetsToCraft, 
+                        self::getParentsCraftData( $witches[ $refWitch ], $witchConf['parents']['craft'] )
+                    );
+
+                }
+
+                if( !empty($witchConf['sisters']['craft']) && !empty($witches[ $refWitch ]->sisters) ){
+                    foreach( $witches[ $refWitch ]->sisters as $sisterWitch ){
+                        $targetsToCraft = array_merge_recursive( 
+                            $targetsToCraft, 
+                            self::getChildrenCraftData( $sisterWitch, $witchConf['sisters']['craft'] )
+                        );
+                    }
+                }
+
+                if( !empty($witchConf['children']['craft']) ){
+                    $targetsToCraft = array_merge_recursive( 
+                        $targetsToCraft, 
+                        self::getChildrenCraftData( $witches[ $refWitch ], $witchConf['children']['craft'] )
+                    );
+                }
+            }
+        }
+        return $targetsToCraft;
+
+        $craftedData     = [];
+        foreach( $targetsToCraft as $table => $ids )
+        {
+            $craftedData[ $table ]  = [];
+            $idList                 = [];
+            
+            $cachedData = $wc->cache->read( self::CACHE_FOLDER, $table ) ?? [];
+            
+            foreach( array_unique($ids) as $id ){
+                if( isset( $cachedData[ $id ]) ){
+                    $craftedData[ $table ][ $id ] = $cachedData[ $id ];
+                }
+                else {
+                    $idList[] = $id;
+                }
+            }
+            
+            if( !empty($idList) )
+            {
+                $craftedData[ $table ]  = array_replace($craftedData[ $table ], self::craftQueryFromIds( $wc, $table, $idList ));
+                $wc->cache->create( self::CACHE_FOLDER, $table, array_replace($cachedData, $craftedData[ $table ]) );
+            }
+            $cachedData = null;
+        }
+        
+        return $craftedData;
+    }
+
     // RECURSIVE READ CRAFT DATA FUNCTIONS
     private static function getChildrenCraftData( Witch $witch, mixed $craftLevel )
     {
