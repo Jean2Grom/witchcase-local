@@ -112,8 +112,6 @@ class WitchCrafting
 
     static function readCraftData2( WitchCase $wc, array $summoningConfiguration, array $witches )
     {
-//return $summoningConfiguration;
-        
         $targetsToCraft = [];
         foreach( $summoningConfiguration as $type => $typeConfiguration )
         {
@@ -124,9 +122,10 @@ class WitchCrafting
                 $witchRefConfJoins = $typeConfiguration;
             }
             
-            foreach( $witchRefConfJoins as $witchConfKey => $witchConf )
+            foreach( $witchRefConfJoins as $witchConf )
             {
                 $refWitch = array_keys($witchConf['entries'])[0];
+                
                 if( empty($witches[ $refWitch ]) ){
                     continue;
                 }
@@ -134,16 +133,16 @@ class WitchCrafting
                 $permission = false;
                 foreach( $witchConf['entries'] as $invoke )
                 {
-                    if( $invoke == true && $witches[ $refWitch ]->hasInvoke() ){
-                        $moduleName = $witches[ $refWitch ]->invoke;
+                    if( $invoke === false ){
+                        $permission = true;
+                    }
+                    elseif( $invoke == true && $witches[ $refWitch ]->hasInvoke() )
+                    {
+                        $module     = new Module( $witches[ $refWitch ], $witches[ $refWitch ]->invoke );
+                        $permission = $witches[ $refWitch ]->isAllowed( $module );
                     }
                     else {
-                        $moduleName = $invoke;
-                    }
-                    
-                    if( !empty($moduleName) )
-                    {
-                        $module     = new Module( $witches[ $refWitch ], $moduleName );
+                        $module     = new Module( $witches[ $refWitch ], $invoke );
                         $permission = $witches[ $refWitch ]->isAllowed( $module );
                     }
                     
@@ -160,19 +159,12 @@ class WitchCrafting
                 {
                     $table  = $witches[ $refWitch ]->craft_table;
                     $fk     = (int) $witches[ $refWitch ]->craft_fk;
-
-                    if( !empty($table) && !empty($fk) )
-                    {
-                        if( empty($targetsToCraft[ $table ]) ){
-                            $targetsToCraft[ $table ] = [];
-                        }
-
-                        if( !in_array($fk, $targetsToCraft[ $table ]) ){
-                            $targetsToCraft[ $table ][] = $fk;
-                        }
+                    
+                    if( !empty($table) && !empty($fk) ){
+                        $targetsToCraft[ $table ] = array_merge($targetsToCraft[ $table ] ?? [], [$fk]);
                     }
                 }
-
+                
                 if( !empty($witchConf['parents']['craft']) ){
                     $targetsToCraft = array_merge_recursive( 
                         $targetsToCraft, 
@@ -198,8 +190,7 @@ class WitchCrafting
                 }
             }
         }
-        return $targetsToCraft;
-
+        
         $craftedData     = [];
         foreach( $targetsToCraft as $table => $ids )
         {

@@ -152,17 +152,28 @@ class Database
         $paramsValues   = [];
         
         $replaceParams  = ( count($params) > 0 && is_array( array_values($params)[0] ) )?  array_values($params)[0]: $params;
+        $replaceParamsBuffer = [];
         foreach( $replaceParams as $key => $value )
         {
-            if( str_starts_with( $key, ':' ) ){
-                $paramsKeys[] = $key;
-            }
-            else {
-                $paramsKeys[] = ':'.$key;
-            }
-            
-            $paramsValues[] = '"'.$value.'"';
+            $length                         = strlen($key);            
+            $replaceParamsBuffer[ $length ] = array_merge($replaceParamsBuffer[ $length ] ?? [], [ $key => $value ]);            
         }
+        
+        krsort($replaceParamsBuffer);
+        
+        foreach( $replaceParamsBuffer as $orderedReplaceParams ){
+            foreach( $orderedReplaceParams as $key => $value )
+            {
+                if( str_starts_with( $key, ':' ) ){
+                    $paramsKeys[] = $key;
+                }
+                else {
+                    $paramsKeys[] = ':'.$key;
+                }
+
+                $paramsValues[] = '"'.$value.'"';
+            }
+        }   
         
         $caller = debug_backtrace()[0];
         
