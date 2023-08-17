@@ -46,23 +46,24 @@ class WitchSummoning
         
         $conditions     = [];
         $urlRefWiches   = [];
-        foreach( $configuration as $witchRef => $witchRefConf )
-        {
-            if( !empty($witchRefConf['url']) )
+        foreach( $configuration["url"] as $typeConfiguration ){
+            foreach( array_keys($typeConfiguration['entries']) as $witchRef )
             {
                 $conditions[ $witchRef ] = [ 
-                    'site'  => $witchRefConf['site'],
-                    'url'   => $witchRefConf['url'],
+                    'site'  => $typeConfiguration['site'],
+                    'url'   => $typeConfiguration['url'],
                 ];
                 
                 $urlRefWiches[] = $witchRef;
             }
-            elseif( !empty($witchRefConf['id']) ){
-                $conditions[ $witchRef ] = [ 
-                    'id'    => $witchRefConf['id'], 
-                ];
+        }
+        foreach( $configuration["id"] as $typeConfiguration ){
+            foreach( array_keys($typeConfiguration['entries']) as $witchRef ){
+                $conditions[ $witchRef ] = [ 'id'  => $typeConfiguration['id'] ];
             }
-            elseif( !empty($witchRefConf['user']) && !empty($result[0]['user_craft_fk']) ){
+        }
+        if( !empty($configuration['user']) && !empty($result[0]['user_craft_fk']) ){
+            foreach( array_keys($configuration['user']['entries']) as $witchRef ){
                 $conditions[ $witchRef ] = [ 
                     'craft_table'  => $wc->user->connexionData['craft_table'], 
                     'craft_fk'     => $result[0]['user_craft_fk'], 
@@ -104,46 +105,80 @@ class WitchSummoning
             }
         }
         
-        foreach( $configuration as $witchRef => $witchRefConf ){
-            if( !empty($witchRefConf['children']) && !empty($witchRefConf['children']['depth']) )
+        foreach( $configuration as $type => $typeConfiguration )
+        {
+            if( $type === 'user' ){
+                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
+            }
+            else {
+                $witchRefConfJoins = $typeConfiguration;
+            }
+            
+            foreach( $witchRefConfJoins as $witchRefConf )
             {
-                $depthLimit = $wc->depth - $witches[ $witchRef ]->depth;
-                if( $witchRefConf['children']['depth'] !== '*' 
-                        && (int) $witchRefConf['children']['depth'] < $depthLimit 
-                ){
-                    $depthLimit = (int) $witchRefConf['children']['depth'];
+                $witchRef = array_keys($witchRefConf['entries'])[0];
+                
+                if( !isset($witches[ $witchRef ]) ){
+                    continue;
                 }
                 
-                self::initChildren( $witches[ $witchRef ], $depthLimit );
+                if( !empty($witchRefConf['children']) && !empty($witchRefConf['children']['depth']) )
+                {
+                    $depthLimit = $wc->depth - $witches[ $witchRef ]->depth;
+                    if( $witchRefConf['children']['depth'] !== '*' 
+                            && (int) $witchRefConf['children']['depth'] < $depthLimit 
+                    ){
+                        $depthLimit = (int) $witchRefConf['children']['depth'];
+                    }
+
+                    self::initChildren( $witches[ $witchRef ], $depthLimit );
+                }
             }
         }
+        
+        
+        foreach( $configuration as $type => $typeConfiguration )
+        {
+            if( $type === 'user' ){
+                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
+            }
+            else {
+                $witchRefConfJoins = $typeConfiguration;
+            }
 
-        foreach( $configuration as $witchRef => $witchRefConf ){
-            if( !empty($witchRefConf['sisters']) && !empty($witchRefConf['sisters']['depth']) )
+            foreach( $witchRefConfJoins as $witchRefConf )
             {
-                $depthLimit = $wc->depth - $witches[ $witchRef ]->depth;
-                if( $witchRefConf['sisters']['depth'] !== '*' 
-                        && (int) $witchRefConf['sisters']['depth'] < $depthLimit 
-                ){
-                    $depthLimit = (int) $witchRefConf['sisters']['depth'];
-                }
+                $witchRef = array_keys($witchRefConf['entries'])[0];
                 
-                if( is_null($witches[ $witchRef ]->sisters) ){
-                    $witches[ $witchRef ]->sisters = [];
+                if( !isset($witches[ $witchRef ]) ){
+                    continue;
                 }
-                
-                if( !empty($witches[ $witchRef ]->mother) && !empty($witches[ $witchRef ]->mother->daughters) ){
-                    foreach( $witches[ $witchRef ]->mother->daughters as $daughterWitch )
-                    {
-                        if( $witches[ $witchRef ]->id !== $daughterWitch->id ){
-                            $witches[ $witchRef ]->addSister($daughterWitch);
+
+                if( !empty($witchRefConf['sisters']) && !empty($witchRefConf['sisters']['depth']) )
+                {
+                    $depthLimit = $wc->depth - $witches[ $witchRef ]->depth;
+                    if( $witchRefConf['sisters']['depth'] !== '*' 
+                            && (int) $witchRefConf['sisters']['depth'] < $depthLimit 
+                    ){
+                        $depthLimit = (int) $witchRefConf['sisters']['depth'];
+                    }
+
+                    if( is_null($witches[ $witchRef ]->sisters) ){
+                        $witches[ $witchRef ]->sisters = [];
+                    }
+
+                    if( !empty($witches[ $witchRef ]->mother) && !empty($witches[ $witchRef ]->mother->daughters) ){
+                        foreach( $witches[ $witchRef ]->mother->daughters as $daughterWitch )
+                        {
+                            if( $witches[ $witchRef ]->id !== $daughterWitch->id ){
+                                $witches[ $witchRef ]->addSister($daughterWitch);
+                            }
+                            self::initChildren( $daughterWitch, $depthLimit );
                         }
-                        self::initChildren( $daughterWitch, $depthLimit );
                     }
                 }
             }
         }
-
         
         foreach( $urlRefWiches as $urlRefWichItem ){
             if( empty($witches[ $urlRefWichItem ]) ){
@@ -174,8 +209,10 @@ class WitchSummoning
     }
     
     
-    private static function witchesRequest( WitchCase $wc, $configuration, $userConnexionJointure=false )
+    private static function witchesRequest( WitchCase $wc, $configuration )
     {
+        $userConnexionJointure = !empty($configuration['user']) && $wc->user->connexion;
+        
         // Determine the list of fields in select part of query
         $query = "";
         $separator = "SELECT DISTINCT ";
@@ -196,93 +233,117 @@ class WitchSummoning
             $query  .= "`".$wc->user->connexionData['craft_table']."` AS `user_craft_table`, ";
         }
         
-        $refWitch = false;
-        foreach( $configuration as $witchRef => $witchRefConf ){
-            if( !empty($witchRefConf['module']) )
+        $refWitch           = false;
+        foreach( $configuration as $type => $typeConfiguration ) 
+        {
+            if( $type === 'user' ){
+                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
+            }
+            else {
+                $witchRefConfJoins = $typeConfiguration;
+            }
+            
+            foreach( $witchRefConfJoins as $witchRef => $witchRefConf )
             {
-                $query  .= "`witch` AS `ref_witch`, ";
-                $refWitch = true;
-                break;
+                if( !empty($witchRefConf['modules']) ){
+                    $query  .= "`witch` AS `ref_witch`, ";
+                    $refWitch = true;
+                    break;
+                }
+
             }
         }
         
         $query  .= "`witch` AS `w` ";
         
         $leftJoin = [];
-        foreach( $configuration as $witchRef => $witchRefConf ) 
+        foreach( $configuration as $type => $typeConfiguration ) 
         {
-            $leftJoin[ $witchRef ] = false;
-            foreach( self::RELATIONSHIPS as $relationship ){
-                if( !empty($witchRefConf[ $relationship ]) )
-                {
-                    $leftJoin[ $witchRef ] = true;
-                    break;
-                }
+            if( $type === 'user' ){
+                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
+            }
+            else {
+                $witchRefConfJoins = $typeConfiguration;
             }
             
-            if( !$leftJoin[ $witchRef ] ){
-                continue;
-            }
-            
-            $query  .= "LEFT JOIN `witch` AS `".$witchRef."` ";
-            $query  .=  "ON ( ";
-            
-            $separator = "";
-            foreach( self::RELATIONSHIPS as $relationship )
+            foreach( $witchRefConfJoins as $witchRef => $witchRefConf ) 
             {
-                if( empty($witchRefConf[ $relationship ]) ){
+                $leftJoin[ $witchRef ] = false;
+                foreach( self::RELATIONSHIPS as $relationship ){
+                    if( !empty($witchRefConf[ $relationship ]) )
+                    {
+                        $leftJoin[ $witchRef ] = true;
+                        break;
+                    }
+                }
+
+                if( !$leftJoin[ $witchRef ] ){
                     continue;
                 }
-                
-                $query .= $separator;
-                $separator = "OR ";
-                
-                $functionName   = $relationship."Jointure";
-                $params         = [$witchRef, 'w'];
-                
-                if( !empty($witchRefConf[ $relationship ]['depth']) ){
-                    $params[] = $witchRefConf[ $relationship ]['depth'];
+
+                $query  .= "LEFT JOIN `witch` AS `".$witchRef."` ";
+                $query  .=  "ON ( ";
+
+                $separator = "";
+                foreach( self::RELATIONSHIPS as $relationship )
+                {
+                    if( empty($witchRefConf[ $relationship ]) ){
+                        continue;
+                    }
+
+                    $query .= $separator;
+                    $separator = "OR ";
+
+                    $functionName   = $relationship."Jointure";
+                    $params         = [$witchRef, 'w'];
+
+                    if( !empty($witchRefConf[ $relationship ]['depth']) ){
+                        $params[] = $witchRefConf[ $relationship ]['depth'];
+                    }
+
+                    $query .= call_user_func_array([ __CLASS__, $functionName ], array_merge([$wc], $params) );
                 }
-                
-                $query .= call_user_func_array([ __CLASS__, $functionName ], array_merge([$wc], $params) );
+
+                $query  .=  ") ";            
             }
-            
-            $query  .=  ") ";            
         }
         
         $parameters = [];
         $separator = "WHERE ( ";
-        foreach( $configuration as $witchRef => $witchRefConf )
+        
+        foreach( $configuration['url'] as $witchRef => $witchRefConf )
         {
-            if( !empty($witchRefConf['url']) )
-            {
-                $parameters['site']   = $witchRefConf['site'];
-                $parameters['url']    = $witchRefConf['url'];
-                
-                $condition  =   "( %s.`site` = :site ";
-                $condition  .=  "AND %s.`url` = :url ) ";
+            $parameters[$witchRef.'_site']  = $witchRefConf['site'];
+            $parameters[$witchRef.'_url']   = $witchRefConf['url'];
+
+            $condition  =   "( %s.`site` = :".$witchRef."_site ";
+            $condition  .=  "AND %s.`url` = :".$witchRef."_url ) ";
+
+            $query      .=  $separator;
+            $separator  =   "OR ";
+            $query      .=  str_replace(' %s.', ' `w`.', $condition);
+            if( $leftJoin[ $witchRef ] ){
+                $query      .=  " OR ".str_replace(' %s.', " `".$witchRef."`.", $condition);
             }
-            elseif( !empty($witchRefConf['id']) )
+        }
+        
+        foreach( $configuration['id'] as $witchRef => $witchRefConf )
+        {
+            $parameters[ $witchRef ]    = (int) $witchRefConf['id'];
+
+            $condition  =   " %s.`id` = :".$witchRef." ";
+              
+            if( !empty($witchRefConf['modules']) && $refWitch )
             {
-                $parameterKey                   = $witchRef.'_id';
-                $parameters[ $parameterKey ]    = (int) $witchRefConf['id'];
-                
-                $condition  =   " %s.`id` = :".$parameterKey." ";
-                if( !empty($witchRefConf['module']) )
+                $innerCondition = [];
+                foreach( $witchRefConf['modules'] as $module )
                 {
-                    $parameterKey                   = $witchRef.'_module';
-                    $parameters[ $parameterKey ]    = $witchRefConf['module'];
-                    
-                    $condition  =   "( ".$condition." AND `ref_witch`.`invoke` = :".$parameterKey." ) ";
+                    $parameterKey                   = $witchRef.'_'.$module;
+                    $parameters[ $parameterKey ]    = $module;
+                    $innerCondition[]               = "`ref_witch`.`invoke` = :".$parameterKey." ";
                 }
-            }
-            elseif( !empty($witchRefConf['user']) )
-            {
-                $parameterKey                   = $witchRef.'_user_table';
-                $parameters[ $parameterKey ]    = $wc->user->connexionData['craft_table'];                
-                
-                $condition  =   "( %s.`craft_table` = :".$parameterKey." ";
-                $condition  .=  "AND %s.`craft_fk` = `user_craft_table`.`id` ) ";
+
+                $condition  =   "( ".$condition." AND ( ". join("OR ", $innerCondition)." ) ) ";
             }
             
             $query      .=  $separator;
@@ -292,6 +353,22 @@ class WitchSummoning
                 $query      .=  " OR ".str_replace(' %s.', " `".$witchRef."`.", $condition);
             }
         }
+        
+        if( $userConnexionJointure )
+        {
+            $parameters[ 'user_craft_table' ]    = $wc->user->connexionData['craft_table'];                
+
+            $condition  =   "( %s.`craft_table` = :user_craft_table ";
+            $condition  .=  "AND %s.`craft_fk` = `user_craft_table`.`id` ) ";
+            
+            $query      .=  $separator;
+            $separator  =   "OR ";
+            $query      .=  str_replace(' %s.', ' `w`.', $condition);
+            if( $leftJoin['user'] ){
+                $query      .=  " OR ".str_replace(' %s.', " `user_craft_table`.", $condition);
+            }            
+        }
+        
         $query .=  ") ";
         
         if( $refWitch )
@@ -414,24 +491,16 @@ class WitchSummoning
     }
     
     
-    
     static function summon( WitchCase $wc, $configuration )
     {
-        $userConnexionJointure = false;
-        foreach( $configuration as $refWitchName => $refWitchSummoning ){
-            if( !empty($refWitchSummoning['user']) && !$wc->user->connexion ){
-                unset($configuration[ $refWitchName ]);
-            }
-            elseif( !empty($refWitchSummoning['user']) ){
-                $userConnexionJointure = true;
-            }
-        }
-        
-        if( empty($configuration) ){
+        if( empty($configuration['id']) 
+                && empty($configuration['url'])
+                && empty($configuration['user']) 
+        ){
             return [];
         }
         
-        $result     = self::witchesRequest($wc, $configuration, $userConnexionJointure);
+        $result     = self::witchesRequest($wc, $configuration);
         
         if( $result === false ){
             return false;

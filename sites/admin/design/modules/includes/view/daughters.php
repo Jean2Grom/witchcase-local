@@ -60,7 +60,7 @@
                                         <i class="fas fa-hand-sparkles"></i>
                                     </a>
                                 <?php else: 
-                                    $url = $daughter->getUrl( null, $websitesList[ $daughter->site ] ); ?>
+                                    $url = $daughter->getUrl( null, $websitesList[ $daughter->site ] ?? null ); ?>
                                     <a target="_blank" href="<?=$url ?>" title="<?=$url ?>">
                                         <em><?='['.$daughter->site.']' ?></em>
                                         <i class="fas fa-hand-sparkles"></i>

@@ -39,7 +39,7 @@
                             <i class="fas fa-hand-sparkles"></i>
                         </a>
                     <?php else: 
-                        $url = $targetWitch->getUrl( null, $websitesList[ $targetWitch->site ] ); ?>
+                        $url = $targetWitch->getUrl( null, $websitesList[ $targetWitch->site ] ?? null ); ?>
                         <a target="_blank" href="<?=$url ?>" title="<?=$url ?>">
                             <em><?='['.$targetWitch->site.']' ?></em>
                             <i class="fas fa-hand-sparkles"></i>

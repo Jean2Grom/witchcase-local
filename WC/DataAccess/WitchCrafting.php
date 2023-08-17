@@ -19,24 +19,46 @@ class WitchCrafting
     static function readCraftData( WitchCase $wc, array $summoningConfiguration, array $witches )
     {
         $targetsToCraft = [];
-        foreach( $summoningConfiguration as $refWitch => $witchConf ){
-            if( !empty($witches[ $refWitch ]) )
+        foreach( $summoningConfiguration as $type => $typeConfiguration )
+        {
+            if( $type === 'user' ){
+                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
+            }
+            else {
+                $witchRefConfJoins = $typeConfiguration;
+            }
+            
+            foreach( $witchRefConfJoins as $witchConf )
             {
-                if( !empty($witches[ $refWitch ]->invoke) )
+                $refWitch = array_keys($witchConf['entries'])[0];
+                
+                if( empty($witches[ $refWitch ]) ){
+                    continue;
+                }
+                
+                $permission = false;
+                foreach( $witchConf['entries'] as $invoke )
                 {
-                    if( !empty($witchConf['invoke']) && is_string($witchConf['invoke']) ){
-                        $permission = $witches[ $refWitch ]
-                                            ->isAllowed( 
-                                                (new Module( $witches[ $refWitch ], $witchConf['invoke'] )) 
-                                            );
+                    if( $invoke === false ){
+                        $permission = true;
+                    }
+                    elseif( $invoke == true && $witches[ $refWitch ]->hasInvoke() )
+                    {
+                        $module     = new Module( $witches[ $refWitch ], $witches[ $refWitch ]->invoke );
+                        $permission = $witches[ $refWitch ]->isAllowed( $module );
                     }
                     else {
-                        $permission = $witches[ $refWitch ]->isAllowed();
+                        $module     = new Module( $witches[ $refWitch ], $invoke );
+                        $permission = $witches[ $refWitch ]->isAllowed( $module );
                     }
                     
-                    if( !$permission ){
-                        continue;
+                    if( $permission ){
+                        break;
                     }
+                }
+                
+                if( !$permission ){
+                    continue;
                 }
                 
                 if( !isset($witchConf['craft']) || !empty($witchConf['craft']) )
@@ -44,15 +66,8 @@ class WitchCrafting
                     $table  = $witches[ $refWitch ]->craft_table;
                     $fk     = (int) $witches[ $refWitch ]->craft_fk;
                     
-                    if( !empty($table) && !empty($fk) )
-                    {
-                        if( empty($targetsToCraft[ $table ]) ){
-                            $targetsToCraft[ $table ] = [];
-                        }
-                        
-                        if( !in_array($fk, $targetsToCraft[ $table ]) ){
-                            $targetsToCraft[ $table ][] = $fk;
-                        }
+                    if( !empty($table) && !empty($fk) ){
+                        $targetsToCraft[ $table ] = array_merge($targetsToCraft[ $table ] ?? [], [$fk]);
                     }
                 }
                 
@@ -63,7 +78,7 @@ class WitchCrafting
                     );
 
                 }
-                
+
                 if( !empty($witchConf['sisters']['craft']) && !empty($witches[ $refWitch ]->sisters) ){
                     foreach( $witches[ $refWitch ]->sisters as $sisterWitch ){
                         $targetsToCraft = array_merge_recursive( 
@@ -72,7 +87,7 @@ class WitchCrafting
                         );
                     }
                 }
-                
+
                 if( !empty($witchConf['children']['craft']) ){
                     $targetsToCraft = array_merge_recursive( 
                         $targetsToCraft, 

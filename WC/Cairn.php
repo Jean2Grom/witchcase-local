@@ -33,66 +33,215 @@ class Cairn
         $this->crafts   = [];
         $this->override = [];
         
-        $this->invokations  = [];
-        
+        $this->invokations      = [];        
         $this->configuration    = self::prepareConfiguration($this->website, $summoningConfiguration);
     }
     
     static function prepareConfiguration(  Website $website, array $rawConfiguration ): array
     {
-        $configuration = $rawConfiguration;
-        foreach( $configuration as $refWitchName => $refWitchSummoning )
+        $arboConf = function ($init, $new) {
+            if( is_array($new) )
+            {
+                $innerDepth      = 1;
+                $innerCraft = false;
+                if( is_array($init) )
+                {
+                    $innerDepth      = $init['depth'];
+                    $innerCraft = $init['craft'];
+                }
+
+                if( $innerDepth == '*' || $new['depth'] == '*' ){
+                    $innerDepth = '*';
+                }
+                elseif( !empty($new['depth']) && $new['depth'] >= $innerDepth ){
+                    $innerDepth = $new['depth'];
+                }
+
+                if( $innerCraft == '*' || $new['craft'] == '*' ){
+                    $innerCraft = '*';
+                }
+                elseif( !empty($new['craft']) && $new['craft'] >= $innerCraft ){
+                    $innerCraft = $new['craft'];
+                }
+
+                return [
+                    'depth' => $innerDepth,
+                    'craft' => $innerCraft,
+                ];
+            }
+            else {
+                return $init;
+            }
+        };
+        
+        $ids    = [];
+        $urls   = [];
+        $user   = [];        
+        foreach( $rawConfiguration as $refWitchName => $refWitchSummoning )
         {
-            $unset = false;
-            if( empty($refWitchSummoning) ){
-                $unset = true;
+            if( !empty($refWitchSummoning['id']) )
+            {
+                $index = 'id_'.$refWitchSummoning['id'];
+                
+                $entries    = [];
+                $modules    = [];
+                $craft      = $refWitchSummoning['craft'] ?? true;
+                
+                $parents    = false;
+                $sisters    = false;
+                $children   = false;
+                if( isset($ids[ $index ]) )
+                {
+                    $entries    = $ids[ $index ]['entries'];
+                    $modules    = $ids[ $index ]['modules'];
+                    $craft      = $craft || $ids[ $index ]['craft'];
+                    
+                    $parents    = $ids[ $index ]['parents'];
+                    $sisters    = $ids[ $index ]['sisters'];
+                    $children   = $ids[ $index ]['children'];
+                }
+                
+                $ids[ $index ] = [
+                    'id'        => (int) $refWitchSummoning['id'],
+                    'entries'   => array_merge($entries, [ $refWitchName => $refWitchSummoning['invoke'] ?? false ]),
+                    'modules'   => (empty($refWitchSummoning['module']) || $modules === false)? false:  array_merge($modules, [ $refWitchSummoning['module'] ]),
+                    'craft'     => $craft,
+                    'parents'   => $arboConf( $parents, $refWitchSummoning['parents'] ?? false ),
+                    'sisters'   => $arboConf( $sisters, $refWitchSummoning['sisters'] ?? false ),
+                    'children'  => $arboConf( $children, $refWitchSummoning['children'] ?? false ),
+                ];
             }
             
             if( !empty($refWitchSummoning['get']) )
             {
-                $paramValue = $website->wc->request->param($refWitchSummoning['get'], 'get');
+                $paramValue = $website->wc->request->param($refWitchSummoning['get'], 'get', FILTER_VALIDATE_INT);
                 if( $paramValue )
                 {
-                    $configuration[ $refWitchName ]['id'] = $paramValue;
-                    unset($configuration[ $refWitchName ]['get']);
-                }
-                else {
-                    $unset = true;
-                }
-            }
-            
-            if( !empty($refWitchSummoning['url']) ){
-                $configuration[ $refWitchName ] = array_replace($configuration[ $refWitchName ], $website->getUrlSearchParameters());
-            }
-                        
-            if( $unset )
-            {
-                unset($configuration[ $refWitchName ]);
-                continue;
-            }
-            
-            foreach( $refWitchSummoning as $refWitchSummoningParam => $refWitchSummoningValue ){
-                if( is_array($refWitchSummoningValue) ){
-                    foreach( $refWitchSummoningValue as $refWitchSummoningValueKey => $refWitchSummoningValueItem ){
-                        if( is_numeric($refWitchSummoningValueItem) ){
-                            $configuration[ $refWitchName ][ $refWitchSummoningParam ][ $refWitchSummoningValueKey ] = (integer) $refWitchSummoningValueItem;
-                        }
+                    $index = 'id_'.$paramValue;
+                    
+                    $entries    = [];
+                    $modules    = [];
+                    $craft      = $refWitchSummoning['craft'] ?? true;
+
+                    $parents    = false;
+                    $sisters    = false;
+                    $children   = false;
+                    if( isset($ids[ $index ]) )
+                    {
+                        $entries    = $ids[ $index ]['entries'];
+                        $modules    = $ids[ $index ]['modules'];
+                        $craft      = $craft || $ids[ $index ]['craft'];
+
+                        $parents    = $ids[ $index ]['parents'];
+                        $sisters    = $ids[ $index ]['sisters'];
+                        $children   = $ids[ $index ]['children'];
                     }
+
+                    $ids[ $index ] = [
+                        'id'        => (int) $paramValue,
+                        'entries'   => array_merge($entries, [ $refWitchName => $refWitchSummoning['invoke'] ?? false ]),
+                        'modules'   => (empty($refWitchSummoning['module']) || $modules === false)? false:  array_merge($modules, [ $refWitchSummoning['module'] ]),
+                        'craft'     => $craft,
+                        'parents'   => $arboConf( $parents, $refWitchSummoning['parents'] ?? false ),
+                        'sisters'   => $arboConf( $sisters, $refWitchSummoning['sisters'] ?? false ),
+                        'children'  => $arboConf( $children, $refWitchSummoning['children'] ?? false ),
+                    ];
                 }
+            }
+            
+            if( !empty($refWitchSummoning['url']) )
+            {
+                $urlData = $website->getUrlSearchParameters();
+                if( !empty($refWitchSummoning['site']) ){
+                    $urlData['site'] = $refWitchSummoning['site'];
+                }
+                if( is_string($refWitchSummoning['url']) ){
+                    $urlData['url'] = $refWitchSummoning['url'];
+                }
+                
+                $index = md5($urlData['site'].':'.$urlData['url']);
+                
+                $entries    = [];
+                $modules    = [];
+                $craft      = $refWitchSummoning['craft'] ?? true;
+                
+                $parents    = false;
+                $sisters    = false;
+                $children   = false;
+                if( isset($urls[ $index ]) )
+                {
+                    $entries    = $urls[ $index ]['entries'];
+                    $modules    = $urls[ $index ]['modules'];
+                    $craft      = $craft || $urls[ $index ]['craft'];
+                    
+                    $parents    = $urls[ $index ]['parents'];
+                    $sisters    = $urls[ $index ]['sisters'];
+                    $children   = $urls[ $index ]['children'];
+                }
+                
+                $urls[ $index ] = [
+                    'site'      => $urlData['site'],
+                    'url'       => $urlData['url'],
+                    'entries'   => array_merge($entries, [ $refWitchName => $refWitchSummoning['invoke'] ?? false ]),
+                    'modules'   => (empty($refWitchSummoning['module']) || $modules === false)? false:  array_merge($modules, [ $refWitchSummoning['module'] ]),
+                    'craft'     => $craft,
+                    'parents'   => $arboConf( $parents, $refWitchSummoning['parents'] ?? false ),
+                    'sisters'   => $arboConf( $sisters, $refWitchSummoning['sisters'] ?? false ),
+                    'children'  => $arboConf( $children, $refWitchSummoning['children'] ?? false ),
+                ];
+            }
+            
+            if( !empty($refWitchSummoning['user']) )
+            {
+                $entries    = [];
+                $modules    = [];
+                $craft      = $refWitchSummoning['craft'] ?? true;
+                
+                $parents    = false;
+                $sisters    = false;
+                $children   = false;
+                if( !empty($user) )
+                {
+                    $entries    = $user['entries'];
+                    $modules    = $user['modules'];
+                    $craft      = $craft || $user['craft'];
+                    
+                    $parents    = $user['parents'];
+                    $sisters    = $user['sisters'];
+                    $children   = $user['children'];
+                }
+                
+                $user = [
+                    'entries'   => array_merge($entries, [ $refWitchName => $refWitchSummoning['invoke'] ?? false ]),
+                    'modules'   => (empty($refWitchSummoning['module']) || $modules === false)? false:  array_merge($modules, [ $refWitchSummoning['module'] ]),
+                    'craft'     => $craft ,
+                    'parents'   => $arboConf( $parents, $refWitchSummoning['parents'] ?? false ),
+                    'sisters'   => $arboConf( $sisters, $refWitchSummoning['sisters'] ?? false ),
+                    'children'  => $arboConf( $children, $refWitchSummoning['children'] ?? false ),
+                ];
             }
         }
         
-        foreach( $configuration as $refWitchName => $refWitchSummoning ){
-            if( !empty($refWitchSummoning['sisters']) && empty($refWitchSummoning['parents']) ){
-                $configuration[ $refWitchName ]['parents'] = [
-                    "depth" => 1,
-                    "craft" => false
-                ];
+        $configuration = [
+            'id'    => $ids,
+            'url'   => $urls,
+            'user'  => $user,
+        ];
+        
+        foreach( $configuration as $type => $typeConfiguration ){
+            foreach( $typeConfiguration as $refWitchName => $refWitchSummoning ){
+                if( !empty($refWitchSummoning['sisters']) && empty($refWitchSummoning['parents']) ){
+                    $configuration[ $type ][ $refWitchName ]['parents'] = [
+                        "depth" => 1,
+                        "craft" => false
+                    ];
+                }
             }
         }
         
         return $configuration;
     }
+    
     
     function summon()
     {
@@ -103,18 +252,28 @@ class Cairn
     
     function sabbath()
     {
-        foreach( $this->configuration as $refWitch => $witchConf ){
-            if( $this->witch( $refWitch ) )
-            {
-                if( empty($witchConf['invoke']) ){
-                    continue;
-                }
-                
-                if( is_string($witchConf['invoke']) ){
-                    $this->invokations[ $refWitch ] = $this->witch($refWitch)->invoke( $witchConf['invoke'] );
-                }
-                else {
-                    $this->invokations[ $refWitch ] = $this->witch($refWitch)->invoke();
+        foreach( $this->configuration as $type => $typeConfiguration )
+        {
+            if( $type === 'user' ){
+                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
+            }
+            else {
+                $witchRefConfJoins = $typeConfiguration;
+            }
+            
+            foreach( $witchRefConfJoins as $witchConf ){
+                foreach( $witchConf['entries'] as $refWitch => $invoke ){
+                    if( $this->witch( $refWitch ) ){
+                        if( empty($invoke) ){
+                            continue;
+                        }
+                        elseif( is_string($invoke) ){
+                            $this->invokations[ $refWitch ] = $this->witch( $refWitch )->invoke( $invoke );
+                        }
+                        else {
+                            $this->invokations[ $refWitch ] = $this->witch( $refWitch )->invoke();
+                        }
+                    }
                 }
             }
         }
