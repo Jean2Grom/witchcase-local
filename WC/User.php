@@ -108,7 +108,7 @@ class User
             $this->name     = $this->wc->configuration->read('system', 'publicUser') ?? "Public";
             $publicProfile  = $this->wc->configuration->read('system', 'publicUserProfile') ?? 'public';
             
-            $getPublicProfileData = UserDA::getPublicProfileData($wc, $publicProfile);
+            $getPublicProfileData = UserDA::getPublicProfileData( $wc, $publicProfile );
 
             $this->profiles = $getPublicProfileData['profiles'];
             $this->policies = $getPublicProfileData['policies'];
@@ -134,7 +134,7 @@ class User
         }
     }
     
-    function connectTo( $login )
+    function connectTo( string $login )
     {
         $userConnexionData = UserDA::getUserLoginData( $this->wc, $login );
         

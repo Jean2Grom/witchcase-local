@@ -9,7 +9,7 @@ use WC\Attribute;
 
 class User
 {    
-    static function getUserLoginData( WitchCase $wc, string $login )
+    static function getUserLoginData( WitchCase $wc, string $login, ?string $site=null  )
     {
         if( empty($login) ){
             return [];
@@ -58,7 +58,14 @@ class User
         $query  .=  "WHERE ( `email`= :login OR `login`= :login ) ";
         $query  .=  "AND `user__connexion`.`craft_table` LIKE '".Craft::TYPES[0]."__%' ";
         
-        $result = $wc->db->multipleRowsQuery($query, [ 'login' => trim($login) ]);
+        $query  .=  "AND ( `profile`.`site` = :site ";
+        $query  .=      "OR `profile`.`site` = '*' ";
+        $query  .=  ") ";
+        
+        $result = $wc->db->multipleRowsQuery($query, [ 
+            'login' => trim($login),
+            'site'  => $site ?? $wc->website->site,
+        ]);
         
         $userConnexionData = [];
         foreach( $result as $row )
@@ -121,7 +128,7 @@ class User
         return $userConnexionData;
     }
     
-    static function getUserWitchFromConnexionData( WitchCase $wc, $connexionData) 
+    static function getUserWitchFromConnexionData( WitchCase $wc, $connexionData ) 
     {
         $savedConnexionData     = $wc->user->connexionData ?? [];
         $savedConnexionValue    = $wc->user->connexion ?? false;
@@ -145,7 +152,7 @@ class User
     }
     
     
-    static function getPublicProfileData(  WitchCase $wc, string $profile )
+    static function getPublicProfileData(  WitchCase $wc, string $profile, ?string $site=null )
     {
         $query = "";
         $query  .=  "SELECT `user__profile`.`id` AS `profile_id` ";
@@ -169,9 +176,15 @@ class User
         $query  .=      "ON `witch`.`id` = `policy`.`fk_witch` ";
         
         $query  .=  "WHERE `user__profile`.`name` = :profile ";
+        $query  .=  "AND ( `user__profile`.`site` = :site ";
+        $query  .=      "OR `user__profile`.`site` = '*' ";
+        $query  .=  ") ";
         
-        $result = $wc->db->multipleRowsQuery($query, [ 'profile' => $profile ]);
-
+        $result = $wc->db->multipleRowsQuery($query, [ 
+            'profile'   => $profile, 
+            'site'      => $site ?? $wc->website->site,
+        ]);
+        
         $profiles   = [];
         $policies   = [];
         foreach( $result as $row )
@@ -197,7 +210,7 @@ class User
 
                 $policies[ $row['policy_id'] ] = [
                     'module'            => $row['policy_module'],
-                    'status'            => $row['policy_status'],
+                    'status'            => $row['policy_status'] ?? '*',
                     'custom_limitation' => $row['policy_custom_limitation'],
                     'position'          => $position,
                     'position_rules'    => [
@@ -308,7 +321,7 @@ class User
                 $profilesData[ $userProfileId ]['policies'][ $userPolicyId ] = [
                     'id'                =>  $userPolicyId,
                     'module'            => $row['policy_module'],
-                    'status'            => $row['policy_status'],
+                    'status'            => $row['policy_status'] ?? '*',
                     'custom_limitation' => $row['policy_custom_limitation'],
                     'position'          => $position,
                     'position_rules'    => [
@@ -377,7 +390,7 @@ class User
                     $policyParams['module'] = $policyFieldValue;
                 }
                 elseif( $policyField == 'status' ){
-                    $policyParams[ 'status' ] = ($policyFieldValue  != '*')? $policyFieldValue: null;
+                    $policyParams[ 'status' ] = ($policyFieldValue != '*')? $policyFieldValue: null;
                 }
                 elseif( $policyField == 'witch' ){
                     $policyParams['fk_witch'] = $policyFieldValue;

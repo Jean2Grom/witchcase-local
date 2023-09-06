@@ -38,8 +38,8 @@ class Module
         $websiteModuleConfig = $this->wc->website->get("modules");
         
         $this->config = array_replace_recursive( 
-                            $websiteModuleConfig['*'] ?? [], 
-                            $websiteModuleConfig[ $this->name ] ?? [] 
+                            $websiteModuleConfig['*'] ?? [],
+                            $websiteModuleConfig[ $this->name ] ?? []
                         );
         
         $this->maxStatus = 0;
