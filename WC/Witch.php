@@ -22,7 +22,6 @@ class Witch
         "invoke",
         "craft_table",
         "craft_fk",
-        "ext_id",
         "is_main",
         "context",
         "datetime",
@@ -754,14 +753,17 @@ class Witch
             $suffix = substr($bufferElement, -1) == '-'? '-': '';
             
             $urlPart = $prefix.self::cleanupString( $bufferElement ).$suffix;
+            if( !empty($url) ){
+                $url .= "/";
+            }
             if( !empty($bufferElement) ){
-                $url .= "/".$urlPart;
+                $url .= $urlPart;
             }
         }
         
-        if( empty($url) ){
+        /*if( empty($url) ){
             $url = '/';
-        }
+        }*/
         
         return $url;
     }
