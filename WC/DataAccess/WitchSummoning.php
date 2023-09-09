@@ -116,6 +116,10 @@ class WitchSummoning
             
             foreach( $witchRefConfJoins as $witchRefConf )
             {
+                if( empty($witchRefConf['entries']) ){
+                    continue;                    
+                }
+                
                 $witchRef = array_keys($witchRefConf['entries'])[0];
                 
                 if( !isset($witches[ $witchRef ]) ){
@@ -148,6 +152,10 @@ class WitchSummoning
 
             foreach( $witchRefConfJoins as $witchRefConf )
             {
+                if( empty($witchRefConf['entries']) ){
+                    continue;                
+                }
+                
                 $witchRef = array_keys($witchRefConf['entries'])[0];
                 
                 if( !isset($witches[ $witchRef ]) ){

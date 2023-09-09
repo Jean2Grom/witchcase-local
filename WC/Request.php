@@ -101,7 +101,7 @@ class Request
         return $this->website;
     }
     
-    function getFullUrl( string $urlPath='', Website $website=null )
+    function getFullUrl( string $urlPath='', ?Website $website=null )
     {
         if( !$website ){
             $website = $this->website;
