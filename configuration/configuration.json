@@ -1,0 +1,107 @@
+{
+    "database": {
+        "driver": "mysql",
+        "server": "<WC_DB_SERVER>",
+        "database": "<WC_DB_NAME>",
+        "user": "<WC_DB_USER>",
+        "password": "<WC_DB_PWD>",
+        "port": "",
+        "charset": "utf8mb4"
+    },
+    "cache": {
+        "directory": "cache",
+        "duration": 1,
+        "durationUnit": "h",
+        "folders": {
+            "system": {
+                "duration": 10,
+                "durationUnit": "min"
+            },
+            "structure": {
+                "directory": "structures",
+                "durationUnit": "week",
+                "duration": 1.5
+            },
+            "contexts": {
+                "duration": "*"
+            }
+        }
+    },
+    "system": {
+        "debug": [
+            "127.0.0.1",
+            "78.202.60.186"
+        ],
+        "createFolderRights": "755",
+        "maxLog": "10000000",        
+        "publicUser": "anonymous",
+        "publicUserProfile": "public"
+    },
+    "global": {
+        "modules": {
+            "*": {
+                "notAllowed": "403"
+            },
+            "view": {
+                "notAllowed": "login"
+            },
+            "login": {
+                "public": true
+            },
+            "404": {
+                "public": true
+            },
+            "403": {
+                "public": true
+            }
+        },
+        "attributes": [
+            "string",
+            "text",
+            "link",
+            "links",
+            "connexion",
+            "image",
+            "images",
+            "file",
+            "files"
+        ],
+        "status": {
+            "0": "public",
+            "1": "subscribers",
+            "2": "customers",
+            "3": "suspended",
+            "4": "hidden",
+            "5": "draft",
+            "6": "pending",
+            "7": "archived",
+            "8": "edito",
+            "9": "admin"
+        },
+        "witches": {
+            "current": {
+                "url": true, 
+                "invoke": true,
+                "craft": true,
+                "parents": {
+                    "depth": "*",
+                    "craft": false
+                },
+                "sisters": {
+                    "depth": 1,
+                    "craft": false
+                },
+                "children": {
+                    "depth": 1,
+                    "craft": false
+                }
+            },
+            "user": {
+                "user": true
+            }
+        },
+        "extensions": [
+            "test"
+        ]
+    }
+}
