@@ -138,7 +138,8 @@ CREATE TABLE `user__policy` (
 INSERT INTO `user__policy` (`id`, `fk_profile`, `module`, `status`, `fk_witch`, `position_ancestors`, `position_included`, `position_descendants`, `custom_limitation`) VALUES
 (1, 1, '*', NULL, NULL, 0, 0, 0, ''),
 (2, 2, '404', NULL, NULL, 0, 0, 0, ''),
-(3, 2, '403', NULL, NULL, 0, 0, 0, '');
+(3, 2, '403', NULL, NULL, 0, 0, 0, ''),
+(4, 2, 'login', NULL, NULL, 0, 0, 0, '');
 
 -- --------------------------------------------------------
 
@@ -300,7 +301,7 @@ ALTER TABLE `user__connexion`
 -- AUTO_INCREMENT pour la table `user__policy`
 --
 ALTER TABLE `user__policy`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `user__profile`

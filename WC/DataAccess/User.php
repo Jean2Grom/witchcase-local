@@ -383,7 +383,14 @@ class User
         $params = [];
         foreach( $data as $policyData )
         {
-            $policyParams = [ 'profile_id' => $profileId ];
+            $policyParams = [ 
+                'profile_id'            => $profileId,
+                'fk_witch'              => null,
+                'position_ancestors'    => 0,
+                'position_included'     => 0,
+                'position_descendants'  => 0,
+                'custom_limitation'     => null,
+            ];
             foreach( $policyData as $policyField => $policyFieldValue )
             {
                 if( $policyField == 'module' ){
@@ -392,7 +399,7 @@ class User
                 elseif( $policyField == 'status' ){
                     $policyParams[ 'status' ] = ($policyFieldValue != '*')? $policyFieldValue: null;
                 }
-                elseif( $policyField == 'witch' ){
+                elseif( $policyField == 'witch' && is_numeric($policyFieldValue) ){
                     $policyParams['fk_witch'] = $policyFieldValue;
                 }
                 elseif( $policyField == 'custom' ){
