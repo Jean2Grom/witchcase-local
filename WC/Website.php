@@ -172,8 +172,20 @@ class Website
             return $filePath;
         }
         
-        return false;
+        return null;
     }
+    
+    
+    function getWebPath( string $filename ): ?string
+    {
+        $filePath = $this->wc->website->getFilePath( $filename );
+        
+        if( $filePath ){
+            return '/'.$filePath;
+        }
+        
+        return null;
+    }    
     
     function listModules()
     {

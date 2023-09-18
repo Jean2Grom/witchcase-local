@@ -2,7 +2,7 @@
 namespace WC\Attribute;
 
 use WC\Attribute;
-use WC\WitchCase;
+
 
 class LinkAttribute extends Attribute 
 {
@@ -14,40 +14,38 @@ class LinkAttribute extends Attribute
     ];
     const PARAMETERS        = [];
     
-    
-    function __construct( WitchCase $wc, string $attributeName, array $params=[] )
+    function content( ?string $element=null  )
     {
-        parent::__construct( $wc, $attributeName, $params );
-        
-        $this->values = [
-            "href"      =>  "",
-            "text"      =>  "",
-            "external"  =>  1,
-        ];
-    }
-    
-    function content()
-    {
-        if( !empty($this->values['href']) )
-        {
-            $content         = [];
-            $content['href'] = $this->values['href'];
-            
-            if( !empty($this->values['text']) )
-            {   $content['text'] = $this->values['text'];   }
-            else
-            {   $content['text'] = $content['href'];    }
-            
-            if( $this->values['external'] )
-            {   $content['external'] = true;    }
-            else 
-            {   $content['external'] = false;   }
-            
-            return $content;
+        if( empty($this->values['href']) ){
+            return null;
         }
-        else
-        {   return false;   }
-    }
+        
+        $content         = [];
+        
+        if( is_null($element) || $element == 'text' ){
+            if( !empty($this->values['text']) ){
+                $content['text'] = $this->values['text'];
+            }
+            else {
+                $content['text'] = $content['href'];
+            }
+        }
 
-    
+        if( is_null($element) || $element == 'external' ){
+            if( $this->values['external'] ){
+                $content['external'] = true;
+            }
+            else {
+                $content['external'] = false;
+            }
+        }
+        
+        $content['href'] = $this->values['href'];
+        
+        if(is_null($element) ){
+            return $content;            
+        }
+        
+        return $content[ $element ] ?? null;
+    }
 }

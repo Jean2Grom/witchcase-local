@@ -55,13 +55,19 @@ abstract class Attribute
         return $this;
     }
     
-    function content() 
+    function content( ?string $element=null ) 
     {
-        if( is_array($this->values) && count($this->values) == 1 ){
-            return array_values($this->values)[0];
+        if( is_null($element) )
+        {
+            if( is_array($this->values) && count($this->values) == 1 ){
+                return array_values($this->values)[0];
+            }
+
+            return $this->values;
         }
         
-        return $this->values;
+        return $this->values[ $element ] ?? null;
+        
     }
     
     function setValue( $key, $value )

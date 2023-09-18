@@ -90,36 +90,39 @@ class ImageAttribute extends Attribute
         return true;
     }
     
-    function content()
+    function content( ?string $element=null )
     {
+        if( empty($this->values['file']) ){
+            return null;
+        }
+        
         $filepath   = $this->getImageFile($this->values['file']);
         
-        if( $filepath )
-        {
-            $content         = [];
-            $content['file'] = $filepath;
-            
-            if( !empty($this->values['title']) ){
-                $content['title'] = $this->values['title'];
-            }
-            else {
-                $content['title'] = substr( $this->values['file'], 
-                                            0, 
-                                            strrpos($this->values['file'], ".") - strlen($this->values['file']) );
-            }
-            
-            if( isset($this->values['link']) ){
-                $content['link'] = $this->values['link'];
-            }
-            else {
-                $content['link'] = false;
-            }
-            
-            return $content;
-        }
-        else {
+        if( !$filepath ){
             return false;
         }
+        
+        if( $element == "file" || $element == "src" ){
+            return $filepath;
+        }
+        
+        $content         = [];
+        $content['file'] = $filepath;
+
+        if( !empty($this->values['title']) ){
+            $content['title'] = $this->values['title'];
+        }
+        else {
+            $content['title'] = substr( $this->values['file'], 
+                                        0, 
+                                        strrpos($this->values['file'], ".") - strlen($this->values['file']) );
+        }
+        
+        if( is_null($element) ){
+            return $content;
+        }
+        
+        return $content[ $element ] ?? null;
     }
     
     function getImageFile()

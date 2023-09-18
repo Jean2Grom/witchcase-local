@@ -138,8 +138,7 @@ class Craft
         return new $className( $wc, $structure, $data );
     }
     
-    function attribute( string $attributeName ): ?Attribute
-    {
+    function attribute( string $attributeName ): ?Attribute {
         return $this->attributes[ $attributeName ] ?? null;
     }
     

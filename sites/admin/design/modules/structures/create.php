@@ -55,7 +55,7 @@
             value="Créer" 
             name="createButton" 
             class="button" />
-    <a href="<?=$baseUri?>">
+    <a href="<?=$this->witch->getUrl()?>">
         <input  type="button" 
                 title="Retourner à la liste des structures" 
                 value="Annuler" 

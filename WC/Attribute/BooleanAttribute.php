@@ -11,10 +11,14 @@ class BooleanAttribute extends Attribute
     ];
     const PARAMETERS        = [];
         
-    function content()
+    function content( ?string $element=null )
     {
+        if( !is_null($element) && $element !== 'value' ){
+            return false;
+        }
+        
         if( is_null($this->values['value']) ){
-            return NULL;
+            return null;
         }
         
         return (boolean) $this->values['value'];

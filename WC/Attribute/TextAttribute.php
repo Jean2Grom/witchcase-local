@@ -11,13 +11,4 @@ class TextAttribute extends Attribute
     ];
     const PARAMETERS        = [];
     
-    function content()
-    {
-        if( $this->values['value'] ){
-            return $this->values['value'];
-        }
-        else {
-            return false;
-        }
-    }
 }

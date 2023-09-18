@@ -132,7 +132,11 @@ class Module
     }
     
     function getImageFile( $filename ){
-        return $this->wc->website->context->getImageFile( $filename );
+        return $this->wc->website->context->imageSrc( $filename );
+    }
+    
+    function image( string $filename ): ?string {
+        return $this->wc->website->context->imageSrc( $filename );
     }
     
     function addCssFile( $cssFile ){
