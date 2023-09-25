@@ -677,15 +677,14 @@ class Witch
             else {
                 $rootUrl    = ""; 
             }
-            
+                        
             $witchName  = !empty($name)? $name: $this->name;
             $urlArray   = [];
             
             if( empty($rootUrl) ){
-                $urlArray[] = '/';
+                $urlArray[] = '';
             }
-            
-            if( substr($rootUrl, -1) != '/' ){
+            else {
                 $rootUrl .= '/';
             }
             
@@ -695,21 +694,20 @@ class Witch
         elseif( !empty($site) && !empty($url) ){
             $urlArray = [ self::urlCleanupString($url) ];
         }
-        
+            
         if( !empty($urlArray) ){
             $url = $this->checkUrls($site, $urlArray);
         }            
         
-        if( !empty($site) && !empty($url) )
+        if( empty($site) || is_null($url) )
+        {
+            $params['site'] = null;
+            $params['url']  = null;
+        }
+        else
         {
             $params['site'] = $site;
             $params['url']  = $url;
-        }
-        elseif( (isset( $params['site'] ) && empty( $params['site'] ))
-                || (isset( $params['url'] ) && empty( $params['url'] ))
-        ){
-            $params['site'] = null;
-            $params['url']  = null;
         }
         
         if( empty($params) ){
@@ -822,10 +820,9 @@ class Witch
             
             $urlArray   = [];
             if( empty($rootUrl) ){
-                $urlArray[] = '/';
+                $urlArray[] = '';
             }
-            
-            if( substr($rootUrl, -1) != '/' ){
+            else {
                 $rootUrl .= '/';
             }
             

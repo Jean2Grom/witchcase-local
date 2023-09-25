@@ -213,5 +213,4 @@ class Module
         
         return $this->wc->website->context->addArrayItems( $arrayName, $value );
     }
-        
 }

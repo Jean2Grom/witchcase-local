@@ -5,7 +5,7 @@ $this->module->addCssFile('imageAttributeView.css');
 
 <? foreach( $values as $i => $value ) { ?>
     <? if( $i > 0 ) { ?>
-        <hr class="imageAttributeDelimiter" />
+        <hr class="attribute-image-delimiter" />
     <? } ?>
     <p>
         <img src="<?=$value['file']?>" class="imageAttributeView" />

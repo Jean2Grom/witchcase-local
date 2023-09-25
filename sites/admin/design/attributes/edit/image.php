@@ -3,15 +3,11 @@
         <h2>Fichier image actuel</h2>
         
         <img src="<?=$srcFile?>" 
-             height="100" />
-        <input  type="submit"
-                class="deleteImage"
-                style=" background:url(<?=$this->wc->website->context->getImageFile('disconnect.png')?>) no-repeat;
-                        width: 16px;
-                        height: 16px;
-                        border: none;
-                        font-size: 0;"
-                value="<?=$this->name.'@'.$this->type.'#filedelete'?>" />
+             height="150" />
+        
+        <a class="deleteImage" value="<?=$this->name.'@'.$this->type.'#filedelete'?>" >
+            <i class="fa fa-times"></i>
+        </a>
     </div>
 <?php endif; ?>
     
