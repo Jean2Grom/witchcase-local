@@ -1,10 +1,9 @@
 <?php
 namespace WC\Attribute;
 
-use WC\Attribute;
 use WC\Datatype\ExtendedDateTime;
 
-class DatetimeAttribute extends Attribute 
+class DatetimeAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "datetime";
     const ELEMENTS          = [

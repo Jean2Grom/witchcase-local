@@ -1,10 +1,7 @@
 <?php
 namespace WC\Attribute;
 
-use WC\Attribute;
-use WC\WitchCase;
-
-class ImageAttribute extends Attribute 
+class ImageAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "image";
     const ELEMENTS          = [
@@ -15,7 +12,7 @@ class ImageAttribute extends Attribute
  
     var $directory;
     
-    function __construct( WitchCase $wc, string $attributeName, array $params=[] )
+    function __construct( \WC\WitchCase $wc, string $attributeName, array $params=[] )
     {
         parent::__construct( $wc, $attributeName, $params );
         

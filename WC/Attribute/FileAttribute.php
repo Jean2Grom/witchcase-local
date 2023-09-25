@@ -1,10 +1,7 @@
 <?php
 namespace WC\Attribute;
 
-use WC\Attribute;
-use WC\WitchCase;
-
-class FileAttribute extends Attribute 
+class FileAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "file";
     const ELEMENTS          = [
@@ -14,7 +11,7 @@ class FileAttribute extends Attribute
     const PARAMETERS        = [];
     
     
-    function __construct( WitchCase $wc, string $attributeName, array $params=[] )
+    function __construct( \WC\WitchCase $wc, string $attributeName, array $params=[] )
     {
         parent::__construct( $wc, $attributeName, $params );
         

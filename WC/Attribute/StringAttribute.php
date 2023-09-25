@@ -1,10 +1,8 @@
 <?php
 namespace WC\Attribute;
 
-use WC\Attribute;
-//use WC\WitchCase;
 
-class StringAttribute extends Attribute 
+class StringAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "string";
     const ELEMENTS          = [

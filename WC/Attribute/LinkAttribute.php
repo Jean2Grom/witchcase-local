@@ -1,10 +1,7 @@
 <?php
 namespace WC\Attribute;
 
-use WC\Attribute;
-
-
-class LinkAttribute extends Attribute 
+class LinkAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "link";
     const ELEMENTS          = [
