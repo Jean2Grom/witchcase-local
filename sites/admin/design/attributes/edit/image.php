@@ -1,6 +1,6 @@
 <?php if( $srcFile ): ?>
     <div class="current-image-display">
-        <h2>Fichier image actuel</h2>
+        <h2>Current image</h2>
         
         <img src="<?=$srcFile?>" 
              height="150" />
@@ -12,7 +12,7 @@
 <?php endif; ?>
     
 <p>
-    <h2>Sélectionner fichier image</h2>
+    <h2>Browse image file</h2>
     
     <input  type="file" 
             class="changeImage"
@@ -25,7 +25,7 @@
 </p>
 
 <p>
-    <h2>Légende de l'image</h2>
+    <h2>Caption</h2>
     <input  type="text" 
             name="<?=$this->name.'@'.$this->type.'#title'?>"
             value="<?=$this->values['title']?>" />

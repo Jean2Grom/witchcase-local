@@ -6,5 +6,5 @@
         <strong><?=$this->values['title']?></strong>
     </p>
 <?php else: ?>
-    Pas d'image
+    No image
 <?php endif; ?>
