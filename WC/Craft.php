@@ -133,7 +133,7 @@ class Craft
     
     static function factory( WitchCase $wc, Structure $structure, array $data=null )
     {
-        $className  = "WC\\Craft\\". ucfirst($structure->type);
+        $className  = __CLASS__."\\".ucfirst($structure->type);
         
         return new $className( $wc, $structure, $data );
     }
@@ -379,5 +379,13 @@ class Craft
         $craftData      = WitchCrafting::getCraftDataFromIds($this->wc, $draftStructure->table, $this->getRelatedCraftsIds(Draft::TYPE) );
         
         return Craft::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
+    }
+    
+    function type(): string {
+        return static::TYPE;
+    }
+    
+    function structure(): string {
+        return $this->structure->name;
     }
 }

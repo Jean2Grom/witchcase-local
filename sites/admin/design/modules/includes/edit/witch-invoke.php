@@ -39,7 +39,6 @@
                 <select name="witch-invoke[<?=$site ?>]" 
                         id="witch-invoke-<?=$site ?>"                                           
                         data-init="<?=$targetWitch->invoke ?>">
-                    <option value="">No module</option>
                     <?php foreach( $website->listModules() as $moduleItem ): ?>
                         <option <?=($targetWitch->invoke === $moduleItem)? 'selected': '' ?>
                                 value="<?=$moduleItem ?>"><?=$moduleItem ?></option>

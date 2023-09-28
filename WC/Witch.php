@@ -664,61 +664,78 @@ class Witch
             }
         }
         
-        $name   = trim($params['name'] ?? "");
-        $site   = trim($params['site'] ?? "");
-        $url    = trim($params['url'] ?? "");
-        
-        // Generate URL
-        if( !empty($site) && empty($url) )
-        {
-            if( $this->mother() ){
-                $rootUrl    = $this->mother()->getClosestUrl( $site );
-            }
-            else {
-                $rootUrl    = ""; 
-            }
-                        
-            $witchName  = !empty($name)? $name: $this->name;
-            $urlArray   = [];
-            
-            if( empty($rootUrl) ){
-                $urlArray[] = '';
-            }
-            else {
-                $rootUrl .= '/';
-            }
-            
-            $rootUrl    .=  self::cleanupString($witchName);
-            $urlArray[] =   $rootUrl;
+        // Name cannot be set to empty string
+        if( !empty($params['name']) ){
+            $params['name']   = trim($params['name']);
         }
-        elseif( !empty($site) && !empty($url) ){
-            $urlArray = [ self::urlCleanupString($url) ];
-        }
-            
-        if( !empty($urlArray) ){
-            $url = $this->checkUrls($site, $urlArray);
-        }            
         
-        if( empty($site) || is_null($url) )
+        if( empty($params['name']) ){
+            unset($params['name']);
+        }
+        
+        $paramsKeyArray = array_keys($params);
+        
+        // If invoke is set to null
+        if( in_array('invoke', $paramsKeyArray) && is_null($params['invoke']) )
         {
             $params['site'] = null;
             $params['url']  = null;
         }
-        else
+        // If invoke is not set but is actually null
+        elseif( !in_array('invoke', $paramsKeyArray) && is_null($this->properties['invoke']) )
         {
-            $params['site'] = $site;
-            $params['url']  = $url;
+            $params['site'] = null;
+            $params['url']  = null;
+        }
+        // If site is set to null
+        elseif( in_array('site', $paramsKeyArray) && empty($params['site']) )
+        {
+            $params['site']     = null;
+            $params['url']      = null;
+            $params['invoke']   = null;
+        }
+        // If site is not set but is actually null
+        elseif( !in_array('site', $paramsKeyArray) && is_null($this->properties['site']) )
+        {
+            $params['site']     = null;
+            $params['url']      = null;
+            $params['invoke']   = null;
+        }
+        // Invoke and site are valid and URL update is required
+        elseif( in_array('url', $paramsKeyArray) )
+        {
+            $site       = $params['site'] ?? $this->properties['site'];
+            $urlArray   = [];
+            
+            // If url is set to a value (ie not null)
+            if( !is_null($params['url']) ){
+                $urlArray[] = self::urlCleanupString( $params['url'] );
+            }
+            else 
+            {
+                $rootUrl    = ""; 
+                if( $this->mother() ){
+                    $rootUrl    = $this->mother()->getClosestUrl( $site );
+                }
+                
+                if( !empty($rootUrl) ){
+                    $rootUrl .= '/';
+                }
+                else {
+                    $urlArray[] = '';
+                }
+                
+                $rootUrl    .=  self::cleanupString($params['name'] ?? $this->name);
+                $urlArray[] =   $rootUrl;                
+            }
+            
+            if( !empty($urlArray) ){
+                $params['url'] = $this->checkUrls($site, $urlArray);
+            }
         }
         
         if( empty($params) ){
             return false;
-        }
-        
-        if( !empty($name) ){
-            $params['name'] = $name;
-        }
-        elseif( isset($params['name']) ) {
-            unset($params['name']);
         }
         
         $updateResult = WitchDA::update($this->wc, $params, ['id' => $this->id]);
@@ -759,10 +776,6 @@ class Witch
             }
         }
         
-        /*if( empty($url) ){
-            $url = '/';
-        }*/
-        
         return $url;
     }
 
@@ -802,47 +815,56 @@ class Witch
      */
     function createDaughter( array $params ): mixed
     {
-        $name   = trim($params['name'] ?? "");
-        if( empty($name) ){
+        // Name cannot be set to empty string 
+        $params['name'] = trim( $params['name'] ?? "" );
+        
+        if( empty($params['name']) ){
             return false;
         }
-        $site   = trim($params['site'] ?? "");
-        $url    = trim($params['url'] ?? "");
         
         if( $this->depth == $this->wc->depth ){
             $this->addLevel();
         }
         
-        // Generate URL
-        if( !empty($site) && empty($url) )
-        {
-            $rootUrl    = $this->getClosestUrl( $site );
-            
-            $urlArray   = [];
-            if( empty($rootUrl) ){
-                $urlArray[] = '';
-            }
-            else {
-                $rootUrl .= '/';
-            }
-            
-            $rootUrl    .=  self::cleanupString($name);
-            $urlArray[] =   $rootUrl;
-        }
-        elseif( !empty($site) && !empty($url) ){
-            $urlArray = [ self::urlCleanupString($url) ];
-        }
-        
-        if( !empty($urlArray) ){
-            $url = $this->checkUrls($site, $urlArray);
-        }
-        
         $newDaughterPosition                        = $this->position;
         $newDaughterPosition[ ($this->depth + 1) ]  = WitchDA::getNewDaughterIndex($this->wc, $this->position);
         
-        $params['name'] = $name;
-        $params['site'] = !empty($site)? $site: null;
-        $params['url']  = !empty($url)? $url: null;
+        if( empty($params['invoke']) || empty($params['site']) || !in_array('url', array_keys($params)) )
+        {
+            $params['site']     = null;
+            $params['url']      = null;
+            $params['invoke']   = null;
+        }
+        else
+        {
+            $urlArray   = [];
+            
+            // If url is set to a value (ie not null)
+            if( !is_null($params['url']) ){
+                $urlArray[] = self::urlCleanupString( $params['url'] );
+            }
+            else 
+            {
+                $rootUrl    = ""; 
+                if( $this->mother() ){
+                    $rootUrl    = $this->mother()->getClosestUrl( $params['site'] );
+                }
+                
+                if( !empty($rootUrl) ){
+                    $rootUrl .= '/';
+                }
+                else {
+                    $urlArray[] = '';
+                }
+                
+                $rootUrl    .=  self::cleanupString($params['name']);
+                $urlArray[] =   $rootUrl;                
+            }
+            
+            if( !empty($urlArray) ){
+                $params['url'] = $this->checkUrls($params['site'], $urlArray);
+            }
+        }        
         
         foreach( $newDaughterPosition as $level => $levelPosition ){
             $params[ "level_".$level ] = $levelPosition;
