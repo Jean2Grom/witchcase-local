@@ -311,6 +311,10 @@ class Website
         }
         $url    .=  $urlPath;
         
+        if( empty($url) ){
+            return '/';
+        }
+        
         return $url;
     }
 }
