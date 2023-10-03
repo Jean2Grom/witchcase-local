@@ -49,7 +49,7 @@ class Website
         
         // Reading non heritable confs variables
         $this->access               = $this->wc->configuration->read($this->name, "access");
-        $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");        
+        $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");
         $this->site                 = $this->wc->configuration->read($this->name, "site") ?? $this->name;
         
         if( $this->site !== $this->name ){
@@ -67,7 +67,7 @@ class Website
             $this->defaultContext       = $defaultContext;
         }
         
-        $this->sitesRestrictions    = [ $this->name ];
+        $this->sitesRestrictions    = [ $this->site ];
         foreach( $this->adminForSites ?? [] as $adminisratedSite )
         {
             if( $adminisratedSite == '*' )
