@@ -1,9 +1,7 @@
 <?php
 namespace WC\Attribute;
 
-use WC\Attribute;
-
-class IntegerAttribute extends Attribute 
+class IntegerAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "integer";
     const ELEMENTS          = [

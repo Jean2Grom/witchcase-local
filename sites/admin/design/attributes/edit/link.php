@@ -1,12 +1,11 @@
-
-<h2>cible du lien (url)</h2>
+<h2>URL</h2>
 <p>
     <input  type="text" 
             name="<?=$this->name.'@'.$this->type.'#href'?>"
             value="<?=$this->values['href']?>" />
 </p>
 
-<h2>texte du lien</h2>
+<h2>Text</h2>
 <p>
     <input  type="text" 
             name="<?=$this->name.'@'.$this->type.'#text'?>"
@@ -20,5 +19,5 @@
             <?php endif; ?>
             name="<?=$this->name.'@'.$this->type.'#external'?>" 
             value="1" />
-    Ouvrir dans une nouvelle fenêtre (ou onglet)
+    Open in new window
 </p>

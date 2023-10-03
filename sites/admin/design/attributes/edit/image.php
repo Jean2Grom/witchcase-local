@@ -1,22 +1,18 @@
 <?php if( $srcFile ): ?>
     <div class="current-image-display">
-        <h2>Fichier image actuel</h2>
+        <h2>Current image</h2>
         
         <img src="<?=$srcFile?>" 
-             height="100" />
-        <input  type="submit"
-                class="deleteImage"
-                style=" background:url(<?=$this->wc->website->context->getImageFile('disconnect.png')?>) no-repeat;
-                        width: 16px;
-                        height: 16px;
-                        border: none;
-                        font-size: 0;"
-                value="<?=$this->name.'@'.$this->type.'#filedelete'?>" />
+             height="150" />
+        
+        <a class="deleteImage" value="<?=$this->name.'@'.$this->type.'#filedelete'?>" >
+            <i class="fa fa-times"></i>
+        </a>
     </div>
 <?php endif; ?>
     
 <p>
-    <h2>Sélectionner fichier image</h2>
+    <h2>Browse image file</h2>
     
     <input  type="file" 
             class="changeImage"
@@ -29,7 +25,7 @@
 </p>
 
 <p>
-    <h2>Légende de l'image</h2>
+    <h2>Caption</h2>
     <input  type="text" 
             name="<?=$this->name.'@'.$this->type.'#title'?>"
             value="<?=$this->values['title']?>" />

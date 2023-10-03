@@ -1,6 +1,5 @@
 <?php
-
-$this->wc->website->context->addCssFile('imageAttributeView.css');
+$this->wc->website->context->addCssFile('attribute/image-view.css');
 
 $srcFile = $this->getImageFile(); 
 

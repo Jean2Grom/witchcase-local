@@ -2,7 +2,7 @@
     <div class="header__logo">
         <a href="<?=$this->website->getRootUrl()?>">
             <img    id="logo" 
-                    src="<?=$this->getImageFile("logo.jpg"); ?>" 
+                    src="<?=$this->imageSrc("logo.jpg"); ?>" 
                     alt="Witchcase" 
                     title="Witchcase"/>
         </a>

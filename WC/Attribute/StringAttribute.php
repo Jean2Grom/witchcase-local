@@ -1,10 +1,8 @@
 <?php
 namespace WC\Attribute;
 
-use WC\Attribute;
-//use WC\WitchCase;
 
-class StringAttribute extends Attribute 
+class StringAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "string";
     const ELEMENTS          = [
@@ -25,14 +23,13 @@ class StringAttribute extends Attribute
 //        parent::__construct( $wc, $attributeName, $params );
 //    }
     
-    function content()
+    function content( ?string $element=null  )
     {
-        if( $this->values['value'] ){
-            return $this->values['value'];
+        if( is_null($element) ){
+            $element = 'value';
         }
-        else {
-            return false;
-        }
+        
+        return $this->values[ $element ] ?? null;
     }
     
     static function verifyLenght( $lenght )

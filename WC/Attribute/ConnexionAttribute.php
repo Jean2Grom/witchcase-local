@@ -1,12 +1,10 @@
 <?php
 namespace WC\Attribute;
 
-use WC\Attribute;
-use WC\WitchCase;
 use WC\Craft;
 use WC\DataAccess\User;
 
-class ConnexionAttribute extends Attribute 
+class ConnexionAttribute extends \WC\Attribute  
 {
     const ATTRIBUTE_TYPE    = "connexion";
     const ELEMENTS          = [
@@ -19,7 +17,7 @@ class ConnexionAttribute extends Attribute
     var $login;
     var $email;
     
-    function __construct( WitchCase $wc, string $attributeName, array $params=[], ?Craft $craft=null )
+    function __construct( \WC\WitchCase $wc, string $attributeName, array $params=[], ?Craft $craft=null )
     {
         parent::__construct( $wc, $attributeName, $params, $craft );
         

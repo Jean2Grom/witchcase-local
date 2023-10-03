@@ -5,7 +5,7 @@ $(document).ready( function(){
     });
     
     $('.deleteImage').click(function(){
-        if( confirm('Êtes vous sûr ?') )
+        if( confirm('Are you sure to remove image ?') )
         {
             $(this).parents('.current-image-display').hide();
             $(this).parents('fieldset').find('input[type="hidden"]').val( '' );

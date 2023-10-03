@@ -1,10 +1,7 @@
 <?php
 namespace WC\Attribute;
 
-use WC\Attribute;
-use WC\WitchCase;
-
-class FileAttribute extends Attribute 
+class FileAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "file";
     const ELEMENTS          = [
@@ -14,7 +11,7 @@ class FileAttribute extends Attribute
     const PARAMETERS        = [];
     
     
-    function __construct( WitchCase $wc, string $attributeName, array $params=[] )
+    function __construct( \WC\WitchCase $wc, string $attributeName, array $params=[] )
     {
         parent::__construct( $wc, $attributeName, $params );
         
@@ -68,32 +65,40 @@ class FileAttribute extends Attribute
         return true;
     }
     
-    function content()
+    function content( ?string $element=null )
     {
+        if( empty($this->values['file']) ){
+            return null;
+        }
+        
         $filepath   = $this->getFile($this->values['file']);
         
-        if( $filepath )
-        {
-            $content         = [];
-            $content['file'] = $filepath;
-            
-            if( !empty($this->values['text']) ){
-                $content['text'] = $this->values['text'];
-            }
-            else
-            {
-                $content['text'] =  substr( $this->values['file'], 
-                                            0, 
-                                            strrpos($this->values['file'], ".") - strlen($this->values['file']) 
-                                    );
-
-            }
-            
-            return $content;
-        }
-        else {
+        if( !$filepath ){
             return false;
         }
+        
+        if( $element == "file" ){
+            return $filepath;
+        }
+        
+        $content         = [];
+        $content['file'] = $filepath;
+        
+        if( !empty($this->values['text']) ){
+            $content['text'] = $this->values['text'];
+        }
+        else {
+            $content['text'] =  substr( $this->values['file'], 
+                                        0, 
+                                        strrpos($this->values['file'], ".") - strlen($this->values['file']) 
+                                );
+        }
+
+        if( is_null($element) ){
+            return $content;
+        }
+        
+        return $content[ $element ] ?? null;
     }
     
     function getFile()

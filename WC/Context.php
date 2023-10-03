@@ -3,9 +3,8 @@ namespace WC;
 
 class Context 
 {
-    const DEFAULT_FILE = "default";
-    
-    const DIR      = "contexts";
+    const DEFAULT_FILE  = "default";    
+    const DIR           = "contexts";
     
     const DESIGN_SUBFOLDER          = "design/contexts";
     const DESIGN_INCLUDES_SUBFOLDER = "design/contexts/includes";
@@ -14,6 +13,11 @@ class Context
     const JS_SUBFOLDER              = "assets/js";
     const CSS_SUBFOLDER             = "assets/css";
     const FONTS_SUBFOLDER           = "assets/fonts";
+    
+    const CSS_FILE_DISPLAY          = "css-file.php";
+    const JS_FILE_DISPLAY           = "js-file.php";
+    const IMAGE_FILE_DISPLAY        = "image-file.php";
+    const FAVICON_FILE_DISPLAY      = "favicon-file.php";
     
     var $execFile;
     var $designFile;
@@ -96,14 +100,54 @@ class Context
         return $this->getDesignFile( $designName, $mandatory );
     }
     
-    function addCssFile( $cssFile )
+    
+    /**
+     * Access internal css file ressource that can be access from web browser,  
+     * Resolving fallbacks and returning relative webpath
+     * 
+     * @param string $cssFile 
+     * @return string|null
+     */
+    function cssSrc( string $cssFile ): ?string {
+        return $this->wc->website->getWebPath( self::CSS_SUBFOLDER."/".$cssFile );
+    }
+    
+    /**
+     * Display css file 
+     * 
+     * @param string $cssFile
+     * @param array $attributes
+     * @return void
+     */
+    function css( string $cssFile, array $attributes=[] ): void
     {
-        $cssFilePath = $this->wc->website->getFilePath( self::CSS_SUBFOLDER."/".$cssFile );
+        $displayFilePath    = $this->wc->website->getFilePath( self::DESIGN_INCLUDES_SUBFOLDER."/".self::CSS_FILE_DISPLAY );
+        if( empty($displayFilePath) )
+        {
+            $this->wc->log->error("Can't get CSS file display file");
+            return;
+        }
         
-        if( $cssFilePath 
-            && !in_array("/".$cssFilePath, $this->css)
+        $cssSrc = $this->cssSrc( $cssFile );
+        if( empty($cssSrc) )
+        {
+            $this->wc->log->error("Can't get CSS file");
+            return;
+        }
+        
+        include $displayFilePath;
+        
+        return;
+    }
+    
+    function addCssFile( string $cssFile ): bool
+    {
+        $cssWebPath = $this->cssSrc( $cssFile );
+        
+        if( $cssWebPath 
+            && !in_array($cssWebPath, $this->css)
         ){
-            $this->css[] = "/".$cssFilePath;
+            $this->css[] = $cssWebPath;
         }
         else {
             return false;
@@ -112,19 +156,43 @@ class Context
         return true;
     }
     
-    function getCssFiles()
-    {
+    function getCssFiles(): array {
         return $this->css;
     }
-
-    function addJsFile( $jsFile )
+    
+    function js( string $jsFile, array $attributes=[] ): void
     {
-        $jsFilePath = $this->wc->website->getFilePath( self::JS_SUBFOLDER."/".$jsFile );
+        $displayFilePath    = $this->wc->website->getFilePath( self::DESIGN_INCLUDES_SUBFOLDER."/".self::JS_FILE_DISPLAY );
+        if( empty($displayFilePath) )
+        {
+            $this->wc->log->error("Can't get JS file display file");
+            return;
+        }
         
-        if( $jsFilePath 
-            && !in_array("/".$jsFilePath, $this->js) 
+        $jsSrc = $this->jsSrc( $jsFile );
+        if( empty($jsSrc) )
+        {
+            $this->wc->log->error("Can't get JS file");
+            return;
+        }
+        
+        include $displayFilePath;
+        
+        return;
+    }
+    
+    function jsSrc( string $jsFile ): ?string {
+        return $this->wc->website->getWebPath( self::JS_SUBFOLDER."/".$jsFile );
+    }
+    
+    function addJsFile( string $jsFile ): bool
+    {
+        $jsWebPath = $this->jsSrc( $jsFile );
+        
+        if( $jsWebPath 
+            && !in_array($jsWebPath, $this->js) 
         ){
-            $this->js[] = "/".$jsFilePath;
+            $this->js[] = $jsWebPath;
         }
         else {
             return false;
@@ -133,19 +201,18 @@ class Context
         return true;
     }
     
-    function getJsFiles()
-    {
+    function getJsFiles(): array {
         return $this->js;
     }
     
-    function addJsLibFile( $jsFile )
+    function addJsLibFile( string $jsFile ): bool
     {
-        $jsFilePath = $this->wc->website->getFilePath( self::JS_SUBFOLDER."/".$jsFile );
+        $jsWebPath = $this->wc->website->getWebPath( self::JS_SUBFOLDER."/".$jsFile );
         
-        if( $jsFilePath 
-            && !in_array("/".$jsFilePath, $this->jsLib) 
+        if( $jsWebPath 
+            && !in_array($jsWebPath, $this->jsLib) 
         ){
-            $this->jsLib[] = "/".$jsFilePath;
+            $this->jsLib[] = $jsWebPath;
         }
         else {
             return false;
@@ -154,21 +221,62 @@ class Context
         return true;
     }
     
-    function getJsLibFiles()
-    {
+    function getJsLibFiles(): array {
         return $this->jsLib;
     }
     
-    function getImageFile( $filename )
+    function imageSrc( string $imageFile ): ?string {
+        return $this->wc->website->getWebPath( self::IMAGES_SUBFOLDER."/".$imageFile );
+    }
+    
+    function image( string $imageFile, array $attributes=[] ): void
     {
-        $fullPath = $this->wc->website->getFilePath(self::IMAGES_SUBFOLDER."/".$filename );
-        
-        if( !$fullPath ){
-            return false;
+        $displayFilePath    = $this->wc->website->getFilePath( self::DESIGN_INCLUDES_SUBFOLDER."/".self::IMAGE_FILE_DISPLAY );
+        if( empty($displayFilePath) )
+        {
+            $this->wc->log->error("Can't get IMAGE file display file");
+            return;
         }
         
-        return "/".$fullPath;
+        $imageSrc = $this->imageSrc( $imageFile );
+        if( empty($imageSrc) )
+        {
+            $this->wc->log->error("Can't get IMAGE file");
+            return;
+        }
+        
+        include $displayFilePath;
+        
+        return;
     }
+    
+    function getImageFile( string $imageFile ): ?string {
+        return $this->imageSrc( $imageFile );
+    }
+    
+    function favicon( string $iconFile="favicon.ico" ): void
+    {
+        $displayFilePath    = $this->wc->website->getFilePath( self::DESIGN_INCLUDES_SUBFOLDER."/".self::FAVICON_FILE_DISPLAY );
+        if( empty($displayFilePath) )
+        {
+            $this->wc->log->error("Can't get FAVICON file display file");
+            return;
+        }
+        
+        $iconSrc = $this->imageSrc( $iconFile );
+        if( empty($iconSrc) )
+        {
+            $this->wc->log->error("Can't get FAVICON file");
+            return;
+        }
+        
+        $iconMime    = mime_content_type( $this->wc->website->getFilePath(self::IMAGES_SUBFOLDER."/".$iconFile) );
+        
+        include $displayFilePath;
+        
+        return;
+    }
+    
     
     function getFontFile( $filename )
     {
