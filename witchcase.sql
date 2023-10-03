@@ -38,7 +38,7 @@ CREATE TABLE `archive__user` (
   `last-name@string#value` varchar(511) DEFAULT NULL,
   `first-name@string#value` varchar(511) DEFAULT NULL,
   `connection@connexion#id` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -53,10 +53,10 @@ CREATE TABLE `content__user` (
   `created` datetime DEFAULT CURRENT_TIMESTAMP,
   `modificator` int DEFAULT NULL,
   `modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `last-name@string#value` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `first-name@string#value` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `last-name@string#value` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `first-name@string#value` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `connection@connexion#id` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `content__user`
@@ -82,7 +82,7 @@ CREATE TABLE `draft__user` (
   `last-name@string#value` varchar(511) DEFAULT NULL,
   `first-name@string#value` varchar(511) DEFAULT NULL,
   `connection@connexion#id` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -96,7 +96,7 @@ CREATE TABLE `user__connexion` (
   `email` varchar(511) DEFAULT NULL,
   `login` varchar(255) DEFAULT NULL,
   `pass_hash` varchar(255) DEFAULT NULL,
-  `craft_table` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `craft_table` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `craft_attribute` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT 'connexion',
   `craft_attribute_var` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT 'fk_user__connexion',
   `attribute_name` varchar(511) DEFAULT NULL,
@@ -104,7 +104,7 @@ CREATE TABLE `user__connexion` (
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `creator` int DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `user__connexion`
@@ -129,7 +129,7 @@ CREATE TABLE `user__policy` (
   `position_included` tinyint(1) NOT NULL DEFAULT '1',
   `position_descendants` tinyint(1) NOT NULL DEFAULT '1',
   `custom_limitation` varchar(31) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `user__policy`
@@ -152,7 +152,7 @@ CREATE TABLE `user__profile` (
   `name` varchar(255) DEFAULT NULL,
   `site` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT '*',
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `user__profile`
@@ -194,7 +194,7 @@ CREATE TABLE `witch` (
   `site` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   `url` varchar(1023) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0',
-  `invoke` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `invoke` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `craft_table` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   `craft_fk` int UNSIGNED DEFAULT NULL,
   `alias` int DEFAULT NULL,
@@ -206,7 +206,7 @@ CREATE TABLE `witch` (
   `level_2` int UNSIGNED DEFAULT NULL,
   `level_3` int UNSIGNED DEFAULT NULL,
   `level_4` int UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 --
 -- Déchargement des données de la table `witch`
 --
