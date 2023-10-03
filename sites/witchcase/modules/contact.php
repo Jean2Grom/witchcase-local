@@ -1,10 +1,5 @@
 <?php
 
-$backgroundImage    = $craft->attributes['background-image']->content()['file'];
-$headline           = $craft->attributes['headline']->content();
-$headlineBody       = $craft->attributes['body']->content();
-
-
 $result = false;
 if( filter_has_var(INPUT_POST, "bouton_formulaire") )
 {
@@ -17,8 +12,8 @@ if( filter_has_var(INPUT_POST, "bouton_formulaire") )
     $subject    = "[".strtoupper($societe)."] ".strtoupper($nom)." ".ucfirst(strtolower($prenom));
     $header     = "From: \"".$subject."\"<".$adresse.">\n";
     
-    $result = mail("info@witch-case.com", $subject, $message, $header);
+    $result = mail("jean.de.gromard@gmail.com", $subject, $message, $header);
 }
 
 
-include $module->getDesignFile();
+include $this->getDesignFile();

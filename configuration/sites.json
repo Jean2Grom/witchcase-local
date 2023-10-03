@@ -1,4 +1,27 @@
 {
+    "witchcase": {
+        "access": [
+            "localhost/witchcase"
+        ],
+        "witches": {
+            "home": {
+                "id": 14,
+                "children": {
+                    "depth": 1,
+                    "craft": false
+                }
+            },
+            "current": {
+                "url": true, 
+                "invoke": true,
+                "craft": true,
+                "children": {
+                    "depth": 1,
+                    "craft": true
+                }
+            }
+        }
+    },
     "admin": {
         "access": [
             "localhost/admin",
