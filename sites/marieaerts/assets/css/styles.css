@@ -1,0 +1,167 @@
+@charset "UTF-8";
+/* CSS Document */
+
+* {
+    margin:0px;
+    padding:0px;
+}
+html {
+    height:100%;
+    margin:0px;	
+}
+body {
+    height:100%;
+    margin:0px;
+    padding:0px;
+    font: 12px Arial, Helvetica, sans-serif;
+    color: #333333;
+}
+HTML,body {
+    height: 100%;
+    margin:0px;
+}
+h1 {
+    font-size:18px;
+}
+li {
+    text-decoration: none;
+    list-style: none;
+    font-variant: normal;
+}
+a {
+    color: #333333;
+    text-decoration: none;
+}
+a:visited {
+    color: #333333;
+    text-decoration: none;
+}
+a:hover, a:focus {
+    color:#999999;
+    text-decoration:none;
+}
+a:active {
+    text-decoration: none;
+    color: #999999;
+}
+#entete p {
+    font-size:10px;
+}
+#container {
+    padding-left:40px;
+    padding-top:20px;
+}
+.menu {
+    margin-top:40px;
+    float:left;
+    width: 240px;
+}
+.submenu {
+    padding-left:40px;
+    line-height: 16px;
+    margin-bottom: 8px;
+}
+.hidden {
+    display: none;
+}
+#content {
+    float:left;
+    margin: 40px;
+    max-width: 640px;
+}
+
+#content h2 {
+    font-size: 14px;
+    font-variant: small-caps;
+    margin-bottom:10px;	
+}
+#content h3 {
+    font-size: 12px;
+    font-weight: normal;
+    font-style: italic;
+    margin-bottom: 8px;
+}
+
+.elements {
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.elements > * {
+    margin: 16px 0;
+}
+
+.image img {
+    max-width: 640px;
+}
+.image p {
+    font-size:10px;
+    color: #4E4E4E;
+}
+
+#documents h4 {
+  max-width: 640px;
+  margin-bottom: 8px;
+  text-align: justify;
+}
+#documents p {
+  max-width: 640px;
+  padding-bottom: 24px;
+  text-align: justify;
+}
+
+.menu-image {
+	font-size: 12px;
+	font-variant: small-caps;
+	display: inline;
+	font-weight: bold;
+	
+
+}
+
+.menu-image li {
+	display: inline-block;
+	padding-right: 30px;
+	padding-bottom:40px;
+}
+
+.text {
+    text-align: justify;
+    max-width: 640px;
+}
+#video {
+	padding-bottom:40px;
+}
+
+#footer {
+	float:none;
+	clear: both;
+	text-align:center;
+}
+
+#footer li {
+	display: inline;
+	font-size:10px;
+	text-align:center;
+	padding-right:40px;
+	padding-bottom:40px;
+
+}
+.EN {
+	color: #7E7E7E;
+	font-style: italic;
+}
+
+#view p {
+	font-size:10px;
+	padding-bottom:20px;
+	color: #4E4E4E;
+}
+
+#exhibitionview p {
+	font-size:10px;
+	padding-bottom:20px;
+	color: #4E4E4E;
+}

@@ -1,4 +1,31 @@
 {
+    "marieaerts": {
+        "access": [
+            "localhost/marieaerts"
+        ],
+        "witches": {
+            "home": {
+                "id": 27,
+                "children": {
+                    "depth": 1,
+                    "craft": true
+                }
+            },
+            "menu": {
+                "id": 33,
+                "children": {
+                    "depth": 2,
+                    "craft": true
+                }
+            },
+            "current": {
+                "children": {
+                    "depth": 2,
+                    "craft": true
+                }
+            }
+        }        
+    },
     "witchcase": {
         "access": [
             "localhost/witchcase"
