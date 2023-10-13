@@ -29,8 +29,8 @@
     },
     "system": {
         "debug": [
-            "127.0.0.1",
-            "78.202.60.186"
+            "127.0.0.1xx",
+            "xxx.xxx.xxx.xxx"
         ],
         "createFolderRights": "755",
         "maxLog": "10000000",        
