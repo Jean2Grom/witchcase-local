@@ -1,11 +1,15 @@
 <?php
-
 $maxLenght  = 255;
-$indice     = strpos( substr($this->values['value'], $maxLenght), " " ) + $maxLenght;
-$value      = substr($this->values['value'], 0, $indice);
+$value      = "";
 
-if( strlen($this->values['value']) > strlen($value) ){
-    $value .= " (...)";
+if( $this->content() )
+{
+    $indice     = strpos( substr($this->content(), $maxLenght), " " ) + $maxLenght;
+    $value      = substr($this->content(), 0, $indice);
+    
+    if( strlen($this->content()) > strlen($value) ){
+        $value .= " (...)";
+    }
 }
 
 include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/view/text.php");

@@ -10,7 +10,7 @@
         </a>
     </div>
 <?php endif; ?>
-    
+
 <p>
     <h2>Browse image file</h2>
     

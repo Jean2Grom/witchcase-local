@@ -278,7 +278,6 @@ class WitchCrafting
 
         $query  .=  "WHERE ".implode( 'AND ', $queryWhereElements )." ";
         
-        //$wc->db->debugQuery( $query, $params );        
         $result         = $wc->db->selectQuery( $query, $params );        
         $craftedData    = self::formatCraftData( $result );
         
@@ -371,24 +370,33 @@ class WitchCrafting
                 $fieldElement   = $splitSelectField['element'];
                 
                 $currentId      = $row[ $table.'|id' ];
-
+                
+                // New table
                 if( empty($craftedData[ $table ]) ){
                     $craftedData[ $table ] = [];
                 }
+                // New record
                 if( empty($craftedData[ $table ][ $currentId ]) ){
-                    $craftedData[ $table ][ $currentId ] = [];
-                }
-                if( empty($craftedData[ $table ][ $currentId ][ $field ]) ){
-                    $craftedData[ $table ][ $currentId ][ $field ] = [];
+                    $craftedData[ $table ][ $currentId ] = [ '@attributes' => [] ];
+                }                
+                // Fixed craft columns
+                if( empty($fieldElement) )
+                {
+                    $craftedData[ $table ][ $currentId ][ $field ] = $rowFieldValue;
+                    continue;
                 }
                 
-                if( empty($fieldElement) ){
-                    $craftedData[ $table ][ $currentId ][ $field ] = $rowFieldValue;
+                // Attribute first enconter
+                if( empty($craftedData[ $table ][ $currentId ]['@attributes'][ $field ]) ){
+                    $craftedData[ $table ][ $currentId ]['@attributes'][ $field ] = [];
                 }
-                elseif( empty($craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ]) ){
-                    $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ] = $rowFieldValue;
+                
+                // Attribute element first enconter
+                if( empty($craftedData[ $table ][ $currentId ]['@attributes'][ $field ][ $fieldElement ]) ){
+                    $craftedData[ $table ][ $currentId ]['@attributes'][ $field ][ $fieldElement ] = $rowFieldValue;
                 }
-                elseif( !is_array($craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ]) )
+                // Attribute element second enconter, making it an array of values
+                elseif( !is_array($craftedData[ $table ][ $currentId ]['@attributes'][ $field ][ $fieldElement ]) )
                 {
                     $prevValue = $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ];
 
@@ -399,11 +407,12 @@ class WitchCrafting
                         ];
                     }
                 }
+                // Attribute element more enconter, adding a value
                 else {
-                    $craftedData[ $table ][ $currentId ][ $field ][ $fieldElement ][] = $rowFieldValue;
+                    $craftedData[ $table ][ $currentId ]['@attributes'][ $field ][ $fieldElement ][] = $rowFieldValue;
                 }
             }
-        } 
+        }
         
         return $craftedData;
     }
