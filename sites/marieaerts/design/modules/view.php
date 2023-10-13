@@ -1,34 +1,29 @@
-<h2><?=$this->witch->craft()->attribute('name')->content()?></h2>
+<h2><?=$title ?></h2>
 
-<?php if( $this->witch->craft()->attribute('head')->content() ): ?>
-    <h3><?=$this->witch->craft()->attribute('head')->content()?></h3>
+<?php if( !empty($description) ): ?>
+    <p class="description"><?=$description ?></p>
 <?php endif; ?>
 
-<?php if( $this->witch->craft()->attribute('description')->content() ): ?>
-    <p><?=$this->witch->craft()->attribute('description')->content()?></p>
+<?php if( $image ): ?>
+    <?=$image->display()?>
+<?php endif; ?>
+
+<?php if( !empty($body) ): ?>
+    <p><?=$body ?></p>
 <?php endif; ?>
 
 <div class="elements">
-    <?php foreach( $this->witch->daughters ?? [] as $element ): ?>
-        <?php if( $element->craft()->attribute('image')->content() ): ?>
-            <div class="image">
-                <?=$element->craft()->attribute('image')->display()?>
-                <p><?=$element->craft()->attribute('image')->content('title')?></p>
-            </div>
+    <?php foreach( $this->witch->daughters() as $daughter ): ?>
+        <?php if( $daughter->craft() ): 
+            $element = $daughter;
+            include $this->getIncludeDesignFile( $daughter->craft()->structure().'.php' ); 
+        else: ?>
+            <h3><?=$daughter->name ?></h3>
+            <?php foreach( $daughter->daughters() as $subelement ): 
+                $element = $subelement;
+                include $this->getIncludeDesignFile( $subelement->craft()->structure().'.php' ); ?> 
+            <?php endforeach; ?>
         <?php endif; ?>
-
-        <?php if( $element->craft()->attribute('embed-player')->content() ): ?>
-            <div class="video">
-                <?=$element->craft()->attribute('embed-player')->content()?>
-            </div>
-        <?php endif; ?>
-
-        <?php if( $element->craft()->attribute('text')->content() ): ?>
-            <div class="text">
-                <?=$element->craft()->attribute('text')->content()?>
-            </div>
-        <?php endif; ?>
-
     <?php endforeach; ?>
 </div>
 

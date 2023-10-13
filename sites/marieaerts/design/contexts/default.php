@@ -25,47 +25,44 @@
         
         <nav class="menu">
             <ul>
-                <?php foreach( $this->wc->witch('menu')->daughters() as $menuItem ): if( $menuItem->hasInvoke() || !empty($menuItem->daughters()) ):?>
+                <?php foreach( $menu as $menuItem ): ?>
                     <li>
-                        <a  <?php if( $menuItem->hasInvoke() ): ?>
-                                href="<?=$menuItem->getUrl() ?>">
-                            <?php elseif( !empty($menuItem->daughters()) ): ?>
-                                href=""
-                                data-toggle="<?=$menuItem->id ?>">
+                        <a  href="<?=$menuItem['href'] ?>"
+                            <?php if( $menuItem['toggle'] ): ?>
+                                data-toggle="<?=$menuItem['toggle'] ?>"
                             <?php endif; ?>
-                            
-                            <?php if( $this->wc->witch() == $menuItem ): ?>
-                                <em><?=$menuItem->name ?></em>
-                            <?php elseif( in_array( $this->wc->witch(), $menuItem->daughters() ) ): ?>
-                                <em><?=$menuItem->name ?></em>
+                            >
+                            <?php if( $menuItem['selected'] ): ?>
+                                <em><?=$menuItem['name'] ?></em>
                             <?php else: ?>
-                                <?=$menuItem->name ?>
+                                <?=$menuItem['name'] ?>
                             <?php endif; ?>
                         </a>
                         
-                        <?php if( !empty($menuItem->daughters()) ): ?>
-                            <ul class="submenu <?=!in_array( $this->wc->witch(), $menuItem->daughters() )? 'hidden': '' ?>"
-                                id="sub-menu-<?=$menuItem->id ?>" >
-                                <?php foreach( $menuItem->daughters() as $subMenuItem ): ?>
-                                    <li>
-                                        <a href="<?=$subMenuItem->getUrl() ?>">
-                                            <strong>
-                                                <?php if( $this->wc->witch() == $subMenuItem ): ?>
-                                                    <em><?=$subMenuItem->name ?></em>
-                                                <?php else: ?>
-                                                    <?=$subMenuItem->name ?>
-                                                <?php endif; ?>
-                                            </strong>                            
-                                        </a>
-                                        <em><?=$subMenuItem->data ?></em>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php endif; ?>
+                        <ul class="submenu <?=!$menuItem['selected']? 'hidden': '' ?>"
+                            id="sub-menu-<?=$menuItem['toggle'] ?>" >
+                                
+                            <?php foreach( $menuItem['submenu'] as $subMenuItem ): ?>
+                                <li>
+                                    <a href="<?=$subMenuItem['href'] ?>">
+                                        <strong>
+                                            <?php if( $subMenuItem['selected'] ): ?>
+                                                <em><?=$subMenuItem['name'] ?></em>
+                                            <?php else: ?>
+                                                <?=$subMenuItem['name'] ?>
+                                            <?php endif; ?>
+                                        </strong>                            
+                                    </a>
+                                    <em><?=$subMenuItem['data'] ?></em>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>                        
+
                     </li>
-                <?php endif; endforeach; ?>
+                <?php endforeach; ?>
             </ul>
         </nav>
+        
         
         <div id="content">
             <?=$this->wc->cairn->invokation() ?>

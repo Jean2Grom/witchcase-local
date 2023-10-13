@@ -68,8 +68,8 @@ a:active {
     float:left;
     margin: 40px;
     max-width: 640px;
+    text-align: justify;
 }
-
 #content h2 {
     font-size: 14px;
     font-variant: small-caps;
@@ -77,20 +77,50 @@ a:active {
 }
 #content h3 {
     font-size: 12px;
+    margin: 16px 0;	
+}
+
+#content h4 {
+    font-size: 12px;
     font-weight: normal;
     font-style: italic;
     margin-bottom: 8px;
+}
+
+.description {
+    font-style: italic;
+    margin: 8px 0;
 }
 
 .elements {
     margin: 16px 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
 .elements > * {
     margin: 16px 0;
+}
+
+.elements img,
+.elements .video {
+    text-align: center;    
+}
+
+.elements .document {
+    margin: 8px 0;
+}
+
+.event {
+    width: fit-content;
+    margin-bottom: 16px;
+}
+.event p {
+    margin: 16px 0;
+}
+.event .right {
+    float: right;
+    font-weight: bold;
 }
 
 .image img {
@@ -128,8 +158,8 @@ a:active {
 }
 
 .text {
-    text-align: justify;
-    max-width: 640px;
+/*    text-align: justify;
+    max-width: 640px;*/
 }
 #video {
 	padding-bottom:40px;

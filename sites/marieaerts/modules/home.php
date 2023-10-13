@@ -1,31 +1,68 @@
 <?php
-
-/*$contenu = false;
-if( isset($target->attributes['contenu']) )
-{   $contenu = $target->attributes['contenu']->content();   }
-
-if( $contenu
-    || strcmp($target->structure, 'work') == 0
-){
-    include $module->getControllerFile('modules/view/work.php');
-}
-elseif( strcmp($target->structure, 'page-folder') == 0 )
+$eligibleForHome    = [];
+$maxPriority        = 0;
+foreach( $this->witch->daughters  as $daughter )
 {
-    include $module->getControllerFile('modules/view/page-folder.php');
+    if( !$daughter->hasCraft() ){
+        continue;
+    }
+    
+    if( $daughter->priority > $maxPriority )
+    {
+        $eligibleForHome    = [];
+        $maxPriority        = $daughter->priority;
+    }
+    
+    if( $daughter->priority == $maxPriority ){
+        $eligibleForHome[] = $daughter;
+    }
+}
+
+$highlight = $eligibleForHome[ rand(0, count($eligibleForHome) - 1) ];
+
+$redirectionURL = null;
+foreach( $highlight->craft()->getWitches() as $highlightWitch ){
+    if( $this->wc->witch('menu')->isParent( $highlightWitch ) )
+    {
+        $redirectionURL = $highlightWitch->mother()->getUrl();
+        break;
+    }
+}
+
+if( $redirectionURL )
+{
+    $image  = $highlight->craft()->attribute('image');
+    $video  = $highlight->craft()->attribute('embed-player');
+    $text   = $highlight->craft()->attribute('text');    
 }
 else
 {
-    $news = $target->attributes['remontee-de-news']->values['targets'];
-    foreach($news as $i => $news_item)
-    {
-        $image = $news_item['attributes']['image']->getFile();
-
-        if( $image )
-        {   $news[$i]['attributes']['image']->values['image'] = $image; }
+    if( $highlight->craft()->attribute('title') ){
+        $title = $highlight->craft()->attribute('title')->content();
+    }
+    if( empty($title) && $highlight->craft()->attribute('name') ){
+        $title = $highlight->craft()->attribute('name')->content();
+    }
+    if( empty($title) ){
+        $title = $highlight->name;
     }
     
-    include $module->getDesignFile();
+    $head = "";
+    if( $highlight->craft()->attribute('head') ){
+        $head = $highlight->craft()->attribute('head')->content();
+    }
+
+    $image = $highlight->craft()->attribute('image');
+
+    $body = "";
+    if( $highlight->craft()->attribute('body') ){
+        $body = $highlight->craft()->attribute('body')->content();
+    }
+    
+    $link = false;
+    if( $highlight->craft()->attribute('link') ){
+        $link = $highlight->craft()->attribute('link')->content();
+    }    
 }
- * 
- */
+
 $this->view();
