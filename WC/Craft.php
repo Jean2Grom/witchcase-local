@@ -112,7 +112,7 @@ class Craft
                 $className          = $attributeData["class"];
                 $attributeParams    = [];
                 $attribute = new $className( $this->wc, $attributeName, $attributeParams, $this );
-                $attribute->set($data[ $attributeName ]);
+                $attribute->set($data['@attributes'][ $attributeName ]);
                 
                 $this->attributes[ $attributeName ] = $attribute;
             }

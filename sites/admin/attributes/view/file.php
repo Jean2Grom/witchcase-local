@@ -1,5 +1,4 @@
 <?php
-
 $srcFile = $this->getFile(); 
 
-include $this->module->getDesignFile('attributes/view/file.php');
+include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/view/file.php" );
