@@ -5,57 +5,79 @@ class FileAttribute extends \WC\Attribute
 {
     const ATTRIBUTE_TYPE    = "file";
     const ELEMENTS          = [
-        "filename"  => "VARCHAR(511) DEFAULT NULL",
-        "text"      => "VARCHAR(511) DEFAULT NULL",
+        "file"      => "VARCHAR(511) DEFAULT NULL",
+        "title"     => "VARCHAR(511) DEFAULT NULL",
     ];
-    const PARAMETERS        = [];
+    const PARAMETERS        = [];    
     
+    var $directory;
     
     function __construct( \WC\WitchCase $wc, string $attributeName, array $params=[] )
     {
         parent::__construct( $wc, $attributeName, $params );
         
         $this->directory    = "files/".$this->type."/".$this->name;
+    }
+    
+    function setValue($key, $value)
+    {
+        if( $key == "file" && !empty($_FILES[ $this->name.'@'.$this->type.'#fileupload' ]["tmp_name"]) )
+        {
+            $tmpFileInfos = $_FILES[ $this->name.'@'.$this->type.'#fileupload' ];
+
+            $check = filesize($tmpFileInfos["tmp_name"]);
+
+            if( $check !== false )
+            {
+                $directoryPath = "";
+                foreach( explode('/', $this->directory) as $folder ) 
+                {
+                    $directoryPath .= $folder;
+                    if( !is_dir($directoryPath) ) 
+                    {   mkdir( $directoryPath, 0705 );  }
+
+                    $directoryPath .= "/";
+                }
+
+                if( copy($tmpFileInfos["tmp_name"], $directoryPath.$tmpFileInfos["name"]) ){
+                    $this->values['file'] = $tmpFileInfos["name"];
+                }
+            }
+            
+            return $this;
+        }
         
-        $this->dbFields     =   [
-            "file"  =>  "`@_".$this->type."#file__".$this->name."` varchar(511) DEFAULT NULL",
-            "text"  =>  "`@_".$this->type."#text__".$this->name."` varchar(511) DEFAULT NULL",
-        ];
-        
-        $this->tableColumns =   [
-                                    "file"  =>  "@_".$this->type."#file__".$this->name,
-                                    "text"  =>  "@_".$this->type."#text__".$this->name,
-                                ];
-        $this->values       =   [
-                                    "file"  =>  "",
-                                    "text"  =>  "",
-                                ];
-        $this->parameters   =   [];
+        return parent::setValue($key, $value);
     }
     
     function set( $args )
     {
-        if( !empty($_FILES['@_'.$this->type.'#fileupload__'.$this->name]["tmp_name"]) )
+        if( !empty($_FILES[ $this->name.'@'.$this->type.'#fileupload' ][ "tmp_name" ]) )
         {
-            $tmpFileInfos = $_FILES['@_'.$this->type.'#fileupload__'.$this->name];
+            $tmpFileInfos = $_FILES[ $this->name.'@'.$this->type.'#fileupload' ];
             
-            $directoryPath = "";
-            foreach( explode('/', $this->directory) as $folder ) 
+            $check = filesize($tmpFileInfos["tmp_name"]);
+
+            if( $check !== false )
             {
-                $directoryPath .= $folder;
-                if( !is_dir($directoryPath) ) 
-                {   mkdir( $directoryPath, 0705 );  }
+                $directoryPath = "";
+                foreach( explode('/', $this->directory) as $folder ) 
+                {
+                    $directoryPath .= $folder;
+                    if( !is_dir($directoryPath) ) 
+                    {   mkdir( $directoryPath, 0705 );  }
 
-                $directoryPath .= "/";
-            }
-
-            if( copy($tmpFileInfos["tmp_name"], $directoryPath.$tmpFileInfos["name"]) ){
-                $this->values['file'] = $tmpFileInfos["name"];
+                    $directoryPath .= "/";
+                }
+                
+                if( copy($tmpFileInfos["tmp_name"], $directoryPath.$tmpFileInfos["name"]) ){
+                    $this->values['file'] = $tmpFileInfos["name"];
+                }
             }
         }
         
         if( isset($args['storeButton']) 
-            && strcmp($args['storeButton'], '@_'.$this->type.'#filedelete__'.$this->name) == 0 
+            && strcmp( $args['storeButton'], $this->name.'@'.$this->type.'#filedelete' ) == 0 
         ){
             $this->values['file'] = "";
         }
@@ -77,23 +99,20 @@ class FileAttribute extends \WC\Attribute
             return false;
         }
         
-        if( $element == "file" ){
+        if( $element == "file" || $element == "src" ){
             return $filepath;
         }
         
         $content         = [];
         $content['file'] = $filepath;
-        
-        if( !empty($this->values['text']) ){
-            $content['text'] = $this->values['text'];
+
+        if( !empty($this->values['title']) ){
+            $content['title'] = $this->values['title'];
         }
         else {
-            $content['text'] =  substr( $this->values['file'], 
-                                        0, 
-                                        strrpos($this->values['file'], ".") - strlen($this->values['file']) 
-                                );
+            $content['title'] = "";
         }
-
+        
         if( is_null($element) ){
             return $content;
         }
@@ -109,6 +128,6 @@ class FileAttribute extends \WC\Attribute
             return false;
         }
         
-        return $this->module->getHost()."/".$filepath;
+        return "/".$filepath;
     }
 }

@@ -134,7 +134,7 @@ class WitchSummoning
                     ){
                         $depthLimit = (int) $witchRefConf['children']['depth'];
                     }
-
+                    
                     self::initChildren( $witches[ $witchRef ], $depthLimit );
                 }
             }
@@ -200,7 +200,7 @@ class WitchSummoning
     
     private static function initChildren( Witch $witch, int $depthLimit )
     {
-        if( $depthLimit == 0 ){
+        if( $depthLimit < 0 ){
             return;
         }
         

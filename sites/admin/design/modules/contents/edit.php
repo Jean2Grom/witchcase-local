@@ -22,6 +22,7 @@
 </p>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
+    
     <fieldset>
         <legend>Craft Name</legend>
         <input type="text" name="name" value="<?=$draft->name ?>" />
