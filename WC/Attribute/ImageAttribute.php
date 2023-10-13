@@ -64,9 +64,10 @@ class ImageAttribute extends \WC\Attribute
                 foreach( explode('/', $this->directory) as $folder ) 
                 {
                     $directoryPath .= $folder;
-                    if( !is_dir($directoryPath) ) 
-                    {   mkdir( $directoryPath, 0705 );  }
-
+                    if( !is_dir($directoryPath) ){
+                        mkdir( $directoryPath, 0705 );
+                    }
+                    
                     $directoryPath .= "/";
                 }
                 
@@ -93,7 +94,7 @@ class ImageAttribute extends \WC\Attribute
             return null;
         }
         
-        $filepath   = $this->getImageFile($this->values['file']);
+        $filepath   = $this->getFile($this->values['file']);
         
         if( !$filepath ){
             return false;
@@ -110,9 +111,7 @@ class ImageAttribute extends \WC\Attribute
             $content['title'] = $this->values['title'];
         }
         else {
-            $content['title'] = substr( $this->values['file'], 
-                                        0, 
-                                        strrpos($this->values['file'], ".") - strlen($this->values['file']) );
+            $content['title'] = "";
         }
         
         if( is_null($element) ){
@@ -122,7 +121,7 @@ class ImageAttribute extends \WC\Attribute
         return $content[ $element ] ?? null;
     }
     
-    function getImageFile()
+    function getFile()
     {
         $filepath = $this->directory.'/'.$this->values['file'];
         
