@@ -2,7 +2,7 @@
 $i = 0;
 foreach( $this->witch->daughters() as $daughter ): ?>
     
-    <?php if( !$daughter->craft() || $daughter->craft()->structure() !== "article-witchcase" ): 
+    <?php if( !$daughter->craft() || $daughter->craft()->structure() !== "witchcase-article" ): 
         continue;
     endif; ?>
     

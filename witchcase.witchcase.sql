@@ -18,16 +18,16 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `witchcase_local`
+-- Base de données : `witchcase`
 --
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `archive__article-witchcase`
+-- Structure de la table `archive__witchcase-article`
 --
 
-CREATE TABLE `archive__article-witchcase` (
+CREATE TABLE `archive__witchcase-article` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -53,10 +53,10 @@ CREATE TABLE `archive__article-witchcase` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `archive__folder-witchcase`
+-- Structure de la table `archive__witchcase-folder`
 --
 
-CREATE TABLE `archive__folder-witchcase` (
+CREATE TABLE `archive__witchcase-folder` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -73,10 +73,10 @@ CREATE TABLE `archive__folder-witchcase` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `archive__home-witchcase`
+-- Structure de la table `archive__witchcase-home`
 --
 
-CREATE TABLE `archive__home-witchcase` (
+CREATE TABLE `archive__witchcase-home` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -104,10 +104,10 @@ CREATE TABLE `archive__home-witchcase` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `archive__user`
+-- Structure de la table `archive__wc-user`
 --
 
-CREATE TABLE `archive__user` (
+CREATE TABLE `archive__wc-user` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -123,10 +123,10 @@ CREATE TABLE `archive__user` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `content__article-witchcase`
+-- Structure de la table `content__witchcase-article`
 --
 
-CREATE TABLE `content__article-witchcase` (
+CREATE TABLE `content__witchcase-article` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -149,10 +149,10 @@ CREATE TABLE `content__article-witchcase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `content__article-witchcase`
+-- Déchargement des données de la table `content__witchcase-article`
 --
 
-INSERT INTO `content__article-witchcase` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `headline@string#value`, `body@text#value`, `image@image#file`, `image@image#title`, `headline-left@string#value`, `body-left@text#value`, `headline-center@string#value`, `body-center@text#value`, `headline-right@string#value`, `body-right@text#value`, `link@link#href`, `link@link#text`, `link@link#external`) VALUES
+INSERT INTO `content__witchcase-article` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `headline@string#value`, `body@text#value`, `image@image#file`, `image@image#title`, `headline-left@string#value`, `body-left@text#value`, `headline-center@string#value`, `body-center@text#value`, `headline-right@string#value`, `body-right@text#value`, `link@link#href`, `link@link#text`, `link@link#external`) VALUES
 (1, 'REPRENEZ LE CONTRÔLE', 1, '2023-09-26 16:37:27', 1, '2023-09-26 16:49:01', 'REPRENEZ LE CONTRÔLE', '', 'logo_woody.png', 'logo woody', 'Pour les développeurs', 'Woody CMS est développé sur des technologies purement <strong>PHP/MySQL, en licence GPL</strong>. Le langage PHP est la seule connaissance requise pour y développer un site. Le concept de Woody CMS est une simplification fondamentale du stockage de données : <strong>plus de cache</strong> sur la visualisation des contenus, et aucune perte de temps due au renouvellement de ses fichiers pour valider ses développements. Les éléments contextuels (le menu par exemple) sont cachés par un système très simple et très accessible laissé aux soins du développeur. <br>De plus Woody CMS est une <strong>plateforme multisites</strong> avec un système d\'héritage et laisse une grande liberté dans le développement des modules. <br>En somme Woody CMS fonctionne comme une véritable <strong>\"boite à outils\"</strong> pour les développeurs.  ', 'Pour les utilisateurs', 'A l’heure actuelle, la contribution d’un site web implique un temps de visualisation de son travail en ligne avant de considérer ou non cette tâche achevée. Ce temps de validation doit prendre en compte la gestion du cache qui, suivant son niveau de complexité, peut prendre jusqu\'à 20 minutes pour une seule contribution. Un site implémenté avec Woody CMS permet la <strong>mise en ligne immédiate</strong> d’une information grâce à l’absence de cache de visualisation. Les contributeurs peuvent ainsi valider immédiatement leur travail. De plus Woody CMS est multisite et gère efficacement le <strong>multi-positionnement de contenus</strong>. Les contributeurs peuvent gérer différents sites via <strong>une seule et même interface</strong>, où la modification d’un contenu multipositionné est effective automatiquement à l’ensemble du site. Les visiteurs consultent alors une information instantanément à jour, sans s’impatienter devant un site ralenti par la régénération des fichiers de cache.', 'Pour les administrateurs', 'Woody CMS est un gestionnaire de contenu <strong>malléable</strong> : la forme et les emplacements sont déterminés par les administrateurs de la plateforme. L’administrateur peut créer et modifier à loisir autant de structures de contenus qu\'il souhaite, suivant la forme qu’il recherche. Par exemple la structure <em>article</em> peut contenir une introduction, une image, un lien ou encore un diaporama afin de correspondre exactement à ses besoins. Afin que les nécessités métier ne s’adaptent pas à une structure rigide, Woody CMS range les différents éléments qui constituent le site, suivant une <strong>arborescence choisie et construite en fonction des besoins requis</strong>. Pour les webmaster, Woody CMS propose nativement une gestion multisites avec héritage et une multiposition des éléments, afin de faciliter l\'administration. Pour les administrateurs réseau, une <strong>prise en compte immédiate et sans cache de la configuration</strong> permet l\'ajout et la suppression de host et de siteaccess \"à chaud\".', NULL, NULL, 1),
 (2, 'Woody CMS en quelques mots', 1, '2023-09-26 16:47:28', 1, '2023-09-26 18:41:25', 'Woody CMS en quelques mots', 'Voici une copie d\'écran de l\'interface Woody CMS. Ici nous visualisons l\'élément de la home du site de Witch case. Nous distinguons à gauche les informations sur l\'élément <em>home</em> : le module est <em>view</em> (module de visualisation de contenus), le contenu associé n\'est plus un brouillon et n\'est pas une archive, il est indiqué <em>Content</em>. Le type de structure du contenu est <em>home-demo</em>, c\'est-à-dire la page d\'accueil. En dessous, nous avons la partie dédiée à l’emplacement, et plus en dessous encore le tableau des sous-éléments. A droite nous avons une visualisation des attributs du contenu.', 'WoodyEcran.png', ' Capture d\'écran de l\'interface d\'administration ', 'Malléabilité', 'Woody CMS est un gestionnaire dont l’arborescence et la <strong>structure des contenus sont gérés à 100% par ses utilisateurs</strong>. Cela permet d\'adapter ce CMS aux besoins métiers et non l\'inverse. Woody CMS permet la gestion multisites avec héritage. Dans le cas de plusieurs sites à structure identique, le nouveau site héritera des codes des précédents sites. Il ne restera plus qu’à développer la spécificité du nouveau site. Il permet également la multiposition d\'éléments, afin de <strong>modifier en une seule action</strong> un élément présent sur plusieurs emplacements. Chacune des positions est associée à un module (un fichier PHP), et peut être associé, ou non, à un contenu. Cela permet d\'ajouter facilement un nouveau traitement par le biais d\'un nouveau module. Woody CMS est une véritable \"boite à outils\" qui <strong>offre une grande liberté</strong> au développement et à l\'administration.', 'Spécificité', 'Woody CMS est fondamentalement orienté vers les professionnels du web, tout en étant fondamentalement flexible aux besoins métiers, tant dans sa structure de données que dans sa gestion de l\'arborescence. Il est tout d’abord dirigé vers le développement : en supprimant la majorité des fichiers de cache, il <strong>diminue significativement les temps</strong> de validation des codes développés. L\'accès au développement de modules spécifique est aussi simplifié : toute la structure des codes est en MVC mais reste à <strong>100% PHP5</strong>. L\'absence de cache de visualisation permet également de réduire les temps de contribution et d\'administration en ayant <strong>instantanément accès à l\'information</strong> par une récupération systématique des données en base.', 'Le projet ', ' Woody CMS est actuellement un prototype. De nombreuses améliorations sont en cours de développement. Nous ne saurons que trop vous remercier si vous souhaitez <strong>contribuer à son développement</strong>. <br>Il est sous <strong>licence GPL</strong> et développé à <strong>100% en PHP5</strong>, sans utilisation de templating (nous utilisons du code PHP dans les pages de visualisation). <br>Le développement de modules d\'utilisation courante est en cours, l\'ajout d\'attributs possible est également en cours, ainsi que des améliorations au niveau du moteur. <br>Le projet est là et bien vivant, <strong>nous n\'attendons plus que vous !</strong>', 'https://github.com/Jean2Grom/witchcase-local', 'Contribuez sur GitHub', 1),
 (3, 'FONCTIONNEMENT GLOBAL', 1, '2023-09-28 18:44:00', 1, '2023-09-28 18:44:00', 'FONCTIONNEMENT GLOBAL', 'Schéma séquence MVC (simplifié)', 'MVC-schema-full.jpg', 'schema MVC', 'Partie <em>View</em>', '<strong>1.</strong> Pour qu\'une page s\'affiche, nous envoyons une requête HTTP (typiquement avec son navigateur web). <br/>\r\n<strong>8.</strong> Nous avons alors toutes les informations nécessaires pour les traitements du module. Nous récupérons alors le fichier \"design\" du module, qui produira l\'apparence du contenu de la page web (le code HTML de la partie évolutive du site, souvent centrale).  <br/>\r\n<strong>10.</strong> Nous récupérons alors le fichier \"design\" (voir plus haut) lié au contexte, on y inclut le résultat du module et nous affichons la page ainsi générée. \r\n', 'Partie <em>Controller</em>', '<strong>2.</strong> Le serveur qui reçoit la requête identifie en premier lieu l\'utilisateur (logé ou non). <br/>\r\n<strong>3.</strong> Le système détermine via le fichier de configuration à quel site la requête fait appel, Woody CMS étant un système multi-sites. <br/>\r\n<strong>5.</strong> Cette dernière requête a récupéré l’information du \"module\" souhaité, le système exécute alors le fichier correspondant à ce module.  <br/>\r\n<strong>9.</strong> Une fois ce code récupéré, il est stocké et nous déterminons quel sera le contexte (c\'est-à-dire la partie de la page HTML qui est partagée par plusieurs pages et qui revient donc régulièrement), les traitements de ce contexte sont effectués. \r\n', 'Partie <em>Model</em>', '<strong>4.</strong> Une fois le site et l\'URL identifiés, nous déterminons l\'emplacement dans l\'arborescence du contenu désiré en envoyant une requête sur la table des emplacements. <br/>\r\n<strong>6.</strong> La requête d\'emplacement a également fourni le contenu cible appelé ici \"target\". Nous envoyons alors une requête simple sur la structure de la table en base de données qui contient ce contenu. <br/>\r\n<strong>7.</strong> Nous obtenons la structure du contenu. Nous regardons alors si d\'autres informations sont souhaitées et nous ajustons si besoin la requête qui doit récupérer ce contenu.\r\n', '', '', 1),
@@ -164,10 +164,10 @@ INSERT INTO `content__article-witchcase` (`id`, `name`, `creator`, `created`, `m
 -- --------------------------------------------------------
 
 --
--- Structure de la table `content__folder-witchcase`
+-- Structure de la table `content__witchcase-folder`
 --
 
-CREATE TABLE `content__folder-witchcase` (
+CREATE TABLE `content__witchcase-folder` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -181,10 +181,10 @@ CREATE TABLE `content__folder-witchcase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `content__folder-witchcase`
+-- Déchargement des données de la table `content__witchcase-folder`
 --
 
-INSERT INTO `content__folder-witchcase` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `headline@string#value`, `body@text#value`, `background@image#file`, `background@image#title`) VALUES
+INSERT INTO `content__witchcase-folder` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `headline@string#value`, `body@text#value`, `background@image#file`, `background@image#title`) VALUES
 (1, 'Le CMS', 1, '2023-09-19 15:55:40', 1, '2023-09-19 15:55:40', 'Le CMS', ' L\'outil qui s\'adapte aux métiers', 'img_fond_home.jpg', 'écorce'),
 (2, 'Technologies', 1, '2023-09-19 16:35:13', 1, '2023-09-19 16:35:13', 'Technologies', 'Les technologies développées par le projet Witchcase', 'img_fond_technologies.jpg', 'moteur'),
 (3, 'À Propos', 1, '2023-09-19 16:51:15', 1, '2023-09-25 19:07:32', 'À propos de Witch case', 'Réconcilier l\'informatique avec ses utilisateurs ', 'img_fond_apropos.jpg', 'organique');
@@ -192,10 +192,10 @@ INSERT INTO `content__folder-witchcase` (`id`, `name`, `creator`, `created`, `mo
 -- --------------------------------------------------------
 
 --
--- Structure de la table `content__home-witchcase`
+-- Structure de la table `content__witchcase-home`
 --
 
-CREATE TABLE `content__home-witchcase` (
+CREATE TABLE `content__witchcase-home` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -220,19 +220,19 @@ CREATE TABLE `content__home-witchcase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `content__home-witchcase`
+-- Déchargement des données de la table `content__witchcase-home`
 --
 
-INSERT INTO `content__home-witchcase` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `meta-title@string#value`, `meta-description@string#value`, `meta-keywords@string#value`, `logo@image#file`, `logo@image#title`, `contact-email@link#href`, `contact-email@link#text`, `contact-email@link#external`, `call-to-action@link#href`, `call-to-action@link#text`, `call-to-action@link#external`, `headline@string#value`, `body@text#value`, `background@image#file`, `background@image#title`) VALUES
+INSERT INTO `content__witchcase-home` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `meta-title@string#value`, `meta-description@string#value`, `meta-keywords@string#value`, `logo@image#file`, `logo@image#title`, `contact-email@link#href`, `contact-email@link#text`, `contact-email@link#external`, `call-to-action@link#href`, `call-to-action@link#text`, `call-to-action@link#external`, `headline@string#value`, `body@text#value`, `background@image#file`, `background@image#title`) VALUES
 (1, 'Home', 1, '2023-09-14 17:03:25', 1, '2023-09-18 16:29:03', 'WitchCase', 'description du site WC', 'witchcase, cms, ecologie, arborescence', 'logo.jpg', 'logo', 'mailto:info@witchcase.com', 'info@witchcase.com', 1, 'https://github.com/Jean2Grom/witchcase-local', 'Répository GitHub', 1, 'WitchCase', 'le gestionnaire de contenus web qui s\'adapte aux métiers', 'img_fond_contact.jpg', 'witch riding broom');
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `content__user`
+-- Structure de la table `content__wc-user`
 --
 
-CREATE TABLE `content__user` (
+CREATE TABLE `content__wc-user` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -245,19 +245,19 @@ CREATE TABLE `content__user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `content__user`
+-- Déchargement des données de la table `content__wc-user`
 --
 
-INSERT INTO `content__user` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
+INSERT INTO `content__wc-user` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
 (1, 'Administrateur', NULL, '2023-09-11 15:03:08', NULL, '2023-09-11 15:03:08', 'Witchcase', 'Administrateur', 1);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `draft__article-witchcase`
+-- Structure de la table `draft__witchcase-article`
 --
 
-CREATE TABLE `draft__article-witchcase` (
+CREATE TABLE `draft__witchcase-article` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -281,19 +281,19 @@ CREATE TABLE `draft__article-witchcase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `draft__article-witchcase`
+-- Déchargement des données de la table `draft__witchcase-article`
 --
 
-INSERT INTO `draft__article-witchcase` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `content_key`, `headline@string#value`, `body@text#value`, `image@image#file`, `image@image#title`, `headline-left@string#value`, `body-left@text#value`, `headline-center@string#value`, `body-center@text#value`, `headline-right@string#value`, `body-right@text#value`, `link@link#href`, `link@link#text`, `link@link#external`) VALUES
+INSERT INTO `draft__witchcase-article` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `content_key`, `headline@string#value`, `body@text#value`, `image@image#file`, `image@image#title`, `headline-left@string#value`, `body-left@text#value`, `headline-center@string#value`, `body-center@text#value`, `headline-right@string#value`, `body-right@text#value`, `link@link#href`, `link@link#text`, `link@link#external`) VALUES
 (4, 'REPRENEZ LE CONTRÔLE', 1, '2023-09-26 18:31:16', 1, '2023-09-26 18:31:16', 1, 'REPRENEZ LE CONTRÔLE', '', 'logo_woody.png', 'logo woody', 'Pour les développeurs', 'Woody CMS est développé sur des technologies purement <strong>PHP/MySQL, en licence GPL</strong>. Le langage PHP est la seule connaissance requise pour y développer un site. Le concept de Woody CMS est une simplification fondamentale du stockage de données : <strong>plus de cache</strong> sur la visualisation des contenus, et aucune perte de temps due au renouvellement de ses fichiers pour valider ses développements. Les éléments contextuels (le menu par exemple) sont cachés par un système très simple et très accessible laissé aux soins du développeur. <br>De plus Woody CMS est une <strong>plateforme multisites</strong> avec un système d\'héritage et laisse une grande liberté dans le développement des modules. <br>En somme Woody CMS fonctionne comme une véritable <strong>\"boite à outils\"</strong> pour les développeurs.  ', 'Pour les utilisateurs', 'A l’heure actuelle, la contribution d’un site web implique un temps de visualisation de son travail en ligne avant de considérer ou non cette tâche achevée. Ce temps de validation doit prendre en compte la gestion du cache qui, suivant son niveau de complexité, peut prendre jusqu\'à 20 minutes pour une seule contribution. Un site implémenté avec Woody CMS permet la <strong>mise en ligne immédiate</strong> d’une information grâce à l’absence de cache de visualisation. Les contributeurs peuvent ainsi valider immédiatement leur travail. De plus Woody CMS est multisite et gère efficacement le <strong>multi-positionnement de contenus</strong>. Les contributeurs peuvent gérer différents sites via <strong>une seule et même interface</strong>, où la modification d’un contenu multipositionné est effective automatiquement à l’ensemble du site. Les visiteurs consultent alors une information instantanément à jour, sans s’impatienter devant un site ralenti par la régénération des fichiers de cache.', 'Pour les administrateurs', 'Woody CMS est un gestionnaire de contenu <strong>malléable</strong> : la forme et les emplacements sont déterminés par les administrateurs de la plateforme. L’administrateur peut créer et modifier à loisir autant de structures de contenus qu\'il souhaite, suivant la forme qu’il recherche. Par exemple la structure <em>article</em> peut contenir une introduction, une image, un lien ou encore un diaporama afin de correspondre exactement à ses besoins. Afin que les nécessités métier ne s’adaptent pas à une structure rigide, Woody CMS range les différents éléments qui constituent le site, suivant une <strong>arborescence choisie et construite en fonction des besoins requis</strong>. Pour les webmaster, Woody CMS propose nativement une gestion multisites avec héritage et une multiposition des éléments, afin de faciliter l\'administration. Pour les administrateurs réseau, une <strong>prise en compte immédiate et sans cache de la configuration</strong> permet l\'ajout et la suppression de host et de siteaccess \"à chaud\".', NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `draft__folder-witchcase`
+-- Structure de la table `draft__witchcase-folder`
 --
 
-CREATE TABLE `draft__folder-witchcase` (
+CREATE TABLE `draft__witchcase-folder` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -308,19 +308,19 @@ CREATE TABLE `draft__folder-witchcase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `draft__folder-witchcase`
+-- Déchargement des données de la table `draft__witchcase-folder`
 --
 
-INSERT INTO `draft__folder-witchcase` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `content_key`, `headline@string#value`, `body@text#value`, `background@image#file`, `background@image#title`) VALUES
+INSERT INTO `draft__witchcase-folder` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `content_key`, `headline@string#value`, `body@text#value`, `background@image#file`, `background@image#title`) VALUES
 (10, 'À Propos', 1, '2023-09-26 11:33:00', 1, '2023-09-26 11:33:00', 3, 'À propos de Witch case', 'Réconcilier l\'informatique avec ses utilisateurs ', 'img_fond_apropos.jpg', 'organique');
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `draft__home-witchcase`
+-- Structure de la table `draft__witchcase-home`
 --
 
-CREATE TABLE `draft__home-witchcase` (
+CREATE TABLE `draft__witchcase-home` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -346,19 +346,19 @@ CREATE TABLE `draft__home-witchcase` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `draft__home-witchcase`
+-- Déchargement des données de la table `draft__witchcase-home`
 --
 
-INSERT INTO `draft__home-witchcase` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `content_key`, `meta-title@string#value`, `meta-description@string#value`, `meta-keywords@string#value`, `logo@image#file`, `logo@image#title`, `contact-email@link#href`, `contact-email@link#text`, `contact-email@link#external`, `call-to-action@link#href`, `call-to-action@link#text`, `call-to-action@link#external`, `headline@string#value`, `body@text#value`, `background@image#file`, `background@image#title`) VALUES
+INSERT INTO `draft__witchcase-home` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `content_key`, `meta-title@string#value`, `meta-description@string#value`, `meta-keywords@string#value`, `logo@image#file`, `logo@image#title`, `contact-email@link#href`, `contact-email@link#text`, `contact-email@link#external`, `call-to-action@link#href`, `call-to-action@link#text`, `call-to-action@link#external`, `headline@string#value`, `body@text#value`, `background@image#file`, `background@image#title`) VALUES
 (4, 'Home', 1, '2023-09-18 17:23:51', 1, '2023-09-18 17:23:51', 1, 'WitchCase', 'description du site WC', 'witchcase, cms, ecologie, arborescence', 'logo.jpg', 'logo', 'mailto:info@witchcase.com', 'info@witchcase.com', 1, 'https://github.com/Jean2Grom/witchcase-local', 'Répository GitHub', 1, 'WitchCase', 'le gestionnaire de contenus web qui s\'adapte aux métiers', 'img_fond_contact.jpg', 'witch riding broom');
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `draft__user`
+-- Structure de la table `draft__wc-user`
 --
 
-CREATE TABLE `draft__user` (
+CREATE TABLE `draft__wc-user` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -398,7 +398,7 @@ CREATE TABLE `user__connexion` (
 --
 
 INSERT INTO `user__connexion` (`id`, `name`, `email`, `login`, `pass_hash`, `craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name`, `modifier`, `modified`, `creator`, `created`) VALUES
-(1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__user', 'connexion', 'id', 'connection', NULL, '2023-09-11 15:03:08', NULL, '2023-09-11 15:03:08');
+(1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2023-09-11 15:03:08', NULL, '2023-09-11 15:03:08');
 
 -- --------------------------------------------------------
 
@@ -505,7 +505,7 @@ INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `c
 (1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2023-09-11 15:03:08', 0, NULL, NULL, NULL, NULL),
 (2, 'Admin WitchCase', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2023-09-11 15:03:08', 0, 1, NULL, NULL, NULL),
 (3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, NULL, NULL, 1, NULL, '2023-09-11 15:03:08', 10, 1, 1, NULL, NULL),
-(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 'content__user', 1, NULL, 1, '', '2023-09-11 15:03:08', 0, 1, 1, 1, NULL),
+(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 'content__wc-user', 1, NULL, 1, '', '2023-09-11 15:03:08', 0, 1, 1, 1, NULL),
 (5, 'Home', '', 'admin', '', 0, 'root', NULL, NULL, NULL, 1, NULL, '2023-09-11 15:03:08', 0, 1, 2, NULL, NULL),
 (6, 'Login', 'Module de déconnexion/connexion', 'admin', 'login', 0, 'login', NULL, NULL, NULL, 1, NULL, '2023-09-11 15:03:08', 40, 1, 2, 1, NULL),
 (7, 'Witch', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'view', NULL, NULL, NULL, 1, NULL, '2023-09-11 15:03:08', 30, 1, 2, 2, NULL),
@@ -515,93 +515,93 @@ INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `c
 (11, 'Profiles', 'Permissions handeling is based on user profiles.', 'admin', 'profiles', 0, 'profiles', NULL, NULL, NULL, 1, NULL, '2023-09-11 15:03:08', 0, 1, 2, 5, 1),
 (12, 'Structures', '', 'admin', 'structures', 0, 'structures', NULL, NULL, NULL, 1, NULL, '2023-09-11 15:03:08', 0, 1, 2, 5, 2),
 (13, 'Site Witchcase', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2023-09-12 11:04:11', 0, 2, NULL, NULL, NULL),
-(14, 'Home', '', 'witchcase', '', 0, 'view', 'content__home-witchcase', 1, NULL, 1, NULL, '2023-09-14 16:54:36', 0, 2, 1, NULL, NULL),
-(15, 'Le CMS', '', 'witchcase', 'le-cms', 0, 'view', 'content__folder-witchcase', 1, NULL, 1, NULL, '2023-09-19 15:53:49', 0, 2, 1, 1, NULL),
-(16, 'Technologies', '', 'witchcase', 'technologies', 0, 'view', 'content__folder-witchcase', 2, NULL, 1, NULL, '2023-09-19 16:33:02', 0, 2, 1, 2, NULL),
-(17, 'À Propos', '', 'witchcase', 'a-propos', 0, 'view', 'content__folder-witchcase', 3, NULL, 1, NULL, '2023-09-19 16:35:59', 0, 2, 1, 3, NULL),
-(18, 'REPRENEZ LE CONTRÔLE', 'Woody CMS est le premier CMS dont la technologie est orientée vers les acteurs du web. Que vous soyez développeur, contributeur, webmaster ou même administrateur réseau, ce gestionnaire de contenu (CMS) a pour objectif de vous simplifier la vie en supprimant les attentes interminables dues au fonctionnement d\'un site web, tout en bénéficiant de la malléabilité exigée d\'un site qui vous représente.', NULL, NULL, 0, NULL, 'content__article-witchcase', 1, NULL, 1, NULL, '2023-09-26 16:33:33', 0, 2, 1, 1, 1),
-(19, 'Woody CMS en quelques mots', 'Woody CMS est un prototype de gestion de contenu, à partir duquel on développe, contribue et administre un site web. Woody CMS propose un modèle de stockage des données en base, gère la sécurité, assure une partition MVC des codes, et propose une interface web pour administrer son ou ses site(s).', NULL, NULL, 0, NULL, 'content__article-witchcase', 2, NULL, 1, NULL, '2023-09-26 16:39:44', 0, 2, 1, 1, 2),
+(14, 'Home', '', 'witchcase', '', 0, 'view', 'content__witchcase-home', 1, NULL, 1, NULL, '2023-09-14 16:54:36', 0, 2, 1, NULL, NULL),
+(15, 'Le CMS', '', 'witchcase', 'le-cms', 0, 'view', 'content__witchcase-folder', 1, NULL, 1, NULL, '2023-09-19 15:53:49', 0, 2, 1, 1, NULL),
+(16, 'Technologies', '', 'witchcase', 'technologies', 0, 'view', 'content__witchcase-folder', 2, NULL, 1, NULL, '2023-09-19 16:33:02', 0, 2, 1, 2, NULL),
+(17, 'À Propos', '', 'witchcase', 'a-propos', 0, 'view', 'content__witchcase-folder', 3, NULL, 1, NULL, '2023-09-19 16:35:59', 0, 2, 1, 3, NULL),
+(18, 'REPRENEZ LE CONTRÔLE', 'Woody CMS est le premier CMS dont la technologie est orientée vers les acteurs du web. Que vous soyez développeur, contributeur, webmaster ou même administrateur réseau, ce gestionnaire de contenu (CMS) a pour objectif de vous simplifier la vie en supprimant les attentes interminables dues au fonctionnement d\'un site web, tout en bénéficiant de la malléabilité exigée d\'un site qui vous représente.', NULL, NULL, 0, NULL, 'content__witchcase-article', 1, NULL, 1, NULL, '2023-09-26 16:33:33', 0, 2, 1, 1, 1),
+(19, 'Woody CMS en quelques mots', 'Woody CMS est un prototype de gestion de contenu, à partir duquel on développe, contribue et administre un site web. Woody CMS propose un modèle de stockage des données en base, gère la sécurité, assure une partition MVC des codes, et propose une interface web pour administrer son ou ses site(s).', NULL, NULL, 0, NULL, 'content__witchcase-article', 2, NULL, 1, NULL, '2023-09-26 16:39:44', 0, 2, 1, 1, 2),
 (20, 'Contacter', '', 'witchcase', 'contacter', 0, 'contact', NULL, NULL, NULL, 1, NULL, '2023-09-27 11:48:37', -9, 2, 1, 4, NULL),
-(21, 'FONCTIONNEMENT GLOBAL', 'Ici nous représentons les flux avec un diagramme de séquence, depuis la requête du navigateur jusqu\'à la visualisation de la page. Nous avons mis ici en valeur la structure MVC (Model View Controller) de Woody CMS.', NULL, NULL, 0, NULL, 'content__article-witchcase', 3, NULL, 1, NULL, '2023-09-28 18:40:14', 40, 2, 1, 2, 1),
-(22, 'EMPLACEMENT MATRICIEL', 'Une des innovations utilisées par Woody CMS est la gestion de l\'arborescence avec des coordonnées matricielles. Cette technique permet d’avoir qu\'une unique requête pour déterminer l\'arborescence de l\'emplacement auquel nous accèdons.', NULL, NULL, 0, NULL, 'content__article-witchcase', 4, NULL, 1, NULL, '2023-09-28 18:45:14', 30, 2, 1, 2, 2),
-(23, 'CONTENU AJUSTABLE', 'Afin de récupérer toutes les informations du contenu à afficher, Witch case a développé une solution qui consiste à ajuster en direct la table correspondant au contenu à afficher. Ainsi, on peut récupérer l\'ensemble des informations en une seule requête.', NULL, NULL, 0, NULL, 'content__article-witchcase', 5, NULL, 1, NULL, '2023-09-28 18:48:54', 20, 2, 1, 2, 3),
-(24, 'NOMMAGE STRUCTUREL DES CHAMPS', 'Afin de permettre une plus grande complexité des attributs qui composent un contenu, il faut connaitre sa structure et son comportement avant d\'envoyer la requête visant à récupérer les contenus. Pour cela nous identifions les champs en BDD par un nommage structurel.', NULL, NULL, 0, NULL, 'content__article-witchcase', 6, NULL, 1, NULL, '2023-09-28 19:02:27', 10, 2, 1, 2, 4),
-(25, 'WITCH CASE EN BREF', 'Witch case est une société d\'édition web crée en 2016 par Jean de Gromard. Ingénieur de formation, il a passé 10 ans dans les technologies du web dont 5 à se spécialiser dans l\'intégration de site via des CMS, avec une expertise sur eZPublish. Woody CMS est le premier projet de Witch case. Le prototype a été développé entre 2015 et 2016, sur une durée d\'environ un an.', NULL, NULL, 0, NULL, 'content__article-witchcase', 7, NULL, 1, NULL, '2023-09-28 19:06:12', 0, 2, 1, 3, 1);
+(21, 'FONCTIONNEMENT GLOBAL', 'Ici nous représentons les flux avec un diagramme de séquence, depuis la requête du navigateur jusqu\'à la visualisation de la page. Nous avons mis ici en valeur la structure MVC (Model View Controller) de Woody CMS.', NULL, NULL, 0, NULL, 'content__witchcase-article', 3, NULL, 1, NULL, '2023-09-28 18:40:14', 40, 2, 1, 2, 1),
+(22, 'EMPLACEMENT MATRICIEL', 'Une des innovations utilisées par Woody CMS est la gestion de l\'arborescence avec des coordonnées matricielles. Cette technique permet d’avoir qu\'une unique requête pour déterminer l\'arborescence de l\'emplacement auquel nous accèdons.', NULL, NULL, 0, NULL, 'content__witchcase-article', 4, NULL, 1, NULL, '2023-09-28 18:45:14', 30, 2, 1, 2, 2),
+(23, 'CONTENU AJUSTABLE', 'Afin de récupérer toutes les informations du contenu à afficher, Witch case a développé une solution qui consiste à ajuster en direct la table correspondant au contenu à afficher. Ainsi, on peut récupérer l\'ensemble des informations en une seule requête.', NULL, NULL, 0, NULL, 'content__witchcase-article', 5, NULL, 1, NULL, '2023-09-28 18:48:54', 20, 2, 1, 2, 3),
+(24, 'NOMMAGE STRUCTUREL DES CHAMPS', 'Afin de permettre une plus grande complexité des attributs qui composent un contenu, il faut connaitre sa structure et son comportement avant d\'envoyer la requête visant à récupérer les contenus. Pour cela nous identifions les champs en BDD par un nommage structurel.', NULL, NULL, 0, NULL, 'content__witchcase-article', 6, NULL, 1, NULL, '2023-09-28 19:02:27', 10, 2, 1, 2, 4),
+(25, 'WITCH CASE EN BREF', 'Witch case est une société d\'édition web crée en 2016 par Jean de Gromard. Ingénieur de formation, il a passé 10 ans dans les technologies du web dont 5 à se spécialiser dans l\'intégration de site via des CMS, avec une expertise sur eZPublish. Woody CMS est le premier projet de Witch case. Le prototype a été développé entre 2015 et 2016, sur une durée d\'environ un an.', NULL, NULL, 0, NULL, 'content__witchcase-article', 7, NULL, 1, NULL, '2023-09-28 19:06:12', 0, 2, 1, 3, 1);
 
 --
 -- Index pour les tables déchargées
 --
 
 --
--- Index pour la table `archive__article-witchcase`
+-- Index pour la table `archive__witchcase-article`
 --
-ALTER TABLE `archive__article-witchcase`
+ALTER TABLE `archive__witchcase-article`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `archive__folder-witchcase`
+-- Index pour la table `archive__witchcase-folder`
 --
-ALTER TABLE `archive__folder-witchcase`
+ALTER TABLE `archive__witchcase-folder`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `archive__home-witchcase`
+-- Index pour la table `archive__witchcase-home`
 --
-ALTER TABLE `archive__home-witchcase`
+ALTER TABLE `archive__witchcase-home`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `archive__user`
+-- Index pour la table `archive__wc-user`
 --
-ALTER TABLE `archive__user`
+ALTER TABLE `archive__wc-user`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `content__article-witchcase`
+-- Index pour la table `content__witchcase-article`
 --
-ALTER TABLE `content__article-witchcase`
+ALTER TABLE `content__witchcase-article`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `content__folder-witchcase`
+-- Index pour la table `content__witchcase-folder`
 --
-ALTER TABLE `content__folder-witchcase`
+ALTER TABLE `content__witchcase-folder`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `content__home-witchcase`
+-- Index pour la table `content__witchcase-home`
 --
-ALTER TABLE `content__home-witchcase`
+ALTER TABLE `content__witchcase-home`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `content__user`
+-- Index pour la table `content__wc-user`
 --
-ALTER TABLE `content__user`
+ALTER TABLE `content__wc-user`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `draft__article-witchcase`
+-- Index pour la table `draft__witchcase-article`
 --
-ALTER TABLE `draft__article-witchcase`
+ALTER TABLE `draft__witchcase-article`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `draft__folder-witchcase`
+-- Index pour la table `draft__witchcase-folder`
 --
-ALTER TABLE `draft__folder-witchcase`
+ALTER TABLE `draft__witchcase-folder`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `draft__home-witchcase`
+-- Index pour la table `draft__witchcase-home`
 --
-ALTER TABLE `draft__home-witchcase`
+ALTER TABLE `draft__witchcase-home`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `draft__user`
+-- Index pour la table `draft__wc-user`
 --
-ALTER TABLE `draft__user`
+ALTER TABLE `draft__wc-user`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -643,63 +643,63 @@ ALTER TABLE `witch`
 --
 
 --
--- AUTO_INCREMENT pour la table `archive__article-witchcase`
+-- AUTO_INCREMENT pour la table `archive__witchcase-article`
 --
-ALTER TABLE `archive__article-witchcase`
+ALTER TABLE `archive__witchcase-article`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT pour la table `archive__folder-witchcase`
+-- AUTO_INCREMENT pour la table `archive__witchcase-folder`
 --
-ALTER TABLE `archive__folder-witchcase`
+ALTER TABLE `archive__witchcase-folder`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT pour la table `archive__home-witchcase`
+-- AUTO_INCREMENT pour la table `archive__witchcase-home`
 --
-ALTER TABLE `archive__home-witchcase`
+ALTER TABLE `archive__witchcase-home`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT pour la table `content__article-witchcase`
+-- AUTO_INCREMENT pour la table `content__witchcase-article`
 --
-ALTER TABLE `content__article-witchcase`
+ALTER TABLE `content__witchcase-article`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT pour la table `content__folder-witchcase`
+-- AUTO_INCREMENT pour la table `content__witchcase-folder`
 --
-ALTER TABLE `content__folder-witchcase`
+ALTER TABLE `content__witchcase-folder`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT pour la table `content__home-witchcase`
+-- AUTO_INCREMENT pour la table `content__witchcase-home`
 --
-ALTER TABLE `content__home-witchcase`
+ALTER TABLE `content__witchcase-home`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT pour la table `content__user`
+-- AUTO_INCREMENT pour la table `content__wc-user`
 --
-ALTER TABLE `content__user`
+ALTER TABLE `content__wc-user`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT pour la table `draft__article-witchcase`
+-- AUTO_INCREMENT pour la table `draft__witchcase-article`
 --
-ALTER TABLE `draft__article-witchcase`
+ALTER TABLE `draft__witchcase-article`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT pour la table `draft__folder-witchcase`
+-- AUTO_INCREMENT pour la table `draft__witchcase-folder`
 --
-ALTER TABLE `draft__folder-witchcase`
+ALTER TABLE `draft__witchcase-folder`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT pour la table `draft__home-witchcase`
+-- AUTO_INCREMENT pour la table `draft__witchcase-home`
 --
-ALTER TABLE `draft__home-witchcase`
+ALTER TABLE `draft__witchcase-home`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
