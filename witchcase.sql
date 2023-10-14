@@ -18,16 +18,16 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `witchcase_local`
+-- Base de données : `witchcase`
 --
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `archive__user`
+-- Structure de la table `archive__wc-user`
 --
 
-CREATE TABLE `archive__user` (
+CREATE TABLE `archive__wc-user` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -43,10 +43,10 @@ CREATE TABLE `archive__user` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `content__user`
+-- Structure de la table `content__wc-user`
 --
 
-CREATE TABLE `content__user` (
+CREATE TABLE `content__wc-user` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -59,19 +59,19 @@ CREATE TABLE `content__user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `content__user`
+-- Déchargement des données de la table `content__wc-user`
 --
 
-INSERT INTO `content__user` (`id`, `name`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
+INSERT INTO `content__wc-user` (`id`, `name`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
 (1, 'Administrateur', 'Witchcase', 'Administrateur', 1);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `draft__user`
+-- Structure de la table `draft__wc-user`
 --
 
-CREATE TABLE `draft__user` (
+CREATE TABLE `draft__wc-user` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -111,7 +111,7 @@ CREATE TABLE `user__connexion` (
 --
 
 INSERT INTO `user__connexion` (`id`, `name`, `email`, `login`, `pass_hash`, `craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name`) VALUES
-(1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__user', 'connexion', 'id', 'connection');
+(1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection');
 
 -- --------------------------------------------------------
 
@@ -215,7 +215,7 @@ INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `c
 (1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL,  0, NULL, NULL, NULL, NULL),
 (2, 'Admin WitchCase', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL,  0, 1, NULL, NULL, NULL),
 (3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, NULL, NULL, 1, NULL, 10, 1, 1, NULL, NULL),
-(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 'content__user', 1, NULL, 1, '',  0, 1, 1, 1, NULL),
+(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 'content__wc-user', 1, NULL, 1, '',  0, 1, 1, 1, NULL),
 (5, 'Home', '', 'admin', '', 0, 'root', NULL, NULL, NULL, 1, NULL,  0, 1, 2, NULL, NULL),
 (6, 'Login', 'Module de déconnexion/connexion', 'admin', 'login', 0, 'login', NULL, NULL, NULL, 1, NULL, 40, 1, 2, 1, NULL),
 (7, 'Witch', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'view', NULL, NULL, NULL, 1, NULL, 30, 1, 2, 2, NULL),
@@ -231,21 +231,21 @@ INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `c
 --
 
 --
--- Index pour la table `archive__user`
+-- Index pour la table `archive__wc-user`
 --
-ALTER TABLE `archive__user`
+ALTER TABLE `archive__wc-user`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `content__user`
+-- Index pour la table `content__wc-user`
 --
-ALTER TABLE `content__user`
+ALTER TABLE `content__wc-user`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `draft__user`
+-- Index pour la table `draft__wc-user`
 --
-ALTER TABLE `draft__user`
+ALTER TABLE `draft__wc-user`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -286,9 +286,9 @@ ALTER TABLE `witch`
 -- AUTO_INCREMENT pour les tables déchargées
 --
 --
--- AUTO_INCREMENT pour la table `content__user`
+-- AUTO_INCREMENT pour la table `content__wc-user`
 --
-ALTER TABLE `content__user`
+ALTER TABLE `content__wc-user`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
