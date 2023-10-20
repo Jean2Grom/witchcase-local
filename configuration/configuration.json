@@ -30,7 +30,7 @@
     "system": {
         "debug": [
             "127.0.0.1",
-            "78.202.60.186"
+            "xxx.xxx.xxx.xxx"
         ],
         "createFolderRights": "755",
         "maxLog": "10000000",        
@@ -76,7 +76,8 @@
             "6": "pending",
             "7": "archived",
             "8": "edito",
-            "9": "admin"
+            "9": "admin",
+            "10": "superadmin"
         },
         "witches": {
             "current": {

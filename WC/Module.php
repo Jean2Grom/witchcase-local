@@ -35,12 +35,12 @@ class Module
         $this->name     = $moduleName;
         $this->execFile = $this->wc->website->getFilePath( self::DIR.'/'.$this->name.".php" );
         
-        $websiteModuleConfig = $this->wc->website->get("modules");
-        
         $this->config = array_replace_recursive( 
-                            $websiteModuleConfig['*'] ?? [],
-                            $websiteModuleConfig[ $this->name ] ?? []
+                            $this->wc->website->modules['*'] ?? [],
+                            $this->wc->website->modules[ $this->name ] ?? []
                         );
+        
+        
         
         $this->maxStatus = 0;
         foreach( $this->wc->user->policies as $policy ){

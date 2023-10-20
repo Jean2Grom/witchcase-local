@@ -99,7 +99,7 @@
                                     <option value="*">
                                         All status
                                     </option>
-                                    <?php foreach( $website->get('status') as $statusKey => $statusLabel ): ?>
+                                    <?php foreach( $website->status as $statusKey => $statusLabel ): ?>
                                         <option value="<?=$statusKey ?>">
                                             <?=$statusLabel ?>
                                         </option>
@@ -234,7 +234,7 @@
                                         <option value="*">
                                             All status
                                         </option>
-                                        <?php foreach( $website->get('status') as $statusKey => $statusLabel ): ?>
+                                        <?php foreach( $website->status as $statusKey => $statusLabel ): ?>
                                             <option <?=($policy->status === $statusKey)? 'selected': '' ?>
                                                     value="<?=$statusKey ?>">
                                                 <?=$statusLabel ?>
