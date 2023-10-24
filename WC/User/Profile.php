@@ -50,7 +50,7 @@ class Profile
         else
         {
             $website = new Website( $wc, $profile->site );
-            $statusLabels = $website->get('status');
+            $statusLabels = $website->status;
         }
         
         foreach( $data['policies'] as $policyData )

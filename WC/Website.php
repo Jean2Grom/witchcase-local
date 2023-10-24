@@ -50,7 +50,7 @@ class Website
         // Reading non heritable confs variables
         $this->access               = $this->wc->configuration->read($this->name, "access");
         $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");
-        $this->site                 = $this->wc->configuration->read($this->name, "site") ?? $this->name;
+        $this->site                 = $this->wc->configuration->read($this->name, "visibility") ?? $this->name;
         
         if( $this->site !== $this->name ){
             $this->wc->debug->toResume("URL site is acceded by: ".$this->site, 'WEBSITE');
@@ -60,8 +60,9 @@ class Website
         $this->siteHeritages        = $this->wc->configuration->getSiteHeritage( $this->name );
         $this->siteHeritages[]      = "global";
         
-        $this->modules              = $this->wc->configuration->readSiteVar('modules', $this) ?? [];
-        $witchesConf                = $this->wc->configuration->readSiteVar('witches', $this) ?? [];
+        $this->modules              = $this->wc->configuration->readSiteMergedVar('modules', $this) ?? [];
+        $witchesConf                = $this->wc->configuration->readSiteMergedVar('witches', $this) ?? [];
+        $this->status               = $this->wc->configuration->readSiteVar('status', $this);
         $defaultContext             = $this->wc->configuration->readSiteVar('defaultContext', $this);
         if( !empty($defaultContext) ){
             $this->defaultContext       = $defaultContext;
@@ -145,7 +146,7 @@ class Website
         
         // Looking in extension files
         /*
-        $extensions = $this->wc->configuration->getExtensions($this->wc->website->name);
+        $extensions = $this->wc->configuration->readSiteMergedVar('extensions', $this);
         if( is_array($extensions) ){
             foreach( $extensions as $extension )
             {
