@@ -408,6 +408,76 @@ class WitchSummoning
             $query  .= "AND `user_craft_table`.`".$wc->user->connexionData['craft_column']."` = :user_id ";
         }
         
+        $userPoliciesConditions = [];
+        foreach( $wc->user->policies as $policyId => $policy )
+        {
+            $condition = [];
+            $policyKeyPrefix = ":policy_".((int) $policyId);
+            /*
+            if( !empty($policy['module']) && $policy['module'] != "*" )
+            {
+                $condition[] = "`w`.`invoke` = ".$policyKeyPrefix."_invoke ";
+                $parameters[ $policyKeyPrefix.'_invoke' ] = $policy['module'];
+            }
+             */
+            
+            if( isset($policy['status']) && $policy['status'] != "*" )
+            {
+                $condition[] = "`w`.`status` <= ".$policyKeyPrefix."_status ";
+                $parameters[ $policyKeyPrefix.'_status' ] = (int) $policy['status'];
+            }
+            
+            if( !empty($condition) && !empty($policy['position']) )
+            {
+                if( $policy['position_rules']['ancestors'] xor $policy['position_rules']['descendants'] )
+                {
+                    $lastLevel = count($policy['position']);
+                    if( $policy['position_rules']['self'] ){
+                        $lastLevel++;
+                    }
+                }
+
+                foreach( $policy['position'] as $level => $levelValue ){
+                    if( $level <= $lastLevel )
+                    {
+                        $field                                      = "level_".((int) $level);
+                        $condition[]                                = "`w`.`".$field."` = ".$policyKeyPrefix."_".$field." ";
+                        $parameters[ $policyKeyPrefix."_".$field ]  = $levelValue;
+                    }
+                }
+                
+                if( $policy['position_rules']['ancestors'] ){
+                    $condition[] = "`w`.`level_".$lastLevel."` IS NULL ";
+                }
+                elseif( $policy['position_rules']['descendants'] && !$policy['position_rules']['self']){
+                    $condition[] = "`w`.`level_".$lastLevel."` IS NOT NULL ";
+                }                
+            }
+            
+            if( !empty($condition) ){
+                $userPoliciesConditions[] = $condition;
+            }
+        }
+        
+        if( !empty($userPoliciesConditions) )
+        {
+            $query .= "AND ( ";
+            foreach( $userPoliciesConditions as $i => $condition )
+            {
+                if( count($condition) == 1 ){
+                    $query .= array_values($condition)[0];
+                }
+                else {
+                    $query .= "( ".implode("AND ", $condition).") ";
+                }
+                
+                if( ($i + 1) < count($userPoliciesConditions) ){
+                    $query .= "OR "; 
+                }
+            }
+            $query .= ") ";
+        }
+        
         return $wc->db->selectQuery($query, $parameters);
     }
 

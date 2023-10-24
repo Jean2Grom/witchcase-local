@@ -76,7 +76,9 @@
             "6": "pending",
             "7": "archived",
             "8": "edito",
-            "9": "admin"
+            "9": "self",
+            "10": "admin",
+            "11": "superadmin"
         },
         "witches": {
             "current": {

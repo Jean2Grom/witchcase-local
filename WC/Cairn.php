@@ -399,7 +399,6 @@ class Cairn
             if( $witch->position == $position ){
                 return $witch;
             }
-            
             $witchBuffer    = $witch;
             $continue       = true;
             while( $continue && $witchBuffer )
@@ -414,7 +413,7 @@ class Cairn
                     }
                 }
                 
-                if( $witchBuffer->position == $position ){
+                if( $witchBuffer && $witchBuffer->position == $position ){
                     return $witchBuffer;
                 }
                 elseif( $continue ){

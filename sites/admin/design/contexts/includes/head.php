@@ -1,9 +1,7 @@
 <meta charset="utf-8">
 <title><?=$title ?? "WitchCase Admin" ?></title>
 
-<?php if( isset($faviconMime) && isset($faviconContent) ): ?>
-    <link rel="icon" type="<?=$faviconMime?>" href="data:<?=$faviconMime?>; base64,<?=$faviconContent?>" />
-<?php endif; ?>
+<?=$this->favicon() ?>
 
 <?php foreach( $this->getJsLibFiles() as $jsLibFile ): ?>
     <script src="<?=$jsLibFile?>"></script>

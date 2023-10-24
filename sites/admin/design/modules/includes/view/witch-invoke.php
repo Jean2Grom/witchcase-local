@@ -22,7 +22,7 @@
             </tr>
             <tr>
                 <td class="label">Status</td>
-                <td class="value"><?=$targetWitch->status ?></td>
+                <td class="value"><?=$targetWitch->status() ?></td>
             </tr>
             <tr>
                 <td class="label">Context</td>

@@ -51,8 +51,11 @@
     },
     "admin": {
         "access": [
-            "localhost/admin",
-            "localhost"
+            "localhost/admin-legacy",
+            "localhost/admin-v1",
+            "localhost/admin-V1",
+            "localhost/adminV1",
+            "localhost/admin1"
         ],
         "adminForSites": [
             "*"
@@ -116,8 +119,26 @@
             "arborescence": {
                 "notAllowed": false,
                 "navigationUnSafeMode": true
+            },
+            "chooseWitch": {
+                "notAllowed": false
             }
         }
-    }
+    },
+    "admin-v2": {
+        "access": [
+            "localhost/admin-v2",
+            "localhost/admin-V2",
+            "localhost/admin",
+            "localhost"
+        ],
+        "siteHeritages": [
+            "admin"
+        ], 
+        "adminForSites": [
+            "*"
+        ],
+        "visibility": "admin"
+    }    
 }
     

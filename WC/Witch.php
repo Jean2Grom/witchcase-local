@@ -36,6 +36,8 @@ class Witch
     var $statusLevel        = 0;
     var $status;
     
+    var $site;
+    
     var $depth              = 0;
     var $position           = [];
     var $modules            = [];
@@ -161,13 +163,42 @@ class Witch
             $this->datetime = new ExtendedDateTime($this->properties['datetime']);
         }
         
+        if( isset($this->properties['site']) ){
+            $this->site = $this->properties['site'];
+        }
+        
         if( isset($this->properties['status']) ){
             $this->statusLevel = (int) $this->properties['status'];
         }
         
-        $this->status      = $this->wc->configuration->read('global', "status")[ $this->statusLevel ];
+        $this->status = null;
         
         return;
+    }
+    
+    /**
+     * Resolve status label with Website generation
+     * @return ?string status label
+     */
+    function status()
+    {
+        if( $this->status ){
+            return $this->status;
+        }
+        
+        if( $this->site ){
+            $statusList = (new Website( $this->wc, $this->site ))->status;
+        }
+        
+        if( empty($statusList) ){
+            $statusList = $this->wc->configuration->read('global', "status");
+        }
+        
+        if( isset($statusList[ $this->statusLevel ]) ){
+            $this->status = $statusList[ $this->statusLevel ];
+        }
+        
+        return $this->status;
     }
     
     /**
@@ -678,13 +709,13 @@ class Witch
         // If invoke is set to null
         if( in_array('invoke', $paramsKeyArray) && is_null($params['invoke']) )
         {
-            $params['site'] = null;
+            //$params['site'] = null;
             $params['url']  = null;
         }
         // If invoke is not set but is actually null
         elseif( !in_array('invoke', $paramsKeyArray) && is_null($this->properties['invoke']) )
         {
-            $params['site'] = null;
+            //$params['site'] = null;
             $params['url']  = null;
         }
         // If site is set to null
@@ -1096,7 +1127,7 @@ class Witch
     {
         $website = $forcedWebsite ?? $this->wc->website;
         
-        if( $this->site !== $website->site || !$this->url ){
+        if( $this->site !== $website->site || is_null($this->url) ){
             return null;
         }
         
