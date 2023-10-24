@@ -709,13 +709,13 @@ class Witch
         // If invoke is set to null
         if( in_array('invoke', $paramsKeyArray) && is_null($params['invoke']) )
         {
-            $params['site'] = null;
+            //$params['site'] = null;
             $params['url']  = null;
         }
         // If invoke is not set but is actually null
         elseif( !in_array('invoke', $paramsKeyArray) && is_null($this->properties['invoke']) )
         {
-            $params['site'] = null;
+            //$params['site'] = null;
             $params['url']  = null;
         }
         // If site is set to null

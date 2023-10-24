@@ -49,6 +49,8 @@ $(document).ready(function()
         $('.view__daughters').show();
     });
     
+    witchInfoChange();
+    autoUrlChange();
     
     $('#witch-site, .witch-invoke').change( witchInfoChange );
     $('#witch-auto-url').change( autoUrlChange );
