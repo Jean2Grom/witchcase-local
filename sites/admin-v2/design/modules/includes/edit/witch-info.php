@@ -88,7 +88,7 @@
             </div>
         <?php endforeach; ?>
         
-        <div class="site-selected"
+        <div id="site-selected"
              <?=!$targetWitch->site? 'style="display: none;"' :'' ?>>
             <div class="auto-url-disabled"
                  <?=!$targetWitch->url? 'style="display: none;"' :'' ?>>

@@ -56,13 +56,13 @@ $(document).ready(function()
     function witchInfoChange()
     {
         $('.witch-info__part').hide();
-        $('.site-selected').hide();
-        
+        $('#site-selected').hide();
+
         let site = $('#witch-site').val();
         $('.witch-info__part-' + site).show();
-        
+
         if( site !== '' && $('#witch-invoke-' + site).val() !== '' ){
-            $('.site-selected').show();
+            $('#site-selected').show();
         }
     }    
     
@@ -97,8 +97,6 @@ $(document).ready(function()
         witchInfoChange();
         autoUrlChange();
     });
-    
-    
     
     
     // Craft part
