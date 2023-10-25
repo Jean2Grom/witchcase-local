@@ -59,6 +59,8 @@ class WitchCase
             $this->depth    = WitchSummoning::getDepth( $this );
             $this->request  = new Request( $this );
             $this->website  = $this->request->getWebsite();
+            $this->debug->addEnableCondition($this->website->debug);
+            
             $this->cairn    = $this->website->getCairn();
             $this->user     = new User( $this );
             
