@@ -38,6 +38,7 @@
         "publicUserProfile": "public"
     },
     "global": {
+        "debug": false,
         "modules": {
             "*": {
                 "notAllowed": "403"

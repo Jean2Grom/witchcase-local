@@ -66,7 +66,7 @@ class Log
         ){
             error_reporting(E_ALL);
             ini_set("display_errors", 1);
-            $this->wc->debug->enabled = true;
+            $this->wc->debug->enable();
         }
         
         $this->errorLogFP = fopen( $this->logFilename, 'a' );
