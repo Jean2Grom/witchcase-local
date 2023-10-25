@@ -481,4 +481,26 @@ class Debug
         $this->databaseAnalysis[ $type ]['requests']++;
         $this->databaseAnalysis[ $type ]['time'] += $time;
     }
+    
+    /**
+     * enable debug output
+     */
+    function enable(){
+        $this->enabled = true;
+    }
+    
+    /**
+     * disable debug output
+     */
+    function disable(){
+        $this->enabled = false;
+    }
+    
+    /**
+     * disable debug output
+     */
+    function addEnableCondition( bool $condition ){
+        $this->enabled = $this->enabled && $condition;
+    }
+    
 }
