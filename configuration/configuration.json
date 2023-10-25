@@ -29,7 +29,7 @@
     },
     "system": {
         "debug": [
-            "127.0.0.1xx",
+            "127.0.0.1",
             "xxx.xxx.xxx.xxx"
         ],
         "createFolderRights": "755",
