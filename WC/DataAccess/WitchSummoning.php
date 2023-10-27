@@ -82,7 +82,8 @@ class WitchSummoning
             {
                 $matched = true;
                 foreach( $conditionsItem as $field => $value ){
-                    if( $row[ $field ] != $value )
+                    
+                    if( $row[ $field ] !== $value )
                     {
                         $matched = false;
                         break;
