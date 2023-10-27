@@ -24,67 +24,31 @@ class FileAttribute extends \WC\Attribute
         if( $key == "file" && !empty($_FILES[ $this->name.'@'.$this->type.'#fileupload' ]["tmp_name"]) )
         {
             $tmpFileInfos = $_FILES[ $this->name.'@'.$this->type.'#fileupload' ];
-
-            $check = filesize($tmpFileInfos["tmp_name"]);
-
-            if( $check !== false )
-            {
-                $directoryPath = "";
-                foreach( explode('/', $this->directory) as $folder ) 
-                {
-                    $directoryPath .= $folder;
-                    if( !is_dir($directoryPath) ) 
-                    {   mkdir( $directoryPath, 0705 );  }
-
-                    $directoryPath .= "/";
-                }
-
-                if( copy($tmpFileInfos["tmp_name"], $directoryPath.$tmpFileInfos["name"]) ){
-                    $this->values['file'] = $tmpFileInfos["name"];
-                }
+            
+            if( filesize($tmpFileInfos["tmp_name"]) !== false 
+                && copy($tmpFileInfos["tmp_name"], $this->newDirectoryName( $tmpFileInfos["name"] )) ){
+                $this->values['file'] = $tmpFileInfos["name"];
             }
             
             return $this;
         }
-        
-        return parent::setValue($key, $value);
-    }
-    
-    function set( $args )
-    {
-        if( !empty($_FILES[ $this->name.'@'.$this->type.'#fileupload' ][ "tmp_name" ]) )
+        elseif( $key == "file" )
         {
-            $tmpFileInfos = $_FILES[ $this->name.'@'.$this->type.'#fileupload' ];
+            $localFile = $this->wc->request->param($this->name.'@'.$this->type.'#filemove');
             
-            $check = filesize($tmpFileInfos["tmp_name"]);
-
-            if( $check !== false )
+            if( $localFile && is_file($localFile) )
             {
-                $directoryPath = "";
-                foreach( explode('/', $this->directory) as $folder ) 
-                {
-                    $directoryPath .= $folder;
-                    if( !is_dir($directoryPath) ) 
-                    {   mkdir( $directoryPath, 0705 );  }
-
-                    $directoryPath .= "/";
+                $baseFilename = basename($localFile);
+                
+                if( copy($localFile, $this->newDirectoryName( $baseFilename )) ){
+                    $this->values['file'] = $baseFilename;
                 }
                 
-                if( copy($tmpFileInfos["tmp_name"], $directoryPath.$tmpFileInfos["name"]) ){
-                    $this->values['file'] = $tmpFileInfos["name"];
-                }
+                return $this;                
             }
         }
         
-        if( isset($args['storeButton']) 
-            && strcmp( $args['storeButton'], $this->name.'@'.$this->type.'#filedelete' ) == 0 
-        ){
-            $this->values['file'] = "";
-        }
-        
-        parent::set($args);
-        
-        return true;
+        return parent::setValue($key, $value);
     }
     
     function content( ?string $element=null )
@@ -129,5 +93,21 @@ class FileAttribute extends \WC\Attribute
         }
         
         return "/".$filepath;
+    }
+    
+    private function newDirectoryName( string $baseFilename ): string
+    {
+        $directoryPath = "";
+        foreach( explode('/', $this->directory) as $folder ) 
+        {
+            $directoryPath .= $folder;
+            if( !is_dir($directoryPath) ){
+                mkdir( $directoryPath, 0705 );                          
+            }
+
+            $directoryPath .= "/";
+        }
+        
+        return $directoryPath.$baseFilename;
     }
 }
