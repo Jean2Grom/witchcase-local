@@ -1,28 +1,31 @@
-<?php if( $srcFile ): ?>
-    <div class="current-image-display">
-        <h2>Current image</h2>
+<div class="current-file-display" <?=$srcFile? '': 'style="display: none;"' ?>>
+    <?php if( $srcFile ): ?>
+        <h2 class="current-file-target">Current image</h2>
         
-        <img src="<?=$srcFile?>" 
-             height="150" />
-        
-        <a class="deleteImage" value="<?=$this->name.'@'.$this->type.'#filedelete'?>" >
-            <i class="fa fa-times"></i>
-        </a>
-    </div>
-<?php endif; ?>
+        <img class="current-file-target" src="<?=$srcFile?>" />
+    <?php endif; ?>
+    
+    <img class="new-image-target" src="" />
+    
+    <a class="delete-image" >
+        <i class="fa fa-times"></i>
+    </a>
+</div>
 
-<p>
+<div class="change-file-container" <?=$srcFile? 'style="display: none;"': '' ?>>
     <h2>Browse image file</h2>
     
     <input  type="file" 
-            class="changeImage"
+            accept="image/*"
+            class="change-image"
             name="<?=$this->name.'@'.$this->type.'#fileupload'?>" />
     
     <input  type="hidden" 
+            class="file-input"
             name="<?=$this->name.'@'.$this->type.'#file'?>" 
             id="<?=$this->name.'@'.$this->type.'#file'?>" 
             value="<?=$this->values['file']?>" />
-</p>
+</div>
 
 <p>
     <h2>Caption</h2>

@@ -1,5 +1,6 @@
 <?php
 $this->wc->website->context->addJsFile('attribute/image-edit.js');
+$this->wc->website->context->addCssFile('attribute/image-edit.css');
 
 $srcFile = $this->getFile(); 
 
