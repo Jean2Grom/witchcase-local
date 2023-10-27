@@ -1,5 +1,6 @@
 {
     "admin": {
+        "debug": false,
         "access": [
             "localhost/admin-legacy",
             "localhost/admin-v1",
