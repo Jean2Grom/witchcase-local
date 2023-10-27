@@ -4,6 +4,10 @@
         "access": [
             "localhost/marieaerts"
         ],
+        "status": {
+            "0": "public",
+            "1": "hidden"
+        },
         "witches": {
             "context": {
                 "id": 27
