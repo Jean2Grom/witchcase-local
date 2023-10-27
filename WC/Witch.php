@@ -860,9 +860,18 @@ class Witch
         $newDaughterPosition                        = $this->position;
         $newDaughterPosition[ ($this->depth + 1) ]  = WitchDA::getNewDaughterIndex($this->wc, $this->position);
         
+        if( !isset($params['site']) ){
+            $params['site'] = $this->site;
+        }
+        
+        /*
+        if( !isset($params['status']) ){
+            $params['status'] = $this->statusLevel;
+        }
+        */
+        
         if( empty($params['invoke']) || empty($params['site']) || !in_array('url', array_keys($params)) )
         {
-            $params['site']     = null;
             $params['url']      = null;
             $params['invoke']   = null;
         }
