@@ -5,12 +5,8 @@
             "localhost/marieaerts"
         ],
         "witches": {
-            "home": {
-                "id": 27,
-                "children": {
-                    "depth": 1,
-                    "craft": true
-                }
+            "context": {
+                "id": 27
             },
             "menu": {
                 "id": 33,

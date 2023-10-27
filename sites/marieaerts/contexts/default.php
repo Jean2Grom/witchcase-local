@@ -1,7 +1,7 @@
 <?php
-$contextCraft = $this->wc->witch('home')->craft();
+$contextCraft = $this->wc->witch('context')->craft();
 
-$metaTitle = $this->wc->witch('home')->name;
+$metaTitle = $this->wc->witch('context')->name;
 if( $contextCraft->attribute('meta-title')->content() ){
     $metaTitle = $contextCraft->attribute('meta-title')->content();
 }
