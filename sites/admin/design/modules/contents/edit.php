@@ -23,19 +23,19 @@
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
     
-    <fieldset>
-        <legend>Craft Name</legend>
-        <input type="text" name="name" value="<?=$draft->name ?>" />
-    </fieldset>
-    <div class="clear"></div>
-    
-    <?php foreach( $draft->attributes as $attribute ): ?>
+    <div class="fieldsets-container">
         <fieldset>
-            <legend><?=$attribute->name?> [<?=$attribute->type?>]</legend>
-                <?php $attribute->edit() ?>
+            <legend>Craft Name</legend>
+            <input type="text" name="name" value="<?=$draft->name ?>" />
         </fieldset>
-        <div class="clear"></div>
-    <?php endforeach; ?>
+        
+        <?php foreach( $draft->attributes as $attribute ): ?>
+            <fieldset>
+                <legend><?=$attribute->name?> [<?=$attribute->type?>]</legend>
+                    <?php $attribute->edit() ?>
+            </fieldset>
+        <?php endforeach; ?>
+    </div>
     
     <?php if( $targetWitch ): ?>
         <button class="trigger-action" 
