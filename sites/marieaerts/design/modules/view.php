@@ -1,7 +1,7 @@
 <h2><?=$title ?></h2>
 
 <?php if( !empty($description) ): ?>
-    <p class="description"><?=$description ?></p>
+    <div class="description"><?=$description ?></div>
 <?php endif; ?>
 
 <?php if( $image ): ?>
