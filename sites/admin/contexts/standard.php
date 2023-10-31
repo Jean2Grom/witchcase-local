@@ -1,34 +1,40 @@
 <?php
-$currentWitch   = $this->wc->witch();
+$initialWitch = $this->wc->witch("target");
+if( !$initialWitch->id ){
+    $initialWitch = $this->wc->witch();
+}
 
 if( $this->breadcrumb ){
     $breadcrumb = $this->breadcrumb;
 }
 else
 {
-    $breadcrumb = [
-        [
-            "name"  => $this->wc->witch()->name,
-            "data"  => $this->wc->witch()->data,
-            "href"  => "javascript: location.reload();",
-        ]
-    ];
-
-    $breadcrumbWitch    = $currentWitch->mother();
+    $breadcrumb         = [];
+    $breadcrumbWitch    = $initialWitch;
     while( !empty($breadcrumbWitch) )
     {
-        $url = $breadcrumbWitch->getUrl();
-
+        if( $breadcrumbWitch  === $initialWitch ){
+            $url    = "javascript: location.reload();";
+        }
+        else {
+            $url    = $breadcrumbWitch->getUrl();
+        }
+        
         if( $url ){
             $breadcrumb[]   = [
                 "name"  => $breadcrumbWitch->name,
                 "data"  => $breadcrumbWitch->data,
                 "href"  => $url,
-            ];        
+            ];
         }
 
-        $breadcrumbWitch    = $breadcrumbWitch->mother();
+        if( $this->wc->witch('root') === $breadcrumbWitch ){
+            break;
+        }
+
+        $breadcrumbWitch    = $breadcrumbWitch->mother();    
     }
+    
     $breadcrumb = array_reverse($breadcrumb);
 }
 
