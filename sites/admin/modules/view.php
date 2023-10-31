@@ -71,24 +71,28 @@ foreach( $sites as $site ){
     }
 }
 
-$breadcrumb = [
-    [
-        "name"  => $targetWitch->name,
-        "data"  => $targetWitch->data,
-        "href"  => $this->witch->getUrl([ 'id' => $targetWitch->id ]),
-    ]
-];
-
-$breadcrumbWitch    = $targetWitch->mother();
+$breadcrumb         = [];
+$breadcrumbWitch    = $targetWitch;
 while( !empty($breadcrumbWitch) )
 {
+    if( $breadcrumbWitch  === $targetWitch ){
+        $url    = "javascript: location.reload();";
+    }
+    else {
+        $url    = $this->witch->getUrl([ 'id' => $breadcrumbWitch->id ]);
+    }
+    
     $breadcrumb[]   = [
         "name"  => $breadcrumbWitch->name,
         "data"  => $breadcrumbWitch->data,
-        "href"  => $this->witch->getUrl([ 'id' => $breadcrumbWitch->id ]),
+        "href"  => $url,
     ];
+
+    if( $this->wc->witch('root') === $breadcrumbWitch ){
+        break;
+    }
     
-    $breadcrumbWitch    = $breadcrumbWitch->mother();
+    $breadcrumbWitch    = $breadcrumbWitch->mother();    
 }
 
 $this->addContextVar( 'breadcrumb', array_reverse($breadcrumb) );
