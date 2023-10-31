@@ -1177,24 +1177,26 @@ class Witch
         if( $currentId && $currentId == $witch->id ){
             $path = true;
         }
-
+        
         $daughters  = [];
-        foreach( $witch->daughters() as $daughterWitch )
-        {
-            if( $maxStatus !== false && $daughterWitch->statusLevel > $maxStatus ){
-                continue;
-            }
+        if( $witch->id ){
+            foreach( $witch->daughters() as $daughterWitch )
+            {
+                if( $maxStatus !== false && $daughterWitch->statusLevel > $maxStatus ){
+                    continue;
+                }
 
-            $subTree        = self::recursiveTree( $daughterWitch, $sitesRestrictions, $currentId, $maxStatus, $hrefCallBack );
-            if( $subTree === false ){
-                continue;
-            }
+                $subTree        = self::recursiveTree( $daughterWitch, $sitesRestrictions, $currentId, $maxStatus, $hrefCallBack );
+                if( $subTree === false ){
+                    continue;
+                }
 
-            if( $subTree['path'] ){
-                $path = true;
-            }
+                if( $subTree['path'] ){
+                    $path = true;
+                }
 
-            $daughters[ $subTree['id'] ]    = $subTree;
+                $daughters[ $subTree['id'] ]    = $subTree;
+            }
         }
 
         $tree   = [ 
