@@ -683,6 +683,18 @@ ALTER TABLE `content__witchcase-home`
 --
 ALTER TABLE `content__wc-user`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
+--
+-- AUTO_INCREMENT pour la table `draft__wc-user`
+--
+ALTER TABLE `draft__wc-user`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+--
+-- AUTO_INCREMENT pour la table `archive__wc-user`
+--
+ALTER TABLE `archive__wc-user`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT pour la table `draft__witchcase-article`
