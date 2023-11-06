@@ -529,14 +529,14 @@ class Witch
         
         if( !$permission && !empty($module->config['notAllowed']) )
         {
-            $this->wc->debug->toResume( "Access denied to for user: ".$this->wc->user->name.", redirecting to ".$module->config['notAllowed'], 'MODULE '.$module->name  );
+            $this->wc->debug->toResume( "Access denied to for user: \"".$this->wc->user->name."\", redirecting to \"".$module->config['notAllowed']."\"", 'MODULE '.$module->name  );
             $result = $this->invoke( $module->config['notAllowed'], true );
             $this->modules[ $moduleName ] = $this->modules[ $module->config['notAllowed'] ];
             return $result;
         }
         elseif( !$permission )
         {
-            $this->wc->debug->toResume( "Access denied for user: ".$this->wc->user->name, 'MODULE '.$module->name );
+            $this->wc->debug->toResume( "Access denied for user: \"".$this->wc->user->name."\"", 'MODULE '.$module->name );
             $this->modules[ $moduleName ]   = false;
             return "";
         }

@@ -3,10 +3,11 @@ namespace WC;
 
 class Module 
 {
+    const DEFAULT_FILE  = "default";   
+    const DIR           = "modules";
+    
     const DESIGN_SUBFOLDER              = "design/modules";
     const DESIGN_INCLUDES_SUBFOLDER     = "design/modules/includes";
-
-    const DIR = "modules";
     
     var $name;
     var $execFile;
@@ -27,7 +28,7 @@ class Module
     {
         $this->witch    = $witch;
         $this->wc       = $this->witch->wc;
-                
+        
         if( strcasecmp(substr($moduleName, -4), ".php") == 0 ){
             $moduleName =  substr($moduleName, 0, -4);
         }        
@@ -35,12 +36,14 @@ class Module
         $this->name     = $moduleName;
         $this->execFile = $this->wc->website->getFilePath( self::DIR.'/'.$this->name.".php" );
         
+        if( !$this->execFile ){
+            $this->execFile = $this->wc->website->getFilePath( self::DIR."/".self::DEFAULT_FILE.".php" );
+        }
+        
         $this->config = array_replace_recursive( 
                             $this->wc->website->modules['*'] ?? [],
                             $this->wc->website->modules[ $this->name ] ?? []
                         );
-        
-        
         
         $this->maxStatus = 0;
         foreach( $this->wc->user->policies as $policy ){
@@ -65,7 +68,7 @@ class Module
             $this->setContext($this->config['defaultContext']);
         }
         
-        $this->wc->debug->toResume("Executing file: ".$this->execFile, 'MODULE '.$this->name);
+        $this->wc->debug->toResume("Executing file: \"".$this->execFile."\"", 'MODULE '.$this->name);
         ob_start();
         include $this->execFile;        
         if( $this->view ){
@@ -121,7 +124,7 @@ class Module
             $this->wc->log->error("Can't get design file: ".$filename, $mandatory);
         }
         
-        $this->wc->debug->toResume("Design file to be included : ".$this->designFile, 'MODULE '.$this->name);
+        $this->wc->debug->toResume("Design file to be included : \"".$this->designFile."\"", 'MODULE '.$this->name);
         return $this->designFile;
     }
     
@@ -160,7 +163,7 @@ class Module
     }
     
     function setContext( $context ){
-        return $this->wc->website->context->setExecFile( $context );
+        return $this->wc->website->context->set( $context );
     }
     
     function getIncludeDesignFile( $filename )
@@ -171,7 +174,7 @@ class Module
             return false;
         }
         
-        $this->wc->debug->toResume("Ressource design file to be Included: ".$fullPath, 'MODULE '.$this->name);
+        $this->wc->debug->toResume("Ressource design file to be Included: \"".$fullPath."\"", 'MODULE '.$this->name);
         return $fullPath;
     }
     
