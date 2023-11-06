@@ -83,8 +83,7 @@
         "access": [
             "localhost/admin-v2",
             "localhost/admin-V2",
-            "localhost/admin",
-            "localhost"
+            "localhost/admin"
         ],
         "siteHeritages": [
             "admin"
@@ -93,6 +92,12 @@
             "*"
         ],
         "visibility": "admin"
+    },
+    "blank": {
+        "access": [
+            "localhost",
+            "localhost/blank"
+        ]
     }    
 }
     
