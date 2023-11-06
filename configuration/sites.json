@@ -1,99 +1,4 @@
 {
-    "marieaerts": {
-        "debug": false,
-        "access": [
-            "localhost/marieaerts"
-        ],
-        "status": {
-            "0": "public",
-            "1": "hidden"
-        },
-        "witches": {
-            "context": {
-                "id": 27
-            },
-            "menu": {
-                "id": 33,
-                "children": {
-                    "depth": 2,
-                    "craft": true
-                }
-            },
-            "current": {
-                "children": {
-                    "depth": 2,
-                    "craft": true
-                }
-            }
-        }        
-    },
-    "adminmarieaerts": {
-        "debug": true,
-        "access": [
-            "localhost/marieaerts/admin"
-        ],
-        "status": {
-            "0": "public",
-            "1": "hidden"
-        },
-        "siteHeritages": [
-            "admin-v2"
-        ], 
-        "adminForSites": [
-            "marieaerts"
-        ],
-        "visibility": "admin",
-        "witches": {
-            "root": {
-                "id": 26
-            },            
-            "arborescence": {
-                "id": 26,
-                "craft": false,
-                "invoke": "arborescence",
-                "parents": false,
-                "sisters": false,
-                "children": {
-                    "depth": "*",
-                    "craft": false
-                }
-            },
-            "chooseWitch": {
-                "id": 26,
-                "craft": false,
-                "invoke": "chooseWitch",
-                "parents": false,
-                "sisters": false,
-                "children": {
-                    "depth": "*",
-                    "craft": false
-                }
-            }
-        }        
-    },
-    "witchcase": {
-        "access": [
-            "localhost/witchcase"
-        ],
-        "witches": {
-            "home": {
-                "id": 14,
-                "children": {
-                    "depth": 1,
-                    "craft": false
-                }
-            },
-            "current": {
-                "url": true, 
-                "invoke": true,
-                "craft": true,
-                "children": {
-                    "depth": 1,
-                    "craft": true
-                }
-            }
-        }
-    },
     "admin": {
         "debug": false,
         "access": [
@@ -193,6 +98,101 @@
             "localhost",
             "localhost/blank"
         ]
+    },
+    "marieaerts": {
+        "debug": false,
+        "access": [
+            "localhost/marieaerts"
+        ],
+        "status": {
+            "0": "public",
+            "1": "hidden"
+        },
+        "witches": {
+            "context": {
+                "id": 27
+            },
+            "menu": {
+                "id": 33,
+                "children": {
+                    "depth": 2,
+                    "craft": true
+                }
+            },
+            "current": {
+                "children": {
+                    "depth": 2,
+                    "craft": true
+                }
+            }
+        }        
+    },
+    "adminmarieaerts": {
+        "debug": true,
+        "access": [
+            "localhost/marieaerts/admin"
+        ],
+        "status": {
+            "0": "public",
+            "1": "hidden"
+        },
+        "siteHeritages": [
+            "admin-v2"
+        ], 
+        "adminForSites": [
+            "marieaerts"
+        ],
+        "visibility": "admin",
+        "witches": {
+            "root": {
+                "id": 26
+            },            
+            "arborescence": {
+                "id": 26,
+                "craft": false,
+                "invoke": "arborescence",
+                "parents": false,
+                "sisters": false,
+                "children": {
+                    "depth": "*",
+                    "craft": false
+                }
+            },
+            "chooseWitch": {
+                "id": 26,
+                "craft": false,
+                "invoke": "chooseWitch",
+                "parents": false,
+                "sisters": false,
+                "children": {
+                    "depth": "*",
+                    "craft": false
+                }
+            }
+        }        
+    },
+    "witchcase": {
+        "access": [
+            "localhost/witchcase"
+        ],
+        "witches": {
+            "home": {
+                "id": 14,
+                "children": {
+                    "depth": 1,
+                    "craft": false
+                }
+            },
+            "current": {
+                "url": true, 
+                "invoke": true,
+                "craft": true,
+                "children": {
+                    "depth": 1,
+                    "craft": true
+                }
+            }
+        }
     }    
 }
     
