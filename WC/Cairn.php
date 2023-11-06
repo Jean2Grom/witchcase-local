@@ -223,9 +223,9 @@ class Cairn
         }
         
         $configuration = [
-            'id'    => $ids,
-            'url'   => $urls,
             'user'  => $user,
+            'url'   => $urls,
+            'id'    => $ids,
         ];
         
         foreach( $configuration as $type => $typeConfiguration ){

@@ -1,7 +1,7 @@
 <?php
 use WC\Witch;
 
-$currentId = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT) ?? $this->wc->witch()->id;
+$currentId = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT) ?? $this->wc->witch()->id ?? 0;
 
 $obj = new class {
     public $baseUrl;

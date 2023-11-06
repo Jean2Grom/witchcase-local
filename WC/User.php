@@ -188,6 +188,25 @@ class User
         $this->session->destroy();
         $this->connexion = false;
         
+        $this->name     = $this->wc->configuration->read('system', 'publicUser') ?? "Public";
+        $publicProfile  = $this->wc->configuration->read('system', 'publicUserProfile') ?? 'public';
+        
+        $getPublicProfileData = UserDA::getPublicProfileData( $this->wc, $publicProfile );
+        
+        $this->profiles = $getPublicProfileData['profiles'];
+        $this->policies = $getPublicProfileData['policies'];
+        
+        $this->session->write(
+            'user', 
+            [
+                'name'          => $this->name,
+                'profiles'      => $this->profiles,
+                'policies'      => $this->policies,
+                'connexionID'   => false,
+                'connexionData' => false,
+            ]
+        );            
+        
         return $this;
     }
     

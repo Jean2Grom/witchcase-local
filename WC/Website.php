@@ -54,7 +54,7 @@ class Website
         $this->site                 = $this->wc->configuration->read($this->name, "visibility") ?? $this->name;
         
         if( $this->site !== $this->name ){
-            $this->wc->debug->toResume("URL site is acceded by: ".$this->site, 'WEBSITE');
+            $this->wc->debug->toResume("URL site is acceded by: \"".$this->site."\"", 'WEBSITE');
         }
         
         

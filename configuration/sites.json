@@ -162,6 +162,9 @@
             "login": {
                 "defaultContext": "login"
             },
+            "404": {
+                "defaultContext": "login"
+            },
             "arborescence": {
                 "notAllowed": false,
                 "navigationUnSafeMode": true
@@ -175,8 +178,7 @@
         "access": [
             "localhost/admin-v2",
             "localhost/admin-V2",
-            "localhost/admin",
-            "localhost"
+            "localhost/admin"
         ],
         "siteHeritages": [
             "admin"
@@ -185,6 +187,12 @@
             "*"
         ],
         "visibility": "admin"
+    },
+    "blank": {
+        "access": [
+            "localhost",
+            "localhost/blank"
+        ]
     }    
 }
     

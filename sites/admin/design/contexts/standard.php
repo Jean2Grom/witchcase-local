@@ -30,28 +30,28 @@
                 <h1 class="breadcrumb__label" title="<?=$this->wc->witch()->data ?>">
                     <a href="javascript: location.reload();"><?=$this->wc->witch()->name ?></a>
                 </h1>
-                
-                <?php foreach( $breadcrumb as $i => $breadcrumbItem ): ?>
+
+                <?php if( $this->wc->witch()->id ): foreach( $breadcrumb as $i => $breadcrumbItem ): ?>
                     <?=( $i > 0 )? "&nbsp;>&nbsp": "" ?>
                     <span class="breadcrumb__item" title="<?=$breadcrumbItem['data'] ?>">
                         <a href="<?=$breadcrumbItem['href'] ?>">
                             <?=$breadcrumbItem['name'] ?>
                         </a>
                     </span>
-                <?php endforeach; ?>
-                <div class="clear"></div>
+                <?php endforeach; endif; ?>
             </div>
             
             <div class="tabs">
-                <?php if( $this->wc->witch("arborescence") ): ?>
+                <?php if( $this->wc->cairn->invokation("arborescence") ): ?>
                     <div class="tabs__item">
                        <a href="#tab-navigation">
-                           <i class="fas fa-sitemap"></i> Navigation
+                           <i class="fas fa-sitemap"></i> 
+                           Navigation
                        </a>
                      </div>
                 <?php endif; ?>
                 
-                <?php if( !$this->wc->witch() ): ?>
+                <?php if( !$this->wc->witch()->id ): ?>
                     <div class="tabs__item selected">
                         <a href="#tab-current">
                             <i class="fas fa-bomb"></i> 404
