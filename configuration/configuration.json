@@ -35,7 +35,8 @@
         "createFolderRights": "755",
         "maxLog": "10000000",        
         "publicUser": "anonymous",
-        "publicUserProfile": "public"
+        "publicUserProfile": "public",
+        "defaultSite": "admin"
     },
     "global": {
         "debug": false,

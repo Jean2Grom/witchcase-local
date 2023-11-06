@@ -5,6 +5,8 @@ use WC\Website;
 
 class Request
 {
+    const DEFAULT_SITE      = "blank";
+    
     var $method;
     var $protocoleName;
     var $protocole;
@@ -87,12 +89,12 @@ class Request
                 $this->access   = substr($this->access , 4);
                 $compareAccess  = $this->compareAccess( $this->access  );
             }
-
+            
             if( !$compareAccess['matchedSiteAccess']   ){   
-                $this->wc->log->error("Site access is not in configuration file", true);  
+                $this->wc->log->error("Site access is not in configuration file");
             }
             else {
-                $this->wc->debug->toResume("Accessing site: ".$compareAccess['siteName']  .", with site access: ".$compareAccess['matchedSiteAccess'], 'SITEACCESS');
+                $this->wc->debug->toResume("Accessing site: \"".$compareAccess['siteName']."\", with site access: \"".$compareAccess['matchedSiteAccess']."\"", 'SITEACCESS');
             }
             
             $this->website = new Website( $this->wc, $compareAccess['siteName']  , $compareAccess['matchedSiteAccess'] );
@@ -113,8 +115,9 @@ class Request
     private function compareAccess( $access )
     {
         $haystack           = strtolower( $access );
-        $siteName           = false;
-        $matchedSiteAccess  = false;
+        $siteName           = $this->wc->configuration->read('system','defaultSite') ?? self::DEFAULT_SITE;
+        
+        $matchedSiteAccess  = "";
         $matchDegree        = 0;
         foreach( $this->wc->configuration->getSiteAccessMap() as $siteAccess => $site )
         {

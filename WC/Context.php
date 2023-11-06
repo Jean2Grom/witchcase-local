@@ -19,6 +19,7 @@ class Context
     const IMAGE_FILE_DISPLAY        = "image-file.php";
     const FAVICON_FILE_DISPLAY      = "favicon-file.php";
     
+    var $name;
     var $execFile;
     var $designFile;
     var $website;
@@ -38,29 +39,27 @@ class Context
         $this->website  = $website;
         $this->wc       = $this->website->wc;
         
-        $context = $initialContext ?? self::DEFAULT_FILE;
+        $this->name     = $initialContext ?? self::DEFAULT_FILE;
         
-        if( strcasecmp(substr($context, -4), ".php") == 0 ){
-            $context = substr($context, 0, -4);
+        if( strcasecmp(substr( $this->name, -4), ".php") == 0 ){
+             $this->name = substr( $this->name, 0, -4);
         }
         
-        $this->execFile = $this->website->getFilePath( self::DIR."/".$context.".php" );
-
-        if( !$this->execFile ){
-            $this->wc->log->error("Context File: ".$context." not found");
+        if( empty($this->name) ){
+            $this->wc->log->error("Context implemented with empty initilialisation");
         }
     }
     
-    function setExecFile( string $context )
+    function set( string $context )
     {
         if( strcasecmp(substr($context, -4), ".php") == 0 ){
             $context = substr($context, 0, -4);
         }
         
-        $this->execFile = $this->website->getFilePath( self::DIR."/".$context.".php" );
-
-        if( !$this->execFile ){
-            $this->wc->log->error("Context File: ".$context." not found");
+        $this->name     = $context;
+        
+        if( empty($this->name) ){
+            $this->wc->log->error("Context has been set with empty value");
         }
         
         return $this;
@@ -72,12 +71,8 @@ class Context
             return $this->designFile;
         }
         
-        if( !$this->execFile ){
-            return false;
-        }
-        
         if( !$designFile ){
-            $designFile = basename( $this->execFile );
+            $designFile = $this->name;
         }
         
         if( strcasecmp(substr($designFile, -4), ".php") == 0 ){
@@ -90,7 +85,7 @@ class Context
             $this->wc->log->error("Can't get design file: ".$designFile, $mandatory);
         }
         
-        $this->wc->debug->toResume("Design file to be included : ".$this->designFile, 'CONTEXT');
+        $this->wc->debug->toResume("Design file to be included : \"".$this->designFile."\"", 'CONTEXT');
         return $this->designFile;
     }
     
@@ -297,13 +292,26 @@ class Context
             return false;
         }
         
-        $this->wc->debug->toResume("Ressource design file to be Included: ".$fullPath, 'CONTEXT');
+        $this->wc->debug->toResume("Ressource design file to be Included: \"".$fullPath."\"", 'CONTEXT');
         return $fullPath;
     }
     
     function display()
     {
-        $this->wc->debug->toResume("Executing file: ".$this->execFile, 'CONTEXT');
+        $this->execFile = $this->website->getFilePath( self::DIR."/". $this->name.".php" );
+        
+        if( !$this->execFile )
+        {
+            $this->wc->debug->toResume("Context File: \"". $this->name."\" not found, searching for ".self::DEFAULT_FILE." file", 'CONTEXT');
+            $this->execFile = $this->website->getFilePath( self::DIR."/".self::DEFAULT_FILE.".php" );
+        }
+        
+        if( !$this->execFile ){
+            $this->wc->log->error("Context File: ". $this->name." not found", true);
+        }        
+        
+        $this->wc->debug->toResume("Executing file: \"".$this->execFile."\"", 'CONTEXT');
+        
         include $this->execFile;
         if( $this->view ){
             include $this->getDesignFile();
