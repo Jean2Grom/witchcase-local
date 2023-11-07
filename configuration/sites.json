@@ -142,7 +142,6 @@
         "adminForSites": [
             "marieaerts"
         ],
-        "visibility": "admin",
         "witches": {
             "root": {
                 "id": 26
@@ -168,7 +167,8 @@
                     "depth": "*",
                     "craft": false
                 }
-            }
+            },
+            "menu": false     
         }        
     },
     "witchcase": {
