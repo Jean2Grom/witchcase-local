@@ -1,4 +1,6 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
 <title><?=$title ?? "WitchCase Admin" ?></title>
 
 <?=$this->favicon() ?>
@@ -12,33 +14,4 @@
             type="text/css" 
             href="<?=$cssFile?>" />
 <?php endforeach; ?>
-
-    
-<style>
-    body {
-        font-family: Helvetica;
-        color: #424242;
-        margin: 0;
-        background-color: #eee;
-    }
-        body a {
-            color: #424242;
-            font-weight: bold;
-            text-decoration: none;
-            cursor: pointer;
-        }
-            body a:hover {
-                /*color: #999999;*/
-                color: #ff9900;
-            }
-    .clear {
-        clear: both;
-    }
-    .text-right {
-        text-align: right;
-    }
-    .text-left {
-        text-align: left;
-    }
-</style>
 

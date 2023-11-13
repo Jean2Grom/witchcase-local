@@ -1,5 +1,5 @@
 <link   <?php foreach( $attributes as $name => $value ): ?>
-            <?=$name?>="<?=addcslashes( $value, '"' )?>"
+            <?=$name.'="'.addcslashes( $value, '"' ).'"'?>
         <?php endforeach; ?>
         
         rel="stylesheet" 

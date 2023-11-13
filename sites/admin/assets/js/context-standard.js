@@ -1,5 +1,9 @@
 $(document).ready(function()
 {
+    $('.side-nav-toggler').click( function(){
+        $('nav').toggle();
+    });
+    
     var tabs = document.getElementsByClassName("tabs__item");
     
     var selectTab = function( event ){

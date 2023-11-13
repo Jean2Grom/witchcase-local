@@ -1,11 +1,25 @@
+@keyframes wcBasicFadeOut{
+    0%{ opacity: 1; }
+    100%{ 
+        opacity: 0; 
+        margin: 0;
+        padding: 0;
+        font-size: 0.01em;
+    }
+}
+
 .alert-message {
+    animation-name: wcBasicFadeOut;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-delay: 8s;
+    
     border: 1px solid #424242;
-    padding: 10px;
+    padding: 1vw 2vw;
     display: block;
     width: max-content;
-    margin-bottom: 15px;
-    border-radius: 10px;  
-    box-shadow: 3px 3px 5px #aaa;
+    border-radius: 8px;
+    box-shadow: 0.2vw 0.2vw 0.2vw #aaa;
     color: #424242;
     font-style: italic;
 }
@@ -23,4 +37,12 @@
     }
     .alert-message strong {
         font-weight: bold;
-    }    
+    }   
+    
+@media screen and (min-device-width: 1024px) {
+    .alert-message {
+        padding: 8px 12px;
+    }
+}
+    
+    

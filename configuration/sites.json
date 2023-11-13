@@ -2,11 +2,7 @@
     "admin": {
         "debug": false,
         "access": [
-            "localhost/admin-legacy",
-            "localhost/admin-v1",
-            "localhost/admin-V1",
-            "localhost/adminV1",
-            "localhost/admin1"
+            "localhost/admin"
         ],
         "adminForSites": [
             "*"
@@ -78,20 +74,6 @@
                 "notAllowed": false
             }
         }
-    },
-    "admin-v2": {
-        "access": [
-            "localhost/admin-v2",
-            "localhost/admin-V2",
-            "localhost/admin"
-        ],
-        "siteHeritages": [
-            "admin"
-        ], 
-        "adminForSites": [
-            "*"
-        ],
-        "visibility": "admin"
     },
     "blank": {
         "access": [

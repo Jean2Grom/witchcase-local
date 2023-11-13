@@ -1,24 +1,23 @@
-<?php 
-    $this->addCssFile('header.css');
-?>
 <!DOCTYPE html>
+<?php 
+    $this->addCssFile('base.css');
+    $this->addCssFile('basic.css');
+    $this->addCssFile('header-footer.css');
+?>
 <html lang="fr">
     <head>
         <?php include $this->getIncludeDesignFile('head.php'); ?>
-        <style>
-            footer {
-                text-align: center;
-            }
-        </style>
     </head>
     
     <body>
-        <!-- header -->
-        <?php include $this->getIncludeDesignFile('header.php'); ?>
+        <div class="container">
+            <header><?php include $this->getIncludeDesignFile('header.php'); ?></header>
+            <main><?=$this->wc->witch()->result() ?></main>
+            <footer><?php include $this->getIncludeDesignFile('footer.php'); ?></footer>
+        </div>
         
-        <?=$this->wc->witch()->result() ?>
-        
-        <!-- footer -->
-        <?php include $this->getIncludeDesignFile('footer.php'); ?>
+        <?php foreach( $this->getJsFiles() as $jsFile ): ?>
+            <script src="<?=$jsFile?>"></script>
+        <?php endforeach; ?>        
     </body>
 </html>
