@@ -10,16 +10,11 @@
         width: 100%;
         resize: none;
     }
-.box-container {
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-}
 .box {
     border: 1px solid #ccc;
-    border-radius: 10px;
-    margin: 15px 15px 5px 0;
-    padding: 10px;
+    border-radius: 12px;
+    margin: 0 1.5vw 2vw 0;
+    padding: 0.7em;
     box-shadow: 5px 5px 5px #ccc;
 }
     .box h2 {
@@ -30,8 +25,23 @@
         margin: 20px 0px 10px 0;
         text-align: right;
     }
-    .box table th {
+    .box .bottom-label {
+        margin-top: 2vh;
+        margin-bottom: 1vh;
+    }
+    .box table {
+        width: 100%;
+    }
+    .box table.vertical {
+        width: auto;
+    }
+    .box table.vertical tr td:first-child {
         min-width: 100px;
+    }
+    .box table .full{
+        display: none;
+    }
+    .box table th {
         background-color: #eee;
         padding: 3px;
     }
@@ -78,14 +88,19 @@
     }    
     .box input, 
     .box textarea {
+        border: 1px solid;
         width: 100%;
         width: -moz-available;          /* WebKit-based browsers will ignore this. */
         width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
         width: fill-available;
     }
+    .box input {
+        padding: 0 0.2em;
+    }    
     .box textarea {
-        height: 100px;
+        height: 5em;
         resize: none;
+        padding: 0.5em;
     }
     .box input[type=checkbox], 
     .box input[type=radio] {
@@ -93,4 +108,32 @@
         cursor: pointer;
     } 
     
+    h3.box-info {
+        display: flex;
+        align-items: center;
+        line-height: 24px;
+    }
+        h3.box-info img {
+            height: 1.17em;
+            margin-right: 0.3em;
+            max-width: 2em;
+        }
+@media screen and (min-device-width: 480px) {
     
+}
+@media screen and (min-device-width: 768px) {
+    .box table .full {
+        display: table-cell;
+    }
+    
+}
+@media screen and (min-device-width: 1024px) {
+    
+    
+.box-container {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+    
+}

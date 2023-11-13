@@ -1,29 +1,35 @@
-.content {
+main {
     border: 1px solid #ccc;
-    width: fit-content;
     padding: 25px;
-    margin: 2vh auto;
+    margin: 2vh 5vw;
     min-width: 20vw;
     background-color: #fff;
     border-radius: 15px;
     box-shadow: 0.2vw 0.2vw 0.2vw #ccc;
     text-align: center;
 }
-    .content form {
+    main form {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        width: 75%;
-        margin-left: 2%;
+        margin: 0 5% 5% 5%;
     }
-    .content input {
-        height: 1.5em;
-        font-size: 1.1em;
+    main input {
+        height: 1.6em;
+        font-size: 1em;
         width: 100%;
         margin-bottom: 1em;
+        border: 1px solid #424242;
+        padding: 0 5px;
     }
-    .content label {
-        margin-top: 0.5em;
+    main label {
         font-weight: bold;
         text-align: left;
     }
+    
+@media screen and (min-device-width: 480px) {
+    main {
+        width: fit-content;
+        margin: 2vh auto;
+    }
+}

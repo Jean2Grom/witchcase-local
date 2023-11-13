@@ -1,24 +1,46 @@
 <div class="box view__daughters">
     <h3>
         <i class="fa fa-folder-open"></i>
-        Daughters
+        Arborescence
     </h3>
     
+    <?php if( $targetWitch->mother() ): ?>
+        <table class="vertical">
+            <tr>
+                <td class="label"><em>Mother</em></td>
+                <td class="value">
+                    <a href="<?=$this->wc->website->getUrl("view?id=".$targetWitch->mother()->id) ?>">
+                        <?=$targetWitch->mother() ?>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    <?php endif; ?>
+    
     <?php if( empty($targetWitch->daughters()) ): ?>
-        <p><em>No daughters for this witch</em></p>
+        <p class="bottom-label"><em>No daughters for this witch</em></p>
         
     <?php else: ?>
-        <p><em>Witch daughters list in arborescence</em></p>
+        <p class="bottom-label"><em>Daughters list for this Witch</em></p>
+        
         <form method="post" 
               id="view-daughters-action" 
               action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>">
+            <table >
+                <thead>
+                    <tr>
+                        <th><em>Daughters</em></th>
+                    </tr>
+                </thead>            
+            </table>
+            
             <table>
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Craft</th>
-                        <th>Invoke</th>
-                        <th>Direct Access</th>
+                        <th class="full">Craft</th>
+                        <th class="full">Status</th>
+                        <th class="full">Invoke</th>
                         <th>Actions</th>
                         <th>Priority</th>
                     </tr>
@@ -30,8 +52,8 @@
                                 <a href="<?=$this->wc->website->getUrl("view?id=".$daughter->id) ?>">
                                     <?=$daughter->name ?>
                                 </a>
-                            </td>
-                            <td>
+                            </td>   
+                            <td class="full">
                                 <a href="<?=$this->wc->website->getUrl("view?id=".$daughter->id."#tab-craft-part") ?>"
                                    class="text-center">
                                     <em><?=$daughter->getCraftStructure() ?></em>
@@ -41,29 +63,17 @@
                                     <?php endif; ?>
                                 </a>
                             </td>
-                            <td>
-                                <a  href="<?=$this->wc->website->getUrl("view?id=".$daughter->id."#tab-invoke-part") ?>"
-                                    class="text-center">
-                                    <em><?=$daughter->invoke ?></em>
-                                    <?php if( !$daughter->hasInvoke() ): ?>
-                                        <em class="hover-hide">no</em>
-                                        <i class="far fa-plus-square hover-show"></i>
-                                    <?php endif; ?>
-                                </a>
+                            <td class="full" title="<?=$daughter->site ?? "" ?>">
+                                <span class="text-center"><?=$daughter->status() ?? "" ?></span>
                             </td>
-                            <td>
-                                <?php if( !$daughter->hasInvoke() ): ?>
-                                <?php elseif( $daughter->site == $this->wc->website->site ): ?>
-                                    <a  target="_blank" href="<?=$daughter->getUrl() ?>" 
-                                        class="text-center"
-                                        title="<?='['.$daughter->site.'] '.$daughter->invoke ?>">
-                                        <i class="fas fa-hand-sparkles"></i>
-                                    </a>
-                                <?php else: 
+                            <td class="full">
+                                <?php if( $daughter->hasInvoke() ): 
                                     $url = $daughter->getUrl( null, $websitesList[ $daughter->site ] ?? null ); ?>
-                                    <a target="_blank" href="<?=$url ?>" title="<?=$url ?>">
-                                        <em><?='['.$daughter->site.']' ?></em>
-                                        <i class="fas fa-hand-sparkles"></i>
+                                    <a  class="text-center"
+                                        target="_blank"
+                                        href="<?=$url ?>" 
+                                        title="<?=$url ?>">
+                                        <em><?=$daughter->invoke ?></em>
                                     </a>
                                 <?php endif; ?>
                             </td>
