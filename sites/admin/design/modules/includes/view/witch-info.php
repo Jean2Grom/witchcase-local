@@ -1,18 +1,28 @@
 <div class="box view__witch-info">
-    <h3>
-        <i class="fa fa-info-circle"></i>
-        Info
+    <h3 class="box-info">
+        <img src="<?=$this->image('favicon.png') ?>" />
+        Witch Information
     </h3>
-    <p><em>Wich global information</em></p>
+    <p><em>Wich inner information</em></p>
     
-    <table>
+    <table class="vertical">
         <tr>
-            <td class="label">Name</td>
-            <td class="value"><?=$targetWitch->name ?></td>
+            <td class="label">Witch ID</td>
+            <td class="value"><?=$targetWitch->id ?></td>
+        </tr>        
+        <tr>
+            <td class="label">Site</td>
+            <td class="value">
+                <?php if( $targetWitch->site ): ?>
+                    <strong><?=$targetWitch->site ?></strong>
+                <?php else: ?>
+                    <em>no</em>
+                <?php endif; ?>
+            </td>
         </tr>
         <tr>
-            <td class="label">Description</td>
-            <td class="value"><em><?=$targetWitch->data ?></em></td>
+            <td class="label">Status</td>
+            <td class="value"><?=$targetWitch->status() ?? "" ?></td>
         </tr>
         <tr>
             <td class="label">Craft</td>
@@ -26,35 +36,33 @@
                 </a>
             </td>
         </tr>
-        <tr>
-            <td class="label">Invoke</td>
-            <td class="value">
-                <a class="tabs__item__triggering" href="#tab-invoke-part">
-                    <em><?=$targetWitch->invoke ?></em>
-                    <?php if( !$targetWitch->hasInvoke() ): ?>
-                        <em class="hover-hide">no</em>
-                        <i class="far fa-plus-square hover-show"></i>
-                    <?php endif; ?>
-                </a>
-            </td>
-        </tr>
-        <tr>
-            <td class="label">ID</td>
-            <td class="value"><?=$targetWitch->id ?></td>
-        </tr>
-        <?php if( $targetWitch->mother() ): ?>
+        <?php if( $targetWitch->hasInvoke() ): ?>
             <tr>
-                <td class="label">Mother</td>
+                <td class="label">URL</td>
+                <td class="value"><?=!is_null($targetWitch->url)? '/'.$targetWitch->url: "No"?></td>
+            </tr>
+            <tr>
+                <td class="label">Invoke</td>
                 <td class="value">
-                    <a href="<?=$this->wc->website->getUrl("view?id=".$targetWitch->mother()->id) ?>">
-                        <i class="fas fa-reply rotate-90"></i>
-                        <?=$targetWitch->mother() ?>
+                    <?php if( $targetWitch->hasInvoke() ): ?>
+                        <strong><?=$targetWitch->invoke ?></strong>
+                    <?php else: ?>
+                        <em>no</em>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Direct Access</td>
+                <td class="value">
+                    <a  target="_blank" 
+                        href="<?=$targetWitch->getUrl(null, (new WC\Website($this->wc, $targetWitch->site) )) ?? "" ?>">
+                        <i class="fas fa-hand-sparkles" aria-hidden="true"></i>
                     </a>
                 </td>
             </tr>
         <?php endif; ?>
     </table>
-
+    
     <div class="box__actions">
         <?php if( $targetWitch->mother() ): ?>
             <button class="trigger-action" 

@@ -1,7 +1,12 @@
 <!DOCTYPE html>
+<?php
+    $this->addCssFile('base.css');
+    $this->addCssFile('basic.css');
+?>
 <html lang="fr">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>WitchCase</title>
         
         <?=$this->favicon() ?>
@@ -15,26 +20,15 @@
                     type="text/css" 
                     href="<?=$cssFile?>" />
         <?php endforeach; ?>
-        
-        <style>
-            body {
-                font-family: Helvetica;
-                color: #424242;
-                margin: 0;
-                background-color: #eee;
-            }
-                body a {
-                    color: #424242;
-                    font-weight: bold;
-                    text-decoration: none;
-                }
-                    body a:hover {
-                        color: #ff9900;
-                    }
-        </style>        
     </head>
     
-    <body>        
-        <?=$this->wc->witch()->result() ?>
+    <body>
+        <div class="container">
+            <main><?=$this->wc->witch()->result() ?></main>
+        </div>
+        
+        <?php foreach( $this->getJsFiles() as $jsFile ): ?>
+            <script src="<?=$jsFile?>"></script>
+        <?php endforeach; ?>
     </body>
 </html>

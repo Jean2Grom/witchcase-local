@@ -5,7 +5,11 @@ h2 {
     margin-bottom: 20px;
 }
 fieldset {
-    min-width: 30%;
+    width: -moz-available;          /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+    width: fill-available;
+    max-width: 1000px;
+    
     border-radius: 15px;
     margin-bottom: 15px;
     margin-right: 15px;
@@ -21,13 +25,19 @@ fieldset {
     fieldset input[type=password],
     fieldset textarea,
     fieldset select {
-        width: 95%;
+        width: -moz-available;          /* WebKit-based browsers will ignore this. */
+        width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+        width: fill-available;
     }
 .fieldsets-container {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
+    fieldset button {
+        box-shadow: none;
+        border-radius: 0;
+    }
 textarea {
     width: 350px;
     height: 100px;

@@ -9,8 +9,8 @@ $possibleActionsList = [
     'edit-priorities',
     'create-new-witch',
     'delete-witch',
+    'save-witch-menu-info',
     'save-witch-info',
-    'save-witch-invoke',
     'create-craft',
     'import-craft',
     'remove-craft',
@@ -157,14 +157,14 @@ switch( $action )
         else 
         {
             $alerts[] = [
-                'level'     =>  'warning',
-                'message'   => implode('<br/>', $errors),
+                'level'     =>  'success',
+                'message'   => implode('<br/>', $success),
             ];
             
             $alerts[] = [
                 'level'     =>  'notice',
-                'message'   => implode('<br/>', $success),
-            ];
+                'message'   => implode('<br/>', $errors),
+            ];            
         }
     break;
     
@@ -224,11 +224,10 @@ switch( $action )
         ];
     break;
     
-    case 'save-witch-info':        
+    case 'save-witch-menu-info':        
         $witchNewData   = [
             'name'      =>  trim($this->wc->request->param('witch-name') ?? ""),
             'data'      =>  trim($this->wc->request->param('witch-data') ?? ""),
-            'priority'  =>  $this->wc->request->param('witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
         ];
         
         if( $witchNewData['name'] === "" ){
@@ -252,82 +251,82 @@ switch( $action )
         }
     break;
         
-    case 'save-witch-invoke':
-        $urlHash = "#tab-invoke-part";
-        
-        $site       = trim($this->wc->request->param('witch-site') ?? "");
-        
-        if( empty($site) ){
-            $witchNewData   = [
-                'site'      => null,
-                'url'       => null,
-                'invoke'    => null,
-                'status'    => 0,
-                'context'   => null,
-            ];
+    case 'save-witch-info':
+        $witchNewData   = [
+            'site'      => null,
+            'status'    => 0,
+            'invoke'    => null,
+            'url'       => null,
+            'context'   => null,
+        ];
+
+        $site       = trim($this->wc->request->param('witch-site') ?? "");        
+        if( !empty($site) ){
+            $witchNewData['site'] = $site;
         }
-        else 
+        
+        $statusArray = $this->wc->request->param('witch-status', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
+        if( $statusArray )
         {
-            $witchNewData   = [
-                'site'      => $site,
-                'url'       => null,
-                'invoke'    => null,
-                'status'    => 0,
-                'context'   => null,
-            ];
+            if( empty($site) && !empty($statusArray[ 'no-site-selected' ]) ){
+                $witchNewData['status'] = $statusArray[ 'no-site-selected' ];
+            }
+            elseif( !empty($statusArray[ $site ]) ){
+                $witchNewData['status'] = $statusArray[ $site ];                
+            }
             
+        }
+        
+        if( !empty($site) )
+        {
             $invokeArray = $this->wc->request->param('witch-invoke', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
             if( $invokeArray && !empty($invokeArray[ $site ]) ){
                 $witchNewData['invoke'] = $invokeArray[ $site ];
             }
             
-            if( !empty($witchNewData['invoke']) 
-                    && empty($witchNewData['invoke']) 
-            ){
-                $alerts[] = [
-                    'level'     =>  'error',
-                    'message'   =>  "Module to invoke is missing"
-                ];
-                break;
-            }
-            
-            $statusArray = $this->wc->request->param('witch-status', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
-            if( $statusArray && !empty($statusArray[ $site ]) ){
-                $witchNewData['status'] = $statusArray[ $site ];
-            }
-            
-            $contextArray = $this->wc->request->param('witch-context', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-            if( $contextArray && !empty($contextArray[ $site ]) ){
-                $witchNewData['context'] = $contextArray[ $site ];
-            }
-            
-            $autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-            $customFullUrl  = $this->wc->request->param('witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-            $customUrl      = $this->wc->request->param('witch-url');
-            
-            if( !$autoUrl )
+            if( !empty($witchNewData['invoke']) )
             {
-                $url    =   "";
-                if( !$customFullUrl )
-                {
-                    if( $targetWitch->mother() ){
-                        $url .= $targetWitch->mother()->getClosestUrl( $site );
-                    }
-                    
-                    if( substr($url, -1) != '/' 
-                            && substr($customUrl, 0, 1) != '/'  
-                    ){
-                        $url .= '/';
-                    }
+                $contextArray = $this->wc->request->param('witch-context', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+                if( $contextArray && !empty($contextArray[ $site ]) ){
+                    $witchNewData['context'] = $contextArray[ $site ];
                 }
-                
-                $url    .=  $customUrl;
-                
-                $witchNewData['url'] = $url;
+
+                $autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+                $customFullUrl  = $this->wc->request->param('witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+                $customUrl      = $this->wc->request->param('witch-url');
+
+                if( !$autoUrl )
+                {
+                    $url    =   "";
+                    if( !$customFullUrl )
+                    {
+                        if( $targetWitch->mother() ){
+                            $url .= $targetWitch->mother()->getClosestUrl( $site );
+                        }
+
+                        if( substr($url, -1) != '/' 
+                                && substr($customUrl, 0, 1) != '/'  
+                        ){
+                            $url .= '/';
+                        }
+                    }
+
+                    $url    .=  $customUrl;
+
+                    $witchNewData['url'] = $url;
+                }
             }
         }
         
-        if( !$targetWitch->edit( $witchNewData ) ){
+        $edit = $targetWitch->edit( $witchNewData );
+        
+        if( $edit === 0 ){
+            $alerts[] = [
+                'level'     =>  'warning',
+                'message'   =>  "No update",
+            ];
+        }
+        elseif( !$edit ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Error, witch was not updated"

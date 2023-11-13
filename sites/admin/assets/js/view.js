@@ -1,42 +1,111 @@
 $(document).ready(function()
 {
-    $('.edit__witch-info').hide();
-    $('button.view-edit-info-toggle').click(function(){
-        $('.view__witch-info').toggle();
-        $('.edit__witch-info').toggle();
+    // Menu info edition behaviour
+    $('.edit__witch-menu-info').hide();
+    $('button.view-edit-menu-info-toggle').click(function(){
+        $('.view__witch-menu-info').toggle();
+        $('.edit__witch-menu-info').toggle();
+        
+        $('.edit__witch-info').hide();
+        $('.view__witch-info').show();
         
         $('.create__witch').hide();
         $('.view__daughters').show();        
     });
     
-    $('.create__witch').hide();
-    $('button.view-daughters__create-witch__toggle').click(function(){
-        $('.view__witch-info').show();
-        $('.edit__witch-info').hide();
-        
-        $('.create__witch').toggle();
-        $('.view__daughters').toggle();
-    });
-    
-    $('.edit__witch-invoke').hide();
-    $('button.view-witch-invoke__edit-witch-invoke__toggle').click(function(){
-        $('.view__witch-invoke').toggle();
-        $('.edit__witch-invoke').toggle();
-    });
-    
-    $('button.edit-info-reinit').click(function(){
-        $('.edit__witch-info input, .edit__witch-info textarea').each(function( i, input ){
+    $('button.edit-menu-info-reinit').click(function(){
+        $('.edit__witch-menu-info input, .edit__witch-menu-info textarea').each(function( i, input ){
             if( $(input).data('init') !== undefined ){
                 $(input).val( $(input).data('init') );
             }
         });
     });
     
+    
+    // Add new witch behaviour
+    $('.create__witch').hide();
+    $('button.view-daughters__create-witch__toggle').click(function(){
+        $('.create__witch').toggle();
+        $('.view__daughters').toggle();
+        
+        $('.edit__witch-info').hide();
+        $('.view__witch-info').show();
+        
+        $('.edit__witch-menu-info').hide();
+        $('.view__witch-menu-info').show();        
+    });       
+    
+    
+    // Witch info edition behaviour
+    $('.edit__witch-info').hide();
+    $('button.view-edit-info-toggle').click(function(){
+        $('.view__witch-info').toggle();
+        $('.edit__witch-info').toggle();
+        
+        $('.edit__witch-menu-info').hide();
+        $('.view__witch-menu-info').show();
+        
+        $('.create__witch').hide();
+        $('.view__daughters').show();
+    });
+    
+    witchInfoChange();
+    autoUrlChange();
+    
+    $('#witch-site, .witch-invoke').change( witchInfoChange );
+    $('#witch-auto-url').change( autoUrlChange );
+    
+    function witchInfoChange()
+    {
+        $('.witch-info__part').hide();
+        $('#site-selected').hide();
+
+        let site = $('#witch-site').val();
+        $('.witch-info__part-' + site).show();
+
+        if( site !== '' && $('#witch-invoke-' + site).val() !== '' ){
+            $('#site-selected').show();
+        }
+    }    
+    
+    function autoUrlChange()
+    {
+        if( $('#witch-auto-url').prop('checked') ){
+            $('.auto-url-disabled').hide();
+        }
+        else {
+            $('.auto-url-disabled').show();
+        }
+    }
+    
+    $('button.edit-info-reinit').click(function(){
+        $('.edit__witch-info input, .edit__witch-info select').each(function( i, input ){
+
+            if( $(input).data('init') !== undefined ){
+                $(input).val( $(input).data('init') );
+            }
+        });
+        
+        if( $('#witch-url').val() === '' )
+        {
+            $('#witch-full-url').prop('checked', false);
+            $('#witch-auto-url').prop('checked', true);
+        }
+        else 
+        {
+            $('#witch-full-url').prop('checked', true);
+            $('#witch-auto-url').prop('checked', false);
+        }
+        witchInfoChange();
+        autoUrlChange();
+    });
+    
+    
+    // Craft part
     $('#witch-content-structure').change(function(){
         $('#witch-create-craft').prop( 'disabled', ($(this).val() === '') );
         $('#witch-get-existing-craft').prop( 'disabled', ($(this).val() !== '') );
-    });
-    
+    });    
     
     $('#witch-get-existing-craft').on('click', function()
     {
@@ -62,6 +131,8 @@ $(document).ready(function()
         });
     });    
     
+    
+    // Daughters cut/copy
     $('.cut-descendants').on('click', function()
     {
         $('#origin-witch').val( $(this).data('id') );
