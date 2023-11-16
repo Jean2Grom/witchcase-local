@@ -1,16 +1,29 @@
 #choose-witch {
     display: none;
+    
     position: fixed;
     top: 30%;
-    left: 30%;
-    width: 40%;
+    left: 5%;
+    max-width: 80%;
     background-color: #FFF;
-    padding: 0 15px 15px 15px;
+    padding: 15px;
     border: 1px solid #000;
     border-radius: 5px;
+    
 }
     #choose-witch .close {
         cursor: pointer;
         float: right;
         margin-right: 5px;
     }
+@media screen and (min-device-width: 480px) {
+}
+@media screen and (min-device-width: 768px) {
+    #choose-witch {
+        left: 30%;
+        width: 40%;
+    }
+    
+}
+@media screen and (min-device-width: 1024px) {
+}
