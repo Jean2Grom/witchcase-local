@@ -8,7 +8,7 @@ class Cache
     const DEFAULT_DURATION      = 86400;    // 24h
     const DEFAULT_UNIT          = "s";    // 24h
     
-    var string $dir;
+    private string $dir;
     var $createFolderRights;
     var $defaultUnit;
     var $defaultDuration;
@@ -202,5 +202,30 @@ class Cache
         fclose($cacheFileFP);
 
         return $filename;
-    }    
+    }
+    
+    function reset(): bool
+    {
+        if( !is_dir($this->dir) ){
+            return false;            
+        }
+        
+        return $this->deleteFolder( $this->dir );
+    }
+    
+    private function deleteFolder( string $folder  ): bool
+    {
+        if( !is_dir($folder) ){
+            return false;
+        }
+        
+        $files = array_diff( scandir($folder), ['.','..'] );
+        
+        foreach( $files as $file ){
+            (is_dir("$folder/$file")) ? $this->deleteFolder("$folder/$file") : unlink("$folder/$file");
+        }
+        
+        return rmdir($folder);
+    }
+
 }
