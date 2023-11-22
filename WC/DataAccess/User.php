@@ -7,6 +7,12 @@ use WC\Cairn;
 use WC\Craft;
 use WC\Attribute;
 
+/**
+ * Class to aggregate User related data access functions
+ * all these functions are statics
+ * 
+ * @author Jean2Grom
+ */
 class User
 {    
     static function getUserLoginData( WitchCase $wc, string $login, ?string $site=null  )

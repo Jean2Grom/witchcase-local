@@ -3,6 +3,11 @@ namespace WC;
 
 use WC\Request;
 
+/**
+ * Class handeling Log files and process
+ * 
+ * @author Jean2Grom
+ */
 class Log 
 {
     const MAXARCHIVEFILES   = 100;
@@ -13,16 +18,16 @@ class Log
      * maxsize of one log file before split
      * @var integer 
      */
-    var $maxLog;
-    var $logFilename;
-    var $currentIP;
-    var $errorLogFP;
+    public $maxLog;
+    public $logFilename;
+    public $currentIP;
+    public $errorLogFP;
     
     /** 
-     * container
-     * @var WitchCase 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
      */
-    var $wc;
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc, $logFilename=false )
     {

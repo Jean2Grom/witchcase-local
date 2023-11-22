@@ -4,24 +4,35 @@ namespace WC;
 use WC\DataAccess\WitchSummoning;
 use WC\DataAccess\WitchCrafting;
 
+/**
+ * Class that handles witch summoning and modules invocation
+ * 
+ * @author Jean2Grom
+ */
 class Cairn 
 {
     const DEFAULT_WITCH = "current";
-    
-    /** WitchCase */
-    var $wc;
-    
-    /** Website */
-    var $website;
     
     private $witches;
     private $cauldron;
     private $crafts;
     private $override;
     
-    var $invokations;
+    public $invokations;
     
-    var $configuration;
+    public $configuration;
+    
+    /** 
+     * Class containing website (app) information and aggreging related objects
+     * @var Website 
+     */
+    public Website $website;
+    
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc, array $summoningConfiguration, ?Website $forcedWebsite=null )
     {

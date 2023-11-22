@@ -3,6 +3,11 @@ namespace WC\Attribute;
 
 use WC\Datatype\ExtendedDateTime;
 
+/**
+ * Class to handle DateTime Attributes
+ * 
+ * @author Jean2Grom
+ */
 class DatetimeAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "datetime";

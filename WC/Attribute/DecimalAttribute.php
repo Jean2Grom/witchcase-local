@@ -1,6 +1,11 @@
 <?php
 namespace WC\Attribute;
 
+/**
+ * Class to handle Decimal Attributes
+ * 
+ * @author Jean2Grom
+ */
 class DecimalAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "decimal";

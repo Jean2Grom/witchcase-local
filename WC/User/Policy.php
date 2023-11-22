@@ -4,23 +4,34 @@ namespace WC\User;
 use WC\WitchCase;
 use WC\Website;
 
+/**
+ * Class to handle a single security access policy
+ * 
+ * @author Jean2Grom
+ */
 class Policy 
 {
-    var $id;
-    var $module;
-    var $position;
-    var $position_rules;
-    var $custom_limitation;
-    var $status;
-    var $positionName;
-    var $positionId;
-    var $statusLabel;
+    public $id;
+    public $module;
+    public $position;
+    public $position_rules;
+    public $custom_limitation;
+    public $status;
+    public $positionName;
+    public $positionId;
+    public $statusLabel;
     
-    /** @var Profile */
-    var $profile;
+    /** 
+     * Class to handle security access profiles
+     * @var Profile
+     */
+    public Profile $profile;
     
-    /** @var WitchCase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc, Profile $profile )
     {

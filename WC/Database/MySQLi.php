@@ -3,11 +3,20 @@ namespace WC\Database;
 
 use WC\WitchCase;
 
+/**
+ * MySQLi database driver
+ * 
+ * @author Jean2Grom
+ */
 class MySQLi implements DatabaseInterface
 {
-    /** @var WitchCase */
-    var $wc;
-    var $mysqli;
+    public $mysqli;
+    
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc, $parameters )
     {

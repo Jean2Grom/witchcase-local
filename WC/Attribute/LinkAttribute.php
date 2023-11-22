@@ -1,6 +1,11 @@
 <?php
 namespace WC\Attribute;
 
+/**
+ * Class to handle Link Attributes
+ * 
+ * @author Jean2Grom
+ */
 class LinkAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "link";

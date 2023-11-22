@@ -9,6 +9,12 @@ use WC\Datatype\ExtendedDateTime;
 use WC\Craft\Draft;
 use WC\Attribute;
 
+/**
+ * Generic Class to handle crafts, 
+ * all craft types (ie craft states) must heritate this class
+ * 
+ * @author Jean2Grom
+ */
 class Craft 
 {
     const TYPES         = [ 
@@ -55,25 +61,30 @@ class Craft
         'modificator_name'  =>  ":modificator_connexion.`name` AS :craft_table|modificator_name`",
     ];
     
-    var $exist;
-    var $attributes;
+    public $exist;
+    public $attributes;
     
-    var $id;
-    var $name;
-    var $created;
-    var $modified;
+    public $id;
+    public $name;
+    public $created;
+    public $modified;
     
     private $properties         = [];
     private $relatedCraftsIds   = [];
     
     private $witches;
     
+    /** 
+     * Class that handle Craft Structures 
+     * @var Structure
+     */
+    public Structure $structure;
     
-    /** @var WitchCase */
-    var $wc;
-    
-    /** @var Structure */
-    var $structure;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc, Structure $structure, array $data=null )
     {

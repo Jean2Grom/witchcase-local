@@ -4,40 +4,73 @@ namespace WC;
 use WC\DataAccess\WitchSummoning;
 
 /**
- * Handler and container of this env
- *
- * @author raoul
+ * WitchCase container class to allow whole access to Kernel
+ * 
+ * @author Jean2Grom
  */
 class WitchCase 
 {
-    /** @var Debug */
-    var $debug;
+    /** 
+     * Class dedicated for debugging WC projects
+     * @var Debug 
+     */
+    public Debug $debug;
     
-    /** @var Configuration */
-    var $configuration;
+    /** 
+     * Class handeling configuration files 
+     * @var Configuration 
+     */
+    public Configuration $configuration;
     
-    /** @var Log */
-    var $log;
+    /** 
+     * Class handeling Log files and process
+     * @var Log 
+     */
+    public Log $log;
     
-    /** @var Database */
-    var $db;
+    /** 
+     * Class handeling Database connexions and requesting
+     * @var Database 
+     */
+    public Database $db;
     
-    /** @var Cache */
-    var $cache;
+    /** 
+     * Class handeling Cache files and access
+     * @var Cache 
+     */
+    public Cache $cache;
     
-    /** @var Request */
-    var $request;
+    /** 
+     * Class handeling HTTP Request, 
+     * determining URL targeted website and ressource
+     * @var Request 
+     */
+    public Request $request;
     
-    /** @var Website */
-    var $website;
+    /** 
+     * Class containing website (app) information and aggreging related objects
+     * @var Website 
+     */
+    public Website $website;
     
-    /** @var User */
-    var $user;
+    /** 
+     * Class handeling User information and security access policies
+     * @var User 
+     */
+    public User $user;
     
-    /** @var Cairn */
-    var $cairn;
+    /**
+     * Class that handles witch summoning and modules invocation
+     * @var Cairn
+     */
+    public Cairn $cairn;
     
+    /**
+     * Current depth of witches matriarcat arborescence tree
+     * @var int 
+     */
     public int $depth;
+    
     
     public function __construct() 
     {

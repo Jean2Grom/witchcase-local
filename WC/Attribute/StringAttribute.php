@@ -1,7 +1,11 @@
 <?php
 namespace WC\Attribute;
 
-
+/**
+ * Class to handle String Attributes
+ * 
+ * @author Jean2Grom
+ */
 class StringAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "string";
@@ -17,12 +21,7 @@ class StringAttribute extends \WC\Attribute
 //        ]
     ];
     
-    
-//    function __construct( WitchCase $wc, string $attributeName, array $params=[] )
-//    {
-//        parent::__construct( $wc, $attributeName, $params );
-//    }
-    
+        
     function content( ?string $element=null  )
     {
         if( is_null($element) ){

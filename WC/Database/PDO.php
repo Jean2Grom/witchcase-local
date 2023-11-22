@@ -3,11 +3,20 @@ namespace WC\Database;
 
 use WC\WitchCase;
 
+/**
+ * PDO database driver
+ * 
+ * @author Jean2Grom
+ */
 class PDO implements DatabaseInterface
 {
-    /** @var WitchCase */
-    var $wc;
-    var $pdo;
+    public $pdo;
+    
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc, $parameters )
     {

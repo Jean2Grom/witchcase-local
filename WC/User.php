@@ -3,21 +3,32 @@ namespace WC;
 
 use WC\DataAccess\User as UserDA;
 
+/**
+ * Class handeling User information and security access policies
+ * 
+ * @author Jean2Grom
+ */
 class User 
 {
-    var $id;
-    var $name;
-    var $profiles;
-    var $policies;
-    var $connexion      = false;
-    var $connexionData  = false;
-    var $loginMessages  = [];
+    public $id;
+    public $name;
+    public $profiles;
+    public $policies;
+    public $connexion      = false;
+    public $connexionData  = false;
+    public $loginMessages  = [];
     
-    /** @var Session */
-    var $session;
+    /** 
+     * PHP Session WC Custom Handler 
+     * @var Session
+     */
+    public Session $session;
     
-    /** @var WitchCase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc )
     {

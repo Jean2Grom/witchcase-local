@@ -4,6 +4,11 @@ namespace WC\Attribute;
 use WC\Craft;
 use WC\DataAccess\User;
 
+/**
+ * Class to handle Connexion Attributes
+ * 
+ * @author Jean2Grom
+ */
 class ConnexionAttribute extends \WC\Attribute  
 {
     const ATTRIBUTE_TYPE    = "connexion";
@@ -12,10 +17,10 @@ class ConnexionAttribute extends \WC\Attribute
     ];
     const PARAMETERS        = [];
     
-    var $password;
-    var $password_confirm;
-    var $login;
-    var $email;
+    public $password;
+    public $password_confirm;
+    public $login;
+    public $email;
     
     function __construct( \WC\WitchCase $wc, string $attributeName, array $params=[], ?Craft $craft=null )
     {

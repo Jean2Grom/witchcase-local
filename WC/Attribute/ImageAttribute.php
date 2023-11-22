@@ -1,6 +1,11 @@
 <?php
 namespace WC\Attribute;
 
+/**
+ * Class to handle Image Attributes
+ * 
+ * @author Jean2Grom
+ */
 class ImageAttribute extends FileAttribute
 {
     const ATTRIBUTE_TYPE    = "image";
