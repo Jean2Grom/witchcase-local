@@ -1,6 +1,11 @@
 <?php
 namespace WC\Attribute;
 
+/**
+ * Class to handle Boolean Attributes
+ * 
+ * @author Jean2Grom
+ */
 class BooleanAttribute extends \WC\Attribute  
 {
     const ATTRIBUTE_TYPE    = "boolean";

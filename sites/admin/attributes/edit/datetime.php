@@ -1,4 +1,4 @@
-<?php
+<?php /** @var WC\Attribute\DatetimeAttribute $this */ 
 
 $value      =  $this->content();
 $inputValue =  "UNDEFINED";

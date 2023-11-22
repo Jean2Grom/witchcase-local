@@ -3,30 +3,43 @@ namespace WC;
 
 use WC\Craft;
 
+/**
+ * Generic Class to handle craft Attributes, 
+ * all attributes types must heritate this class
+ * 
+ * @author Jean2Grom
+ */
 abstract class Attribute 
 {
     const ATTRIBUTE_TYPE        = null;
     const DIR                   = "attributes";
     const DESIGN_SUBFOLDER      = "design/attributes";
 
-    var $parameters     = [];
-    var $dbFields       = [];
-    var $values         = [];
-    var $tableColumns   = [];
-    var $joinTables     = [];
-    var $joinFields     = [];
-    var $joinConditions = [];
-    var $leftJoin       = [];
-    var $groupBy        = [];
+    public $parameters     = [];
+    public $dbFields       = [];
+    public $values         = [];
+    public $tableColumns   = [];
+    public $joinTables     = [];
+    public $joinFields     = [];
+    public $joinConditions = [];
+    public $leftJoin       = [];
+    public $groupBy        = [];
     
-    var $name;
-    var $type;
+    public $name;
+    public $type;
     
-    /** WitchCase */
-    var $wc;
+    /**
+     * Generic Class to handle all crafts types
+     * 
+     * @var ?Craft
+     */
+    public ?Craft $craft;
     
-    /** Craft */
-    var $craft;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc, string $name, array $parameters=[], ?Craft $craft=null )
     {

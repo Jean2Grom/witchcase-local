@@ -1,6 +1,11 @@
 <?php
 namespace WC\Attribute;
 
+/**
+ * Class to handle File Attributes
+ * 
+ * @author Jean2Grom
+ */
 class FileAttribute extends \WC\Attribute 
 {
     const ATTRIBUTE_TYPE    = "file";
@@ -10,7 +15,7 @@ class FileAttribute extends \WC\Attribute
     ];
     const PARAMETERS        = [];    
     
-    var $directory;
+    public $directory;
     
     function __construct( \WC\WitchCase $wc, string $attributeName, array $params=[] )
     {

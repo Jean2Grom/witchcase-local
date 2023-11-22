@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <h1>403</h1>
 <p>Not Allowed</p>    
 <p>

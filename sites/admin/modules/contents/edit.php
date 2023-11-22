@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Module $this */
+
 $possibleActionsList = [
     'save',
     'save-and-return',

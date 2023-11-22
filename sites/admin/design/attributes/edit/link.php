@@ -1,3 +1,5 @@
+<?php /** @var WC\Attribute\LinkAttribute $this */ ?>
+
 <h2>URL</h2>
 <p>
     <input  type="text" 

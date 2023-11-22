@@ -1,3 +1,5 @@
+<?php /** @var WC\Context $this */ ?>
+
 <a class="side-nav-toggler">
     <i class="fa fa-bars"></i>
 </a>

@@ -5,6 +5,12 @@ use WC\WitchCase;
 use WC\Craft\Draft;
 use WC\Craft\Archive;
 
+/**
+ * Class to aggregate Craft related data access functions
+ * all these functions are statics
+ * 
+ * @author Jean2Grom
+ */
 class Craft 
 {
     static function getRelatedCraftsIds( WitchCase $wc, string $table, int $id )

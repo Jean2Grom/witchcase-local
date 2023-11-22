@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <h1>
     Création de votre nouvelle structure
 </h1>

@@ -1,12 +1,20 @@
 <?php
 namespace WC;
 
+/**
+ * PHP Session WC Custom Handler 
+ * 
+ * @author Jean2Grom
+ */
 class Session 
 {
-    var $namespace;
+    public $namespace;
     
-    /** @var WitchCase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc, string $namespace="" )
     {

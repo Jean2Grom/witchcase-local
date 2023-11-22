@@ -1,21 +1,29 @@
 <?php
 namespace WC;
 
+/**
+ * Class handeling Cache files and access
+ * 
+ * @author Jean2Grom
+ */
 class Cache 
 {    
     const DEFAULT_DIRECTORY     = "cache";
     const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
     const DEFAULT_DURATION      = 86400;    // 24h
-    const DEFAULT_UNIT          = "s";    // 24h
+    const DEFAULT_UNIT          = "s";      // 24h
     
     private string $dir;
-    var $createFolderRights;
-    var $defaultUnit;
-    var $defaultDuration;
-    var $folders = [];
+    public $createFolderRights;
+    public $defaultUnit;
+    public $defaultDuration;
+    public $folders = [];
     
-    /** @var WitchCase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc )
     {

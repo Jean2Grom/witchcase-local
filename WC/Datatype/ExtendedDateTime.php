@@ -1,12 +1,17 @@
 <?php
 namespace WC\Datatype;
 
-
+/**
+ * Class to extend DateTime native, adding a french format 
+ * and an associated actor name
+ * 
+ * @author Jean2Grom
+ */
 class ExtendedDateTime extends \DateTime 
 {
-    var $frenchFormatDate;
-    var $frenchFormatDateTime;
-    var $actor;
+    public $frenchFormatDate;
+    public $frenchFormatDateTime;
+    public $actor;
     
     public function __construct(string $datetime = "now", ?string $actor = null, ?string $timezone = null) 
     {

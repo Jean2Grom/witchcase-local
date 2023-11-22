@@ -4,12 +4,16 @@ namespace WC\Craft;
 use WC\Craft;
 use WC\Structure;
 
+/**
+ * class to handle Content crafts
+ * 
+ * @author Jean2Grom
+ */
 class Content extends Craft 
 {
     const TYPE          = 'content';    
     const DB_FIELDS     = [];
     const ELEMENTS      = [];
-    
     
     function archive( bool $historyMode=false )
     {

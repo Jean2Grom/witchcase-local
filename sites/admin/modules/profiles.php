@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Module $this */
+
 use WC\User\Profile;
 use WC\Website;
 

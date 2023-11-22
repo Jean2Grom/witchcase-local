@@ -1,3 +1,5 @@
+<?php /** @var WC\Attribute\LinkAttribute $this */ ?>
+
 <p>
     <strong><?=$text?></strong>
     =>

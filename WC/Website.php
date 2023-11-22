@@ -2,53 +2,63 @@
 namespace WC;
 
 /**
- * Description of Website
- *
- * @author teletravail
+ * Class containing website (app) information and aggreging related objects
+ * 
+ * @author Jean2Grom
  */
 class Website 
 {
     const SITES_DIR         = "sites";
     const DEFAULT_SITE_DIR  = "sites/default";
     
-    var $name;
-    var $currentAccess;
-    var $site;
+    public $name;
+    public $currentAccess;
+    public $site;
     
-    var $access;
-    var $adminForSites;
-    var $sitesRestrictions;
+    public $access;
+    public $adminForSites;
+    public $sitesRestrictions;
     
-    var $baseUri;
-    var $urlPath;
-    var $modulesList;
+    public $baseUri;
+    public $urlPath;
+    public $modulesList;
     private $rootUrl;
     
+    public $modules;
+    public $attributes;
+    public $status;
     
-    var $modules;
-    var $attributes;
-    var $status;
+    public $debug;    
+    public $extensions;
     
-    var $debug;    
-    var $extensions;
+    public $siteHeritages;
     
-    var $siteHeritages;
+    public $defaultContext;
     
-    var $context;
-    var $defaultContext;
+    /**
+     * Layout class that handle display
+     * @var Context
+     */    
+    public Context $context;
     
-    /** @var WitchCase */
-    var $wc;
+    /**
+     * class that handles witch summoning and modules invocation
+     * @var Cairn
+     */
+    public Cairn $cairn;
     
-    /** @var Cairn */
-    var $cairn;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc, string $name, ?string $siteAccess=null )
     {
         $this->wc               = $wc;
         $this->name             = $name;
         
-        // Reading non heritable confs variables
+        // Reading non heritable confs publiciables
         $this->access               = $this->wc->configuration->read($this->name, "access");
         $this->adminForSites        = $this->wc->configuration->read($this->name, "adminForSites");
         $this->site                 = $this->wc->configuration->read($this->name, "visibility") ?? $this->name;

@@ -6,6 +6,11 @@ use WC\Structure;
 use WC\DataAccess\Craft as CraftDA;
 use WC\DataAccess\WitchCrafting;
 
+/**
+ * class to handle Draft crafts
+ * 
+ * @author Jean2Grom
+ */
 class Draft extends Craft 
 {
     const TYPE      = 'draft';
@@ -16,7 +21,7 @@ class Draft extends Craft
         'content_key',
     ];
     
-    var $content_key;
+    public $content_key;
     
     function createDraft(){
         return clone $this;

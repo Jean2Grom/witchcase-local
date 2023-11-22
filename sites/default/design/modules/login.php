@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <h1>Login</h1>
 
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>

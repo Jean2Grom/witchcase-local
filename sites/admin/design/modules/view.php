@@ -1,23 +1,24 @@
-<?php
-    $this->addCssFile('view.css');
-    $this->addCssFile('boxes.css');
-    $this->addJsFile('triggers.js');
-    $this->addJsFile('view.js');
-    
-    $this->addContextArrayItems( 'tabs', [
-        'tab-current'       => [
-            'selected'  => true,
-            'iconClass' => ($targetWitch->hasCraft() && $targetWitch->hasInvoke())? "fas fa-hat-wizard"
-                                : ($targetWitch->hasCraft()? "fas fa-mortar-pestle"
-                                : ($targetWitch->hasInvoke()? "fas fa-hand-sparkles"
-                                : "fas fa-folder")),
-            'text'      => "Witch",
-        ],
-        'tab-craft-part'    => [
-            'iconClass' => !$targetWitch->hasCraft()? "far fa-plus-square": ($targetWitch->hasInvoke()? "fas fa-mortar-pestle": ""),
-            'text'      => "Craft",
-        ],
-    ]);
+<?php /** @var WC\Module $this */
+
+$this->addCssFile('view.css');
+$this->addCssFile('boxes.css');
+$this->addJsFile('triggers.js');
+$this->addJsFile('view.js');
+
+$this->addContextArrayItems( 'tabs', [
+    'tab-current'       => [
+        'selected'  => true,
+        'iconClass' => ($targetWitch->hasCraft() && $targetWitch->hasInvoke())? "fas fa-hat-wizard"
+                            : ($targetWitch->hasCraft()? "fas fa-mortar-pestle"
+                            : ($targetWitch->hasInvoke()? "fas fa-hand-sparkles"
+                            : "fas fa-folder")),
+        'text'      => "Witch",
+    ],
+    'tab-craft-part'    => [
+        'iconClass' => !$targetWitch->hasCraft()? "far fa-plus-square": ($targetWitch->hasInvoke()? "fas fa-mortar-pestle": ""),
+        'text'      => "Craft",
+    ],
+]);
 ?>
 
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>

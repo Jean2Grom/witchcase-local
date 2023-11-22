@@ -1,6 +1,11 @@
 <?php
 namespace WC;
 
+/**
+ * Layout class that handle display
+ * 
+ * @author Jean2Grom
+ */
 class Context 
 {
     const DEFAULT_FILE  = "default";    
@@ -19,11 +24,11 @@ class Context
     const IMAGE_FILE_DISPLAY        = "image-file.php";
     const FAVICON_FILE_DISPLAY      = "favicon-file.php";
     
-    var $name;
-    var $execFile;
-    var $designFile;
-    var $website;
-    var $view;
+    public $name;
+    public $execFile;
+    public $designFile;
+    public $website;
+    public $view;
     
     private $css    = [];
     private $js     = [];
@@ -31,8 +36,11 @@ class Context
     
     private $customVars  = [];
     
-    /** @var WitchCase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( Website $website, ?string $initialContext=null )
     {

@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Module $this */ 
+
 if( $this->wc->request->param("action") == "login" && $this->wc->user->connexion )
 {
     header( 'Location: '.$this->wc->website->getFullUrl() );

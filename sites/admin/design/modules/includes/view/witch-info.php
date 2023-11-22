@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <div class="box view__witch-info">
     <h3 class="box-info">
         <img src="<?=$this->image('favicon.png') ?>" />

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<?php /** @var WC\Context $this */ ?>
 <html lang="fr">
 <head>
     <meta charset="utf-8" />

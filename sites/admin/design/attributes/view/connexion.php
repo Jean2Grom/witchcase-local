@@ -1,3 +1,5 @@
+<?php /** @var WC\Attribute\ConnexionAttribute $this */ ?>
+
 <p>
     <strong>name&nbsp;:</strong>
     <?=$this->values['name']?>

@@ -3,27 +3,39 @@ namespace WC;
 
 use WC\Website;
 
+/** 
+ * Class handeling HTTP Request, 
+ * determining URL targeted website and ressource
+ * 
+ * @author Jean2Grom
+ */
 class Request
 {
     const DEFAULT_SITE      = "blank";
     
-    var $method;
-    var $protocoleName;
-    var $protocole;
-    var $https;
-    var $host;
-    var $port;
-    var $uri;
-    var $path;
-    var $queryString;
-    var $requesterIpAddress;
-    var $access;
+    public $method;
+    public $protocoleName;
+    public $protocole;
+    public $https;
+    public $host;
+    public $port;
+    public $uri;
+    public $path;
+    public $queryString;
+    public $requesterIpAddress;
+    public $access;
     
-    /** @var Website */
-    var $website;
+    /** 
+     * Class containing website (app) information and aggreging related objects
+     * @var Website 
+     */
+    public Website $website;
     
-    /** @var WitchCase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc )
     {

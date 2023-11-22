@@ -8,17 +8,25 @@ use WC\DataAccess\WitchCrafting;
 use WC\Datatype\ExtendedDateTime;
 use WC\Attribute;
 
+/**
+ * Class that handle Craft Structures 
+ * 
+ * @author Jean2Grom
+ */
 class Structure 
 {
-    var $table;
-    var $type;
-    var $name;
-    var $attributes;    
-    var $lastModified;
-    var $exist;
+    public $table;
+    public $type;
+    public $name;
+    public $attributes;    
+    public $lastModified;
+    public $exist;
     
-    /** @var WitchCase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc, string $structureOrTableName, ?string $forcedType=null )
     {

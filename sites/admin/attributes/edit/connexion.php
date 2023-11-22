@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Attribute\ConnexionAttribute $this */ 
+
 use WC\User\Profile;
 
 $profiles = Profile::listProfiles( $this->wc );

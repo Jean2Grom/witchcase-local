@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <h1>
     Modifier la Structure&nbsp;: <?=$structureName?>
 </h1>
