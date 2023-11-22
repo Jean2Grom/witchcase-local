@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Module $this */
+
 use WC\Witch;
 
 $currentId  = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT) ?? $this->wc->witch()->id ?? 0;

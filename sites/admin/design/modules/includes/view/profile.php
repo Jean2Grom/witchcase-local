@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <div class="box view__profile" data-profile="<?=$profile->id?>">
     <h3>
         <i class="fas fa-user"></i> <?=$profile->name?>

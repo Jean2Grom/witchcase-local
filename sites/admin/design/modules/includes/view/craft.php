@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <div class="box view__craft">
     <?php if( empty($targetWitch->craft()) ): ?>
         <h3>

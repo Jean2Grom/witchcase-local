@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Module $this */
+
 $reset = $this->wc->cache->reset();
 
 $this->wc->user->addAlerts([[

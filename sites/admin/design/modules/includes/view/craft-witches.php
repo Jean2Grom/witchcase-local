@@ -1,4 +1,6 @@
-<?php if( $targetWitch->craft() ): ?>
+<?php /** @var WC\Module $this */
+
+if( $targetWitch->craft() ): ?>
     <div class="box view__craft-witches">
         <h3>
             <i class="fa fa-project-diagram"></i>

@@ -1,35 +1,34 @@
 <?php /** @var WC\Module $this */
 
-    $this->addCssFile('boxes.css');
-    $this->addJsFile('triggers.js');
-    $this->addCssFile('profiles.css');
-    $this->addJsFile('profiles.js');
-    
+$this->addCssFile('boxes.css');
+$this->addJsFile('triggers.js');
+$this->addCssFile('profiles.css');
+$this->addJsFile('profiles.js');
+
+$this->addContextArrayItems( 'tabs', [
+    'tab-current'       => [
+        'selected'  => true,
+        'iconClass' => "fas fa-list",
+        'text'      => "List",
+    ],
+]);
+
+foreach( $profiles as $id => $profile ){
     $this->addContextArrayItems( 'tabs', [
-        'tab-current'       => [
-            'selected'  => true,
-            'iconClass' => "fas fa-list",
-            'text'      => "List",
+        'tab-profile-'.$id       => [
+            'text'      => $profile->name,
+            'close'     => true,
+            'hidden'    => true,
         ],
     ]);
-    
-    foreach( $profiles as $id => $profile ){
-        $this->addContextArrayItems( 'tabs', [
-            'tab-profile-'.$id       => [
-                'text'      => $profile->name,
-                'close'     => true,
-                'hidden'    => true,
-            ],
-        ]);
-    }
-    
-    $this->addContextArrayItems( 'tabs', [
-        'tab-profile-add'       => [
-            'iconClass' => "fas fa-plus",
-            'text'      => "New",
-        ],
-    ]);
-    
+}
+
+$this->addContextArrayItems( 'tabs', [
+    'tab-profile-add'       => [
+        'iconClass' => "fas fa-plus",
+        'text'      => "New",
+    ],
+]);    
 ?>
 
 <h2>User Profiles</h2> 

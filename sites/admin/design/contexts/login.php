@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<?php 
-    $this->addCssFile('base.css');
-    $this->addCssFile('basic.css');
-    $this->addCssFile('header-footer.css');
+<?php /** @var WC\Context $this */
+
+$this->addCssFile('base.css');
+$this->addCssFile('basic.css');
+$this->addCssFile('header-footer.css');
 ?>
 <html lang="fr">
     <head>
