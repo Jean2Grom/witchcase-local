@@ -1,3 +1,5 @@
+<?php /** @var WC\Attribute\IntegerAttribute $this */ ?>
+
 <input  type="number" 
         name="<?=$this->tableColumns['value']?>" 
         id="<?=$this->tableColumns['value']?>" 

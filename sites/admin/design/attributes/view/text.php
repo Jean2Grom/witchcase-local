@@ -1,3 +1,3 @@
-<p>
-    <?=$value ?>
-</p>
+<?php /** @var WC\Attribute\TextAttribute $this */ ?>
+
+<p><?=$value ?></p>

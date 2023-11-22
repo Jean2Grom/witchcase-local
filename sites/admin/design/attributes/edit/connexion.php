@@ -1,3 +1,5 @@
+<?php /** @var WC\Attribute\ConnexionAttribute $this */ ?>
+
 <input  type="hidden"
         name="<?=$this->tableColumns['id']?>"
         value="<?=$this->values['id'] ?>" />

@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Attribute\LinkAttribute $this */ 
+
 $maxLenght  = 255;
 
 $indice = strpos( substr($this->values['text'] ?? '', $maxLenght), " " ) + $maxLenght;

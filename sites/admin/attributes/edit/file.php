@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Attribute\FileAttribute $this */ 
+
 $this->wc->website->context->addJsFile('attribute/file-edit.js');
 $this->wc->website->context->addCssFile('attribute/file-edit.css');
 

@@ -1,3 +1,5 @@
+<?php /** @var WC\Attribute\BooleanAttribute $this */ ?>
+
 <div>
   <input type="radio" 
          id="<?=$this->tableColumns['value'].'__1'?>" 
