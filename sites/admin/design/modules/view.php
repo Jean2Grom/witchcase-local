@@ -26,26 +26,9 @@ $this->addContextArrayItems( 'tabs', [
 <?php include $this->getIncludeDesignFile('view/witch-menu-info.php'); ?>
 <?php include $this->getIncludeDesignFile('edit/witch-menu-info.php'); ?>
 
-<form>
-    <div class="wc-captcha-loader">
-        <i class="fa fa-circle-notch fa-spin"></i>
-    </div>
-</form>
-<script>
-    var wcCaptchaUrl = '/admin/captcha';
-    $.ajax({
-        url: wcCaptchaUrl,
-        success: function( data, status, a ){
-            let target = $('.wc-captcha-loader');
-            $(target).after( data );
-            $(target).remove();
-            
-            $('#' + wcCaptchaId + " .wc-captcha-refresh").data( 'href', wcCaptchaUrl );
-        },
-        dataType: 'html'
-    });        
-</script>
-<br/>
+
+<?php include $this->getIncludeDesignFile('captcha.php'); ?>
+
 
 <div class="tabs-target__item selected"  id="tab-current">
     <div class="box-container">
