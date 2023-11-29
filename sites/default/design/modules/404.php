@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <h1>404</h1>
 <p>Not Found</p>
 <p>

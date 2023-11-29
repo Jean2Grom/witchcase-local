@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <div class="box edit__profile" data-profile="<?=$profile->id?>">
    <form class="edit-profile-form" id="edit-profile-form-<?=$profile->id?>"  method="post" >
         <input type="hidden" name="profile-id" value="<?=$profile->id ?>" />

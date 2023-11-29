@@ -3,7 +3,11 @@ namespace WC\Craft;
 
 use WC\Craft;
 
-
+/**
+ * class to handle Archived crafts
+ * 
+ * @author Jean2Grom
+ */
 class Archive extends Craft 
 {
     const TYPE      = 'archive';
@@ -14,7 +18,7 @@ class Archive extends Craft
         'content_key',
     ];
 
-    var $content_key;
+    public $content_key;
     
        
     function archive( bool $historyMode=false )

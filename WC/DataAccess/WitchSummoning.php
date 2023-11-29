@@ -5,9 +5,10 @@ use WC\WitchCase;
 use WC\Witch;
 
 /**
- * Description of WitchSummoning
- *
- * @author teletravail
+ * Class to aggregate Witch's summoning related data access functions
+ * all these functions are statics
+ * 
+ * @author Jean2Grom
  */
 class WitchSummoning 
 {

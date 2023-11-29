@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Context $this */
+
 $initialWitch = $this->wc->witch("target");
 if( !$initialWitch->id ){
     $initialWitch = $this->wc->witch();

@@ -8,9 +8,10 @@ use WC\Structure;
 use WC\Attribute;
 
 /**
- * Description of WitchCrafting
- *
- * @author teletravail
+ * Class to aggregate Witch's Craft related data access functions
+ * all these functions are statics
+ * 
+ * @author Jean2Grom
  */
 class WitchCrafting 
 {

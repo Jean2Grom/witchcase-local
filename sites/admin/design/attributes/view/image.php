@@ -1,3 +1,5 @@
+<?php /** @var WC\Attribute\ImageAttribute $this */ ?>
+
 <?php if( $srcFile ): ?>
     <p>
         <img src="<?=$srcFile?>" class="attribute-image-view" />

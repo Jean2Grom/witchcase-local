@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <div class="box view__daughters">
     <h3>
         <i class="fa fa-folder-open"></i>

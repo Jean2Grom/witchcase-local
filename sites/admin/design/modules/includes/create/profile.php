@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <div class="box create__profile">
    <form id="create-profile-form" method="post" >
         <h3>

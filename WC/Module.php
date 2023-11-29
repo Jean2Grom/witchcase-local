@@ -1,6 +1,12 @@
 <?php
 namespace WC;
 
+/**
+ * Class dedicated to module invokation (execution)
+ * and display insertion in a Context class
+ * 
+ * @author Jean2Grom
+ */
 class Module 
 {
     const DEFAULT_FILE  = "default";   
@@ -9,20 +15,26 @@ class Module
     const DESIGN_SUBFOLDER              = "design/modules";
     const DESIGN_INCLUDES_SUBFOLDER     = "design/modules/includes";
     
-    var $name;
-    var $execFile;
-    var $designFile;
-    var $result;
-    var $config;
-    var $view;
-    var $maxStatus;
-    var $isRedirection;
+    public $name;
+    public $execFile;
+    public $designFile;
+    public $result;
+    public $config;
+    public $view;
+    public $maxStatus;
+    public $isRedirection;
     
-    /** @var Witch */
-    var $witch;
+    /**
+     * Witch that calls this module
+     * @var Witch
+     */
+    public Witch $witch;
     
-    /** @var WitchCase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( Witch $witch, string $moduleName )
     {

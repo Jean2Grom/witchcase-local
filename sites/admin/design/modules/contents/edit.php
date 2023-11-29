@@ -1,6 +1,7 @@
-<?php
-    $this->addCssFile('content-edit.css');
-    $this->addJsFile('triggers.js');
+<?php /** @var WC\Module $this */
+
+$this->addCssFile('content-edit.css');
+$this->addJsFile('triggers.js');
 ?>
 <h1>
     <i class="fa fa-feather-alt"></i>

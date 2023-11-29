@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <h1>Voir Structure : <?=$structure->name?></h1>
 
 <p class="left modified">

@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Attribute\ImageAttribute $this */ 
+
 $this->wc->website->context->addCssFile('attribute/image-view.css');
 
 $srcFile = $this->getFile(); 

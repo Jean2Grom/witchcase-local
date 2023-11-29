@@ -2,9 +2,11 @@
 namespace WC;
 
 /**
- * Debug class for developpers
+ * Class dedicated for debugging WC projects
  * Can display big var debugs, exec times, 
  * and can log in file if wanted
+ * 
+ * @author Jean2Grom
  */
 class Debug 
 {
@@ -49,11 +51,11 @@ class Debug
      * 
      * @var bool
      */
-    var $enabled;
+    public $enabled;
     
-    var $buffer = [];
-    var $resume = [];
-    var $databaseAnalysis = [];
+    public $buffer = [];
+    public $resume = [];
+    public $databaseAnalysis = [];
     
     private $refNanoTime;
     private $databaseRefNanoTime;
@@ -64,13 +66,13 @@ class Debug
      * 
      * @var int
      */
-    var $refMemoryUsage;
+    public $refMemoryUsage;
     
     /** 
-     * container
-     * @var WitchCase 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
      */
-    var $wc;
+    public WitchCase $wc;
     
     /**
      * 

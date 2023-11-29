@@ -4,11 +4,20 @@ namespace WC;
 use WC\Database\PDO;
 use WC\Database\MySQLi;
 
+/**
+ * Class handeling Database connexions and requesting
+ * 
+ * @author Jean2Grom
+ */
 class Database
 {
-    /** @var WitchCase */
-    var $wc;
-    var $ressource;
+    public $ressource;
+    
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc )
     {

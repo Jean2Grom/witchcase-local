@@ -1,7 +1,11 @@
 <?php
 namespace WC\Database;
 
-
+/**
+ * Interface for handler class for database drivers
+ * 
+ * @author Jean2Grom
+ */
 interface DatabaseInterface 
 {
     public function fetchQuery( string $query, array $bindParams=[] );

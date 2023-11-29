@@ -1,4 +1,6 @@
-<?php if( !empty($alerts) ): 
+<?php /** @var WC\Module $this */ 
+
+if( !empty($alerts) ): 
     $this->addCssFile('alert-message.css');
     
     foreach( $alerts as $alert ): ?>
@@ -6,4 +8,4 @@
             <?=$alert['message']?>
         </p>
     <?php endforeach; 
-endif; ?>
+endif; 

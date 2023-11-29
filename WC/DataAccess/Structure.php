@@ -4,6 +4,12 @@ namespace WC\DataAccess;
 use WC\WitchCase;
 use WC\Craft;
 
+/**
+ * Class to aggregate Structure related data access functions
+ * all these functions are statics
+ * 
+ * @author Jean2Grom
+ */
 class Structure 
 {
     const CACHE_FOLDER = "structure";

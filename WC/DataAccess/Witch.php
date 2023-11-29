@@ -4,6 +4,12 @@ namespace WC\DataAccess;
 use WC\WitchCase;
 use WC\Cairn;
 
+/**
+ * Class to aggregate Witch related data access functions
+ * all these functions are statics
+ * 
+ * @author Jean2Grom
+ */
 class Witch
 {
     static function readFromId( WitchCase $wc, int $id )

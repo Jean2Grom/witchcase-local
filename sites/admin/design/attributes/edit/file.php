@@ -1,3 +1,5 @@
+<?php /** @var WC\Attribute\FileAttribute $this */ ?>
+
 <div class="current-file-display" <?=$srcFile? '': 'style="display: none;"' ?>>
     <?php if( $srcFile ): ?>
         <h2 class="current-file-target">Current file</h2>

@@ -1,3 +1,5 @@
+<?php /** @var WC\Attribute\FileAttribute $this */ ?>
+
 <?php if( $srcFile ): ?>
     <p>
         <strong><?=$this->values['title']?></strong>

@@ -1,3 +1,5 @@
+<?php /** @var WC\Module $this */ ?>
+
 <div class="view__witch-menu-info">
     <h2 title="<?=$this->witch->data ?>">
         <?=$targetWitch->name ?>

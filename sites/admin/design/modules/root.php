@@ -1,7 +1,8 @@
-<?php 
-    $this->addCssFile('boxes.css');
-    $this->addJsFile('triggers.js');
-    $this->addJsFile('root.js');
+<?php /** @var WC\Module $this */
+
+$this->addCssFile('boxes.css');
+$this->addJsFile('triggers.js');
+$this->addJsFile('root.js');
 ?>
 <div class="content">
     <h1>Tableau de bord</h1>

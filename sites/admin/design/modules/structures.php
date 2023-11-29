@@ -1,5 +1,6 @@
-<?php
-    $this->addCssFile('structures.css');
+<?php /** @var WC\Module $this */
+
+$this->addCssFile('structures.css');
 ?>
 <div class="view-content">
     <h1>Structures des données</h1>

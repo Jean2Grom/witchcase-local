@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Attribute\TextAttribute $this */ 
+
 $maxLenght  = 255;
 $value      = "";
 

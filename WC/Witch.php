@@ -6,9 +6,14 @@ use WC\Datatype\ExtendedDateTime;
 use WC\Structure;
 
 /**
- * Description of Witch
+ * A witch is an element of global arborescence, that we call matriarcat. 
+ * Each witch except root (ID 1) has a mother witch, and can have daughters witch
+ * The structure tree of WC is composed of witches, witch represents the elements of it
+ * Each Witch car be associated with a craft, a module and an URL to execute, 
+ * a visibility status ... 
+ * This class is very essential in the WC management
  *
- * @author teletravail
+ * @author jGrom
  */
 class Witch 
 {
@@ -29,25 +34,28 @@ class Witch
     ];
     private $properties     = [];
     
-    var $id;
-    var $name;
-    var $datetime;
+    public $id;
+    public $name;
+    public $datetime;
     
-    var $statusLevel        = 0;
-    var $status;
+    public $statusLevel        = 0;
+    public $status;
     
-    var $site;
+    public $site;
     
-    var $depth              = 0;
-    var $position           = [];
-    var $modules            = [];
+    public $depth              = 0;
+    public $position           = [];
+    public $modules            = [];
     
-    var $mother;
-    var $sisters;
-    var $daughters;
+    public $mother;
+    public $sisters;
+    public $daughters;
     
-    /** @var WitchCase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     /**
      * This contructor should not be directly used

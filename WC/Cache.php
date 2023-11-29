@@ -1,21 +1,29 @@
 <?php
 namespace WC;
 
+/**
+ * Class handeling Cache files and access
+ * 
+ * @author Jean2Grom
+ */
 class Cache 
 {    
     const DEFAULT_DIRECTORY     = "cache";
     const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
     const DEFAULT_DURATION      = 86400;    // 24h
-    const DEFAULT_UNIT          = "s";    // 24h
+    const DEFAULT_UNIT          = "s";      // 24h
     
-    var string $dir;
-    var $createFolderRights;
-    var $defaultUnit;
-    var $defaultDuration;
-    var $folders = [];
+    private string $dir;
+    public $createFolderRights;
+    public $defaultUnit;
+    public $defaultDuration;
+    public $folders = [];
     
-    /** @var WitchCase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc )
     {
@@ -202,5 +210,30 @@ class Cache
         fclose($cacheFileFP);
 
         return $filename;
-    }    
+    }
+    
+    function reset(): bool
+    {
+        if( !is_dir($this->dir) ){
+            return false;            
+        }
+        
+        return $this->deleteFolder( $this->dir );
+    }
+    
+    private function deleteFolder( string $folder  ): bool
+    {
+        if( !is_dir($folder) ){
+            return false;
+        }
+        
+        $files = array_diff( scandir($folder), ['.','..'] );
+        
+        foreach( $files as $file ){
+            (is_dir("$folder/$file")) ? $this->deleteFolder("$folder/$file") : unlink("$folder/$file");
+        }
+        
+        return rmdir($folder);
+    }
+
 }

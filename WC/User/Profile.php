@@ -1,21 +1,27 @@
 <?php
 namespace WC\User;
 
-
 use WC\WitchCase;
 use WC\DataAccess\User as UserDA;
-
 use WC\Website;
 
+/**
+ * Class to handle security access profiles
+ * 
+ * @author Jean2Grom
+ */
 class Profile 
 {
-    var $id;
-    var $name;
-    var $site;
-    var $policies;
+    public $id;
+    public $name;
+    public $site;
+    public $policies;
     
-    /** @var Witchcase */
-    var $wc;
+    /** 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
+     */
+    public WitchCase $wc;
     
     function __construct( WitchCase $wc )
     {

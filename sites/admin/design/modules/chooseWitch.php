@@ -1,7 +1,8 @@
-<?php 
-    $this->addJsLibFile('jquery-3.6.0.min.js');
-    $this->addCssFile('choose-witch.css');
-    $this->addJsFile('choose-witch.js');
+<?php /** @var WC\Module $this */
+
+$this->addJsLibFile('jquery-3.6.0.min.js');
+$this->addCssFile('choose-witch.css');
+$this->addJsFile('choose-witch.js');
 ?>
 <div id="choose-witch">
     <h3>

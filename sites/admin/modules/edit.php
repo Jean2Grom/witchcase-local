@@ -1,4 +1,5 @@
-<?php
+<?php /** @var WC\Module $this */
+
 use WC\Witch;
 use WC\Structure;
 use WC\Craft\Draft;

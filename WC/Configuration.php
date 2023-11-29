@@ -1,6 +1,11 @@
 <?php 
 namespace WC;
 
+/**
+ * Class handeling configuration files 
+ * 
+ * @author Jean2Grom
+ */
 class Configuration 
 {
     const WC_ENV_VAR_PREFIX = 'WC_';    
@@ -8,21 +13,15 @@ class Configuration
     const CONFIG_FILE       = 'configuration.json';
     const SITES_FILE        = 'sites.json';
     
-    var $filepath           = "configuration/configuration.ini";
-    var $sections           = [];
-    var $siteAccess         = [];
-    var $heritedVariables   = [];
-    
-    
-    var string $dir;
-    var $configuration  = [];
-    var $sites          = [];
+    public string $dir;
+    public $configuration  = [];
+    public $sites          = [];
     
     /** 
-     * container
-     * @var WitchCase 
+     * WitchCase container class to allow whole access to Kernel
+     * @var WitchCase
      */
-    var $wc;
+    public WitchCase $wc;
     
     /**
      * @param WitchCase $wc : container
