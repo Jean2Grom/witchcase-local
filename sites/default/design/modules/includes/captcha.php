@@ -1,5 +1,19 @@
 <?php /** @var WC\Module $this */ 
 
+/**
+ * - To add a captcha check into your form, you have to add this code :
+ * 
+ * include $this->getIncludeDesignFile('captcha.php');
+ * 
+ * - To check captcha validation in PHP file, use this test : 
+ * 
+ * $this->wc->user->session->read('captcha') === $this->wc->request->param('captcha')
+ * 
+ * - To display "Wrong Catpcha" or custom label :
+ * 
+ * $this->wc->user->session->write('captcha-error', true|"CUSTOM_LABEL");
+ */
+
 use WC\Website;
 
 $this->addCssFile('captcha.css');

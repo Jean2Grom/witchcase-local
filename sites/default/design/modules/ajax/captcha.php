@@ -1,5 +1,8 @@
 <?php /** @var WC\Module $this */ ?>
 
+<?php if( $captchaError ): ?>
+    <div class="wc-captcha-error"><?=$captchaError?></div>
+<?php endif; ?>
 <div class="wc-captcha">
     <div class="wc-captcha-col">
         <?php if( $hintImage ): ?>

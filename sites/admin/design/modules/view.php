@@ -27,9 +27,6 @@ $this->addContextArrayItems( 'tabs', [
 <?php include $this->getIncludeDesignFile('edit/witch-menu-info.php'); ?>
 
 
-<?php include $this->getIncludeDesignFile('captcha.php'); ?>
-
-
 <div class="tabs-target__item selected"  id="tab-current">
     <div class="box-container">
         <div><?php include $this->getIncludeDesignFile('view/witch-info.php'); ?></div>

@@ -53,7 +53,13 @@ for( $i=0; $i < WC_CAPTCHA_ITERATIONS; $i++ )
         }
     }
 }
+
+$captchaError = $this->wc->user->session->read('captcha-error');
+
+if( $captchaError 
+    && (!is_string($captchaError) || strlen($captchaError) == 0) ){
+   $captchaError = "Wrong Catpcha";
+}
+
 $this->setContext('empty');
 $this->view();
-
-
