@@ -47,6 +47,9 @@
                         <label for="question">Demande</label>  
                         <textarea name="question" rows="4" cols="31"></textarea>
                     </li>
+                    <li style="margin-left: 31.5%;">
+                        <?php include $this->getIncludeDesignFile('captcha.php'); ?>
+                    </li>
                     <li>
                         <input id="envoyer" type="submit" name="bouton_formulaire" value="Envoyer" />
                     </li>
