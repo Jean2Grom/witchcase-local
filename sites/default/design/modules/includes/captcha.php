@@ -20,11 +20,12 @@ $this->addCssFile('captcha.css');
 $this->addJsFile('captcha.js');
 
 $id = "wc-captcha-container-".md5(rand());   
-if( $this->wc->website->site !== "admin" ){
+if( $this->wc->website->site === "admin" ){
     $wcCaptchaUrl = $this->wc->website->getUrl('captcha');
 }
 else {
-    $wcCaptchaUrl =  (new Website( $this->wc, "admin" ))->getUrl('captcha');
+    $wcCaptchaUrl   =   (new Website( $this->wc, "admin" ))->getUrl('captcha');
+    $wcCaptchaUrl   .=  "?site=".$this->wc->website->name;
 }
 ?>
 <div class="wc-captcha-container" id="<?=$id?>">
@@ -33,6 +34,7 @@ else {
     </div>
 </div>
 <script>
-    var wcCaptchaUrl  = '<?=$wcCaptchaUrl ?>';
-    var wcCaptchaId   = '<?=$id ?>';
+    var wcCaptchaUrl        = '<?=$wcCaptchaUrl ?>';
+    var wcCaptchaId         = '<?=$id ?>';
+    var wcCaptchaSiteTarget = '<?=$this->wc->website->name ?>';
 </script>

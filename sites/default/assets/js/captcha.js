@@ -12,8 +12,10 @@ function  generateWcCaptcha()
         document.querySelector("#"+wcCaptchaId).innerHTML = WcCaptchaHTML;
 
         document.querySelector("#"+wcCaptchaId+' .wc-captcha-refresh')
-            .addEventListener("click", () => {
+            .addEventListener("click", (e) => {
+                e.preventDefault();
                 generateWcCaptcha();
+                return false;
             });        
     })
     .catch((error) => {

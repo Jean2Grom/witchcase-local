@@ -1,12 +1,29 @@
 <?php /** @var WC\Module $this */
 
+use WC\Session;
+use WC\Website;
+
 const WC_CAPTCHA_ITERATIONS = 3;
 
+$site           = $this->wc->request->param('site');
+if( $site )
+{
+    $session    = new Session($this->wc, $site);
+    $website    = new Website($this->wc, $site);
+}
+else 
+{
+    $session    = $this->wc->user->session;
+    $website    = $this->wc->user->website;
+}
+
+$iterations = $website->modules['ajax/captcha']['iterations'] ?? WC_CAPTCHA_ITERATIONS;
+
 $id             = "wc-captcha-".md5(rand());   
-$match          = rand(0, WC_CAPTCHA_ITERATIONS - 1);
+$match          = rand(0, $iterations - 1);
 $captchaImages  = [];
 $hintImage      = null;
-for( $i=0; $i < WC_CAPTCHA_ITERATIONS; $i++ )
+for( $i=0; $i < $iterations; $i++ )
 {
     $randomAlpha    = md5(rand());
     $captchaCode    = substr($randomAlpha, 0, 6);
@@ -34,9 +51,9 @@ for( $i=0; $i < WC_CAPTCHA_ITERATIONS; $i++ )
     
     if( $i == $match )
     {
-        $this->wc->user->session->write('captcha', $captchaCode);
+        $session->write('captcha', $captchaCode);
         
-        if( WC_CAPTCHA_ITERATIONS > 1 )
+        if( $iterations > 1 )
         {
             $string = "Code is the ".($match + 1);
 
@@ -54,11 +71,15 @@ for( $i=0; $i < WC_CAPTCHA_ITERATIONS; $i++ )
     }
 }
 
-$captchaError = $this->wc->user->session->read('captcha-error');
+$captchaError = $session->read('captcha-error');
 
-if( $captchaError 
-    && (!is_string($captchaError) || strlen($captchaError) == 0) ){
-   $captchaError = "Wrong Catpcha";
+if( $captchaError )
+{
+    $session->delete('captcha-error');
+    
+    if( !is_string($captchaError) || strlen($captchaError) == 0 ){
+        $captchaError = "Wrong Catpcha";
+    }
 }
 
 $this->setContext('empty');
