@@ -55,6 +55,9 @@
             },
             "403": {
                 "public": true
+            },
+            "ajax/captcha": {
+                "public": true
             }
         },
         "attributes": [
