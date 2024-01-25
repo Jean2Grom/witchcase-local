@@ -510,13 +510,15 @@ class Witch
      * @param bool $isRedirection
      * @return string
      */
-    function invoke( ?string $assignedModuleName=null, bool $isRedirection=false ): string
+    function invoke( ?string $assignedModuleName=null, bool $isRedirection=false, bool $allowContextSetting=false ): string
     {
         if( !empty($assignedModuleName) ){
             $moduleName = $assignedModuleName;
         }
-        else {
-            $moduleName = $this->properties["invoke"];
+        else 
+        {
+            $moduleName             = $this->properties["invoke"];
+            $allowContextSetting    = true;
         }
         
         if( empty($moduleName) ){
@@ -525,6 +527,7 @@ class Witch
         
         $module     = new Module( $this, $moduleName );
         $module->setIsRedirection( $isRedirection );
+        $module->setAllowContextSetting( $allowContextSetting );
         
         if( !$module->isValid() )
         {
@@ -538,7 +541,7 @@ class Witch
         if( !$permission && !empty($module->config['notAllowed']) )
         {
             $this->wc->debug->toResume( "Access denied to for user: \"".$this->wc->user->name."\", redirecting to \"".$module->config['notAllowed']."\"", 'MODULE '.$module->name  );
-            $result = $this->invoke( $module->config['notAllowed'], true );
+            $result = $this->invoke( $module->config['notAllowed'], true, $allowContextSetting );
             $this->modules[ $moduleName ] = $this->modules[ $module->config['notAllowed'] ];
             return $result;
         }

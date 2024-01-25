@@ -23,6 +23,7 @@ class Module
     public $view;
     public $maxStatus;
     public $isRedirection;
+    public $allowContextSetting;
     
     /**
      * Witch that calls this module
@@ -174,8 +175,13 @@ class Module
         return $this->wc->website->context->getJsFiles();
     }
     
-    function setContext( $context ){
-        return $this->wc->website->context->set( $context );
+    function setContext( $context )
+    {
+        if( $this->allowContextSetting ){
+            return $this->wc->website->context->set( $context );
+        }
+        
+        return false;
     }
     
     function getIncludeDesignFile( $filename )
@@ -211,7 +217,16 @@ class Module
         $this->isRedirection = $isRedirection;
         
         return $this;
-    }    
+    }
+    
+    function setAllowContextSetting( bool $allowContextSetting ): self
+    {
+        $this->allowContextSetting = $allowContextSetting;
+        
+        return $this;
+    }
+    
+    
     
     function addContextVar( string $name, mixed $value ){
         return $this->wc->website->context->addVar( $name, $value );

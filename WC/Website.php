@@ -310,7 +310,16 @@ class Website
         }
         
         $fullUrl    =   $request->protocole.'://';
-        $fullUrl    .=  $request->host;
+        if( strstr($this->currentAccess, '/') ){
+            $fullUrl .= dirname($this->currentAccess);
+        }
+        else {
+            $fullUrl .= $this->currentAccess;
+        }
+        
+        if( substr($fullUrl, -( strlen($request->port) + 1 )) !== ':'.$request->port ){
+            $fullUrl .= ':'.$request->port;
+        }
         
         $fullUrl    .=  $this->getUrl( $urlPath );
         
