@@ -5,6 +5,16 @@ use WC\Website;
 
 const WC_CAPTCHA_ITERATIONS = 3;
 
+$getCaptcha     = $this->wc->request->param('get');
+if( $getCaptcha )
+{
+    $session    = new Session($this->wc, $getCaptcha);    
+    $captcha    = $session->read('captcha');
+    $session->delete('captcha');
+    
+    die( $captcha );
+}
+
 $site           = $this->wc->request->param('site');
 if( $site )
 {
@@ -82,5 +92,6 @@ if( $captchaError )
     }
 }
 
+header('Access-Control-Allow-Origin: *');
 $this->setContext('empty');
 $this->view();

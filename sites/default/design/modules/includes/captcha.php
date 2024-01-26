@@ -24,7 +24,7 @@ if( $this->wc->website->site === "admin" ){
     $wcCaptchaUrl = $this->wc->website->getUrl('captcha');
 }
 else {
-    $wcCaptchaUrl   =   (new Website( $this->wc, "admin" ))->getUrl('captcha');
+    $wcCaptchaUrl   =   (new Website( $this->wc, "admin" ))->getFullUrl('captcha');
     $wcCaptchaUrl   .=  "?site=".$this->wc->website->name;
 }
 ?>
