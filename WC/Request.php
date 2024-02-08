@@ -22,6 +22,8 @@ class Request
     public $uri;
     public $path;
     public $queryString;
+    public $origin;
+    public $accessControlRequestHeaders;
     public $requesterIpAddress;
     public $access;
     
@@ -59,6 +61,12 @@ class Request
                                         ?? $_SERVER["PATH_INFO"] ?? "/";
         $this->queryString          = filter_input(INPUT_SERVER, "QUERY_STRING")
                                         ?? $_SERVER["QUERY_STRING"] ?? "";
+        
+        $this->origin               = filter_input(INPUT_SERVER, "HTTP_ORIGIN") 
+                                        ?? $_SERVER['HTTP_ORIGIN'] ?? null;        
+        $this->accessControlRequestHeaders  = filter_input(INPUT_SERVER, "HTTP_ACCESS_CONTROL_REQUEST_HEADERS") 
+                                        ?? $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] ?? null;
+        
         $this->requesterIpAddress   = self::getRequesterIpAddress();
         
         if( empty($this->protocole) && !empty($this->https) && $this->https == "on" ){

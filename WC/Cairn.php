@@ -316,7 +316,8 @@ class Cairn
         return $this->witches; 
     }
     
-    function witch( ?string $witchName=null ){
+    function witch( ?string $witchName=null ): Witch
+    {
         return  $this->witches[ $witchName ?? self::DEFAULT_WITCH ] 
                     ?? Witch::createFromData( $this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ] ); 
     }

@@ -80,6 +80,34 @@
             "localhost",
             "localhost/blank"
         ]
-    }    
+    },
+    "api": {
+        "access": [
+            "localhost/api"
+        ],
+        "modules": {
+            "default": {
+                "public": true
+            }
+        }
+    },
+    "carbon-measure-extension": {
+        "access": [
+            "localhost/api/carbon-measure-extension"
+        ],
+        "siteHeritages": [
+            "api"
+        ], 
+        "modules": {
+            "*": {
+                "public": true
+            }
+        },  
+        "witches": {
+            "catalog": {
+                "id": 127
+            }
+        }
+    }
 }
     

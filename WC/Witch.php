@@ -520,7 +520,7 @@ class Witch
             $moduleName             = $this->properties["invoke"];
             $allowContextSetting    = true;
         }
-        
+            
         if( empty($moduleName) ){
             return "";
         }
