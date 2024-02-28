@@ -41,32 +41,21 @@ class Request
     {
         $this->wc = $wc;
         
-        $this->method               = filter_input(INPUT_SERVER, "REQUEST_METHOD")
-                                        ?? $_SERVER["REQUEST_METHOD"];
-        $this->protocoleName        = filter_input(INPUT_SERVER, "SERVER_PROTOCOL")
-                                        ?? $_SERVER["SERVER_PROTOCOL"];
-        $this->https                = filter_input(INPUT_SERVER, "HTTPS", FILTER_DEFAULT, FILTER_NULL_ON_FAILURE)
-                                        ?? $_SERVER["HTTPS"];
-        $this->protocole            = filter_input(INPUT_SERVER, "HTTP_X_FORWARDED_PROTO", FILTER_DEFAULT, FILTER_NULL_ON_FAILURE)
-                                        ?? $_SERVER["HTTP_X_FORWARDED_PROTO"];
-        $this->host                 = filter_input(INPUT_SERVER, "HTTP_HOST")
-                                        ?? $_SERVER["HTTP_HOST"];
-        $this->port                 = filter_input(INPUT_SERVER, "SERVER_PORT")
-                                        ?? $_SERVER["SERVER_PORT"];
-        $this->uri                  = filter_input(INPUT_SERVER, "SCRIPT_URI", FILTER_DEFAULT, FILTER_NULL_ON_FAILURE)
-                                        ?? $_SERVER["SCRIPT_URI"];
-        $this->path                 = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_DEFAULT, FILTER_NULL_ON_FAILURE)
-                                        ?? $_SERVER["REQUEST_URI"]
-                                        ?? filter_input(INPUT_SERVER, "SCRIPT_URL")
-                                        ?? $_SERVER["PATH_INFO"] ?? "/";
-        $this->queryString          = filter_input(INPUT_SERVER, "QUERY_STRING")
-                                        ?? $_SERVER["QUERY_STRING"] ?? "";
+        $this->method               = $_SERVER["REQUEST_METHOD"] ?? "GET";
+        $this->protocoleName        = $_SERVER["SERVER_PROTOCOL"] ?? false;
+        $this->https                = $_SERVER["HTTPS"] ?? false;
+        $this->protocole            = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? false;
+        $this->host                 = $_SERVER["HTTP_HOST"];
+        $this->port                 = $_SERVER["SERVER_PORT"] ?? '';
+        $this->uri                  = $_SERVER["SCRIPT_URI"] ?? false;
+        $this->path                 = $_SERVER["REQUEST_URI"] ?? $_SERVER["SCRIPT_URL"] ?? $_SERVER["PATH_INFO"] ?? "/";
+        $this->queryString          = $_SERVER["QUERY_STRING"] ?? "";
         $this->requesterIpAddress   = self::getRequesterIpAddress();
         
-        if( empty($this->protocole) && !empty($this->https) && $this->https == "on" ){
+        if( !$this->protocole && isset($this->https) && $this->https == "on" ){
             $this->protocole = "https";
         }
-        elseif( empty($this->protocole) ){
+        elseif( !$this->protocole ){
             $this->protocole = "http";
         }
         
