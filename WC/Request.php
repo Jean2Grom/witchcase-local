@@ -55,7 +55,9 @@ class Request
                                         ?? $_SERVER["SERVER_PORT"];
         $this->uri                  = filter_input(INPUT_SERVER, "SCRIPT_URI", FILTER_DEFAULT, FILTER_NULL_ON_FAILURE)
                                         ?? $_SERVER["SCRIPT_URI"];
-        $this->path                 = filter_input(INPUT_SERVER, "SCRIPT_URL")
+        $this->path                 = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_DEFAULT, FILTER_NULL_ON_FAILURE)
+                                        ?? $_SERVER["REQUEST_URI"]
+                                        ?? filter_input(INPUT_SERVER, "SCRIPT_URL")
                                         ?? $_SERVER["PATH_INFO"] ?? "/";
         $this->queryString          = filter_input(INPUT_SERVER, "QUERY_STRING")
                                         ?? $_SERVER["QUERY_STRING"] ?? "";
