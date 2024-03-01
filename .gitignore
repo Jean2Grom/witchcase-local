@@ -1,6 +1,5 @@
 local
 log
-composer.lock
 cache
 vendor
 files
