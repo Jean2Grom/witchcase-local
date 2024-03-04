@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Hôte : localhost
--- Généré le : ven. 08 sep. 2023 à 15:21
--- Version du serveur : 8.0.32
--- Version de PHP : 8.2.3
+-- Hôte : db
+-- Généré le : lun. 04 mars 2024 à 17:27
+-- Version du serveur : 8.0.36
+-- Version de PHP : 8.2.8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,10 +24,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `archive__wc-user`
+-- Structure de la table `archive__test`
 --
 
-CREATE TABLE `archive__wc-user` (
+CREATE TABLE `archive__test` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -35,10 +35,87 @@ CREATE TABLE `archive__wc-user` (
   `modificator` int DEFAULT NULL,
   `modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `content_key` int DEFAULT NULL,
-  `last-name@string#value` varchar(511) DEFAULT NULL,
-  `first-name@string#value` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-boolean__archive__archive@boolean#value` int DEFAULT NULL,
+  `nouvel-attribut-integer__archive__archive@integer#value` int DEFAULT NULL,
+  `nouvel-attribut-datetime__archive__archive@datetime#value` datetime DEFAULT NULL,
+  `nouvel-attribut-string__archive__archive@string#value` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-text__archive__archive@text#value` text,
+  `nouvel-attribut-decimal__archive__archive@decimal#value` decimal(10,2) DEFAULT NULL,
+  `nouvel-attribut-link@link#href` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-link@link#text` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-link@link#external` tinyint(1) DEFAULT '1',
+  `nouvel-attribut-file@file#file` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-file@file#title` varchar(511) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `archive__wc-user`
+--
+
+CREATE TABLE `archive__wc-user` (
+  `id` int UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `creator` int DEFAULT NULL,
+  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int DEFAULT NULL,
+  `modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `content_key` int DEFAULT NULL,
+  `last-name@string#value` varchar(511) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `first-name@string#value` varchar(511) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `connection@connexion#id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `cauldron`
+--
+
+CREATE TABLE `cauldron` (
+  `id` int UNSIGNED NOT NULL,
+  `content_key` int UNSIGNED DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `resume` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `data` json DEFAULT NULL,
+  `status` int NOT NULL DEFAULT '0',
+  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `priority` int NOT NULL DEFAULT '0',
+  `level_1` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `cauldron`
+--
+
+INSERT INTO `cauldron` (`id`, `content_key`, `name`, `resume`, `data`, `status`, `datetime`, `priority`, `level_1`) VALUES
+(1, NULL, 'Content', NULL, NULL, 0, '2024-03-04 17:23:31', 0, 1),
+(2, NULL, 'Draft', NULL, NULL, 0, '2024-03-04 17:24:19', 0, 2),
+(3, NULL, 'Archive', NULL, NULL, 0, '2024-03-04 17:24:19', 0, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `content__test`
+--
+
+CREATE TABLE `content__test` (
+  `id` int UNSIGNED NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `creator` int DEFAULT NULL,
+  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int DEFAULT NULL,
+  `modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `nouvel-attribut-link@link#href` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-link@link#text` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-link@link#external` tinyint(1) DEFAULT '1',
+  `nouvel-attribut-file@file#file` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-file@file#title` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-image@image#file` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-image@image#title` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-connexion@connexion#id` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -48,7 +125,7 @@ CREATE TABLE `archive__wc-user` (
 
 CREATE TABLE `content__wc-user` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `creator` int DEFAULT NULL,
   `created` datetime DEFAULT CURRENT_TIMESTAMP,
   `modificator` int DEFAULT NULL,
@@ -62,8 +139,32 @@ CREATE TABLE `content__wc-user` (
 -- Déchargement des données de la table `content__wc-user`
 --
 
-INSERT INTO `content__wc-user` (`id`, `name`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
-(1, 'Administrateur', 'Witchcase', 'Administrateur', 1);
+INSERT INTO `content__wc-user` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
+(1, 'Administrateur', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01', 'Witchcase', 'Administrateur', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `draft__test`
+--
+
+CREATE TABLE `draft__test` (
+  `id` int UNSIGNED NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `creator` int DEFAULT NULL,
+  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int DEFAULT NULL,
+  `modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `content_key` int DEFAULT NULL,
+  `nouvel-attribut-link@link#href` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-link@link#text` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-link@link#external` tinyint(1) DEFAULT '1',
+  `nouvel-attribut-file@file#file` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-file@file#title` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-image@image#file` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-image@image#title` varchar(511) DEFAULT NULL,
+  `nouvel-attribut-connexion@connexion#id` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -73,15 +174,152 @@ INSERT INTO `content__wc-user` (`id`, `name`, `last-name@string#value`, `first-n
 
 CREATE TABLE `draft__wc-user` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `creator` int DEFAULT NULL,
   `created` datetime DEFAULT CURRENT_TIMESTAMP,
   `modificator` int DEFAULT NULL,
   `modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `content_key` int DEFAULT NULL,
-  `last-name@string#value` varchar(511) DEFAULT NULL,
-  `first-name@string#value` varchar(511) DEFAULT NULL,
+  `last-name@string#value` varchar(511) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `first-name@string#value` varchar(511) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `connection@connexion#id` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ingredient__boolean`
+--
+
+CREATE TABLE `ingredient__boolean` (
+  `id` int UNSIGNED NOT NULL,
+  `cauldron_fk` int UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `creator` int UNSIGNED DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int UNSIGNED DEFAULT NULL,
+  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `value` bit(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ingredient__datetime`
+--
+
+CREATE TABLE `ingredient__datetime` (
+  `id` int UNSIGNED NOT NULL,
+  `cauldron_fk` int UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `creator` int UNSIGNED DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int UNSIGNED DEFAULT NULL,
+  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `value` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ingredient__float`
+--
+
+CREATE TABLE `ingredient__float` (
+  `id` int UNSIGNED NOT NULL,
+  `cauldron_fk` int UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `creator` int UNSIGNED DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int UNSIGNED DEFAULT NULL,
+  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `value` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ingredient__identifier`
+--
+
+CREATE TABLE `ingredient__identifier` (
+  `id` int UNSIGNED NOT NULL,
+  `cauldron_fk` int UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `creator` int UNSIGNED DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int UNSIGNED DEFAULT NULL,
+  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `value_id` int UNSIGNED DEFAULT NULL,
+  `value_table` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ingredient__integer`
+--
+
+CREATE TABLE `ingredient__integer` (
+  `id` int UNSIGNED NOT NULL,
+  `cauldron_fk` int UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `creator` int UNSIGNED DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int UNSIGNED DEFAULT NULL,
+  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `value` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ingredient__price`
+--
+
+CREATE TABLE `ingredient__price` (
+  `id` int UNSIGNED NOT NULL,
+  `cauldron_fk` int UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `creator` int UNSIGNED DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int UNSIGNED DEFAULT NULL,
+  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `value` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ingredient__string`
+--
+
+CREATE TABLE `ingredient__string` (
+  `id` int UNSIGNED NOT NULL,
+  `cauldron_fk` int UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `creator` int UNSIGNED DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int UNSIGNED DEFAULT NULL,
+  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `value` varchar(511) COLLATE utf8mb4_general_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ingredient__text`
+--
+
+CREATE TABLE `ingredient__text` (
+  `id` int UNSIGNED NOT NULL,
+  `cauldron_fk` int UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `creator` int UNSIGNED DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int UNSIGNED DEFAULT NULL,
+  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `value` text COLLATE utf8mb4_general_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -92,14 +330,14 @@ CREATE TABLE `draft__wc-user` (
 
 CREATE TABLE `user__connexion` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(255) DEFAULT NULL COMMENT 'user signature',
-  `email` varchar(511) DEFAULT NULL,
-  `login` varchar(255) DEFAULT NULL,
-  `pass_hash` varchar(255) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'user signature',
+  `email` varchar(511) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `login` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `pass_hash` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `craft_table` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `craft_attribute` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT 'connexion',
   `craft_attribute_var` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT 'fk_user__connexion',
-  `attribute_name` varchar(511) DEFAULT NULL,
+  `attribute_name` varchar(511) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `modifier` int DEFAULT NULL,
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `creator` int DEFAULT NULL,
@@ -110,8 +348,8 @@ CREATE TABLE `user__connexion` (
 -- Déchargement des données de la table `user__connexion`
 --
 
-INSERT INTO `user__connexion` (`id`, `name`, `email`, `login`, `pass_hash`, `craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name`) VALUES
-(1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection');
+INSERT INTO `user__connexion` (`id`, `name`, `email`, `login`, `pass_hash`, `craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name`, `modifier`, `modified`, `creator`, `created`) VALUES
+(1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01');
 
 -- --------------------------------------------------------
 
@@ -122,13 +360,13 @@ INSERT INTO `user__connexion` (`id`, `name`, `email`, `login`, `pass_hash`, `cra
 CREATE TABLE `user__policy` (
   `id` int UNSIGNED NOT NULL,
   `fk_profile` int UNSIGNED DEFAULT NULL,
-  `module` varchar(255) NOT NULL DEFAULT 'view',
+  `module` varchar(255) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'view',
   `status` int UNSIGNED DEFAULT NULL,
   `fk_witch` int UNSIGNED DEFAULT NULL,
   `position_ancestors` tinyint(1) NOT NULL DEFAULT '0',
   `position_included` tinyint(1) NOT NULL DEFAULT '1',
   `position_descendants` tinyint(1) NOT NULL DEFAULT '1',
-  `custom_limitation` varchar(31) DEFAULT NULL
+  `custom_limitation` varchar(31) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -149,7 +387,7 @@ INSERT INTO `user__policy` (`id`, `fk_profile`, `module`, `status`, `fk_witch`, 
 
 CREATE TABLE `user__profile` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `site` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT '*',
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -158,9 +396,9 @@ CREATE TABLE `user__profile` (
 -- Déchargement des données de la table `user__profile`
 --
 
-INSERT INTO `user__profile` (`id`, `name`, `site`) VALUES
-(1, 'administrator', '*'),
-(2, 'public', '*');
+INSERT INTO `user__profile` (`id`, `name`, `site`, `created`) VALUES
+(1, 'administrator', '*', '2024-03-01 15:46:01'),
+(2, 'public', '*', '2024-03-01 15:46:01');
 
 -- --------------------------------------------------------
 
@@ -178,8 +416,8 @@ CREATE TABLE `user__rel__connexion__profile` (
 -- Déchargement des données de la table `user__rel__connexion__profile`
 --
 
-INSERT INTO `user__rel__connexion__profile` (`fk_connexion`, `fk_profile`) VALUES
-(1, 1);
+INSERT INTO `user__rel__connexion__profile` (`fk_connexion`, `fk_profile`, `created`) VALUES
+(1, 1, '2024-03-01 15:46:01');
 
 -- --------------------------------------------------------
 
@@ -189,8 +427,8 @@ INSERT INTO `user__rel__connexion__profile` (`fk_connexion`, `fk_profile`) VALUE
 
 CREATE TABLE `witch` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `data` text,
+  `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `data` text COLLATE utf8mb4_general_ci,
   `site` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   `url` varchar(1023) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0',
@@ -199,7 +437,7 @@ CREATE TABLE `witch` (
   `craft_fk` int UNSIGNED DEFAULT NULL,
   `alias` int DEFAULT NULL,
   `is_main` int UNSIGNED NOT NULL DEFAULT '1',
-  `context` varchar(255) DEFAULT NULL,
+  `context` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `priority` int NOT NULL DEFAULT '0',
   `level_1` int UNSIGNED DEFAULT NULL,
@@ -207,33 +445,54 @@ CREATE TABLE `witch` (
   `level_3` int UNSIGNED DEFAULT NULL,
   `level_4` int UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Déchargement des données de la table `witch`
 --
 
-INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `craft_table`, `craft_fk`, `alias`, `is_main`, `context`, `priority`, `level_1`, `level_2`, `level_3`, `level_4`) VALUES
-(1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL,  0, NULL, NULL, NULL, NULL),
-(2, 'Admin WitchCase', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL,  0, 1, NULL, NULL, NULL),
-(3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, NULL, NULL, 1, NULL, 10, 1, 1, NULL, NULL),
-(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 'content__wc-user', 1, NULL, 1, '',  0, 1, 1, 1, NULL),
-(5, 'Home', '', 'admin', '', 0, 'root', NULL, NULL, NULL, 1, NULL,  0, 1, 2, NULL, NULL),
-(6, 'Login', 'Module de déconnexion/connexion', 'admin', 'login', 0, 'login', NULL, NULL, NULL, 1, NULL, 40, 1, 2, 1, NULL),
-(7, 'Witch', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'view', NULL, NULL, NULL, 1, NULL, 30, 1, 2, 2, NULL),
-(8, 'Edit Witch', '', 'admin', 'edit', 0, 'edit', NULL, NULL, NULL, 1, NULL,  20, 1, 2, 3, NULL),
-(9, 'Edit Craft', 'This is the draft of craft, you can publish it, save it for later, or remove draft to cancel modification.', 'admin', 'edit-content', 0, 'contents/edit', NULL, NULL, NULL, 1, NULL, 10, 1, 2, 4, NULL),
-(10, 'Menu', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL,  0, 1, 2, 5, NULL),
-(11, 'Profiles', 'Permissions handeling is based on user profiles.', 'admin', 'profiles', 0, 'profiles', NULL, NULL, NULL, 1, NULL,  0, 1, 2, 5, 1),
-(12, 'Structures', '', 'admin', 'structures', 0, 'structures', NULL, NULL, NULL, 1, NULL, 0, 1, 2, 5, 2);
-
+INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `craft_table`, `craft_fk`, `alias`, `is_main`, `context`, `datetime`, `priority`, `level_1`, `level_2`, `level_3`, `level_4`) VALUES
+(1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, NULL, NULL, NULL, NULL),
+(2, 'Admin WitchCase', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, NULL, NULL, NULL),
+(3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 10, 1, 1, NULL, NULL),
+(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 'content__wc-user', 1, NULL, 1, '', '2024-03-01 15:46:01', 0, 1, 1, 1, NULL),
+(5, 'Home', '', 'admin', '', 0, 'root', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, NULL, NULL),
+(6, 'Login', 'Module de déconnexion/connexion', 'admin', 'login', 0, 'login', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 40, 1, 2, 1, NULL),
+(7, 'Witch', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'view', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 30, 1, 2, 2, NULL),
+(8, 'Edit Witch', '', 'admin', 'edit', 0, 'edit', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 20, 1, 2, 3, NULL),
+(9, 'Edit Craft', 'This is the draft of craft, you can publish it, save it for later, or remove draft to cancel modification.', 'admin', 'edit-content', 0, 'contents/edit', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 10, 1, 2, 4, NULL),
+(10, 'Menu', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, NULL),
+(11, 'Profiles', 'Permissions handeling is based on user profiles.', 'admin', 'profiles', 0, 'profiles', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 1),
+(12, 'Structures', '', 'admin', 'structures', 0, 'structures', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 2),
+(13, 'Apply', '', 'admin', 'apply', 0, 'emptyCache', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:28', -1, 1, 2, 5, 3);
 
 --
 -- Index pour les tables déchargées
 --
 
 --
+-- Index pour la table `archive__test`
+--
+ALTER TABLE `archive__test`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Index pour la table `archive__wc-user`
 --
 ALTER TABLE `archive__wc-user`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `cauldron`
+--
+ALTER TABLE `cauldron`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_level_1` (`level_1`),
+  ADD KEY `CONTENT_KEY` (`content_key`);
+
+--
+-- Index pour la table `content__test`
+--
+ALTER TABLE `content__test`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -243,10 +502,72 @@ ALTER TABLE `content__wc-user`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Index pour la table `draft__test`
+--
+ALTER TABLE `draft__test`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Index pour la table `draft__wc-user`
 --
 ALTER TABLE `draft__wc-user`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `ingredient__boolean`
+--
+ALTER TABLE `ingredient__boolean`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
+
+--
+-- Index pour la table `ingredient__datetime`
+--
+ALTER TABLE `ingredient__datetime`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
+
+--
+-- Index pour la table `ingredient__float`
+--
+ALTER TABLE `ingredient__float`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
+
+--
+-- Index pour la table `ingredient__identifier`
+--
+ALTER TABLE `ingredient__identifier`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
+
+--
+-- Index pour la table `ingredient__integer`
+--
+ALTER TABLE `ingredient__integer`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
+
+--
+-- Index pour la table `ingredient__price`
+--
+ALTER TABLE `ingredient__price`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
+
+--
+-- Index pour la table `ingredient__string`
+--
+ALTER TABLE `ingredient__string`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
+
+--
+-- Index pour la table `ingredient__text`
+--
+ALTER TABLE `ingredient__text`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
 
 --
 -- Index pour la table `user__connexion`
@@ -285,23 +606,48 @@ ALTER TABLE `witch`
 --
 -- AUTO_INCREMENT pour les tables déchargées
 --
+
+--
+-- AUTO_INCREMENT pour la table `archive__test`
+--
+ALTER TABLE `archive__test`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `archive__wc-user`
+--
+ALTER TABLE `archive__wc-user`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `cauldron`
+--
+ALTER TABLE `cauldron`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT pour la table `content__test`
+--
+ALTER TABLE `content__test`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT pour la table `content__wc-user`
 --
 ALTER TABLE `content__wc-user`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
 --
+-- AUTO_INCREMENT pour la table `draft__test`
+--
+ALTER TABLE `draft__test`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT pour la table `draft__wc-user`
 --
 ALTER TABLE `draft__wc-user`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
---
---
--- AUTO_INCREMENT pour la table `archive__wc-user`
---
-ALTER TABLE `archive__wc-user`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour la table `user__connexion`
@@ -325,7 +671,7 @@ ALTER TABLE `user__profile`
 -- AUTO_INCREMENT pour la table `witch`
 --
 ALTER TABLE `witch`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

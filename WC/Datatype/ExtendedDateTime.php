@@ -13,7 +13,7 @@ class ExtendedDateTime extends \DateTime
     public $frenchFormatDateTime;
     public $actor;
     
-    public function __construct(string $datetime = "now", ?string $actor = null, ?string $timezone = null) 
+    public function __construct(?string $datetime = "now", ?string $actor = null, ?string $timezone = null) 
     {
         $this->actor    =  $actor ?? '';
         $dateTimeZone   = new \DateTimeZone( $timezone ?? date_default_timezone_get() );

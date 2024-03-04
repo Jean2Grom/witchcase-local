@@ -631,7 +631,7 @@ class Witch
     /**
      * Read witch module, invoke it if needed
      * @param string|null $invoke
-     * @return boolean
+     * @return Module|boolean
      */
     function module( ?string $invoke=null )
     {
@@ -1179,7 +1179,7 @@ class Witch
     static function recursiveTree( self $witch, $sitesRestrictions=false, $currentId=false, $maxStatus=false, ?array $hrefCallBack=null )
     {
         if( !is_null($witch->site) 
-            && $sitesRestrictions !== false
+            && is_array($sitesRestrictions)
             && !in_array($witch->site, $sitesRestrictions) ){
             return false;
         }
