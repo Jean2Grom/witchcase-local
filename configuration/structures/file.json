@@ -1,0 +1,15 @@
+{
+    "name": "file",
+    "type": "structure",
+    "composition": [
+        {
+            "mandatory": true,
+            "name": "file",
+            "type": "string"
+        },
+        {
+            "name": "title",
+            "type": "string"
+        }
+    ]
+}

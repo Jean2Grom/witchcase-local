@@ -1,0 +1,21 @@
+{
+    "name": "wc-user",
+    "type": "structure",
+    "composition": [
+        {
+            "mandatory": true,
+            "name": "last-name",
+            "type": "string"
+        },
+        {
+            "mandatory": true,
+            "name": "first-name",
+            "type": "string"
+        },
+        {
+            "mandatory": true,
+            "name": "connexion",
+            "type": "wc-connexion"
+        }
+    ]
+}

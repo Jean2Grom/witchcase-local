@@ -1,0 +1,19 @@
+{
+    "name": "link",
+    "type": "structure",
+    "composition": [
+        {
+            "mandatory": true,
+            "name": "href",
+            "type": "string"
+        },
+        {
+            "name": "text",
+            "type": "string"
+        },
+        {
+            "name": "external",
+            "type": "boolean"
+        }
+    ]
+}
