@@ -2,6 +2,7 @@
 namespace WC;
 
 use WC\DataAccess\WitchSummoning;
+use WC\DataAccess\Cauldron;
 
 /**
  * WitchCase container class to allow whole access to Kernel
@@ -71,6 +72,12 @@ class WitchCase
      */
     public int $depth;
     
+    /**
+     * Current depth of cauldron arborescence tree
+     * @var int 
+     */
+    public int $caudronDepth;
+    
     
     public function __construct() 
     {
@@ -90,6 +97,7 @@ class WitchCase
     {
         try {
             $this->depth    = WitchSummoning::getDepth( $this );
+            $this->caudronDepth= Cauldron::getDepth( $this );
             $this->request  = new Request( $this );
             $this->website  = $this->request->getWebsite();
             $this->debug->addEnableCondition($this->website->debug);
