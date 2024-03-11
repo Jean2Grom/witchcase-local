@@ -97,7 +97,7 @@ class WitchCase
     {
         try {
             $this->depth    = WitchSummoning::getDepth( $this );
-            $this->caudronDepth= Cauldron::getDepth( $this );
+            $this->caudronDepth = Cauldron::getDepth( $this );
             $this->request  = new Request( $this );
             $this->website  = $this->request->getWebsite();
             $this->debug->addEnableCondition($this->website->debug);

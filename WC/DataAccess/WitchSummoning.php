@@ -17,7 +17,7 @@ class WitchSummoning
         'parents',
         'children',
     ];
-           
+    
     static function getDepth( WitchCase $wc ): int
     {
         $depth = $wc->cache->read( 'system', 'depth' );

@@ -16,6 +16,12 @@ class Cauldron
         "datetime",
     ];
 
+    const RELATIONSHIPS = [
+        //'sisters',
+        'parents',
+        'children',
+    ];
+
     static function getDepth( WitchCase $wc ): int
     {
         $depth = $wc->cache->read( 'system', 'depth-cauldron' );
@@ -32,7 +38,7 @@ class Cauldron
         return (int) $depth;
     }
 
-    static function witchesRequest( WitchCase $wc, $configuration )
+    static function cauldronRequest( WitchCase $wc, $configuration )
     {
         $userConnexionJointure = !empty($configuration['user']) && $wc->user->connexion;
         
@@ -44,41 +50,55 @@ class Cauldron
             $query      .=  $separator."`c`.`".$field."` ";
             $separator  =   ", ";
         }
-        for( $i=1; $i<=$wc->depth; $i++ ){
+        for( $i=1; $i<=$wc->caudronDepth; $i++ ){
             $query      .=  $separator."`c`.`level_".$i."` ";
         }
         if( $userConnexionJointure ){
             $query  .= ", `user_craft_table`.`id` AS `user_craft_fk` ";
         }
         
+        $query  .= ", `b`.`value` AS `bool` ";
+        $query  .= ", `dt`.`value` AS `datetime` ";
+        $query  .= ", `f`.`value` AS `float` ";
+        $query  .= ", `i`.`value` AS `int` ";
+        $query  .= ", `i`.`value` AS `int` ";
+        $query  .= ", `p`.`value` AS `price` ";
+        $query  .= ", `t`.`value` AS `text` ";
+
+        $query  .= ", `identifier`.`value_table` AS `ext_table` ";
+        $query  .= ", `identifier`.`value_id` AS `ext_id` ";
+
         $query  .= "FROM ";
         if( $userConnexionJointure ){
             $query  .= "`".$wc->user->connexionData['craft_table']."` AS `user_craft_table`, ";
         }
         
-        $refWitch           = false;
-        foreach( $configuration as $type => $typeConfiguration ) 
-        {
-            if( $type === 'user' ){
-                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
-            }
-            else {
-                $witchRefConfJoins = $typeConfiguration;
-            }
-            
-            foreach( $witchRefConfJoins as $witchRef => $witchRefConf )
-            {
-                if( !empty($witchRefConf['modules']) ){
-                    $query  .= "`witch` AS `ref_witch`, ";
-                    $refWitch = true;
-                    break;
-                }
+        $query  .= "`cauldron` AS `c` ";
 
-            }
-        }
+        $query  .= "LEFT JOIN `ingredient__identifier` AS `identifier` ";
+        $query  .=      "ON `identifier`.`cauldron_fk` = `c`.`id` ";
         
-        $query  .= "`witch` AS `w` ";
+        $query  .= "LEFT JOIN `ingredient__string` AS `s` ";
+        $query  .=      "ON `s`.`cauldron_fk` = `c`.`id` ";
         
+        $query  .= "LEFT JOIN `ingredient__boolean` AS `b` ";
+        $query  .=      "ON `b`.`cauldron_fk` = `c`.`id` ";
+        
+        $query  .= "LEFT JOIN `ingredient__datetime` AS `dt` ";
+        $query  .=      "ON `dt`.`cauldron_fk` = `c`.`id` ";
+
+        $query  .= "LEFT JOIN `ingredient__float` AS `f` ";
+        $query  .=      "ON `f`.`cauldron_fk` = `c`.`id` ";
+
+        $query  .= "LEFT JOIN `ingredient__text` AS `t` ";
+        $query  .=      "ON `t`.`cauldron_fk` = `c`.`id` ";
+
+        $query  .= "LEFT JOIN `ingredient__integer` AS `i` ";
+        $query  .=      "ON `i`.`cauldron_fk` = `c`.`id` ";
+
+        $query  .= "LEFT JOIN `ingredient__price` AS `p` ";
+        $query  .=      "ON `p`.`cauldron_fk` = `c`.`id` ";
+
         $leftJoin = [];
         foreach( $configuration as $type => $typeConfiguration ) 
         {
@@ -104,7 +124,7 @@ class Cauldron
                     continue;
                 }
 
-                $query  .= "LEFT JOIN `witch` AS `".$witchRef."` ";
+                $query  .= "LEFT JOIN `cauldron` AS `".$witchRef."` ";
                 $query  .=  "ON ( ";
 
                 $separator = "";
@@ -118,7 +138,7 @@ class Cauldron
                     $separator = "OR ";
 
                     $functionName   = $relationship."Jointure";
-                    $params         = [$witchRef, 'w'];
+                    $params         = [$witchRef, 'c'];
 
                     if( !empty($witchRefConf[ $relationship ]['depth']) ){
                         $params[] = $witchRefConf[ $relationship ]['depth'];
@@ -133,45 +153,16 @@ class Cauldron
         
         $parameters = [];
         $separator = "WHERE ( ";
-        
-        foreach( $configuration['url'] as $witchRef => $witchRefConf )
-        {
-            $parameters[$witchRef.'_site']  = $witchRefConf['site'];
-            $parameters[$witchRef.'_url']   = $witchRefConf['url'];
-
-            $condition  =   "( %s.`site` = :".$witchRef."_site ";
-            $condition  .=  "AND %s.`url` = :".$witchRef."_url ) ";
-
-            $query      .=  $separator;
-            $separator  =   "OR ";
-            $query      .=  str_replace(' %s.', ' `w`.', $condition);
-            if( $leftJoin[ $witchRef ] ){
-                $query      .=  " OR ".str_replace(' %s.', " `".$witchRef."`.", $condition);
-            }
-        }
-        
+                
         foreach( $configuration['id'] as $witchRef => $witchRefConf )
         {
             $parameters[ $witchRef ]    = (int) $witchRefConf['id'];
 
             $condition  =   " %s.`id` = :".$witchRef." ";
-              
-            if( !empty($witchRefConf['modules']) && $refWitch )
-            {
-                $innerCondition = [];
-                foreach( $witchRefConf['modules'] as $module )
-                {
-                    $parameterKey                   = $witchRef.'_'.$module;
-                    $parameters[ $parameterKey ]    = $module;
-                    $innerCondition[]               = "`ref_witch`.`invoke` = :".$parameterKey." ";
-                }
 
-                $condition  =   "( ".$condition." AND ( ". join("OR ", $innerCondition)." ) ) ";
-            }
-            
             $query      .=  $separator;
             $separator  =   "OR ";
-            $query      .=  str_replace(' %s.', ' `w`.', $condition);
+            $query      .=  str_replace(' %s.', ' `c`.', $condition);
             if( $leftJoin[ $witchRef ] ){
                 $query      .=  " OR ".str_replace(' %s.', " `".$witchRef."`.", $condition);
             }
@@ -186,24 +177,14 @@ class Cauldron
             
             $query      .=  $separator;
             $separator  =   "OR ";
-            $query      .=  str_replace(' %s.', ' `w`.', $condition);
+            $query      .=  str_replace(' %s.', ' `c`.', $condition);
             if( $leftJoin['user'] ){
                 $query      .=  " OR ".str_replace(' %s.', " `user_craft_table`.", $condition);
             }            
         }
         
         $query .=  ") ";
-        
-        if( $refWitch )
-        {
-            if( empty($parameters['site']) || empty($parameters['url']) ){
-                $parameters = array_replace($parameters, $wc->website->getUrlSearchParameters());
-            }
-            
-            $query .=  "AND ( `ref_witch`.`site` = :site ";
-            $query .=  "AND `ref_witch`.`url` = :url ) ";
-        }
-        
+                
         if( $wc->website->sitesRestrictions )
         {
             $sitesRestrictionsParams = [];
@@ -214,7 +195,7 @@ class Cauldron
                 $parameters[ $parameterKey ]    = $sitesRestrictionsValue;
             }
             
-            $query .=  "AND ( `w`.`site` IN ( :".implode(", :", $sitesRestrictionsParams)." ) OR `w`.`site` IS NULL ) ";
+            $query .=  "AND ( `c`.`site` IN ( :".implode(", :", $sitesRestrictionsParams)." ) OR `c`.`site` IS NULL ) ";
         }
         
         if( $userConnexionJointure )
@@ -231,14 +212,14 @@ class Cauldron
             /*
             if( !empty($policy['module']) && $policy['module'] != "*" )
             {
-                $condition[] = "`w`.`invoke` = ".$policyKeyPrefix."_invoke ";
+                $condition[] = "`c`.`invoke` = ".$policyKeyPrefix."_invoke ";
                 $parameters[ $policyKeyPrefix.'_invoke' ] = $policy['module'];
             }
              */
             
             if( isset($policy['status']) && $policy['status'] != "*" )
             {
-                $condition[] = "`w`.`status` <= ".$policyKeyPrefix."_status ";
+                $condition[] = "`c`.`status` <= ".$policyKeyPrefix."_status ";
                 $parameters[ $policyKeyPrefix.'_status' ] = (int) $policy['status'];
             }
             
@@ -256,16 +237,16 @@ class Cauldron
                     if( $level <= $lastLevel )
                     {
                         $field                                      = "level_".((int) $level);
-                        $condition[]                                = "`w`.`".$field."` = ".$policyKeyPrefix."_".$field." ";
+                        $condition[]                                = "`c`.`".$field."` = ".$policyKeyPrefix."_".$field." ";
                         $parameters[ $policyKeyPrefix."_".$field ]  = $levelValue;
                     }
                 }
                 
                 if( $policy['position_rules']['ancestors'] ){
-                    $condition[] = "`w`.`level_".$lastLevel."` IS NULL ";
+                    $condition[] = "`c`.`level_".$lastLevel."` IS NULL ";
                 }
                 elseif( $policy['position_rules']['descendants'] && !$policy['position_rules']['self']){
-                    $condition[] = "`w`.`level_".$lastLevel."` IS NOT NULL ";
+                    $condition[] = "`c`.`level_".$lastLevel."` IS NOT NULL ";
                 }                
             }
             
@@ -293,7 +274,48 @@ class Cauldron
             $query .= ") ";
         }
         
+$wc->db->debugQuery($query, $parameters);
+
         return $wc->db->selectQuery($query, $parameters);
+    }
+
+
+    private static function childrenJointure( WitchCase $wc, $mother, $daughter, $depth=1 )
+    {
+        $m = function (int $level) use ($mother): string {
+            return "`".$mother."`.`level_".$level."`";
+        };
+        $d = function (int $level) use  ($daughter): string {
+            return "`".$daughter."`.`level_".$level."`";
+        };
+        
+        $jointure = "( `".$mother."`.`id` <> `".$daughter."`.`id` ) ";
+        
+        $jointure  .=      "AND ( ";
+        $jointure  .=          "( ".$m(1)." IS NOT NULL AND ".$d(1)." = ".$m(1)." ) ";
+        $jointure  .=          "OR ( ".$m(1)." IS NULL AND ".$d(1)." IS NOT NULL ) ";
+        $jointure  .=      ") ";
+        
+        for( $i=2; $i <= $wc->depth; $i++ )
+        {
+            $jointure  .=  "AND ( ";
+            $jointure  .=      "( ".$m($i)." IS NOT NULL AND ".$d($i)." = ".$m($i)." ) ";
+            $jointure  .=      "OR ( ".$m($i)." IS NULL AND ".$m($i-1)." IS NOT NULL AND ".$d($i)." IS NOT NULL ) ";
+            $jointure  .=      "OR (  ".$m($i)." IS NULL AND ".$m($i-1)." IS NULL ";
+            // Apply level
+            if( $depth != '*' && ($depth + $i - 1) <= $wc->depth ){
+                $jointure  .=       "AND ".$d($depth + $i - 1)." IS NULL ";
+            }
+            $jointure  .=      ") ";
+            $jointure  .=  ") ";
+        }
+        
+        return $jointure;
+    }
+    
+    private static function parentsJointure( WitchCase $wc, $daughter, $mother, $depth=1 )
+    {
+        return self::childrenJointure( $wc, $mother, $daughter, $depth );
     }
 
 
