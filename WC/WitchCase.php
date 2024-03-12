@@ -96,10 +96,10 @@ class WitchCase
     public function injest(): self
     {
         try {
-            $this->depth    = WitchSummoning::getDepth( $this );
+            $this->depth        = WitchSummoning::getDepth( $this );
             $this->caudronDepth = Cauldron::getDepth( $this );
-            $this->request  = new Request( $this );
-            $this->website  = $this->request->getWebsite();
+            $this->request      = new Request( $this );
+            $this->website      = $this->request->getWebsite();
             $this->debug->addEnableCondition($this->website->debug);
             
             $this->cairn    = $this->website->getCairn();

@@ -4,15 +4,16 @@ use WC\DataAccess\Cauldron as CauldronDA;
 
 
 $conf = [
+    'user' => [
+        "parents" => false,
+        "children" => [ "depth" => "*" ],
+    ],
     'id' => [
-        "id_4" => 
+        "id_7" => 
         [
-            "id" => 4,
+            "id" => 7,
             "entries" => [ "test" => false ],
-            "modules" => false,
-            "craft" => false,
-            "parents" => [ "depth" => "*" ],
-            "sisters" => false,
+            "parents" => [ "depth" => "1" ],
             "children" => [ "depth" => "*" ],
         ]
     ]

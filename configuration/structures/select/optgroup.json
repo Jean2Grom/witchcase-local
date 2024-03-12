@@ -1,0 +1,22 @@
+{
+    "name": "optgroup",
+    "type": "structure",
+    "composition": [
+        {
+            "mandatory": true,
+            "name": "label",
+            "type": "string"
+        },
+        {
+            "mandatory": true,
+            "name" : "options",
+            "type": "array",
+            "require": {
+                "min": 1
+            },
+            "composition" : [
+                {   "type": "select/option"    }
+            ]
+        }
+    ]
+}

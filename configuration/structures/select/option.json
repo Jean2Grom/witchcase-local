@@ -1,0 +1,15 @@
+{
+    "name": "option",
+    "type": "structure",
+    "composition": [
+        {
+            "mandatory": true,
+            "name": "value",
+            "type": "string"
+        },
+        {
+            "name": "label",
+            "type": "string"
+        }
+    ]
+}

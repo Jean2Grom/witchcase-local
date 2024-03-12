@@ -38,14 +38,14 @@ class Witch
     public $name;
     public $datetime;
     
-    public $statusLevel        = 0;
+    public $statusLevel     = 0;
     public $status;
     
     public $site;
     
-    public $depth              = 0;
-    public $position           = [];
-    public $modules            = [];
+    public $depth           = 0;
+    public $position        = [];
+    public $modules         = [];
     
     public $mother;
     public $sisters;

@@ -1,0 +1,27 @@
+{
+    "name": "selection",
+    "type": "structure",
+    "composition": [
+        {
+            "mandatory": true,
+            "name" : "select",
+            "type": "cauldron_link",
+            "require": {
+                "structure": "select"
+            }
+        },
+        {
+            "mandatory": true,
+            "name" : "options",
+            "type": "array",
+            "composition" : [
+                {   
+                    "type": "cauldron_link",
+                    "require": {
+                        "structure": "select/option"
+                    }
+                }
+            ]
+        }
+    ]
+}

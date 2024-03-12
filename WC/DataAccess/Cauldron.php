@@ -54,19 +54,55 @@ class Cauldron
             $query      .=  $separator."`c`.`level_".$i."` ";
         }
         if( $userConnexionJointure ){
-            $query  .= ", `user_craft_table`.`id` AS `user_craft_fk` ";
+            $userConnexionJointure = false;
+            //$query  .= ", `user_craft_table`.`id` AS `user_craft_fk` ";
         }
         
         $query  .= ", `b`.`value` AS `bool` ";
-        $query  .= ", `dt`.`value` AS `datetime` ";
-        $query  .= ", `f`.`value` AS `float` ";
-        $query  .= ", `i`.`value` AS `int` ";
-        $query  .= ", `i`.`value` AS `int` ";
-        $query  .= ", `p`.`value` AS `price` ";
-        $query  .= ", `t`.`value` AS `text` ";
+        $query  .= ", `b`.`id` AS `bool_id` ";
+        $query  .= ", `b`.`name` AS `bool_name` ";
+        $query  .= ", `b`.`priority` AS `bool_priority` ";
 
-        $query  .= ", `identifier`.`value_table` AS `ext_table` ";
-        $query  .= ", `identifier`.`value_id` AS `ext_id` ";
+        $query  .= ", `dt`.`value` AS `datetime` ";
+        $query  .= ", `dt`.`id` AS `datetime_id` ";
+        $query  .= ", `dt`.`name` AS `datetime_name` ";
+        $query  .= ", `dt`.`priority` AS `datetime_priority` ";
+
+        $query  .= ", `f`.`value` AS `float` ";
+        $query  .= ", `f`.`id` AS `float_id` ";
+        $query  .= ", `f`.`name` AS `float_name` ";
+        $query  .= ", `f`.`priority` AS `float_priority` ";
+
+        $query  .= ", `i`.`value` AS `int` ";
+        $query  .= ", `i`.`id` AS `int_id` ";
+        $query  .= ", `i`.`name` AS `int_name` ";
+        $query  .= ", `i`.`priority` AS `int_priority` ";
+
+        $query  .= ", `p`.`value` AS `price` ";
+        $query  .= ", `p`.`id` AS `price_id` ";
+        $query  .= ", `p`.`name` AS `price_name` ";
+        $query  .= ", `p`.`priority` AS `price_priority` ";
+
+        $query  .= ", `s`.`value` AS `string` ";
+        $query  .= ", `s`.`id` AS `string_id` ";
+        $query  .= ", `s`.`name` AS `string_name` ";
+        $query  .= ", `s`.`priority` AS `string_priority` ";
+
+        $query  .= ", `t`.`value` AS `text` ";
+        $query  .= ", `t`.`id` AS `text_id` ";
+        $query  .= ", `t`.`name` AS `text_name` ";
+        $query  .= ", `t`.`priority` AS `text_priority` ";
+
+        $query  .= ", `identifier`.`value_table` AS `identifier_table` ";
+        $query  .= ", `identifier`.`value_id` AS `identifier` ";
+        $query  .= ", `identifier`.`id` AS `identifier_id` ";
+        $query  .= ", `identifier`.`name` AS `identifier_name` ";
+        $query  .= ", `identifier`.`priority` AS `identifier_priority` ";
+
+        $query  .= ", `cl`.`value` AS `link` ";
+        $query  .= ", `cl`.`id` AS `link_id` ";
+        $query  .= ", `cl`.`name` AS `link_name` ";
+        $query  .= ", `cl`.`priority` AS `link_priority` ";
 
         $query  .= "FROM ";
         if( $userConnexionJointure ){
@@ -75,12 +111,6 @@ class Cauldron
         
         $query  .= "`cauldron` AS `c` ";
 
-        $query  .= "LEFT JOIN `ingredient__identifier` AS `identifier` ";
-        $query  .=      "ON `identifier`.`cauldron_fk` = `c`.`id` ";
-        
-        $query  .= "LEFT JOIN `ingredient__string` AS `s` ";
-        $query  .=      "ON `s`.`cauldron_fk` = `c`.`id` ";
-        
         $query  .= "LEFT JOIN `ingredient__boolean` AS `b` ";
         $query  .=      "ON `b`.`cauldron_fk` = `c`.`id` ";
         
@@ -90,15 +120,24 @@ class Cauldron
         $query  .= "LEFT JOIN `ingredient__float` AS `f` ";
         $query  .=      "ON `f`.`cauldron_fk` = `c`.`id` ";
 
-        $query  .= "LEFT JOIN `ingredient__text` AS `t` ";
-        $query  .=      "ON `t`.`cauldron_fk` = `c`.`id` ";
-
         $query  .= "LEFT JOIN `ingredient__integer` AS `i` ";
         $query  .=      "ON `i`.`cauldron_fk` = `c`.`id` ";
 
         $query  .= "LEFT JOIN `ingredient__price` AS `p` ";
         $query  .=      "ON `p`.`cauldron_fk` = `c`.`id` ";
 
+        $query  .= "LEFT JOIN `ingredient__string` AS `s` ";
+        $query  .=      "ON `s`.`cauldron_fk` = `c`.`id` ";
+        
+        $query  .= "LEFT JOIN `ingredient__text` AS `t` ";
+        $query  .=      "ON `t`.`cauldron_fk` = `c`.`id` ";
+
+        $query  .= "LEFT JOIN `ingredient__identifier` AS `identifier` ";
+        $query  .=      "ON `identifier`.`cauldron_fk` = `c`.`id` ";
+        
+        $query  .= "LEFT JOIN `ingredient__cauldron_link` AS `cl` ";
+        $query  .=      "ON `cl`.`cauldron_fk` = `c`.`id` ";
+        
         $leftJoin = [];
         foreach( $configuration as $type => $typeConfiguration ) 
         {
