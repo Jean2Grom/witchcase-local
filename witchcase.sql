@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : db
--- Généré le : ven. 08 mars 2024 à 17:48
+-- Généré le : mar. 12 mars 2024 à 18:47
 -- Version du serveur : 8.0.36
 -- Version de PHP : 8.2.8
 
@@ -99,7 +99,10 @@ INSERT INTO `cauldron` (`id`, `content_key`, `status`, `name`, `resume`, `data`,
 (3, NULL, NULL, 'Users', NULL, NULL, 0, '2024-03-08 15:22:40', 1, 1, NULL, NULL, NULL),
 (4, NULL, NULL, 'Administrateur', NULL, '{\"stucture\": \"wc-user\"}', 0, '2024-03-08 15:28:54', 1, 1, 1, NULL, NULL),
 (5, NULL, NULL, 'connexion', NULL, '{\"structure\": \"wc-connexion\"}', 0, '2024-03-08 16:24:51', 1, 1, 1, 1, NULL),
-(6, NULL, NULL, 'profiles', NULL, '{\"structure\": \"array\"}', 0, '2024-03-08 16:27:50', 1, 1, 1, 1, 1);
+(6, NULL, NULL, 'profiles', NULL, '{\"structure\": \"array\"}', 0, '2024-03-08 16:27:50', 1, 1, 1, 1, 1),
+(7, NULL, NULL, 'Jean', NULL, '{\"stucture\": \"wc-user\"}', 0, '2024-03-12 18:24:26', 1, 1, 2, NULL, NULL),
+(8, NULL, NULL, 'connexion', NULL, '{\"structure\": \"wc-connexion\"}', 0, '2024-03-12 18:27:06', 1, 1, 2, 1, NULL),
+(9, NULL, NULL, 'profiles', NULL, '{\"stucture\": \"array\"}', 0, '2024-03-12 18:27:06', 1, 1, 2, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -213,6 +216,24 @@ CREATE TABLE `ingredient__boolean` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `ingredient__cauldron_link`
+--
+
+CREATE TABLE `ingredient__cauldron_link` (
+  `id` int UNSIGNED NOT NULL,
+  `cauldron_fk` int UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `value` int DEFAULT NULL,
+  `priority` int NOT NULL DEFAULT '0',
+  `creator` int UNSIGNED DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modificator` int UNSIGNED DEFAULT NULL,
+  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `ingredient__datetime`
 --
 
@@ -271,7 +292,9 @@ CREATE TABLE `ingredient__identifier` (
 
 INSERT INTO `ingredient__identifier` (`id`, `cauldron_fk`, `name`, `value_table`, `value_id`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
 (1, 5, 'connexion', 'user__connexion', 1, 0, NULL, '2024-03-08 16:01:35', NULL, '2024-03-08 16:49:13'),
-(2, 6, NULL, 'user__profile', 1, 0, NULL, '2024-03-08 16:18:39', NULL, '2024-03-08 17:18:45');
+(2, 6, NULL, 'user__profile', 1, 0, NULL, '2024-03-08 16:18:39', NULL, '2024-03-08 17:18:45'),
+(3, 8, 'connexion', 'user__connexion', 2, 0, NULL, '2024-03-08 16:01:35', NULL, '2024-03-08 16:49:13'),
+(4, 9, NULL, 'user__profile', 1, 0, NULL, '2024-03-08 16:18:39', NULL, '2024-03-08 17:18:45');
 
 -- --------------------------------------------------------
 
@@ -333,7 +356,9 @@ CREATE TABLE `ingredient__string` (
 
 INSERT INTO `ingredient__string` (`id`, `cauldron_fk`, `name`, `value`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
 (1, 4, 'last-name', 'Witchcase', 0, NULL, '2024-03-08 15:46:14', NULL, '2024-03-08 15:46:14'),
-(2, 4, 'fist-name', 'Administrateur', 0, NULL, '2024-03-08 15:46:14', NULL, '2024-03-08 15:46:14');
+(2, 4, 'fist-name', 'Administrateur', 0, NULL, '2024-03-08 15:46:14', NULL, '2024-03-08 15:46:14'),
+(3, 7, 'last-name', 'Gromard', 0, NULL, '2024-03-12 18:32:49', NULL, '2024-03-12 18:32:49'),
+(4, 7, 'fist-name', 'Jean', 0, NULL, '2024-03-12 18:32:49', NULL, '2024-03-12 18:32:49');
 
 -- --------------------------------------------------------
 
@@ -380,7 +405,8 @@ CREATE TABLE `user__connexion` (
 --
 
 INSERT INTO `user__connexion` (`id`, `name`, `email`, `login`, `pass_hash`, `craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name`, `modifier`, `modified`, `creator`, `created`) VALUES
-(1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01');
+(1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
+(2, 'Jean', 'jean.de.gromard@gmail.com', 'jean', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01');
 
 -- --------------------------------------------------------
 
@@ -448,7 +474,8 @@ CREATE TABLE `user__rel__connexion__profile` (
 --
 
 INSERT INTO `user__rel__connexion__profile` (`fk_connexion`, `fk_profile`, `created`) VALUES
-(1, 2, '2024-03-01 15:46:01');
+(1, 1, '2024-03-01 15:46:01'),
+(2, 1, '2024-03-01 15:46:01');
 
 -- --------------------------------------------------------
 
@@ -495,7 +522,8 @@ INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `c
 (11, 'Profiles', 'Permissions handeling is based on user profiles.', 'admin', 'profiles', 0, 'profiles', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 1),
 (12, 'Structures', '', 'admin', 'structures', 0, 'structures', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 2),
 (13, 'Apply', '', 'admin', 'apply', 0, 'emptyCache', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:28', -1, 1, 2, 5, 3),
-(14, 'test', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-08 17:35:00', 0, 2, NULL, NULL, NULL);
+(14, 'test', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-08 17:35:00', 0, 2, NULL, NULL, NULL),
+(15, 'Chaudron', '', 'admin', 'chaudron', 0, 'cauldron', NULL, NULL, NULL, 1, NULL, '2024-03-09 15:48:02', 0, 1, 2, 5, 4);
 
 --
 -- Index pour les tables déchargées
@@ -553,6 +581,13 @@ ALTER TABLE `draft__wc-user`
 -- Index pour la table `ingredient__boolean`
 --
 ALTER TABLE `ingredient__boolean`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
+
+--
+-- Index pour la table `ingredient__cauldron_link`
+--
+ALTER TABLE `ingredient__cauldron_link`
   ADD PRIMARY KEY (`id`),
   ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
 
@@ -659,7 +694,7 @@ ALTER TABLE `archive__wc-user`
 -- AUTO_INCREMENT pour la table `cauldron`
 --
 ALTER TABLE `cauldron`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT pour la table `content__test`
@@ -692,6 +727,12 @@ ALTER TABLE `ingredient__boolean`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT pour la table `ingredient__cauldron_link`
+--
+ALTER TABLE `ingredient__cauldron_link`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT pour la table `ingredient__datetime`
 --
 ALTER TABLE `ingredient__datetime`
@@ -707,7 +748,7 @@ ALTER TABLE `ingredient__float`
 -- AUTO_INCREMENT pour la table `ingredient__identifier`
 --
 ALTER TABLE `ingredient__identifier`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__integer`
@@ -725,7 +766,7 @@ ALTER TABLE `ingredient__price`
 -- AUTO_INCREMENT pour la table `ingredient__string`
 --
 ALTER TABLE `ingredient__string`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__text`
@@ -737,7 +778,7 @@ ALTER TABLE `ingredient__text`
 -- AUTO_INCREMENT pour la table `user__connexion`
 --
 ALTER TABLE `user__connexion`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `user__policy`
@@ -755,7 +796,7 @@ ALTER TABLE `user__profile`
 -- AUTO_INCREMENT pour la table `witch`
 --
 ALTER TABLE `witch`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
