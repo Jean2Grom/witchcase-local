@@ -17,7 +17,7 @@ class Cauldron
     ];
 
     const RELATIONSHIPS = [
-        //'sisters',
+        'sisters',
         'parents',
         'children',
     ];
@@ -52,10 +52,6 @@ class Cauldron
         }
         for( $i=1; $i<=$wc->caudronDepth; $i++ ){
             $query      .=  $separator."`c`.`level_".$i."` ";
-        }
-        if( $userConnexionJointure ){
-            $userConnexionJointure = false;
-            //$query  .= ", `user_craft_table`.`id` AS `user_craft_fk` ";
         }
         
         $query  .= ", `b`.`value` AS `bool` ";
@@ -106,7 +102,7 @@ class Cauldron
 
         $query  .= "FROM ";
         if( $userConnexionJointure ){
-            $query  .= "`".$wc->user->connexionData['craft_table']."` AS `user_craft_table`, ";
+            $query  .= "`ingredient__identifier` AS `user_connexion`, ";
         }
         
         $query  .= "`cauldron` AS `c` ";
@@ -193,7 +189,7 @@ class Cauldron
         $parameters = [];
         $separator = "WHERE ( ";
                 
-        foreach( $configuration['id'] as $witchRef => $witchRefConf )
+        foreach( $configuration['id'] ?? [] as $witchRef => $witchRefConf )
         {
             $parameters[ $witchRef ]    = (int) $witchRefConf['id'];
 
@@ -209,112 +205,20 @@ class Cauldron
         
         if( $userConnexionJointure )
         {
-            $parameters[ 'user_craft_table' ]    = $wc->user->connexionData['craft_table'];                
-
-            $condition  =   "( %s.`craft_table` = :user_craft_table ";
-            $condition  .=  "AND %s.`craft_fk` = `user_craft_table`.`id` ) ";
-            
             $query      .=  $separator;
             $separator  =   "OR ";
-            $query      .=  str_replace(' %s.', ' `c`.', $condition);
-            if( $leftJoin['user'] ){
-                $query      .=  " OR ".str_replace(' %s.', " `user_craft_table`.", $condition);
-            }            
+
+            $query  .=  "`user`.`id` = `user_connexion`.`cauldron_fk` ";
+            $query  .=  "AND `user`.`data`->>\"$.structure\" = \"wc-connexion\" ";
+            $query  .=  "AND `user_connexion`.`id` IS NOT NULL ";
+            $query  .=  "AND `user_connexion`.`value_table` = \"user__connexion\" ";
+            $query  .=  "AND `user_connexion`.`value_id` = :user_id ";
+
+            $parameters[ 'user_id' ] = (int) $wc->user->id;
         }
         
         $query .=  ") ";
-                
-        if( $wc->website->sitesRestrictions )
-        {
-            $sitesRestrictionsParams = [];
-            foreach( $wc->website->sitesRestrictions as $sitesRestrictionsKey => $sitesRestrictionsValue )
-            {
-                $parameterKey                   = 'site_restriction_'.$sitesRestrictionsKey;
-                $sitesRestrictionsParams[]      = $parameterKey;
-                $parameters[ $parameterKey ]    = $sitesRestrictionsValue;
-            }
-            
-            $query .=  "AND ( `c`.`site` IN ( :".implode(", :", $sitesRestrictionsParams)." ) OR `c`.`site` IS NULL ) ";
-        }
         
-        if( $userConnexionJointure )
-        {
-            $parameters[ 'user_id' ] = (int) $wc->user->id;
-            $query  .= "AND `user_craft_table`.`".$wc->user->connexionData['craft_column']."` = :user_id ";
-        }
-        
-        $userPoliciesConditions = [];
-        foreach( $wc->user->policies as $policyId => $policy )
-        {
-            $condition = [];
-            $policyKeyPrefix = ":policy_".((int) $policyId);
-            /*
-            if( !empty($policy['module']) && $policy['module'] != "*" )
-            {
-                $condition[] = "`c`.`invoke` = ".$policyKeyPrefix."_invoke ";
-                $parameters[ $policyKeyPrefix.'_invoke' ] = $policy['module'];
-            }
-             */
-            
-            if( isset($policy['status']) && $policy['status'] != "*" )
-            {
-                $condition[] = "`c`.`status` <= ".$policyKeyPrefix."_status ";
-                $parameters[ $policyKeyPrefix.'_status' ] = (int) $policy['status'];
-            }
-            
-            if( !empty($condition) && !empty($policy['position']) )
-            {
-                if( $policy['position_rules']['ancestors'] xor $policy['position_rules']['descendants'] )
-                {
-                    $lastLevel = count($policy['position']);
-                    if( $policy['position_rules']['self'] ){
-                        $lastLevel++;
-                    }
-                }
-
-                foreach( $policy['position'] as $level => $levelValue ){
-                    if( $level <= $lastLevel )
-                    {
-                        $field                                      = "level_".((int) $level);
-                        $condition[]                                = "`c`.`".$field."` = ".$policyKeyPrefix."_".$field." ";
-                        $parameters[ $policyKeyPrefix."_".$field ]  = $levelValue;
-                    }
-                }
-                
-                if( $policy['position_rules']['ancestors'] ){
-                    $condition[] = "`c`.`level_".$lastLevel."` IS NULL ";
-                }
-                elseif( $policy['position_rules']['descendants'] && !$policy['position_rules']['self']){
-                    $condition[] = "`c`.`level_".$lastLevel."` IS NOT NULL ";
-                }                
-            }
-            
-            if( !empty($condition) ){
-                $userPoliciesConditions[] = $condition;
-            }
-        }
-        
-        if( !empty($userPoliciesConditions) )
-        {
-            $query .= "AND ( ";
-            foreach( $userPoliciesConditions as $i => $condition )
-            {
-                if( count($condition) == 1 ){
-                    $query .= array_values($condition)[0];
-                }
-                else {
-                    $query .= "( ".implode("AND ", $condition).") ";
-                }
-                
-                if( ($i + 1) < count($userPoliciesConditions) ){
-                    $query .= "OR "; 
-                }
-            }
-            $query .= ") ";
-        }
-        
-$wc->db->debugQuery($query, $parameters);
-
         return $wc->db->selectQuery($query, $parameters);
     }
 
@@ -357,5 +261,54 @@ $wc->db->debugQuery($query, $parameters);
         return self::childrenJointure( $wc, $mother, $daughter, $depth );
     }
 
+
+    private static function sistersJointure( WitchCase $wc, $witch, $sister, $depth=1 )
+    {
+        $w = function (int $level) use ($witch): string {
+            return "`".$witch."`.`level_".$level."`";
+        };
+        $s = function (int $level) use  ($sister): string {
+            return "`".$sister."`.`level_".$level."`";
+        };
+        
+        $jointure = "( `".$witch."`.`id` <> `".$sister."`.`id` ) ";
+        
+        for( $i=1; $i < $wc->depth; $i++ )
+        {
+            $jointure  .=  "AND ( ";
+            $jointure  .=      "( ".$w($i)." IS NOT NULL AND ".$w($i+1)." IS NOT NULL AND ".$s($i)." = ".$w($i)." ) ";
+            $jointure  .=      "OR ( ".$w($i)." IS NOT NULL AND ".$w($i+1)." IS NULL AND ".$s($i)." IS NOT NULL ) ";
+            
+            if( $i == 1 ){
+                $jointure  .=      "OR ( ".$w($i)." IS NULL AND ".$s($i)." IS NULL ) ";
+            }
+            elseif( $depth != '*' && ($i + 1 - $depth) > 0 )
+            {
+                $jointure  .=      "OR ( ".$w($i)." IS NULL AND ".$w($i + 1 - $depth)." IS NULL AND ".$s($i)." IS NULL ) ";
+                $jointure  .=      "OR ( ".$w($i)." IS NULL AND ".$w($i + 1 - $depth)." IS NOT NULL ) ";
+                
+            }
+            else {
+                $jointure  .=      "OR ( ".$w($i)." IS NULL ) ";
+            }
+            
+            $jointure  .=  ") ";
+        }
+        
+        $maxDepth = (int) $wc->depth;
+        $jointure  .=      "AND ( ";
+        $jointure  .=          "( ".$w($maxDepth)." IS NOT NULL AND ".$s($maxDepth)." IS NOT NULL ) ";
+        if( $depth != '*' && ($maxDepth + 1 - $depth) > 0 )
+        {
+            $jointure  .=          "OR ( ".$w($maxDepth)." IS NULL AND ".$w($maxDepth + 1 - $depth)." IS NULL AND ".$s($maxDepth)." IS NULL ) ";
+            $jointure  .=          "OR ( ".$w($maxDepth)." IS NULL AND ".$w($maxDepth + 1 - $depth)." IS NOT NULL ) ";
+        }
+        else {
+            $jointure  .=      "OR ( ".$w($maxDepth)." IS NULL ) ";
+        }
+        $jointure  .=      ") ";
+        
+        return $jointure;
+    }
 
 }

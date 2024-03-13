@@ -5,15 +5,19 @@ use WC\DataAccess\Cauldron as CauldronDA;
 
 $conf = [
     'user' => [
-        "parents" => false,
-        "children" => [ "depth" => "*" ],
+        "parents"   => [ "depth" => "1" ],
+        "sisters"   => [ "depth" => "*" ],
+        "children"  => [ "depth" => "*" ],
     ],
+    
     'id' => [
         "id_7" => 
         [
             "id" => 7,
             "entries" => [ "test" => false ],
-            "parents" => [ "depth" => "1" ],
+            //"parents" => [ "depth" => "1" ],
+            "parents" => false,
+            //"sisters" => [ "depth" => "*" ],
             "children" => [ "depth" => "*" ],
         ]
     ]

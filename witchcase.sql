@@ -3,19 +3,13 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : db
--- Généré le : mar. 12 mars 2024 à 18:47
+-- Généré le : mer. 13 mars 2024 à 17:28
 -- Version du serveur : 8.0.36
 -- Version de PHP : 8.2.8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Base de données : `witchcase`
@@ -76,7 +70,7 @@ CREATE TABLE `archive__wc-user` (
 CREATE TABLE `cauldron` (
   `id` int UNSIGNED NOT NULL,
   `content_key` int UNSIGNED DEFAULT NULL,
-  `status` bit(1) DEFAULT NULL,
+  `status` bit(1) DEFAULT NULL COMMENT 'Null for content, 0 for draft, 1 for archive',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `resume` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data` json DEFAULT NULL,
@@ -94,13 +88,13 @@ CREATE TABLE `cauldron` (
 --
 
 INSERT INTO `cauldron` (`id`, `content_key`, `status`, `name`, `resume`, `data`, `priority`, `datetime`, `level_1`, `level_2`, `level_3`, `level_4`, `level_5`) VALUES
-(1, NULL, NULL, 'Root', NULL, NULL, 0, '2024-03-08 15:22:07', NULL, NULL, NULL, NULL, NULL),
+(1, NULL, NULL, 'Root', NULL, NULL, 0, '2024-03-13 17:08:26', NULL, NULL, NULL, NULL, NULL),
 (2, NULL, NULL, 'Admin', NULL, NULL, 0, '2024-03-08 15:22:33', 1, NULL, NULL, NULL, NULL),
 (3, NULL, NULL, 'Users', NULL, NULL, 0, '2024-03-08 15:22:40', 1, 1, NULL, NULL, NULL),
-(4, NULL, NULL, 'Administrateur', NULL, '{\"stucture\": \"wc-user\"}', 0, '2024-03-08 15:28:54', 1, 1, 1, NULL, NULL),
+(4, NULL, NULL, 'Administrateur', NULL, '{\"structure\": \"wc-user\"}', 0, '2024-03-13 15:40:06', 1, 1, 1, NULL, NULL),
 (5, NULL, NULL, 'connexion', NULL, '{\"structure\": \"wc-connexion\"}', 0, '2024-03-08 16:24:51', 1, 1, 1, 1, NULL),
 (6, NULL, NULL, 'profiles', NULL, '{\"structure\": \"array\"}', 0, '2024-03-08 16:27:50', 1, 1, 1, 1, 1),
-(7, NULL, NULL, 'Jean', NULL, '{\"stucture\": \"wc-user\"}', 0, '2024-03-12 18:24:26', 1, 1, 2, NULL, NULL),
+(7, NULL, NULL, 'Jean', NULL, '{\"structure\": \"wc-user\"}', 0, '2024-03-13 15:39:12', 1, 1, 2, NULL, NULL),
 (8, NULL, NULL, 'connexion', NULL, '{\"structure\": \"wc-connexion\"}', 0, '2024-03-12 18:27:06', 1, 1, 2, 1, NULL),
 (9, NULL, NULL, 'profiles', NULL, '{\"stucture\": \"array\"}', 0, '2024-03-12 18:27:06', 1, 1, 2, 1, 1);
 
@@ -798,7 +792,3 @@ ALTER TABLE `user__profile`
 ALTER TABLE `witch`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
