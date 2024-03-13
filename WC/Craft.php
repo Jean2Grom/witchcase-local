@@ -22,6 +22,7 @@ class Craft
         'draft', 
         'archive',
     ];
+    const TYPE = null;
     
     const ELEMENTS      = [
         "id",
@@ -240,7 +241,7 @@ class Craft
             return $this->witches[ $table ];
         }
         
-        if( $type && $type !== static::TYPE 
+        if( $type && $type !== $this->type()
             && property_exists($this, 'content_key') && $this->content_key
         ){
             $dataArray = CraftDA::getWitchesFromContentKey($this->wc, $table, $this->content_key) ?? [];
@@ -391,10 +392,10 @@ class Craft
         
         return Craft::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
     }
-    
-    function type(): string {
+
+    function type(): ?string {
         return static::TYPE;
-    }
+    }    
     
     function structure(): string {
         return $this->structure->name;
