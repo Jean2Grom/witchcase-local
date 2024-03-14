@@ -1,12 +1,12 @@
 <?php /** @var WC\Module $this */
 
 use WC\DataAccess\Cauldron as CauldronDA;
-
+use WC\Handler\CauldronHandler;
 
 $conf = [
     'user' => [
         "parents"   => [ "depth" => "1" ],
-        "sisters"   => [ "depth" => "*" ],
+        "siblings"  => [ "depth" => "*" ],
         "children"  => [ "depth" => "*" ],
     ],
     
@@ -14,15 +14,23 @@ $conf = [
         "id_7" => 
         [
             "id" => 7,
-            "entries" => [ "test" => false ],
             //"parents" => [ "depth" => "1" ],
             "parents" => false,
-            //"sisters" => [ "depth" => "*" ],
+            //"siblings" => [ "depth" => "*" ],
             "children" => [ "depth" => "*" ],
         ]
     ]
 ];
 
-$this->wc->dump( CauldronDA::cauldronRequest($this->wc, $conf) );
+$result = CauldronDA::cauldronRequest($this->wc, $conf);
+
+foreach( $result as $row )
+{
+    $cauldron = CauldronHandler::createFromData($this->wc, $row);
+    
+$this->wc->dump( $cauldron );
+}
+
+//  $this->wc->dump( $result );
 
 echo $this->wc->caudronDepth;

@@ -15,11 +15,11 @@ class Cauldron
         "priority",
         "datetime",
     ];
-
-    const RELATIONSHIPS = [
-        'sisters',
-        'parents',
-        'children',
+    
+    const RELATIONSHIPS_JOINTURE = [
+        'siblings' => "siblingsJointure",
+        'parents'  => "parentsJointure",
+        'children' => "childrenJointure",
     ];
 
     static function getDepth( WitchCase $wc ): int
@@ -147,7 +147,7 @@ class Cauldron
             foreach( $witchRefConfJoins as $witchRef => $witchRefConf ) 
             {
                 $leftJoin[ $witchRef ] = false;
-                foreach( self::RELATIONSHIPS as $relationship ){
+                foreach( array_keys(self::RELATIONSHIPS_JOINTURE) as $relationship ){
                     if( !empty($witchRefConf[ $relationship ]) )
                     {
                         $leftJoin[ $witchRef ] = true;
@@ -163,23 +163,22 @@ class Cauldron
                 $query  .=  "ON ( ";
 
                 $separator = "";
-                foreach( self::RELATIONSHIPS as $relationship )
+                foreach( self::RELATIONSHIPS_JOINTURE as $relationship => $jointureFunction )
                 {
                     if( empty($witchRefConf[ $relationship ]) ){
                         continue;
                     }
 
                     $query .= $separator;
+                    
                     $separator = "OR ";
-
-                    $functionName   = $relationship."Jointure";
-                    $params         = [$witchRef, 'c'];
+                    $params    = [$witchRef, 'c'];
 
                     if( !empty($witchRefConf[ $relationship ]['depth']) ){
                         $params[] = $witchRefConf[ $relationship ]['depth'];
                     }
 
-                    $query .= call_user_func_array([ __CLASS__, $functionName ], array_merge([$wc], $params) );
+                    $query .= call_user_func_array([ __CLASS__, $jointureFunction ], array_merge([$wc], $params) );
                 }
 
                 $query  .=  ") ";            
@@ -262,7 +261,7 @@ class Cauldron
     }
 
 
-    private static function sistersJointure( WitchCase $wc, $witch, $sister, $depth=1 )
+    private static function siblingsJointure( WitchCase $wc, $witch, $sister, $depth=1 )
     {
         $w = function (int $level) use ($witch): string {
             return "`".$witch."`.`level_".$level."`";
