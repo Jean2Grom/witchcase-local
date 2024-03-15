@@ -54,51 +54,51 @@ class Cauldron
             $query      .=  $separator."`c`.`level_".$i."` ";
         }
         
-        $query  .= ", `b`.`value` AS `bool` ";
-        $query  .= ", `b`.`id` AS `bool_id` ";
-        $query  .= ", `b`.`name` AS `bool_name` ";
-        $query  .= ", `b`.`priority` AS `bool_priority` ";
+        $query  .= ", `b`.`value` AS `b_value` ";
+        $query  .= ", `b`.`id` AS `b_id` ";
+        $query  .= ", `b`.`name` AS `b_name` ";
+        $query  .= ", `b`.`priority` AS `b_priority` ";
 
-        $query  .= ", `dt`.`value` AS `datetime` ";
-        $query  .= ", `dt`.`id` AS `datetime_id` ";
-        $query  .= ", `dt`.`name` AS `datetime_name` ";
-        $query  .= ", `dt`.`priority` AS `datetime_priority` ";
+        $query  .= ", `dt`.`value` AS `dt_value` ";
+        $query  .= ", `dt`.`id` AS `dt_id` ";
+        $query  .= ", `dt`.`name` AS `dt_name` ";
+        $query  .= ", `dt`.`priority` AS `dt_priority` ";
 
-        $query  .= ", `f`.`value` AS `float` ";
-        $query  .= ", `f`.`id` AS `float_id` ";
-        $query  .= ", `f`.`name` AS `float_name` ";
-        $query  .= ", `f`.`priority` AS `float_priority` ";
+        $query  .= ", `f`.`value` AS `f_value` ";
+        $query  .= ", `f`.`id` AS `f_id` ";
+        $query  .= ", `f`.`name` AS `f_name` ";
+        $query  .= ", `f`.`priority` AS `f_priority` ";
 
-        $query  .= ", `i`.`value` AS `int` ";
-        $query  .= ", `i`.`id` AS `int_id` ";
-        $query  .= ", `i`.`name` AS `int_name` ";
-        $query  .= ", `i`.`priority` AS `int_priority` ";
+        $query  .= ", `i`.`value` AS `i_value` ";
+        $query  .= ", `i`.`id` AS `i_id` ";
+        $query  .= ", `i`.`name` AS `i_name` ";
+        $query  .= ", `i`.`priority` AS `i_priority` ";
 
-        $query  .= ", `p`.`value` AS `price` ";
-        $query  .= ", `p`.`id` AS `price_id` ";
-        $query  .= ", `p`.`name` AS `price_name` ";
-        $query  .= ", `p`.`priority` AS `price_priority` ";
+        $query  .= ", `p`.`value` AS `p_value` ";
+        $query  .= ", `p`.`id` AS `p_id` ";
+        $query  .= ", `p`.`name` AS `p_name` ";
+        $query  .= ", `p`.`priority` AS `p_priority` ";
 
-        $query  .= ", `s`.`value` AS `string` ";
-        $query  .= ", `s`.`id` AS `string_id` ";
-        $query  .= ", `s`.`name` AS `string_name` ";
-        $query  .= ", `s`.`priority` AS `string_priority` ";
+        $query  .= ", `s`.`value` AS `s_value` ";
+        $query  .= ", `s`.`id` AS `s_id` ";
+        $query  .= ", `s`.`name` AS `s_name` ";
+        $query  .= ", `s`.`priority` AS `s_priority` ";
 
-        $query  .= ", `t`.`value` AS `text` ";
-        $query  .= ", `t`.`id` AS `text_id` ";
-        $query  .= ", `t`.`name` AS `text_name` ";
-        $query  .= ", `t`.`priority` AS `text_priority` ";
+        $query  .= ", `t`.`value` AS `t_value` ";
+        $query  .= ", `t`.`id` AS `t_id` ";
+        $query  .= ", `t`.`name` AS `t_name` ";
+        $query  .= ", `t`.`priority` AS `t_priority` ";
 
-        $query  .= ", `identifier`.`value_table` AS `identifier_table` ";
-        $query  .= ", `identifier`.`value_id` AS `identifier` ";
+        $query  .= ", `identifier`.`value_table` AS `identifier_value_table` ";
+        $query  .= ", `identifier`.`value_id` AS `identifier_value_id` ";
         $query  .= ", `identifier`.`id` AS `identifier_id` ";
         $query  .= ", `identifier`.`name` AS `identifier_name` ";
         $query  .= ", `identifier`.`priority` AS `identifier_priority` ";
 
-        $query  .= ", `cl`.`value` AS `link` ";
-        $query  .= ", `cl`.`id` AS `link_id` ";
-        $query  .= ", `cl`.`name` AS `link_name` ";
-        $query  .= ", `cl`.`priority` AS `link_priority` ";
+        $query  .= ", `cl`.`value` AS `cl_value` ";
+        $query  .= ", `cl`.`id` AS `cl_id` ";
+        $query  .= ", `cl`.`name` AS `cl_name` ";
+        $query  .= ", `cl`.`priority` AS `cl_priority` ";
 
         $query  .= "FROM ";
         if( $userConnexionJointure ){
