@@ -14,6 +14,10 @@ class CauldronHandler
         'archive',
     ];
 
+
+    /**
+     * 
+     */
     static function fetch( WitchCase $wc, array $configuration )
     {
         if( empty($configuration['id']) && empty($configuration['user']) ){
@@ -29,50 +33,45 @@ class CauldronHandler
         return self::instanciate($wc, $configuration, $result);
     }
 
-
+    
+    /**
+     * 
+     */
     private static function instanciate( WitchCase $wc, $configuration, $result )
     {
-        $witches        = [];
-        $witchesList    = [];
-        
-        $depthArray = [];
-        foreach( range(0, $wc->depth) as $d ){
+        $return         = [];
+
+        $cauldronsList  = [];
+        $depthArray     = [];
+        foreach( range(0, $wc->caudronDepth) as $d ){
             $depthArray[ $d ] = [];
         }
         
         $conditions     = [];
-        $urlRefWiches   = [];
-        foreach( $configuration["url"] as $typeConfiguration ){
-            foreach( array_keys($typeConfiguration['entries']) as $witchRef )
-            {
-                $conditions[ $witchRef ] = [ 
-                    'site'  => $typeConfiguration['site'],
-                    'url'   => $typeConfiguration['url'],
-                ];
-                
-                $urlRefWiches[] = $witchRef;
+        foreach( $configuration["id"] ?? [] as $typeConfiguration ){            
+            if( !empty($typeConfiguration['id']) ){
+                $conditions[ 'id_'.$typeConfiguration['id'] ] = [ 'id'  => $typeConfiguration['id'] ];
+            }
+            else {
+                foreach( $typeConfiguration as $typeConfigurationItem ){
+                    $conditions[  'id_'.$typeConfigurationItem['id'] ] = [ 'id'  => $typeConfigurationItem['id'] ];
+                }
             }
         }
-        foreach( $configuration["id"] as $typeConfiguration ){
-            foreach( array_keys($typeConfiguration['entries']) as $witchRef ){
-                $conditions[ $witchRef ] = [ 'id'  => $typeConfiguration['id'] ];
-            }
-        }
-        if( !empty($configuration['user']) && !empty($result[0]['user_craft_fk']) ){
-            foreach( array_keys($configuration['user']['entries']) as $witchRef ){
-                $conditions[ $witchRef ] = [ 
-                    'craft_table'  => $wc->user->connexionData['craft_table'], 
-                    'craft_fk'     => $result[0]['user_craft_fk'], 
-                ];
-            }
+        if( !empty($configuration['user']) ){
+            $conditions[ 'user' ] = [ 
+                'identifier_value_table'    => 'user__connexion', 
+                'identifier_value_id'       => $wc->user->id, 
+            ];
         }
         
         foreach( $result as $row )
         {
-            $id                             = $row['id'];
-            $witch                          = Witch::createFromData( $wc, $row );
-            $depthArray[ $witch->depth ][]  = $id;
-            $witchesList[ $id ]             = $witch;
+            $id                                             = $row['id'];
+            $cauldronsList[ $id ]                           = $cauldronsList[ $id ] 
+                                                                ?? self::createFromData( $wc, $row );
+            $depthArray[ $cauldronsList[ $id ]->depth ][]   = $id;
+            //$cauldronsList[ $id ]   = $cauldron;
             
             foreach( $conditions as $witchRef => $conditionsItem )
             {
@@ -87,11 +86,16 @@ class CauldronHandler
                 }
                 
                 if( $matched ){
-                    $witches[ $witchRef ] = $witch;
+                    $witches[ $witchRef ] = $cauldronsList[ $id ];
                 }
             }
         }
+
+$wc->dump( $depthArray );
+$wc->dump( $cauldronsList );
+return;
         
+                
         for( $i=0; $i < $wc->depth; $i++ ){
             foreach( $depthArray[ $i ] as $potentialMotherId ){
                 foreach( $depthArray[ ($i+1) ] as $potentialDaughterId ){
@@ -184,13 +188,7 @@ class CauldronHandler
                 }
             }
         }
-        
-        foreach( $urlRefWiches as $urlRefWichItem ){
-            if( empty($witches[ $urlRefWichItem ]) ){
-                $witches[ $urlRefWichItem ] = Witch::createFromData( $wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ] );
-            }
-        }
-        
+                
         return $witches;
     }
 

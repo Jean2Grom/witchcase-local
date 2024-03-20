@@ -11,7 +11,6 @@ $conf = [
     ],
     
     'id' => [
-        "id_7" => 
         [
             "id" => 7,
             //"parents" => [ "depth" => "1" ],
@@ -21,6 +20,10 @@ $conf = [
         ]
     ]
 ];
+
+
+$result = CauldronHandler::fetch($this->wc, $conf);
+
 
 $result = CauldronDA::cauldronRequest($this->wc, $conf);
 

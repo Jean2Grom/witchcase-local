@@ -140,8 +140,15 @@ class Cauldron
             if( $type === 'user' ){
                 $witchRefConfJoins = [ 'user' => $typeConfiguration ];
             }
-            else {
-                $witchRefConfJoins = $typeConfiguration;
+            elseif( $type === 'id' && isset($typeConfiguration['id']) ){
+                $witchRefConfJoins = [ 'id_'.$typeConfiguration['id'] => $typeConfiguration ];
+            }
+            elseif( $type === 'id' )
+            {
+                $witchRefConfJoins = [];
+                foreach( $typeConfiguration as $typeConfigurationItem ){
+                    $witchRefConfJoins[ 'id_'.$typeConfigurationItem['id'] ] = $typeConfigurationItem;
+                }
             }
             
             foreach( $witchRefConfJoins as $witchRef => $witchRefConf ) 
@@ -188,8 +195,9 @@ class Cauldron
         $parameters = [];
         $separator = "WHERE ( ";
                 
-        foreach( $configuration['id'] ?? [] as $witchRef => $witchRefConf )
+        foreach( $configuration['id'] ?? [] as $witchRefConf )
         {
+            $witchRef                   = 'id_'.$witchRefConf['id'];
             $parameters[ $witchRef ]    = (int) $witchRefConf['id'];
 
             $condition  =   " %s.`id` = :".$witchRef." ";
