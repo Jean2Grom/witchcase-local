@@ -24,6 +24,8 @@ $conf = [
 
 $result = CauldronDA::cauldronRequest($this->wc, $conf);
 
+$this->wc->dump( $result );
+
 foreach( $result as $row )
 {
     $cauldron = CauldronHandler::createFromData($this->wc, $row);
@@ -31,6 +33,6 @@ foreach( $result as $row )
 $this->wc->dump( $cauldron );
 }
 
-//  $this->wc->dump( $result );
+
 
 echo $this->wc->caudronDepth;

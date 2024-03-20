@@ -38,7 +38,7 @@ class Cauldron
         return (int) $depth;
     }
 
-    static function cauldronRequest( WitchCase $wc, $configuration )
+    static function cauldronRequest( WitchCase $wc, array $configuration )
     {
         $userConnexionJointure = !empty($configuration['user']) && $wc->user->connexion;
         

@@ -4,19 +4,8 @@ namespace WC;
 
 class Ingredient 
 {
-    const DEFAULT_AVAILABLE_INGREDIENT_TYPES = [
-        'boolean', 
-        'cauldron_link',
-        'datetime',
-        'float',
-        'identifier',
-        'integer',
-        'price',
-        'string',
-        'text',
-    ];
-
     public $type;
+    public $value;
 
     public $id;
     public $name;
@@ -39,5 +28,14 @@ class Ingredient
      */
     public WitchCase $wc;
     
-
+    /**
+     * Default function to set value
+     * @param mixed $value 
+     * @return self
+     */
+    public function set( mixed $value )
+    {
+        $this->value = $value;
+        return $this;
+    }
 }
