@@ -14,11 +14,10 @@ class CauldronHandler
         'archive',
     ];
 
-
     /**
      * 
      */
-    static function fetch( WitchCase $wc, array $configuration )
+    static function fetch( WitchCase $wc, array $configuration ): array
     {
         if( empty($configuration['id']) && empty($configuration['user']) ){
             return [];
@@ -32,12 +31,11 @@ class CauldronHandler
         
         return self::instanciate($wc, $configuration, $result);
     }
-
     
     /**
      * 
      */
-    private static function instanciate( WitchCase $wc, $configuration, $result )
+    private static function instanciate( WitchCase $wc, $configuration, $result ): array
     {
         $return         = [];
 
@@ -70,14 +68,14 @@ class CauldronHandler
             $id                                             = $row['id'];
             $cauldronsList[ $id ]                           = $cauldronsList[ $id ] 
                                                                 ?? self::createFromData( $wc, $row );
-            $depthArray[ $cauldronsList[ $id ]->depth ][]   = $id;
-            //$cauldronsList[ $id ]   = $cauldron;
+            if( !in_array($id, $depthArray[ $cauldronsList[ $id ]->depth ]) ){
+                $depthArray[ $cauldronsList[ $id ]->depth ][] = $id;
+            }
             
-            foreach( $conditions as $witchRef => $conditionsItem )
+            foreach( $conditions as $ref => $conditionsItem )
             {
                 $matched = true;
                 foreach( $conditionsItem as $field => $value ){
-                    
                     if( $row[ $field ] !== $value )
                     {
                         $matched = false;
@@ -86,115 +84,27 @@ class CauldronHandler
                 }
                 
                 if( $matched ){
-                    $witches[ $witchRef ] = $cauldronsList[ $id ];
+                    $return[ $ref ] = $cauldronsList[ $id ];
                 }
             }
         }
-
-$wc->dump( $depthArray );
-$wc->dump( $cauldronsList );
-return;
         
-                
-        for( $i=0; $i < $wc->depth; $i++ ){
-            foreach( $depthArray[ $i ] as $potentialMotherId ){
+        for( $i=0; $i < $wc->caudronDepth; $i++ ){
+            foreach( $depthArray[ $i ] as $potentialParentId ){
                 foreach( $depthArray[ ($i+1) ] as $potentialDaughterId ){
-                    if( $witchesList[ $potentialMotherId ]->isMotherOf( $witchesList[ $potentialDaughterId ] ) ){
-                        $witchesList[ $potentialMotherId ]->addDaughter( $witchesList[ $potentialDaughterId ] );
+                    if( $cauldronsList[ $potentialParentId ]->isParentOf($cauldronsList[ $potentialDaughterId ]) ){
+                        self::setParenthood($cauldronsList[ $potentialParentId ], $cauldronsList[ $potentialDaughterId ]);
                     }
                 }
             }
         }
         
-        foreach( $configuration as $type => $typeConfiguration )
-        {
-            if( $type === 'user' ){
-                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
-            }
-            else {
-                $witchRefConfJoins = $typeConfiguration;
-            }
-            
-            foreach( $witchRefConfJoins as $witchRefConf )
-            {
-                if( empty($witchRefConf['entries']) ){
-                    continue;                    
-                }
-                
-                $witchRef = array_keys($witchRefConf['entries'])[0];
-                
-                if( !isset($witches[ $witchRef ]) ){
-                    continue;
-                }
-                
-                if( !empty($witchRefConf['children']) && !empty($witchRefConf['children']['depth']) )
-                {
-                    $depthLimit = $wc->depth - $witches[ $witchRef ]->depth;
-                    if( $witchRefConf['children']['depth'] !== '*' 
-                            && (int) $witchRefConf['children']['depth'] < $depthLimit 
-                    ){
-                        $depthLimit = (int) $witchRefConf['children']['depth'];
-                    }
-                    
-                    self::initChildren( $witches[ $witchRef ], $depthLimit );
-                }
-            }
-        }
-        
-        
-        foreach( $configuration as $type => $typeConfiguration )
-        {
-            if( $type === 'user' ){
-                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
-            }
-            else {
-                $witchRefConfJoins = $typeConfiguration;
-            }
-
-            foreach( $witchRefConfJoins as $witchRefConf )
-            {
-                if( empty($witchRefConf['entries']) ){
-                    continue;                
-                }
-                
-                $witchRef = array_keys($witchRefConf['entries'])[0];
-                
-                if( !isset($witches[ $witchRef ]) ){
-                    continue;
-                }
-
-                if( !empty($witchRefConf['sisters']) && !empty($witchRefConf['sisters']['depth']) )
-                {
-                    $depthLimit = $wc->depth - $witches[ $witchRef ]->depth;
-                    if( $witchRefConf['sisters']['depth'] !== '*' 
-                            && (int) $witchRefConf['sisters']['depth'] < $depthLimit 
-                    ){
-                        $depthLimit = (int) $witchRefConf['sisters']['depth'];
-                    }
-
-                    if( is_null($witches[ $witchRef ]->sisters) ){
-                        $witches[ $witchRef ]->sisters = [];
-                    }
-
-                    if( !empty($witches[ $witchRef ]->mother) && !empty($witches[ $witchRef ]->mother->daughters) ){
-                        foreach( $witches[ $witchRef ]->mother->daughters as $daughterWitch )
-                        {
-                            if( $witches[ $witchRef ]->id !== $daughterWitch->id ){
-                                $witches[ $witchRef ]->addSister($daughterWitch);
-                            }
-                            self::initChildren( $daughterWitch, $depthLimit );
-                        }
-                    }
-                }
-            }
-        }
-                
-        return $witches;
+        return $return;
     }
 
 
     /**
-     * Witch factory class, implements witch whith data provided
+     * Cauldron factory class, implements Cauldron with data provided
      * @param WitchCase $wc
      * @param array $data
      * @return Cauldron
@@ -260,5 +170,16 @@ return;
         return;
     }
         
+    static function setParenthood( Cauldron $parent, Cauldron $child ): void
+    {
+        if( $parent->children && in_array($child->id, array_keys( $parent->children )) ){
+            return;
+        }
+
+        $parent->children   = array_replace( $parent->children ?? [], [$child->id => $child] );
+        $child->parent      = $parent;
+        
+        return;
+    }
 
 }

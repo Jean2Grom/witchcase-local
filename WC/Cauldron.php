@@ -18,8 +18,7 @@ class Cauldron
     public $position    = [];
     
     public $parent;
-    public $siblings;
-    public $children;
+    public $children    = [];
     
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -88,6 +87,24 @@ class Cauldron
     }
     
 
+    function isParentOf( self $potentialChild ): bool
+    {
+        if( $potentialChild->depth != $this->depth + 1 ){
+            return false;
+        }
+        
+        $isParent = true;
+        for( $i=1; $i<=$this->depth; $i++ ){
+            if( $this->position[ $i ] != $potentialChild->position[ $i ] )
+            {
+                $isParent = false;
+                break;
+            }
+        }
+
+        return $isParent;
+    }
+
     /*
     ["id"] => 9
     ["content_key"] => null
@@ -102,38 +119,47 @@ class Cauldron
     ["level_3"] => 2
     ["level_4"] => 1
     ["level_5"] => 1
+
     ["bool"] => null
     ["bool_id"] => null
     ["bool_name"] => null
     ["bool_priority"] => null
+    
     ["datetime_id"] => null
     ["datetime_name"] => null
     ["datetime_priority"] => null
+    
     ["float"] => null
     ["float_id"] => null
     ["float_name"] => null
     ["float_priority"] => null
+
     ["int"] => null
     ["int_id"] => null
     ["int_name"] => null
     ["int_priority"] => null
+
     ["price"] => null
     ["price_id"] => null
     ["price_name"] => null
     ["price_priority"] => null
+
     ["string"] => null
     ["string_id"] => null
     ["string_name"] => null
     ["string_priority"] => null
+
     ["text"] => null
     ["text_id"] => null
     ["text_name"] => null
     ["text_priority"] => null
+
     ["identifier_table"] => "user__profile"
     ["identifier"] => 1
     ["identifier_id"] => 4
     ["identifier_name"] => null
     ["identifier_priority"] => 0
+    
     ["link"] => null
     ["link_id"] => null
     ["link_name"] => null

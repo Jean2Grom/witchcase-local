@@ -13,21 +13,21 @@ $conf = [
     'id' => [
         [
             "id" => 7,
-            //"parents" => [ "depth" => "1" ],
+            //"parents" => [ "depth" => 5 ],
             "parents" => false,
-            //"siblings" => [ "depth" => "*" ],
             "children" => [ "depth" => "*" ],
         ]
-    ]
+    ],
+    
 ];
 
 
 $result = CauldronHandler::fetch($this->wc, $conf);
 
-
-$result = CauldronDA::cauldronRequest($this->wc, $conf);
-
 $this->wc->dump( $result );
+
+/*
+$result = CauldronDA::cauldronRequest($this->wc, $conf);
 
 foreach( $result as $row )
 {
@@ -35,7 +35,7 @@ foreach( $result as $row )
     
 $this->wc->dump( $cauldron );
 }
-
+*/
 
 
 echo $this->wc->caudronDepth;
