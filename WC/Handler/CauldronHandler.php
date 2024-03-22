@@ -68,6 +68,7 @@ class CauldronHandler
             $id                                             = $row['id'];
             $cauldronsList[ $id ]                           = $cauldronsList[ $id ] 
                                                                 ?? self::createFromData( $wc, $row );
+            $ingredientsCreation    = IngredientHandler::createFromData( $cauldronsList[ $id ], $row );
             if( !in_array($id, $depthArray[ $cauldronsList[ $id ]->depth ]) ){
                 $depthArray[ $cauldronsList[ $id ]->depth ][] = $id;
             }
@@ -114,7 +115,7 @@ class CauldronHandler
         $cauldron       = new Cauldron();
         $cauldron->wc   = $wc;
         
-        foreach( CauldronDA::FIELDS as $field ){
+        foreach( Cauldron::FIELDS as $field ){
             $cauldron->properties[ $field ] = $data[ $field ] ?? null;
         }
         
@@ -161,6 +162,10 @@ class CauldronHandler
         
         if( !empty($cauldron->properties['data']) ){
             $cauldron->data = json_decode( $cauldron->properties['data'], true );
+        }
+
+        if( !empty($cauldron->properties['priority']) ){
+            $cauldron->priority = (int) $cauldron->properties['priority'];
         }
         
         if( !empty($cauldron->properties['datetime']) ){

@@ -2,20 +2,10 @@
 namespace WC\DataAccess;
 
 use WC\WitchCase;
+use WC\Cauldron as CauldronObj;
 
 class Cauldron
-{
-    const FIELDS = [
-        "id",
-        "content_key",
-        "status",
-        "name",
-        "resume",
-        "data",
-        "priority",
-        "datetime",
-    ];
-    
+{    
     const RELATIONSHIPS_JOINTURE = [
         'siblings' => "siblingsJointure",
         'parents'  => "parentsJointure",
@@ -45,7 +35,7 @@ class Cauldron
         // Determine the list of fields in select part of query
         $query = "";
         $separator = "SELECT DISTINCT ";
-        foreach( self::FIELDS as $field )
+        foreach( CauldronObj::FIELDS as $field )
         {
             $query      .=  $separator."`c`.`".$field."` ";
             $separator  =   ", ";

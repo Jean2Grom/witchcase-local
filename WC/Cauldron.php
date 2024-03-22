@@ -3,6 +3,17 @@ namespace WC;
 
 class Cauldron
 {
+    const FIELDS = [
+        "id",
+        "content_key",
+        "status",
+        "name",
+        "resume",
+        "data",
+        "priority",
+        "datetime",
+    ];
+
     public $properties  = [];
 
     public $id;
@@ -12,10 +23,13 @@ class Cauldron
     public $name;
     //public $resume;
     public $data;
+    public $priority;
     public $datetime;
     
     public $depth       = 0;
     public $position    = [];
+
+    public $ingredients = [];
     
     public $parent;
     public $children    = [];
