@@ -39,7 +39,9 @@ class IngredientHandler
                 continue;
             }
 
-            $className = "\\WC\\Ingredient\\".ucfirst($type).'Ingredient';
+            $className  =   "\\WC\\Ingredient\\";
+            $className  .=  str_replace('_', '', \ucwords($type, '_'));
+            $className  .=  'Ingredient';
             
             if( !class_exists($className) )
             {
@@ -92,7 +94,7 @@ class IngredientHandler
             $ingredient->priority = (int) $ingredient->properties['priority'];
         }
 
-        $ingredient->readFromProperty();
+        $ingredient->init();
         
         return;
     }

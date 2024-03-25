@@ -1,9 +1,9 @@
 <?php 
 namespace WC\Ingredient;
 
-class BooleanIngredient extends \WC\Ingredient 
+class IntegerIngredient extends \WC\Ingredient 
 {
-    public $type        = 'boolean';
+    public $type        = 'integer';
 
     /**
      * Init function used to setup ingredient
@@ -11,18 +11,18 @@ class BooleanIngredient extends \WC\Ingredient
      * @return self
      */
     function init( mixed $value=null ): self {
-        return $this->set( $value ?? (boolean) $this->properties[ 'value' ] ?? null );
+        return $this->set( $value ?? (int) $this->properties[ 'value' ] ?? null );
     }
 
     /**
-     * Set value
-     * @param mixed $value : has to be a boolean
+     * Default function to set value
+     * @param mixed $value : has to be a integer
      * @return self
      */
     public function set( mixed $value )
     {
-        if( !is_null($value) && !is_bool($value) ){
-            $this->wc->log->error( "Try to set a non boolean value to ".$this->type." ingredient");
+        if( !is_null($value) && !ctype_digit(strval($value)) ){
+            $this->wc->log->error( "Try to set a non integer value to ".$this->type." ingredient");
         }
         else {
             $this->value = $value;

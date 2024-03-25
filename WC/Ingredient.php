@@ -57,10 +57,13 @@ class Ingredient
      */
     public WitchCase $wc;
     
-    function readFromProperty(): self
-    {
-        $this->value = $this->properties[ 'value' ] ?? null;
-        return $this;
+    /**
+     * Init function used to setup ingredient
+     * @param mixed $value : if left to null, read from properties values 'value'
+     * @return self
+     */
+    function init( mixed $value=null ): self {
+        return $this->set( $value ?? $this->properties[ 'value' ] ?? null );
     }
 
     /**
@@ -71,6 +74,17 @@ class Ingredient
     public function set( mixed $value )
     {
         $this->value = $value;
+        return $this;
+    }
+
+    /**
+     * Reset value to null
+     * @param mixed $value 
+     * @return self
+     */
+    public function reset()
+    {
+        $this->value = null;
         return $this;
     }
 }
