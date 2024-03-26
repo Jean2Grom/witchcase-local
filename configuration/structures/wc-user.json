@@ -14,8 +14,27 @@
         },
         {
             "mandatory": true,
-            "name": "connexion",
-            "type": "wc-connexion"
+            "name" : "connexion",
+            "type": "identifier",
+            "require":{
+                "value_table" : "user__connexion"
+            }
+        }, 
+        {
+            "mandatory": true,
+            "name" : "profiles",
+            "type": "array",
+            "require": {
+                "min": 1
+            },
+            "composition" : [
+                {
+                    "type": "identifier",
+                    "require":{
+                        "value_table" : "user__profile"
+                    }
+                }
+            ]
         }
     ]
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : db
--- Généré le : mer. 13 mars 2024 à 17:28
+-- Généré le : mar. 26 mars 2024 à 17:53
 -- Version du serveur : 8.0.36
 -- Version de PHP : 8.2.8
 
@@ -92,11 +92,9 @@ INSERT INTO `cauldron` (`id`, `content_key`, `status`, `name`, `resume`, `data`,
 (2, NULL, NULL, 'Admin', NULL, NULL, 0, '2024-03-08 15:22:33', 1, NULL, NULL, NULL, NULL),
 (3, NULL, NULL, 'Users', NULL, NULL, 0, '2024-03-08 15:22:40', 1, 1, NULL, NULL, NULL),
 (4, NULL, NULL, 'Administrateur', NULL, '{\"structure\": \"wc-user\"}', 0, '2024-03-13 15:40:06', 1, 1, 1, NULL, NULL),
-(5, NULL, NULL, 'connexion', NULL, '{\"structure\": \"wc-connexion\"}', 0, '2024-03-08 16:24:51', 1, 1, 1, 1, NULL),
-(6, NULL, NULL, 'profiles', NULL, '{\"structure\": \"array\"}', 0, '2024-03-08 16:27:50', 1, 1, 1, 1, 1),
+(5, NULL, NULL, 'profiles', NULL, '{\"structure\": \"array\"}', 0, '2024-03-26 17:35:47', 1, 1, 1, 1, NULL),
 (7, NULL, NULL, 'Jean', NULL, '{\"structure\": \"wc-user\"}', 0, '2024-03-13 15:39:12', 1, 1, 2, NULL, NULL),
-(8, NULL, NULL, 'connexion', NULL, '{\"structure\": \"wc-connexion\"}', 0, '2024-03-12 18:27:06', 1, 1, 2, 1, NULL),
-(9, NULL, NULL, 'profiles', NULL, '{\"stucture\": \"array\"}', 0, '2024-03-12 18:27:06', 1, 1, 2, 1, 1);
+(8, NULL, NULL, 'profiles', NULL, '{\"stucture\": \"array\"}', 0, '2024-03-26 17:40:19', 1, 1, 2, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -207,6 +205,13 @@ CREATE TABLE `ingredient__boolean` (
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Déchargement des données de la table `ingredient__boolean`
+--
+
+INSERT INTO `ingredient__boolean` (`id`, `cauldron_fk`, `name`, `value`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
+(1, 7, 'test_boolean', b'1', 0, NULL, '2024-03-20 10:48:01', NULL, '2024-03-20 10:48:01');
+
 -- --------------------------------------------------------
 
 --
@@ -285,10 +290,10 @@ CREATE TABLE `ingredient__identifier` (
 --
 
 INSERT INTO `ingredient__identifier` (`id`, `cauldron_fk`, `name`, `value_table`, `value_id`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
-(1, 5, 'connexion', 'user__connexion', 1, 0, NULL, '2024-03-08 16:01:35', NULL, '2024-03-08 16:49:13'),
-(2, 6, NULL, 'user__profile', 1, 0, NULL, '2024-03-08 16:18:39', NULL, '2024-03-08 17:18:45'),
-(3, 8, 'connexion', 'user__connexion', 2, 0, NULL, '2024-03-08 16:01:35', NULL, '2024-03-08 16:49:13'),
-(4, 9, NULL, 'user__profile', 1, 0, NULL, '2024-03-08 16:18:39', NULL, '2024-03-08 17:18:45');
+(1, 4, 'connexion', 'user__connexion', 1, 0, NULL, '2024-03-08 16:01:35', NULL, '2024-03-26 17:34:16'),
+(2, 5, NULL, 'user__profile', 1, 0, NULL, '2024-03-08 16:18:39', NULL, '2024-03-26 17:36:13'),
+(3, 7, 'connexion', 'user__connexion', 2, 0, NULL, '2024-03-08 16:01:35', NULL, '2024-03-26 17:39:36'),
+(4, 8, NULL, 'user__profile', 1, 0, NULL, '2024-03-08 16:18:39', NULL, '2024-03-26 17:39:44');
 
 -- --------------------------------------------------------
 
@@ -485,6 +490,7 @@ CREATE TABLE `witch` (
   `url` varchar(1023) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0',
   `invoke` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cauldron` int UNSIGNED DEFAULT NULL,
   `craft_table` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   `craft_fk` int UNSIGNED DEFAULT NULL,
   `alias` int DEFAULT NULL,
@@ -502,22 +508,22 @@ CREATE TABLE `witch` (
 -- Déchargement des données de la table `witch`
 --
 
-INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `craft_table`, `craft_fk`, `alias`, `is_main`, `context`, `datetime`, `priority`, `level_1`, `level_2`, `level_3`, `level_4`) VALUES
-(1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, NULL, NULL, NULL, NULL),
-(2, 'Admin WitchCase', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, NULL, NULL, NULL),
-(3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 10, 1, 1, NULL, NULL),
-(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 'content__wc-user', 1, NULL, 1, '', '2024-03-01 15:46:01', 0, 1, 1, 1, NULL),
-(5, 'Home', '', 'admin', '', 0, 'root', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, NULL, NULL),
-(6, 'Login', 'Module de déconnexion/connexion', 'admin', 'login', 0, 'login', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 40, 1, 2, 1, NULL),
-(7, 'Witch', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'view', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 30, 1, 2, 2, NULL),
-(8, 'Edit Witch', '', 'admin', 'edit', 0, 'edit', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 20, 1, 2, 3, NULL),
-(9, 'Edit Craft', 'This is the draft of craft, you can publish it, save it for later, or remove draft to cancel modification.', 'admin', 'edit-content', 0, 'contents/edit', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 10, 1, 2, 4, NULL),
-(10, 'Menu', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, NULL),
-(11, 'Profiles', 'Permissions handeling is based on user profiles.', 'admin', 'profiles', 0, 'profiles', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 1),
-(12, 'Structures', '', 'admin', 'structures', 0, 'structures', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 2),
-(13, 'Apply', '', 'admin', 'apply', 0, 'emptyCache', NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:28', -1, 1, 2, 5, 3),
-(14, 'test', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-08 17:35:00', 0, 2, NULL, NULL, NULL),
-(15, 'Chaudron', '', 'admin', 'chaudron', 0, 'cauldron', NULL, NULL, NULL, 1, NULL, '2024-03-09 15:48:02', 0, 1, 2, 5, 4);
+INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `cauldron`, `craft_table`, `craft_fk`, `alias`, `is_main`, `context`, `datetime`, `priority`, `level_1`, `level_2`, `level_3`, `level_4`) VALUES
+(1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, NULL, NULL, NULL, NULL),
+(2, 'Admin WitchCase', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, NULL, NULL, NULL),
+(3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 10, 1, 1, NULL, NULL),
+(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 4, 'content__wc-user', 1, NULL, 1, '', '2024-03-01 15:46:01', 0, 1, 1, 1, NULL),
+(5, 'Home', '', 'admin', '', 0, 'root', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, NULL, NULL),
+(6, 'Login', 'Module de déconnexion/connexion', 'admin', 'login', 0, 'login', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 40, 1, 2, 1, NULL),
+(7, 'Witch', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'view', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 30, 1, 2, 2, NULL),
+(8, 'Edit Witch', '', 'admin', 'edit', 0, 'edit', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 20, 1, 2, 3, NULL),
+(9, 'Edit Craft', 'This is the draft of craft, you can publish it, save it for later, or remove draft to cancel modification.', 'admin', 'edit-content', 0, 'contents/edit', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 10, 1, 2, 4, NULL),
+(10, 'Menu', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, NULL),
+(11, 'Profiles', 'Permissions handeling is based on user profiles.', 'admin', 'profiles', 0, 'profiles', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 1),
+(12, 'Structures', '', 'admin', 'structures', 0, 'structures', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 2),
+(13, 'Apply', '', 'admin', 'apply', 0, 'emptyCache', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:28', -1, 1, 2, 5, 3),
+(14, 'test', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-08 17:35:00', 0, 2, NULL, NULL, NULL),
+(15, 'Chaudrons', '', 'admin', 'chaudrons', 0, 'cauldron', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-09 15:48:02', 0, 1, 2, 5, 4);
 
 --
 -- Index pour les tables déchargées
@@ -718,7 +724,7 @@ ALTER TABLE `draft__wc-user`
 -- AUTO_INCREMENT pour la table `ingredient__boolean`
 --
 ALTER TABLE `ingredient__boolean`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__cauldron_link`

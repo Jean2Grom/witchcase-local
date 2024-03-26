@@ -21,7 +21,7 @@ class Cauldron
     public $contentID;
     public $content;
     public $name;
-    //public $resume;
+    public $resume;
     public $data;
     public $priority;
     public $datetime;
@@ -40,7 +40,6 @@ class Cauldron
      */
     public WitchCase $wc;
     
-
     /**
      * Property setting 
      * @param string $name
@@ -48,7 +47,7 @@ class Cauldron
      * @return void
      */
     public function __set( string $name, mixed $value ): void {
-        $this->properties[$name] = $value;
+        $this->properties[ $name ] = $value;
     }
     
     /**
@@ -56,8 +55,8 @@ class Cauldron
      * @param string $name
      * @return mixed
      */
-    public function __get(string $name): mixed {
-        return $this->properties[$name] ?? null;
+    public function __get( string $name ): mixed {
+        return $this->properties[ $name ] ?? null;
     }
     
     /**
@@ -118,65 +117,4 @@ class Cauldron
 
         return $isParent;
     }
-
-    /*
-    ["id"] => 9
-    ["content_key"] => null
-    ["status"] => null
-    ["name"] => "profiles"
-    ["resume"] => null
-    ["data"] => "{"stucture": "array"}"
-    ["priority"] => 0
-    ["datetime"] => null
-    ["level_1"] => 1
-    ["level_2"] => 1
-    ["level_3"] => 2
-    ["level_4"] => 1
-    ["level_5"] => 1
-
-    ["bool"] => null
-    ["bool_id"] => null
-    ["bool_name"] => null
-    ["bool_priority"] => null
-    
-    ["datetime_id"] => null
-    ["datetime_name"] => null
-    ["datetime_priority"] => null
-    
-    ["float"] => null
-    ["float_id"] => null
-    ["float_name"] => null
-    ["float_priority"] => null
-
-    ["int"] => null
-    ["int_id"] => null
-    ["int_name"] => null
-    ["int_priority"] => null
-
-    ["price"] => null
-    ["price_id"] => null
-    ["price_name"] => null
-    ["price_priority"] => null
-
-    ["string"] => null
-    ["string_id"] => null
-    ["string_name"] => null
-    ["string_priority"] => null
-
-    ["text"] => null
-    ["text_id"] => null
-    ["text_name"] => null
-    ["text_priority"] => null
-
-    ["identifier_table"] => "user__profile"
-    ["identifier"] => 1
-    ["identifier_id"] => 4
-    ["identifier_name"] => null
-    ["identifier_priority"] => 0
-    
-    ["link"] => null
-    ["link_id"] => null
-    ["link_name"] => null
-    ["link_priority"] => null
-    */
 }

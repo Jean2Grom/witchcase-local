@@ -160,6 +160,10 @@ class CauldronHandler
             $cauldron->name = $cauldron->properties['name'];
         }
         
+        if( !empty($cauldron->properties['resume']) ){
+            $cauldron->resume = $cauldron->properties['resume'];
+        }
+        
         if( !empty($cauldron->properties['data']) ){
             $cauldron->data = json_decode( $cauldron->properties['data'], true );
         }

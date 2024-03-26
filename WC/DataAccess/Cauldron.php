@@ -3,6 +3,8 @@ namespace WC\DataAccess;
 
 use WC\WitchCase;
 use WC\Cauldron as CauldronObj;
+use WC\Ingredient;
+use WC\Handler\IngredientHandler;
 
 class Cauldron
 {    
@@ -44,52 +46,21 @@ class Cauldron
             $query      .=  $separator."`c`.`level_".$i."` ";
         }
         
-        $query  .= ", `b`.`value` AS `b_value` ";
-        $query  .= ", `b`.`id` AS `b_id` ";
-        $query  .= ", `b`.`name` AS `b_name` ";
-        $query  .= ", `b`.`priority` AS `b_priority` ";
-
-        $query  .= ", `dt`.`value` AS `dt_value` ";
-        $query  .= ", `dt`.`id` AS `dt_id` ";
-        $query  .= ", `dt`.`name` AS `dt_name` ";
-        $query  .= ", `dt`.`priority` AS `dt_priority` ";
-
-        $query  .= ", `f`.`value` AS `f_value` ";
-        $query  .= ", `f`.`id` AS `f_id` ";
-        $query  .= ", `f`.`name` AS `f_name` ";
-        $query  .= ", `f`.`priority` AS `f_priority` ";
-
-        $query  .= ", `i`.`value` AS `i_value` ";
-        $query  .= ", `i`.`id` AS `i_id` ";
-        $query  .= ", `i`.`name` AS `i_name` ";
-        $query  .= ", `i`.`priority` AS `i_priority` ";
-
-        $query  .= ", `p`.`value` AS `p_value` ";
-        $query  .= ", `p`.`id` AS `p_id` ";
-        $query  .= ", `p`.`name` AS `p_name` ";
-        $query  .= ", `p`.`priority` AS `p_priority` ";
-
-        $query  .= ", `s`.`value` AS `s_value` ";
-        $query  .= ", `s`.`id` AS `s_id` ";
-        $query  .= ", `s`.`name` AS `s_name` ";
-        $query  .= ", `s`.`priority` AS `s_priority` ";
-
-        $query  .= ", `t`.`value` AS `t_value` ";
-        $query  .= ", `t`.`id` AS `t_id` ";
-        $query  .= ", `t`.`name` AS `t_name` ";
-        $query  .= ", `t`.`priority` AS `t_priority` ";
-
-        $query  .= ", `identifier`.`value_table` AS `identifier_value_table` ";
-        $query  .= ", `identifier`.`value_id` AS `identifier_value_id` ";
-        $query  .= ", `identifier`.`id` AS `identifier_id` ";
-        $query  .= ", `identifier`.`name` AS `identifier_name` ";
-        $query  .= ", `identifier`.`priority` AS `identifier_priority` ";
-
-        $query  .= ", `cl`.`value` AS `cl_value` ";
-        $query  .= ", `cl`.`id` AS `cl_id` ";
-        $query  .= ", `cl`.`name` AS `cl_name` ";
-        $query  .= ", `cl`.`priority` AS `cl_priority` ";
-
+        $excludFields = [
+            'cauldron_fk',
+            'creator',
+            'created',
+            'modificator',
+            'modified',
+        ];
+        foreach( Ingredient::DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX as $type => $prefix ){
+            foreach( IngredientHandler::getTypeFields( $type ) as $field ){
+                if( !in_array($field, $excludFields) ){
+                    $query  .=  ", `".$prefix."`.`".$field."` AS `".$prefix."_".$field."` ";
+                }
+            }
+        }
+        
         $query  .= "FROM ";
         if( $userConnexionJointure ){
             $query  .= "`ingredient__identifier` AS `user_connexion`, ";
@@ -97,6 +68,13 @@ class Cauldron
         
         $query  .= "`cauldron` AS `c` ";
 
+        foreach( Ingredient::DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX as $type => $prefix )
+        {
+            $query  .=  "LEFT JOIN `ingredient__".$type."` AS `".$prefix."` ";
+            $query  .=      "ON `".$prefix."`.`cauldron_fk` = `c`.`id` ";
+        }
+
+/*
         $query  .= "LEFT JOIN `ingredient__boolean` AS `b` ";
         $query  .=      "ON `b`.`cauldron_fk` = `c`.`id` ";
         
@@ -123,7 +101,7 @@ class Cauldron
         
         $query  .= "LEFT JOIN `ingredient__cauldron_link` AS `cl` ";
         $query  .=      "ON `cl`.`cauldron_fk` = `c`.`id` ";
-        
+*/
         $leftJoin = [];
         foreach( $configuration as $type => $typeConfiguration ) 
         {
@@ -175,7 +153,10 @@ class Cauldron
                         $params[] = $cauldronRefConf[ $relationship ]['depth'];
                     }
 
-                    $query .= call_user_func_array([ __CLASS__, $jointureFunction ], array_merge([$wc], $params) );
+                    $query .= call_user_func_array(
+                        [ __CLASS__, $jointureFunction ], 
+                        array_merge( [$wc->caudronDepth], $params ) 
+                    );
                 }
 
                 $query  .=  ") ";            
@@ -225,7 +206,7 @@ class Cauldron
     }
 
 
-    private static function childrenJointure( WitchCase $wc, $mother, $daughter, $depth=1 )
+    private static function childrenJointure( $maxDepth, $mother, $daughter, $depth=1 )
     {
         $m = function (int $level) use ($mother): string {
             return "`".$mother."`.`level_".$level."`";
@@ -241,14 +222,14 @@ class Cauldron
         $jointure  .=          "OR ( ".$m(1)." IS NULL AND ".$d(1)." IS NOT NULL ) ";
         $jointure  .=      ") ";
         
-        for( $i=2; $i <= $wc->depth; $i++ )
+        for( $i=2; $i <= $maxDepth; $i++ )
         {
             $jointure  .=  "AND ( ";
             $jointure  .=      "( ".$m($i)." IS NOT NULL AND ".$d($i)." = ".$m($i)." ) ";
             $jointure  .=      "OR ( ".$m($i)." IS NULL AND ".$m($i-1)." IS NOT NULL AND ".$d($i)." IS NOT NULL ) ";
             $jointure  .=      "OR (  ".$m($i)." IS NULL AND ".$m($i-1)." IS NULL ";
             // Apply level
-            if( $depth != '*' && ($depth + $i - 1) <= $wc->depth ){
+            if( $depth != '*' && ($depth + $i - 1) <= $maxDepth ){
                 $jointure  .=       "AND ".$d($depth + $i - 1)." IS NULL ";
             }
             $jointure  .=      ") ";
@@ -258,13 +239,13 @@ class Cauldron
         return $jointure;
     }
     
-    private static function parentsJointure( WitchCase $wc, $daughter, $mother, $depth=1 )
+    private static function parentsJointure( $maxDepth, $daughter, $mother, $depth=1 )
     {
-        return self::childrenJointure( $wc, $mother, $daughter, $depth );
+        return self::childrenJointure( $maxDepth, $mother, $daughter, $depth );
     }
 
 
-    private static function siblingsJointure( WitchCase $wc, $witch, $sister, $depth=1 )
+    private static function siblingsJointure( $maxDepth, $witch, $sister, $depth=1 )
     {
         $w = function (int $level) use ($witch): string {
             return "`".$witch."`.`level_".$level."`";
@@ -275,7 +256,7 @@ class Cauldron
         
         $jointure = "( `".$witch."`.`id` <> `".$sister."`.`id` ) ";
         
-        for( $i=1; $i < $wc->depth; $i++ )
+        for( $i=1; $i < $maxDepth; $i++ )
         {
             $jointure  .=  "AND ( ";
             $jointure  .=      "( ".$w($i)." IS NOT NULL AND ".$w($i+1)." IS NOT NULL AND ".$s($i)." = ".$w($i)." ) ";
@@ -297,7 +278,6 @@ class Cauldron
             $jointure  .=  ") ";
         }
         
-        $maxDepth = (int) $wc->depth;
         $jointure  .=      "AND ( ";
         $jointure  .=          "( ".$w($maxDepth)." IS NOT NULL AND ".$s($maxDepth)." IS NOT NULL ) ";
         if( $depth != '*' && ($maxDepth + 1 - $depth) > 0 )

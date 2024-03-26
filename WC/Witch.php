@@ -25,6 +25,7 @@ class Witch
         "url",
         "status",
         "invoke",
+        "cauldron",
         "craft_table",
         "craft_fk",
         "is_main",

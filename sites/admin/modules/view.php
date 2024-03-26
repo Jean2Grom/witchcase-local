@@ -28,24 +28,24 @@ else
     
     foreach( $craftWitches as $key => $craftWitch )
     {
-        $breadcrumb = [];
+        $breadcrumb         = [];
         $breadcrumbWitch    = $craftWitch->mother();
         while( !empty($breadcrumbWitch) )
         {
-            $breadcrumb[]   = [
+            $breadcrumb[] = [
                 "name"  => $breadcrumbWitch->name,
                 "data"  => $breadcrumbWitch->data,
                 "href"  => $this->witch->getUrl([ 'id' => $breadcrumbWitch->id ]),
             ];
 
-            $breadcrumbWitch    = $breadcrumbWitch->mother();
+            $breadcrumbWitch = $breadcrumbWitch->mother();
         }
         
         $craftWitches[ $key ]->breadcrumb = array_reverse($breadcrumb);
     }
     
-    $craftWitchesTargetFirst = [];
-    $craftWitchesTargetFirst[] = $craftWitches[ $targetWitch->id ];
+    $craftWitchesTargetFirst    = [];
+    $craftWitchesTargetFirst[]  = $craftWitches[ $targetWitch->id ];
     foreach( $craftWitches as $key => $craftWitch ){
         if( $key !=  $targetWitch->id ){
             $craftWitchesTargetFirst[] = $craftWitch;
@@ -95,6 +95,9 @@ while( !empty($breadcrumbWitch) )
     
     $breadcrumbWitch    = $breadcrumbWitch->mother();    
 }
+
+$this->wc->debug( $targetWitch );
+$this->wc->debug( $targetWitch->cauldron );
 
 $this->addContextVar( 'breadcrumb', array_reverse($breadcrumb) );
 

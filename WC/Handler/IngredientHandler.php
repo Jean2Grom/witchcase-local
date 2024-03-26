@@ -11,7 +11,7 @@ class IngredientHandler
     /**
      * @param Cauldron $cauldron
      * @param array $row
-     * @return Ingredient
+     * @return void
      */
     static function createFromData(  Cauldron $cauldron, array $row ): void
     {
@@ -38,9 +38,9 @@ class IngredientHandler
             if( $alreadyCreated ){
                 continue;
             }
-
+            
             $className  =   "\\WC\\Ingredient\\";
-            $className  .=  str_replace('_', '', \ucwords($type, '_'));
+            $className  .=  str_replace('_', '', ucwords($type, '_'));
             $className  .=  'Ingredient';
             
             if( !class_exists($className) )
@@ -57,14 +57,10 @@ class IngredientHandler
                 $ingredient->properties[ $field ] = $row[ $prefix.'_'.$field ] ?? null;
             }
 
-            $ingredient->cauldron                   = $cauldron;
+            $ingredient->cauldron       = $cauldron;
+            $cauldron->ingredients[]    = $ingredient;
 
             self::readProperties( $ingredient );
-
-            //$cauldron->wc->debug( $ingredient->getValueFields(), 'la', 2 );
-            $cauldron->wc->debug( $ingredient, 'ici', 2 );
-
-            $cauldron->ingredients[] = $ingredient;
         }
         
         return;
@@ -98,6 +94,28 @@ class IngredientHandler
         
         return;
     }
-        
+    
 
+    static function getTypeFields( string $type ): array 
+    {
+        $className  =   "\\WC\\Ingredient\\";
+        $className  .=  str_replace('_', '', ucwords($type, '_'));
+        $className  .=  'Ingredient';
+        
+        if( !class_exists($className) ){
+            return [];
+        }
+
+        $return = [];
+        foreach( Ingredient::FIELDS as $field ){
+            $return[] = $field;
+        }
+
+        $ingredient = new $className(); 
+        foreach( $ingredient->valueFields as $field ){
+            $return[] = $field;
+        }
+
+        return $return;
+    }
 }
