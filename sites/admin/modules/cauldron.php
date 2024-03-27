@@ -4,23 +4,11 @@ use WC\DataAccess\Cauldron as CauldronDA;
 use WC\Handler\CauldronHandler;
 
 $conf = [
-    'user' => [
-        "parents"   => [ "depth" => "1" ],
-        "siblings"  => [ "depth" => "*" ],
-        "children"  => [ "depth" => "*" ],
-    ],
-    
-    'id' => [
-        [
-            "id" => 7,
-            //"parents" => [ "depth" => 5 ],
-            "parents" => false,
-            "children" => [ "depth" => "*" ],
-        ]
-    ],
-    
+    'user',
+    7,    
 ];
 
+$this->wc->dump( $conf );
 
 $result = CauldronHandler::fetch($this->wc, $conf);
 

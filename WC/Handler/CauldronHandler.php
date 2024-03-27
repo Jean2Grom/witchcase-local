@@ -19,9 +19,6 @@ class CauldronHandler
      */
     static function fetch( WitchCase $wc, array $configuration ): array
     {
-        if( empty($configuration['id']) && empty($configuration['user']) ){
-            return [];
-        }
         
         $result = CauldronDA::cauldronRequest($wc, $configuration);
         
@@ -38,56 +35,36 @@ class CauldronHandler
     private static function instanciate( WitchCase $wc, $configuration, $result ): array
     {
         $return         = [];
-
         $cauldronsList  = [];
         $depthArray     = [];
         foreach( range(0, $wc->caudronDepth) as $d ){
             $depthArray[ $d ] = [];
         }
         
-        $conditions     = [];
-        foreach( $configuration["id"] ?? [] as $typeConfiguration ){            
-            if( !empty($typeConfiguration['id']) ){
-                $conditions[ 'id_'.$typeConfiguration['id'] ] = [ 'id'  => $typeConfiguration['id'] ];
-            }
-            else {
-                foreach( $typeConfiguration as $typeConfigurationItem ){
-                    $conditions[  'id_'.$typeConfigurationItem['id'] ] = [ 'id'  => $typeConfigurationItem['id'] ];
-                }
-            }
-        }
-        if( !empty($configuration['user']) ){
-            $conditions[ 'user' ] = [ 
-                'identifier_value_table'    => 'user__connexion', 
-                'identifier_value_id'       => $wc->user->id, 
-            ];
-        }
-        
         foreach( $result as $row )
         {
-            $id                                             = $row['id'];
-            $cauldronsList[ $id ]                           = $cauldronsList[ $id ] 
-                                                                ?? self::createFromData( $wc, $row );
-            $ingredientsCreation    = IngredientHandler::createFromData( $cauldronsList[ $id ], $row );
+            $id                     = $row['id'];
+            $cauldronsList[ $id ]   = $cauldronsList[ $id ] ?? self::createFromData( $wc, $row );
+            
+            IngredientHandler::createFromData( $cauldronsList[ $id ], $row );
             if( !in_array($id, $depthArray[ $cauldronsList[ $id ]->depth ]) ){
                 $depthArray[ $cauldronsList[ $id ]->depth ][] = $id;
             }
-            
-            foreach( $conditions as $ref => $conditionsItem )
-            {
-                $matched = true;
-                foreach( $conditionsItem as $field => $value ){
-                    if( $row[ $field ] !== $value )
-                    {
-                        $matched = false;
-                        break;
-                    }
-                }
-                
-                if( $matched ){
-                    $return[ $ref ] = $cauldronsList[ $id ];
+
+            foreach( $configuration as $conf ){
+                if( $conf === $id ){
+                    $return[ $conf ] = $cauldronsList[ $id ];
                 }
             }
+
+            if(  in_array('user', $configuration) 
+                &&  empty($return['user'])
+                &&  $row['identifier_value_table'] === 'user__connexion'
+                &&  $row['identifier_value_id'] === $wc->user->id 
+            ){
+                $return['user'] = $cauldronsList[ $id ];
+            }
+
         }
         
         for( $i=0; $i < $wc->caudronDepth; $i++ ){

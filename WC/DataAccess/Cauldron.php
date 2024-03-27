@@ -32,8 +32,6 @@ class Cauldron
 
     static function cauldronRequest( WitchCase $wc, array $configuration )
     {
-        $userConnexionJointure = !empty($configuration['user']) && $wc->user->connexion;
-        
         // Determine the list of fields in select part of query
         $query = "";
         $separator = "SELECT DISTINCT ";
@@ -62,122 +60,46 @@ class Cauldron
         }
         
         $query  .= "FROM ";
-        if( $userConnexionJointure ){
+
+        $userConnexionJointure = false;
+        if( in_array('user', $configuration) && $wc->user->connexion )
+        {
+            $userConnexionJointure = true;
             $query  .= "`ingredient__identifier` AS `user_connexion`, ";
         }
         
         $query  .= "`cauldron` AS `c` ";
-
         foreach( Ingredient::DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX as $type => $prefix )
         {
             $query  .=  "LEFT JOIN `ingredient__".$type."` AS `".$prefix."` ";
             $query  .=      "ON `".$prefix."`.`cauldron_fk` = `c`.`id` ";
         }
 
-/*
-        $query  .= "LEFT JOIN `ingredient__boolean` AS `b` ";
-        $query  .=      "ON `b`.`cauldron_fk` = `c`.`id` ";
-        
-        $query  .= "LEFT JOIN `ingredient__datetime` AS `dt` ";
-        $query  .=      "ON `dt`.`cauldron_fk` = `c`.`id` ";
-
-        $query  .= "LEFT JOIN `ingredient__float` AS `f` ";
-        $query  .=      "ON `f`.`cauldron_fk` = `c`.`id` ";
-
-        $query  .= "LEFT JOIN `ingredient__integer` AS `i` ";
-        $query  .=      "ON `i`.`cauldron_fk` = `c`.`id` ";
-
-        $query  .= "LEFT JOIN `ingredient__price` AS `p` ";
-        $query  .=      "ON `p`.`cauldron_fk` = `c`.`id` ";
-
-        $query  .= "LEFT JOIN `ingredient__string` AS `s` ";
-        $query  .=      "ON `s`.`cauldron_fk` = `c`.`id` ";
-        
-        $query  .= "LEFT JOIN `ingredient__text` AS `t` ";
-        $query  .=      "ON `t`.`cauldron_fk` = `c`.`id` ";
-
-        $query  .= "LEFT JOIN `ingredient__identifier` AS `identifier` ";
-        $query  .=      "ON `identifier`.`cauldron_fk` = `c`.`id` ";
-        
-        $query  .= "LEFT JOIN `ingredient__cauldron_link` AS `cl` ";
-        $query  .=      "ON `cl`.`cauldron_fk` = `c`.`id` ";
-*/
-        $leftJoin = [];
-        foreach( $configuration as $type => $typeConfiguration ) 
+        foreach( $configuration as $conf )
         {
-            if( $type === 'user' ){
-                $cauldronRefConfJoins = [ 'user' => $typeConfiguration ];
-            }
-            elseif( $type === 'id' && isset($typeConfiguration['id']) ){
-                $cauldronRefConfJoins = [ 'id_'.$typeConfiguration['id'] => $typeConfiguration ];
-            }
-            elseif( $type === 'id' )
-            {
-                $cauldronRefConfJoins = [];
-                foreach( $typeConfiguration as $typeConfigurationItem ){
-                    $cauldronRefConfJoins[ 'id_'.$typeConfigurationItem['id'] ] = $typeConfigurationItem;
-                }
-            }
-            
-            foreach( $cauldronRefConfJoins as $cauldronRef => $cauldronRefConf ) 
-            {
-                $leftJoin[ $cauldronRef ] = false;
-                foreach( array_keys(self::RELATIONSHIPS_JOINTURE) as $relationship ){
-                    if( !empty($cauldronRefConf[ $relationship ]) )
-                    {
-                        $leftJoin[ $cauldronRef ] = true;
-                        break;
-                    }
-                }
-
-                if( !$leftJoin[ $cauldronRef ] ){
-                    continue;
-                }
-
-                $query  .= "LEFT JOIN `cauldron` AS `".$cauldronRef."` ";
-                $query  .=  "ON ( ";
-
-                $separator = "";
-                foreach( self::RELATIONSHIPS_JOINTURE as $relationship => $jointureFunction )
-                {
-                    if( empty($cauldronRefConf[ $relationship ]) ){
-                        continue;
-                    }
-
-                    $query .= $separator;
-                    
-                    $separator = "OR ";
-                    $params    = [$cauldronRef, 'c'];
-
-                    if( !empty($cauldronRefConf[ $relationship ]['depth']) ){
-                        $params[] = $cauldronRefConf[ $relationship ]['depth'];
-                    }
-
-                    $query .= call_user_func_array(
-                        [ __CLASS__, $jointureFunction ], 
-                        array_merge( [$wc->caudronDepth], $params ) 
-                    );
-                }
-
-                $query  .=  ") ";            
-            }
+            $query  .= "LEFT JOIN `cauldron` AS `c_".$conf."` ";
+            $query  .=  "ON ( ";
+            $query  .=  self::childrenJointure( $wc->caudronDepth, "c_".$conf, 'c', '*' );
+            $query  .=  ") ";            
         }
+
         
         $parameters = [];
         $separator = "WHERE ( ";
-                
-        foreach( $configuration['id'] ?? [] as $cauldronRefConf )
+        
+        foreach( $configuration as $conf )
         {
-            $cauldronRef                   = 'id_'.$cauldronRefConf['id'];
-            $parameters[ $cauldronRef ]    = (int) $cauldronRefConf['id'];
+            if( ctype_digit(strval($conf)) )
+            {
+                $parameters[ 'c_'.$conf ]    = (int) $conf;
+    
+                $condition  =   " %s.`id` = :c_".$conf." ";
+    
+                $query      .=  $separator;
+                $separator  =   "OR ";
 
-            $condition  =   " %s.`id` = :".$cauldronRef." ";
-
-            $query      .=  $separator;
-            $separator  =   "OR ";
-            $query      .=  str_replace(' %s.', ' `c`.', $condition);
-            if( $leftJoin[ $cauldronRef ] ){
-                $query      .=  " OR ".str_replace(' %s.', " `".$cauldronRef."`.", $condition);
+                $query      .=  str_replace(' %s.', ' `c`.', $condition);
+                $query      .=  " OR ".str_replace(' %s.', " `c_".$conf."`.", $condition);
             }
         }
         
@@ -187,10 +109,8 @@ class Cauldron
             $separator  =   "OR ";
 
             $query  .=  "( ";
-            $query  .=      "( `user`.`id` = `user_connexion`.`cauldron_fk` ";
-            $query  .=          "AND `user`.`data`->>\"$.structure\" = \"wc-connexion\" ) ";
-            $query  .=      "OR ( `c`.`id` = `user_connexion`.`cauldron_fk` ";
-            $query  .=          "AND `c`.`data`->>\"$.structure\" = \"wc-connexion\" ) ";
+            $query  .=      " `c`.`id` = `user_connexion`.`cauldron_fk` ";
+            $query  .=          "OR  `c_user`.`id` = `user_connexion`.`cauldron_fk` ";
             $query  .=  ") ";
 
             $query  .=  "AND `user_connexion`.`id` IS NOT NULL ";
