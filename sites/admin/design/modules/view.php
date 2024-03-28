@@ -18,6 +18,10 @@ $this->addContextArrayItems( 'tabs', [
         'iconClass' => !$targetWitch->hasCraft()? "far fa-plus-square": ($targetWitch->hasInvoke()? "fas fa-mortar-pestle": ""),
         'text'      => "Craft",
     ],
+    'tab-cauldron-part'    => [
+        'iconClass' => !$targetWitch->hasCraft()? "far fa-plus-square": ($targetWitch->hasInvoke()? "fas fa-mortar-pestle": ""),
+        'text'      => "Cauldron",
+    ],
 ]);
 ?>
 
@@ -39,6 +43,13 @@ $this->addContextArrayItems( 'tabs', [
 <div class="tabs-target__item"  id="tab-craft-part">
     <div class="box-container">
         <div><?php include $this->getIncludeDesignFile('view/craft.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('view/craft-witches.php'); ?></div>
+    </div>
+</div>
+
+<div class="tabs-target__item"  id="tab-cauldron-part">
+    <div class="box-container">
+        <div><?php include $this->getIncludeDesignFile('view/cauldron.php'); ?></div>
         <div><?php include $this->getIncludeDesignFile('view/craft-witches.php'); ?></div>
     </div>
 </div>

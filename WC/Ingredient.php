@@ -2,21 +2,24 @@
 namespace WC;
 
 
-class Ingredient 
+abstract class Ingredient 
 {
     const FIELDS = [
         "id",
         "cauldron_fk",
         "name",
         "priority",
+    ];
+    
+    const VALUE_FIELDS = [
+        "value",
+    ];
+
+    const HISTORY_FIELDS = [
         "creator",
         "created",
         "modificator",
         "modified",
-    ];
-    
-    public $valueFields = [
-        "value",
     ];
 
     const DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX = [
@@ -31,7 +34,12 @@ class Ingredient
         'text'          => 't', 
     ];
     
+    const TYPE                  = null;
+    const DIR                   = "ingredients";
+    const DESIGN_SUBFOLDER      = "design/ingredients";
+
     public $type;
+    public $valueFields;
     public $value;
 
     public $properties;
@@ -57,6 +65,14 @@ class Ingredient
      */
     public WitchCase $wc;
     
+
+    function __construct()
+    {
+        $instanciedClass    = (new \ReflectionClass($this))->getName();
+        $this->type         = $instanciedClass::TYPE;
+        $this->valueFields  = $instanciedClass::VALUE_FIELDS;
+    }
+
     /**
      * Init function used to setup ingredient
      * @param mixed $value : if left to null, read from properties values 'value'
@@ -87,4 +103,26 @@ class Ingredient
         $this->value = null;
         return $this;
     }
+
+
+    function display( $filename=false )
+    {
+        if( !$filename ){
+            $filename = strtolower( $this->type );
+        }
+        
+        $file = $this->wc->website->getFilePath( self::DIR."/view/".$filename.'.php');
+        
+        if( !$file ){
+            $file = $this->wc->website->getFilePath( self::DIR."/view/default.php");
+        }
+        
+        if( $file ){
+            include $file;
+        }
+        
+        return;
+    }
+
+
 }

@@ -17,11 +17,11 @@ class CauldronHandler
     /**
      * 
      */
-    static function fetch( WitchCase $wc, array $configuration ): array
+    static function fetch( WitchCase $wc, array $configuration )
     {
         
         $result = CauldronDA::cauldronRequest($wc, $configuration);
-        
+        $wc->dump( $result );        
         if( $result === false ){
             return false;
         }
@@ -142,7 +142,7 @@ class CauldronHandler
         }
         
         if( !empty($cauldron->properties['data']) ){
-            $cauldron->data = json_decode( $cauldron->properties['data'], true );
+            $cauldron->data = json_decode( $cauldron->properties['data'] );
         }
 
         if( !empty($cauldron->properties['priority']) ){

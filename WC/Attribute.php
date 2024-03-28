@@ -1,8 +1,6 @@
 <?php
 namespace WC;
 
-use WC\Craft;
-
 /**
  * Generic Class to handle craft Attributes, 
  * all attributes types must heritate this class

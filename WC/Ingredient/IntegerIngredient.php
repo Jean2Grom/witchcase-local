@@ -3,7 +3,7 @@ namespace WC\Ingredient;
 
 class IntegerIngredient extends \WC\Ingredient 
 {
-    public $type        = 'integer';
+    const TYPE  = 'integer';
 
     /**
      * Init function used to setup ingredient

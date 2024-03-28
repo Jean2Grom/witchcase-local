@@ -3,7 +3,7 @@ namespace WC\Ingredient;
 
 class StringIngredient extends \WC\Ingredient 
 {
-    public $type        = 'string';
+    const TYPE  = 'string';
 
     /**
      * Init function used to setup ingredient

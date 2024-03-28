@@ -1,5 +1,6 @@
 <?php /** @var WC\Module $this */
 
+use WC\Handler\CauldronHandler;
 use WC\Structure;
 use WC\Website;
 
@@ -96,9 +97,17 @@ while( !empty($breadcrumbWitch) )
     $breadcrumbWitch    = $breadcrumbWitch->mother();    
 }
 
-$this->wc->debug( $targetWitch );
-$this->wc->debug( $targetWitch->cauldron );
-
 $this->addContextVar( 'breadcrumb', array_reverse($breadcrumb) );
+
+//$this->wc->debug( $targetWitch );
+$this->wc->debug( $targetWitch->cauldron );
+if( $targetWitch->cauldron )
+{
+    $result = CauldronHandler::fetch($this->wc, [ $targetWitch->cauldron ]);
+    $cauldron = $result[ $targetWitch->cauldron ];
+
+    $this->wc->dump( $cauldron );
+}
+
 
 $this->view();

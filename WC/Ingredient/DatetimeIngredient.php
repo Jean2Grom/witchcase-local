@@ -3,7 +3,7 @@ namespace WC\Ingredient;
 
 class DatetimeIngredient extends \WC\Ingredient 
 {
-    public $type        = 'datetime';
+    const TYPE  = 'datetime';
 
     /**
      * Default function to set value

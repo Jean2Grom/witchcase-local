@@ -3,5 +3,5 @@ namespace WC\Ingredient;
 
 class CauldronLinkIngredient extends IntegerIngredient
 {
-    public $type        = 'cauldron_link';
+    const TYPE  = 'cauldron_link';
 }

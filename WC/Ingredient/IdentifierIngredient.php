@@ -3,9 +3,13 @@ namespace WC\Ingredient;
 
 class IdentifierIngredient extends \WC\Ingredient 
 {
-    public $type        = 'identifier';
-    public $valueFields = [ 'value_table', 'value_id' ];
+    const TYPE  = 'identifier';
 
+    const VALUE_FIELDS = [
+        "value_table",
+        "value_id",
+    ];
+    
     /**
      * Init function used to setup ingredient
      * @param mixed $value : if left to null, read from properties values 'value'

@@ -15,10 +15,6 @@ class IngredientHandler
      */
     static function createFromData(  Cauldron $cauldron, array $row ): void
     {
-        $ingredient             = new Ingredient();
-        $ingredient->cauldron   = $cauldron;
-        $ingredient->wc         = $cauldron->wc;
-        
         foreach( Ingredient::DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX as $type => $prefix )
         {
             $id = $row[ $prefix.'_id' ] ?? null;
@@ -26,17 +22,10 @@ class IngredientHandler
                 continue;
             }
 
-            $alreadyCreated = false;
-            foreach( $cauldron->ingredients as $cauldronIngredientItem ){
-                if( $cauldronIngredientItem->id == $id )
-                {
-                    $alreadyCreated = true;
-                    break;
+            foreach( $cauldron->ingredients[ $type ] ?? [] as $cauldronTypeIngredient ){
+                if( $cauldronTypeIngredient->id == $id ){
+                    continue 2;
                 }
-            }
-
-            if( $alreadyCreated ){
-                continue;
             }
             
             $className  =   "\\WC\\Ingredient\\";
@@ -57,8 +46,11 @@ class IngredientHandler
                 $ingredient->properties[ $field ] = $row[ $prefix.'_'.$field ] ?? null;
             }
 
-            $ingredient->cauldron       = $cauldron;
-            $cauldron->ingredients[]    = $ingredient;
+            $ingredient->cauldron           = $cauldron;
+            $cauldron->ingredients[ $type ] = array_replace(
+                $cauldron->ingredients[ $type ] ?? [], 
+                [ $id => $ingredient ]
+            );
 
             self::readProperties( $ingredient );
         }

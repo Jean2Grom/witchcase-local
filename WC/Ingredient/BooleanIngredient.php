@@ -3,7 +3,7 @@ namespace WC\Ingredient;
 
 class BooleanIngredient extends \WC\Ingredient 
 {
-    public $type        = 'boolean';
+    const TYPE  = 'boolean';
 
     /**
      * Init function used to setup ingredient

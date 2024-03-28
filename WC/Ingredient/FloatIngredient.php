@@ -3,7 +3,7 @@ namespace WC\Ingredient;
 
 class FloatIngredient extends \WC\Ingredient 
 {
-    public $type        = 'float';
+    const TYPE  = 'float';
 
     /**
      * Init function used to setup ingredient
