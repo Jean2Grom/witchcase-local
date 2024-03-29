@@ -1,9 +1,12 @@
 <?php 
 namespace WC;
 
+use WC\Traits\DisplayTrait;
 
 abstract class Ingredient 
 {
+    use DisplayTrait;
+
     const FIELDS = [
         "id",
         "cauldron_fk",
@@ -35,8 +38,8 @@ abstract class Ingredient
     ];
     
     const TYPE                  = null;
-    const DIR                   = "ingredients";
-    const DESIGN_SUBFOLDER      = "design/ingredients";
+    const DIR                   = "cauldron/ingredients";
+    const DESIGN_SUBFOLDER      = "design/cauldron/ingredients";
 
     public $type;
     public $valueFields;
@@ -104,25 +107,14 @@ abstract class Ingredient
         return $this;
     }
 
-
-    function display( $filename=false )
+    function content( ?string $element=null ) 
     {
-        if( !$filename ){
-            $filename = strtolower( $this->type );
+        if( is_null($element) ){
+            return $this->value;
         }
         
-        $file = $this->wc->website->getFilePath( self::DIR."/view/".$filename.'.php');
+        return $this->value[ $element ] ?? null;
         
-        if( !$file ){
-            $file = $this->wc->website->getFilePath( self::DIR."/view/default.php");
-        }
-        
-        if( $file ){
-            include $file;
-        }
-        
-        return;
     }
-
 
 }

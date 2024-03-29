@@ -50,6 +50,5 @@ $this->addContextArrayItems( 'tabs', [
 <div class="tabs-target__item"  id="tab-cauldron-part">
     <div class="box-container">
         <div><?php include $this->getIncludeDesignFile('view/cauldron.php'); ?></div>
-        <div><?php include $this->getIncludeDesignFile('view/craft-witches.php'); ?></div>
     </div>
 </div>

@@ -46,10 +46,6 @@ class Cauldron
         
         $excludFields = [
             'cauldron_fk',
-            'creator',
-            'created',
-            'modificator',
-            'modified',
         ];
         foreach( Ingredient::DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX as $type => $prefix ){
             foreach( IngredientHandler::getTypeFields( $type ) as $field ){

@@ -21,7 +21,7 @@ class CauldronHandler
     {
         
         $result = CauldronDA::cauldronRequest($wc, $configuration);
-        $wc->dump( $result );        
+        
         if( $result === false ){
             return false;
         }
@@ -121,35 +121,35 @@ class CauldronHandler
      */
     static function readProperties( Cauldron $cauldron ): void
     {
-        if( !empty($cauldron->properties['id']) ){
+        if( !is_null($cauldron->properties['id']) ){
             $cauldron->id = (int) $cauldron->properties['id'];
         }
         
-        if( isset($cauldron->properties['status']) ){
+        if( !is_null($cauldron->properties['status']) ){
             $cauldron->status = $cauldron->properties['status'] === 0? 'draft': 'archive';
         }
         
-        if( !empty($cauldron->properties['content_key']) ){
-            $cauldron->contentID = (int) $cauldron->properties['content_key'];
+        if( !is_null($cauldron->properties['content_key']) ){
+            $cauldron->contentCauldronID = (int) $cauldron->properties['content_key'];
         }
         
-        if( !empty($cauldron->properties['name']) ){
+        if( !is_null($cauldron->properties['name']) ){
             $cauldron->name = $cauldron->properties['name'];
         }
         
-        if( !empty($cauldron->properties['resume']) ){
+        if( !is_null($cauldron->properties['resume']) ){
             $cauldron->resume = $cauldron->properties['resume'];
         }
         
-        if( !empty($cauldron->properties['data']) ){
+        if( !is_null($cauldron->properties['data']) ){
             $cauldron->data = json_decode( $cauldron->properties['data'] );
         }
 
-        if( !empty($cauldron->properties['priority']) ){
+        if( !is_null($cauldron->properties['priority']) ){
             $cauldron->priority = (int) $cauldron->properties['priority'];
         }
         
-        if( !empty($cauldron->properties['datetime']) ){
+        if( !is_null($cauldron->properties['datetime']) ){
             $cauldron->datetime = new ExtendedDateTime($cauldron->properties['datetime']);
         }
                 

@@ -64,21 +64,21 @@ class IngredientHandler
      */
     static function readProperties( Ingredient $ingredient ): void
     {
-        if( !empty($ingredient->properties['id']) ){
+        if( !is_null($ingredient->properties['id']) ){
             $ingredient->id = (int) $ingredient->properties['id'];
         }
 
-        if( !empty($ingredient->cauldron) )
+        if( !is_null($ingredient->cauldron) )
         {
             $ingredient->wc                         = $ingredient->cauldron->wc;
             $ingredient->properties['cauldron_fk']  = $ingredient->cauldron->id;
         }
 
-        if( !empty($ingredient->properties['name']) ){
+        if( !is_null($ingredient->properties['name']) ){
             $ingredient->name = $ingredient->properties['name'];
         }
         
-        if( !empty($ingredient->properties['priority']) ){
+        if( !is_null($ingredient->properties['priority']) ){
             $ingredient->priority = (int) $ingredient->properties['priority'];
         }
 
