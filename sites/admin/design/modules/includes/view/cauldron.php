@@ -1,17 +1,17 @@
 <?php /** @var WC\Module $this */ ?>
 
 <div class="box view__cauldron">
-    <?php if( empty($targetWitch->craft()) ): ?>
+    <?php if( !$targetWitch->cauldron ): ?>
         <h3>
             <i class="fa fa-feather-alt"></i>
-            No craft
+            No cauldron
         </h3>
         <form method="post" 
               action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
               id="witch-add-new-content">
             <select name="witch-content-structure" id="witch-content-structure">
                 <option value="">
-                    Select new craft structure
+                    Select new cauldron structure
                 </option>
                 <?php foreach( $structuresList as $structureData ): ?>
                     <option value="<?=$structureData['name']?>">
@@ -63,21 +63,14 @@
             </fieldset>
         <?php endforeach; ?>
         
-        <?php foreach( $targetWitch->craft()->attributes as $attribute ): ?>
-            <fieldset>
-                <legend><?=$attribute->name?> [<?=$attribute->type?>]</legend>
-                    <?php $attribute->display() ?>
-            </fieldset>
-        <?php endforeach; ?>
-        
         <p>
-            <?php if( $targetWitch->craft()->created ): ?>
+            <?php /*if( $targetWitch->craft()->created ): ?>
                 <em>Created by <?=$targetWitch->craft()->created->actor?>: <?=$targetWitch->craft()->created->format( \DateTimeInterface::RFC2822 )?></em>
             <?php endif; ?>
             <?php if( $targetWitch->craft()->modified && $targetWitch->craft()->created != $targetWitch->craft()->modified ): ?>
                 <br/> 
                 <em>Modified by <?=$targetWitch->craft()->modified->actor?>: <?=$targetWitch->craft()->modified->format( \DateTimeInterface::RFC2822 )?></em>
-            <?php endif; ?>
+            <?php endif;*/ ?>
         </p>
         
         <div class="box__actions">
@@ -85,7 +78,8 @@
                     data-confirm="Warning ! You are about to remove this content"
                     data-action="remove-craft"
                     data-target="view-craft-action">
-                <?php if( count($craftWitches) == 1 ): ?>
+                <?php //if( count($craftWitches) == 1 ): ?>
+                <?php if( true ): ?>
                     <i class="fa fa-trash"></i>
                     Delete
                 <?php else: ?>
@@ -93,7 +87,7 @@
                     Remove
                 <?php endif;?>
             </button>
-            <?php if( $targetWitch->craft()->structure->type === WC\Craft\Content::TYPE ): ?>
+            <?php /*if( $targetWitch->craft()->structure->type === WC\Craft\Content::TYPE ): ?>
                 <button class="trigger-action"
                         data-confirm="Are you sure to archive this content ?"
                         data-action="archive-craft"
@@ -101,7 +95,7 @@
                     <i class="fa fa-archive"></i>
                     Archive
                 </button>
-            <?php endif; ?>
+            <?php endif; */?>
             <button class="trigger-href" 
                     data-href="<?=$this->wc->website->getUrl("edit-content?id=".$targetWitch->id) ?>"
                     id="content__edit">

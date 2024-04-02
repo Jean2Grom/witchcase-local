@@ -19,7 +19,7 @@ $this->addContextArrayItems( 'tabs', [
         'text'      => "Craft",
     ],
     'tab-cauldron-part'    => [
-        'iconClass' => !$targetWitch->hasCraft()? "far fa-plus-square": ($targetWitch->hasInvoke()? "fas fa-mortar-pestle": ""),
+        'iconClass' => !$targetWitch->cauldron? "far fa-plus-square": ($targetWitch->hasInvoke()? "fas fa-mortar-pestle": ""),
         'text'      => "Cauldron",
     ],
 ]);

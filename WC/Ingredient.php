@@ -76,6 +76,25 @@ abstract class Ingredient
         $this->valueFields  = $instanciedClass::VALUE_FIELDS;
     }
 
+
+    function __toString()
+    {
+        if( is_array($this->value) )
+        {
+            $return     = "";
+            $separator  = "";
+            foreach( $this->value as $key => $value )
+            {
+                $return .= $separator.$key." => ".$value;
+                $separator = "; ";
+            }
+            
+            return $return;
+        }
+
+        return $this->value;
+    }    
+
     /**
      * Init function used to setup ingredient
      * @param mixed $value : if left to null, read from properties values 'value'

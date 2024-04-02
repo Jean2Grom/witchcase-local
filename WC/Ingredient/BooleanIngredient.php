@@ -5,13 +5,18 @@ class BooleanIngredient extends \WC\Ingredient
 {
     const TYPE  = 'boolean';
 
+    function __toString(){
+        return  is_null($this->value)? "null": ($this->value == 0? "false": "true");
+    }
+
+
     /**
      * Init function used to setup ingredient
      * @param mixed $value : if left to null, read from properties values 'value'
      * @return self
      */
     function init( mixed $value=null ): self {
-        return $this->set( $value ?? (boolean) $this->properties[ 'value' ] ?? null );
+        return $this->set( $value ?? !is_null($this->properties[ 'value' ])? (boolean) $this->properties[ 'value' ]: null );
     }
 
     /**
