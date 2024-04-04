@@ -5,6 +5,10 @@ class DatetimeIngredient extends \WC\Ingredient
 {
     const TYPE  = 'datetime';
 
+    function __toString(){
+        return empty($this->value)? "unset": $this->value->format("Y-m-d H:i:s");
+    }    
+
     /**
      * Default function to set value
      * @param mixed $value : has to be a string

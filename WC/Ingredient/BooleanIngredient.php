@@ -9,7 +9,6 @@ class BooleanIngredient extends \WC\Ingredient
         return  is_null($this->value)? "null": ($this->value == 0? "false": "true");
     }
 
-
     /**
      * Init function used to setup ingredient
      * @param mixed $value : if left to null, read from properties values 'value'

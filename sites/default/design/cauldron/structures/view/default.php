@@ -2,11 +2,14 @@
 
 <ul>
     <?php foreach( $this->content() ?? [] as $ingredient ): ?>
-        <li>
-            <?php if( $ingredient->name ): ?>
-                <?=$ingredient->name." : " ?>
-            <?php endif; ?>
-            <?php $ingredient->display(); ?>
+        <li style="display: flex;justify-content: space-between;">
+            <div>
+                <?php if( $ingredient->name ): ?>
+                    <?=$ingredient->name ?>
+                <?php endif; ?>
+                <?="[".$ingredient->type."] " ?>
+            </div>
+            <div><?php $ingredient->display( false, 40 ); ?></div>
         </li>
     <?php endforeach; ?>
 </ul>

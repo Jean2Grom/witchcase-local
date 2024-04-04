@@ -109,7 +109,7 @@ abstract class Ingredient
      * @param mixed $value 
      * @return self
      */
-    public function set( mixed $value )
+    function set( mixed $value )
     {
         $this->value = $value;
         return $this;
@@ -120,7 +120,7 @@ abstract class Ingredient
      * @param mixed $value 
      * @return self
      */
-    public function reset()
+    function reset()
     {
         $this->value = null;
         return $this;
@@ -133,7 +133,6 @@ abstract class Ingredient
         }
         
         return $this->value[ $element ] ?? null;
-        
     }
 
 }

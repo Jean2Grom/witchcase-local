@@ -10,6 +10,19 @@ class IdentifierIngredient extends \WC\Ingredient
         "value_id",
     ];
     
+
+    function __toString()
+    {
+        if( empty($this->value['table']) ){
+            return "unset";
+        }
+        elseif( empty($this->value['id']) ){
+            return $this->value['table']." : unset";
+        }
+
+        return $this->value['table']." : ".$this->value['id'];
+    }    
+
     /**
      * Init function used to setup ingredient
      * @param mixed $value : if left to null, read from properties values 'value'
