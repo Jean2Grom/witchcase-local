@@ -3,6 +3,7 @@ namespace WC\DataAccess;
 
 use WC\WitchCase;
 use WC\Witch;
+use WC\Handler\WitchHandler;
 
 /**
  * Class to aggregate Witch's summoning related data access functions
@@ -75,7 +76,7 @@ class WitchSummoning
         foreach( $result as $row )
         {
             $id                             = $row['id'];
-            $witch                          = Witch::createFromData( $wc, $row );
+            $witch                          = WitchHandler::createFromData( $wc, $row );
             $depthArray[ $witch->depth ][]  = $id;
             $witchesList[ $id ]             = $witch;
             
@@ -192,7 +193,7 @@ class WitchSummoning
         
         foreach( $urlRefWiches as $urlRefWichItem ){
             if( empty($witches[ $urlRefWichItem ]) ){
-                $witches[ $urlRefWichItem ] = Witch::createFromData( $wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ] );
+                $witches[ $urlRefWichItem ] = WitchHandler::createFromData( $wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ] );
             }
         }
         

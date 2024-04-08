@@ -1,7 +1,7 @@
 <?php /** @var WC\Module $this */ ?>
 
 <div class="box view__cauldron">
-    <?php if( !$targetWitch->cauldron ): ?>
+    <?php if( !isset($cauldron) ): ?>
         <h3>
             <i class="fa fa-feather-alt"></i>
             No cauldron
@@ -97,8 +97,8 @@
                 </button>
             <?php endif; */?>
             <button class="trigger-href" 
-                    data-href="<?=$this->wc->website->getUrl("edit-content?id=".$targetWitch->id) ?>"
-                    id="content__edit">
+                    data-href="<?=$this->wc->website->getUrl("cauldron?id=".$cauldron->id) ?>"
+                    id="cauldron__edit">
                 <i class="fa fa-pencil"></i>
                 Edit
             </button>

@@ -25,11 +25,14 @@ trait DisplayTrait
             $result = ob_get_contents();
             ob_end_clean();
 
-            if(  $maxChars && strlen($result) > $maxChars )
+            $suffix = " (...)";
+            if(  $maxChars && strlen($result) > $maxChars && strlen($suffix) < $maxChars )
             {
-                $truncated = substr(  $result, 0, ($maxChars-6) );
-                $lastSpace = strrpos( $truncated, " " );
-                echo $lastSpace? substr($truncated, 0, $lastSpace)." (...)": $truncated." (...)";
+                $truncated  = substr(  $result, 0, ($maxChars-strlen( $suffix )) );
+                $lastSpace  = strrpos( $truncated, " " );
+
+                echo $lastSpace? substr($truncated, 0, $lastSpace): $truncated;
+                echo $suffix;
             }
             else {
                 echo $result;

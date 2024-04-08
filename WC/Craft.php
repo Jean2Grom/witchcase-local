@@ -3,6 +3,7 @@ namespace WC;
 
 use WC\DataAccess\Craft as CraftDA;
 use WC\DataAccess\WitchCrafting;
+use WC\Handler\WitchHandler;
 
 use WC\WitchCase;
 use WC\Datatype\ExtendedDateTime;
@@ -252,7 +253,7 @@ class Craft
         
         $this->witches[ $table ] = [];
         foreach( $dataArray as $data ){
-            $this->witches[ $table ][ $data['id'] ] = Witch::createFromData($this->wc, $data);
+            $this->witches[ $table ][ $data['id'] ] = WitchHandler::createFromData($this->wc, $data);
         }
         
         return $this->witches[ $table ];

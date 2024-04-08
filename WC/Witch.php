@@ -1,6 +1,7 @@
 <?php
 namespace WC;
 
+use WC\Handler\WitchHandler;
 use WC\DataAccess\Witch as WitchDA;
 use WC\Datatype\ExtendedDateTime;
 use WC\Structure;
@@ -33,7 +34,7 @@ class Witch
         "datetime",
         "priority",
     ];
-    private $properties     = [];
+    public $properties     = [];
     
     public $id;
     public $name;
@@ -58,18 +59,6 @@ class Witch
      */
     public WitchCase $wc;
     
-    /**
-     * This contructor should not be directly used
-     * @param WitchCase $wc
-     */
-    function __construct( WitchCase $wc )
-    {
-        $this->wc = $wc;
-        
-        foreach( self::FIELDS as $field ){
-            $this->properties[$field] = NULL;
-        }
-    }
     
     /**
      * Property setting 
@@ -120,38 +109,7 @@ class Witch
             return false;
         }
         
-        return self::createFromData( $wc, $data );
-    }
-    
-    /**
-     * Witch factory class, implements witch whith data provided
-     * @param WitchCase $wc
-     * @param array $data
-     * @return self
-     */
-    static function createFromData(  WitchCase $wc, array $data ): self
-    {
-        $witch = new self( $wc );
-        
-        $witch->properties = $data;
-        
-        $witch->propertiesRead();
-
-        $witch->position    = [];
-        
-        $i = 1;
-        while( isset($data['level_'.$i]) )
-        {
-            $witch->position[$i] = (int) $witch->{'level_'.$i};
-            $i++;
-        }
-        $witch->depth       = $i - 1; 
-        
-        if( $witch->depth == 0 ){
-            $witch->mother = false;
-        }
-        
-        return $witch;
+        return WitchHandler::createFromData( $wc, $data );
     }
     
     /**
@@ -387,7 +345,7 @@ class Witch
         }
         
         return  $this->sisters[ $id ] 
-                    ?? Witch::createFromData($this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]);
+                    ?? WitchHandler::createFromData($this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]);
     }
     
     
@@ -470,7 +428,7 @@ class Witch
         }
         
         return  $this->daughters[ $id ] 
-                    ?? Witch::createFromData($this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]);
+                    ?? WitchHandler::createFromData($this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]);
     }
     
     

@@ -3,6 +3,7 @@ namespace WC;
 
 use WC\DataAccess\WitchSummoning;
 use WC\DataAccess\WitchCrafting;
+use WC\Handler\WitchHandler;
 
 /**
  * Class that handles witch summoning and modules invocation
@@ -318,7 +319,7 @@ class Cairn
     
     function witch( ?string $witchName=null ){
         return  $this->witches[ $witchName ?? self::DEFAULT_WITCH ] 
-                    ?? Witch::createFromData( $this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ] ); 
+                    ?? WitchHandler::createFromData( $this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ] ); 
     }
     
     function __get( string $witchName ){

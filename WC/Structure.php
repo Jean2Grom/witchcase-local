@@ -4,6 +4,7 @@ namespace WC;
 use WC\DataAccess\Structure as StructureDA;
 use WC\DataAccess\Witch as WitchDA;
 use WC\DataAccess\WitchCrafting;
+use WC\Handler\WitchHandler;
 
 use WC\Datatype\ExtendedDateTime;
 use WC\Attribute;
@@ -215,7 +216,7 @@ class Structure
         $witchesByDepth = [];
         foreach( $datas as $witchData )
         {
-            $witch = Witch::createFromData($this->wc, $witchData);
+            $witch = WitchHandler::createFromData($this->wc, $witchData);
             
             if( empty($witchesByDepth[ $witch->depth ]) ){
                 $witchesByDepth[ $witch->depth ] = [];

@@ -3,6 +3,7 @@ namespace WC\DataAccess;
 
 use WC\WitchCase;
 use WC\Witch;
+use WC\Handler\WitchHandler;
 use WC\Cairn;
 use WC\Craft;
 use WC\Attribute;
@@ -112,7 +113,7 @@ class User
                 $position = false;
                 if( !empty($row['id']) )
                 {
-                    $positionWitch  = Witch::createFromData($wc, $row);
+                    $positionWitch  = WitchHandler::createFromData($wc, $row);
                     $position       = $positionWitch->position;
                 }
 
@@ -210,7 +211,7 @@ class User
                 $position = false;
                 if( !empty($row['id']) )
                 {
-                    $positionWitch  = Witch::createFromData($wc, $row);
+                    $positionWitch  = WitchHandler::createFromData($wc, $row);
                     $position       = $positionWitch->position;
                 }
 
@@ -320,7 +321,7 @@ class User
                 $positionWitch  = false;
                 if( !empty($row['id']) )
                 {
-                    $positionWitch  = Witch::createFromData($wc, $row);
+                    $positionWitch  = WitchHandler::createFromData($wc, $row);
                     $position       = $positionWitch->position;
                 }
 
