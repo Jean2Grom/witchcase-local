@@ -89,9 +89,9 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
 
                                 <?=$this->wc->witch()->name ?>
 
-                                <?php if( $this->wc->witch("target")->exist() ): ?>
+                                <?php if( $this->wc->witch("target") ): ?>
                                     &nbsp;:
-                                <?php elseif( $this->wc->witch("mother")->exist() ): ?>
+                                <?php elseif( $this->wc->witch("mother") ): ?>
                                     from&nbsp;:
                                 <?php endif; ?>
                                 <?=$this->wc->witch("target").$this->wc->witch("mother")?>

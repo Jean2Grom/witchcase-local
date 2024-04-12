@@ -1,9 +1,6 @@
 <?php /** @var WC\Context $this */
 
-$initialWitch = $this->wc->witch("target");
-if( !$initialWitch->id ){
-    $initialWitch = $this->wc->witch();
-}
+$initialWitch = $this->wc->witch("target") ?? $this->wc->witch();
 
 if( $this->breadcrumb ){
     $breadcrumb = $this->breadcrumb;

@@ -1,6 +1,6 @@
 <?php /** @var WC\Module $this */
 
-use WC\Witch;
+use WC\Handler\WitchHandler;
 use WC\Structure;
 use WC\Craft\Draft;
 
@@ -55,8 +55,8 @@ switch( $action )
             break;
         }
         
-        $originWitch        = Witch::createFromId( $this->wc, $originWitchId);
-        $destinationWitch   = Witch::createFromId( $this->wc, $destinationWitchId);        
+        $originWitch        = WitchHandler::createFromId( $this->wc, $originWitchId);
+        $destinationWitch   = WitchHandler::createFromId( $this->wc, $destinationWitchId);        
         if( !$originWitch || !$destinationWitch )
         {
             $alerts[] = [
@@ -97,8 +97,8 @@ switch( $action )
             break;
         }
         
-        $originWitch        = Witch::createFromId( $this->wc, $originWitchId);
-        $destinationWitch   = Witch::createFromId( $this->wc, $destinationWitchId);        
+        $originWitch        = WitchHandler::createFromId( $this->wc, $originWitchId);
+        $destinationWitch   = WitchHandler::createFromId( $this->wc, $destinationWitchId);        
         if( !$originWitch || !$destinationWitch )
         {
             $alerts[] = [
@@ -393,7 +393,7 @@ switch( $action )
             break;
         }
         
-        $importCraftWitch = Witch::createFromId( $this->wc, $id);
+        $importCraftWitch = WitchHandler::createFromId( $this->wc, $id);
         if( !$importCraftWitch || !$importCraftWitch->hasCraft() )
         {
             $alerts[] = [
@@ -482,7 +482,7 @@ switch( $action )
             break;
         }
         
-        $motherWitch = Witch::createFromId( $this->wc, $id);
+        $motherWitch = WitchHandler::createFromId( $this->wc, $id);
         if( !$motherWitch )
         {
             $alerts[] = [

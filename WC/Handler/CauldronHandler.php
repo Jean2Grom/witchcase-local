@@ -121,35 +121,35 @@ class CauldronHandler
      */
     static function readProperties( Cauldron $cauldron ): void
     {
-        if( !is_null($cauldron->properties['id']) ){
+        if( isset($cauldron->properties['id']) ){
             $cauldron->id = (int) $cauldron->properties['id'];
         }
         
-        if( !is_null($cauldron->properties['status']) ){
+        if( isset($cauldron->properties['status']) ){
             $cauldron->status = $cauldron->properties['status'] === 0? 'draft': 'archive';
         }
         
-        if( !is_null($cauldron->properties['content_key']) ){
+        if( isset($cauldron->properties['content_key']) ){
             $cauldron->contentCauldronID = (int) $cauldron->properties['content_key'];
         }
         
-        if( !is_null($cauldron->properties['name']) ){
+        if( isset($cauldron->properties['name']) ){
             $cauldron->name = $cauldron->properties['name'];
         }
         
-        if( !is_null($cauldron->properties['resume']) ){
+        if( isset($cauldron->properties['resume']) ){
             $cauldron->resume = $cauldron->properties['resume'];
         }
         
-        if( !is_null($cauldron->properties['data']) ){
+        if( isset($cauldron->properties['data']) ){
             $cauldron->data = json_decode( $cauldron->properties['data'] );
         }
 
-        if( !is_null($cauldron->properties['priority']) ){
+        if( isset($cauldron->properties['priority']) ){
             $cauldron->priority = (int) $cauldron->properties['priority'];
         }
         
-        if( !is_null($cauldron->properties['datetime']) ){
+        if( isset($cauldron->properties['datetime']) ){
             $cauldron->datetime = new ExtendedDateTime($cauldron->properties['datetime']);
         }
                 
