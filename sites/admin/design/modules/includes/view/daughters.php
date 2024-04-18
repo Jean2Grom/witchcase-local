@@ -70,7 +70,7 @@
                             </td>
                             <td class="full">
                                 <?php if( $daughter->hasInvoke() ): 
-                                    $url = $daughter->getUrl( null, $websitesList[ $daughter->site ] ?? null ); ?>
+                                    $url = $daughter->url( null, $websitesList[ $daughter->site ] ?? null ); ?>
                                     <a  class="text-center"
                                         target="_blank"
                                         href="<?=$url ?>" 

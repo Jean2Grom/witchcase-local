@@ -27,7 +27,7 @@ else
     {
         $menu[] =   [
             'name'  =>  $child->name,
-            'url'   =>  $child->getUrl(),
+            'url'   =>  $child->url(),
         ];
     }
     

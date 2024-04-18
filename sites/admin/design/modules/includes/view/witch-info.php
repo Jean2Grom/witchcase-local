@@ -57,7 +57,7 @@
                 <td class="label">Direct Access</td>
                 <td class="value">
                     <a  target="_blank" 
-                        href="<?=$targetWitch->getUrl(null, (new WC\Website($this->wc, $targetWitch->site) )) ?? "" ?>">
+                        href="<?=$targetWitch->url(null, (new WC\Website($this->wc, $targetWitch->site) )) ?? "" ?>">
                         <i class="fas fa-hand-sparkles" aria-hidden="true"></i>
                     </a>
                 </td>

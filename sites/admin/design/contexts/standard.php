@@ -22,7 +22,7 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
                     <i class="fa fa-times"></i>
                 </a>
                 <?php if( $this->wc->witch('menu')->id ): foreach( $this->wc->witch('menu')->daughters() as $menuItemWitch ): ?>
-                    <a href="<?=$menuItemWitch->getUrl() ?>">
+                    <a href="<?=$menuItemWitch->url() ?>">
                         <?=$menuItemWitch->name?>
                     </a>
                 <?php endforeach; endif; ?>

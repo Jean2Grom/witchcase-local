@@ -36,7 +36,7 @@ else
             $breadcrumb[] = [
                 "name"  => $breadcrumbWitch->name,
                 "data"  => $breadcrumbWitch->data,
-                "href"  => $this->witch->getUrl([ 'id' => $breadcrumbWitch->id ]),
+                "href"  => $this->witch->url([ 'id' => $breadcrumbWitch->id ]),
             ];
 
             $breadcrumbWitch = $breadcrumbWitch->mother();
@@ -81,7 +81,7 @@ while( !empty($breadcrumbWitch) )
         $url    = "javascript: location.reload();";
     }
     else {
-        $url    = $this->witch->getUrl([ 'id' => $breadcrumbWitch->id ]);
+        $url    = $this->witch->url([ 'id' => $breadcrumbWitch->id ]);
     }
     
     $breadcrumb[]   = [

@@ -15,7 +15,7 @@ else
             $url    = "javascript: location.reload();";
         }
         else {
-            $url    = $breadcrumbWitch->getUrl();
+            $url    = $breadcrumbWitch->url();
         }
         
         if( $url ){

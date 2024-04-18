@@ -8,6 +8,7 @@ use WC\Datatype\ExtendedDateTime;
 
 class WitchHandler
 {
+    const MAX_INT_ID_LENGTH = 10;
 
     /**
      * Witch factory class, implements witch whith data provided
@@ -149,6 +150,132 @@ class WitchHandler
         
         return $url;
     }
+
+    /**
+     * Reorder a witch array based on priority
+     * @param array $witchesList
+     * @return array
+     */
+    static function reorderWitches( array $witchesList ): array
+    {
+        $orderedWitchesIds = [];
+        $refMaxPossiblrPriority = 1;
+        for( $i=1; $i <= self::MAX_INT_ID_LENGTH; $i++ ){
+            $refMaxPossiblrPriority = $refMaxPossiblrPriority*10;
+        }
+
+        foreach( $witchesList as $witchItem ) 
+        {
+            $priority = $refMaxPossiblrPriority - $witchItem->priority;
+            
+            for( $i=strlen($priority); $i < self::MAX_INT_ID_LENGTH; $i++  ){
+                $priority = "0".$priority;
+            }
+            
+            $orderIndex = $priority."__".mb_strtolower($witchItem->name)."__".$witchItem->id;
+            $orderedWitchesIds[ $orderIndex ] = $witchItem->id;
+        }
+        
+        ksort($orderedWitchesIds);
+        
+        $orderedWitches = [];
+        foreach( $orderedWitchesIds as $orderedWitchId ){
+            $orderedWitches[ $orderedWitchId ] = $witchesList[ $orderedWitchId ];
+        }
+        
+        return $orderedWitches;
+    }
+
+    /**
+     * 
+     */
+    static function recursiveTree( Witch $witch, $sitesRestrictions=false, $currentId=false, $maxStatus=false, ?array $hrefCallBack=null )
+    {
+        if( !is_null($witch->site) 
+            && is_array($sitesRestrictions)
+            && !in_array($witch->site, $sitesRestrictions) ){
+            return false;
+        }
+
+        $path       = false;
+        if( $currentId && $currentId == $witch->id ){
+            $path = true;
+        }
+        
+        $daughters  = [];
+        if( $witch->id ){
+            foreach( $witch->daughters() as $daughterWitch )
+            {
+                if( $maxStatus !== false && $daughterWitch->statusLevel > $maxStatus ){
+                    continue;
+                }
+
+                $subTree        = self::recursiveTree( $daughterWitch, $sitesRestrictions, $currentId, $maxStatus, $hrefCallBack );
+                if( $subTree === false ){
+                    continue;
+                }
+
+                if( $subTree['path'] ){
+                    $path = true;
+                }
+
+                $daughters[ $subTree['id'] ]    = $subTree;
+            }
+        }
+
+        $tree   = [ 
+            'id'                => $witch->id,
+            'name'              => $witch->name,
+            'site'              => $witch->site ?? "",
+            'description'       => $witch->data,
+            'craft'             => $witch->hasCraft(),
+            'invoke'            => $witch->hasInvoke(),
+            'daughters'         => $daughters,
+            'daughters_orders'  => array_keys( $daughters ),
+            'path'              => $path,
+        ];
+        
+        if( $hrefCallBack ){
+            $tree['href'] = call_user_func( $hrefCallBack, $witch );
+        }
+        
+        return $tree;
+    }
+
+
+
+    /**
+     * Mother witch manipulation
+     * @param Witch $descendant
+     * @param Witch $mother
+     */
+    static function setMother(  Witch $descendant, Witch $mother )
+    {
+        self::unsetMother( $descendant );
+
+        $descendant->mother = $mother;
+        if( !in_array($descendant->id, array_keys($mother->daughters ?? [])) ){
+            $mother->addDaughter($descendant);
+        }
+        
+        return;
+    }
+    
+    /**
+     * Mother witch manipulation
+     * @param Witch $witch
+     */
+    static function unsetMother( Witch $witch )
+    {
+        if( !empty($witch->mother) && !empty($witch->mother->daughters[ $witch->id ]) ){
+            unset($witch->mother->daughters[ $witch->id ]);
+        }
+        
+        $witch->mother = null;
+        
+        return;
+    }
+        
 
 
 }

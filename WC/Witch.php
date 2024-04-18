@@ -135,39 +135,7 @@ class Witch
         return !empty($this->properties[ 'invoke' ]);
     }
     
-    
-    /**
-     * Mother witch manipulation
-     * @param self $mother
-     * @return self
-     */
-    function setMother( self $mother ): self
-    {
-        $this->unsetMother();
         
-        $this->mother = $mother;
-        if( !in_array($this->id, array_keys($mother->daughters ?? [])) ){
-            $mother->addDaughter($this);
-        }
-        
-        return $this;
-    }
-    
-    /**
-     * Mother witch manipulation
-     * @return self
-     */
-    function unsetMother(): self
-    {
-        if( !empty($this->mother) && !empty($this->mother->daughters[ $this->id ]) ){
-            unset($this->mother->daughters[ $this->id ]);
-        }
-        
-        $this->mother = null;
-        
-        return $this;
-    }
-    
     /**
      * Mother witch test
      * @param self $potentialDaughter
@@ -209,12 +177,12 @@ class Witch
             
             $mother = $this->wc->cairn->searchFromPosition($motherPosition);
             if( $mother ){
-                $this->setMother( $mother );
+                Handler::setMother( $this, $mother );
             }
         }
         
         if( is_null($this->mother) ){
-            $this->setMother( DataAccess::fetchAncestors($this->wc, $this->id, true) );
+            Handler::setMother( $this, DataAccess::fetchAncestors($this->wc, $this->id, true) );
         }
         
         return $this->mother;
@@ -320,7 +288,7 @@ class Witch
     function reorderDaughters(): self
     {
         $daughters                  = $this->daughters;
-        $this->daughters            = self::reorderWitches( $daughters );
+        $this->daughters            = Handler::reorderWitches( $daughters );
         
         return $this;
     }
@@ -382,38 +350,7 @@ class Witch
                     ?? Handler::createFromData($this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]);
     }
     
-    
-    /**
-     * Reorder a witch array based on priority
-     * @param array $witchesList
-     * @return array
-     */
-    static function reorderWitches( array $witchesList ): array
-    {
-        $orderedWitchesIds = [];
-        foreach( $witchesList as $witchItem ) 
-        {
-            $priority = 1000000000 - $witchItem->priority;
             
-            for( $i=strlen($priority); $i < 10; $i++  ){
-                $priority = "0".$priority;
-            }
-            
-            $orderIndex = $priority."__".mb_strtolower($witchItem->name)."__".$witchItem->id;
-            $orderedWitchesIds[ $orderIndex ] = $witchItem->id;
-        }
-        
-        ksort($orderedWitchesIds);
-        
-        $orderedWitches = [];
-        foreach( $orderedWitchesIds as $orderedWitchId ){
-            $orderedWitches[ $orderedWitchId ] = $witchesList[ $orderedWitchId ];
-        }
-        
-        return $orderedWitches;
-    }
-    
-    
     /**
      * Invoke the module 
      * @param string|null $assignedModuleName
@@ -996,9 +933,8 @@ class Witch
      * relative if no forcedWebsite is passed, full if there is one
      * @param array|null $queryParams
      * @param Website|null $forcedWebsite
-     * @return mixed
      */
-    function getUrl( ?array $queryParams=null, ?Website $forcedWebsite=null ): mixed
+    function url( ?array $queryParams=null, ?Website $forcedWebsite=null )
     {
         $website = $forcedWebsite ?? $this->wc->website;
         
@@ -1031,58 +967,6 @@ class Witch
         return call_user_func([$website, $method], $this->url.$queryString);
     }
     
-    static function recursiveTree( self $witch, $sitesRestrictions=false, $currentId=false, $maxStatus=false, ?array $hrefCallBack=null )
-    {
-        if( !is_null($witch->site) 
-            && is_array($sitesRestrictions)
-            && !in_array($witch->site, $sitesRestrictions) ){
-            return false;
-        }
-
-        $path       = false;
-        if( $currentId && $currentId == $witch->id ){
-            $path = true;
-        }
-        
-        $daughters  = [];
-        if( $witch->id ){
-            foreach( $witch->daughters() as $daughterWitch )
-            {
-                if( $maxStatus !== false && $daughterWitch->statusLevel > $maxStatus ){
-                    continue;
-                }
-
-                $subTree        = self::recursiveTree( $daughterWitch, $sitesRestrictions, $currentId, $maxStatus, $hrefCallBack );
-                if( $subTree === false ){
-                    continue;
-                }
-
-                if( $subTree['path'] ){
-                    $path = true;
-                }
-
-                $daughters[ $subTree['id'] ]    = $subTree;
-            }
-        }
-
-        $tree   = [ 
-            'id'                => $witch->id,
-            'name'              => $witch->name,
-            'site'              => $witch->site ?? "",
-            'description'       => $witch->data,
-            'craft'             => $witch->hasCraft(),
-            'invoke'            => $witch->hasInvoke(),
-            'daughters'         => $daughters,
-            'daughters_orders'  => array_keys( $daughters ),
-            'path'              => $path,
-        ];
-        
-        if( $hrefCallBack ){
-            $tree['href'] = call_user_func( $hrefCallBack, $witch );
-        }
-        
-        return $tree;
-    }
     
     function moveTo( self $witch )
     {

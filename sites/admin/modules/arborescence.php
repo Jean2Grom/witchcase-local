@@ -1,6 +1,6 @@
 <?php /** @var WC\Module $this */
 
-use WC\Witch;
+use WC\Handler\WitchHandler;
 
 $currentId = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT) ?? $this->wc->witch()->id ?? 0;
 
@@ -15,7 +15,7 @@ $obj = new class {
             && $witch->invoke 
             && $witch->site === $this->currentSite 
         ){
-            return $witch->getUrl();
+            return $witch->url();
         }
         
         return $this->baseUrl.'?id='.$witch->id;
@@ -25,8 +25,8 @@ $obj = new class {
 $obj->baseUrl       = $this->wc->website->getUrl("view");
 $obj->unSafeMode    = $this->config['navigationUnSafeMode'] ?? false;
 $obj->currentSite   = $this->wc->website->site;
-        
-$root   = Witch::recursiveTree( $this->witch, $this->wc->website->sitesRestrictions, $currentId, $this->maxStatus, [$obj, "href"] );
+
+$root   = WitchHandler::recursiveTree( $this->witch, $this->wc->website->sitesRestrictions, $currentId, $this->maxStatus, [$obj, "href"] );
 
 $tree       = [ $this->witch->id => $root ];
 $breadcrumb = [ $this->witch->id ];

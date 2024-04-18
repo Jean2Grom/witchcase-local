@@ -109,7 +109,7 @@ if( strcmp($action, "createStructure") == 0 )
                 $queryParams = [ "base" => $structureCopyPost ];
             }
             
-            header( 'Location: '.$this->witch->getUrl($queryParams, $this->wc->website) );
+            header( 'Location: '.$this->witch->url($queryParams, $this->wc->website) );
             exit;
         }
     }
@@ -171,7 +171,7 @@ if( $action === "editStructure" )
         }
     }
     
-    $viewHref   = $this->witch->getUrl([ 'view' => $structureName ]);
+    $viewHref   = $this->witch->url([ 'view' => $structureName ]);
     
     $this->view('structures/edit.php');
 }
@@ -185,7 +185,7 @@ if( $action === "viewStructure" )
     $attributes         = $structure->attributes();
     $archivedAttributes = [];
     
-    $modificationHref   = $this->witch->getUrl([ 'edit' => $structure->name ]);
+    $modificationHref   = $this->witch->url([ 'edit' => $structure->name ]);
     
     $this->view('structures/view.php');
 }
@@ -216,7 +216,7 @@ if( $action === "listStructures" )
     
     foreach( $structures as $key => $value )
     {
-        $structures[ $key ]['viewHref']  =   $this->witch->getUrl([ 'view' => $value['name'] ]);
+        $structures[ $key ]['viewHref']  =   $this->witch->url([ 'view' => $value['name'] ]);
         $structures[ $key ]['creation']  =   new ExtendedDateTime($value['created']);
     }
     
