@@ -141,8 +141,6 @@ switch( $action )
             }
         }
         
-        $targetWitch->reorderDaughters();
-        
         if( empty($errors) ){
             $alerts[] = [
                 'level'     =>  'success',

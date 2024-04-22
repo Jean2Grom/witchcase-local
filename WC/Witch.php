@@ -13,7 +13,7 @@ use WC\Structure;
  * a visibility status ... 
  * This class is very essential in the WC management
  *
- * @author jGrom
+ * @author jean2Grom
  */
 class Witch 
 {
@@ -188,43 +188,7 @@ class Witch
         return $this->mother;
     }
     
-    
-    /**
-     * Sister witches manipulation
-     * @param self $sister
-     * @return self
-     */
-    function addSister( self $sister ): self
-    {
-        if( empty($this->sisters) ){
-            $this->sisters = [];
-        }
         
-        if( $sister->id != $this->id ){
-            $this->sisters[ $sister->id ] = $sister;
-        }
-        
-        return $this;
-    }
-    
-    /**
-     * Sister witches manipulation
-     * @param self $sister
-     * @return self
-     */
-    function removeSister( self $sister ): self
-    {
-        if( !empty($this->sisters[ $sister->id ]) ){
-            unset($this->sisters[ $sister->id ]);
-        }
-        
-        if( !empty($sister->sisters[ $this->id ]) ){
-            unset($sister->sisters[ $this->id ]);
-        }
-        
-        return $this;
-    }
-    
     /**
      * Sister witches manipulation
      * @return array
@@ -252,7 +216,7 @@ class Witch
         
         if( is_null($this->sisters) && $this->mother() ){
             foreach( DataAccess::fetchDescendants($this->wc, $this->mother()->id, true) as $sisterWitch ){
-                $this->addSister($sisterWitch);
+                Handler::addSister( $this, $sisterWitch );
             }
         }
         elseif( is_null($this->sisters) ){
@@ -270,19 +234,6 @@ class Witch
     
     /**
      * Daughter witches manipulation
-     * @param self $daughter
-     * @return self
-     */
-    function addDaughter( self $daughter ): self
-    {
-        $this->daughters[ $daughter->id ]   = $daughter;
-        $daughter->mother                   = $this;
-        
-        return $this->reorderDaughters();
-    }
-    
-    /**
-     * Daughter witches manipulation
      * @return self
      */
     function reorderDaughters(): self
@@ -293,23 +244,6 @@ class Witch
         return $this;
     }
     
-    /**
-     * Daughter witches manipulation
-     * @param self $daughter
-     * @return self
-     */
-    function removeDaughter( self $daughter ): self
-    {
-        if( !empty($this->daughters[ $daughter->id ]) ){
-            unset($this->daughters[ $daughter->id ]);
-        }
-        
-        if( $daughter->mother->id == $this->id ){
-            $daughter->mother = null;
-        }
-        
-        return $this;
-    }
     
     /**
      * Daughter witches manipulation
@@ -336,10 +270,11 @@ class Witch
             return false;
         }
         
-        if( is_null($this->daughters) )
-        {
-            $this->daughters = DataAccess::fetchDescendants($this->wc, $this->id, true);
-            $this->reorderDaughters();
+        if( is_null($this->daughters) ){
+            Handler::addDaughters( 
+                $this, 
+                DataAccess::fetchDescendants($this->wc, $this->id, true) 
+            );
         }
         
         if( !$id ){
@@ -347,10 +282,13 @@ class Witch
         }
         
         return  $this->daughters[ $id ] 
-                    ?? Handler::createFromData($this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]);
+                    ?? Handler::createFromData(
+                        $this->wc, 
+                        [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]
+                    );
     }
     
-            
+    
     /**
      * Invoke the module 
      * @param string|null $assignedModuleName
@@ -497,6 +435,7 @@ class Witch
         return $this->modules[ $moduleInvoked ];
     }
     
+
     /**
      * Read witch module result, invoke it if needed
      * @param string|null $invoke
@@ -513,6 +452,7 @@ class Witch
         return $module->getResult() ?? "";
     }
     
+
     /**
      * Craft witch content, store it in the Cairn (if exists, only read it)
      * @return mixed
@@ -525,6 +465,7 @@ class Witch
         
         return $this->wc->cairn->craft( $this->craft_table, $this->craft_fk );
     }
+    
     
     /**
      * Generate Craft witch structure
@@ -619,7 +560,7 @@ class Witch
             }
             
             if( !empty($urlArray) ){
-                $params['url'] = $this->checkUrls($site, $urlArray);
+                $params['url'] = Handler::checkUrls( $this->wc, $site, $urlArray, $this->id );
             }
         }
         
@@ -657,7 +598,7 @@ class Witch
         }
         
         if( $this->depth == $this->wc->depth ){
-            $this->addLevel();
+            Handler::addLevel($this->wc);
         }
         
         $newDaughterPosition                        = $this->position;
@@ -705,7 +646,7 @@ class Witch
             }
             
             if( !empty($urlArray) ){
-                $params['url'] = $this->checkUrls($params['site'], $urlArray);
+                $params['url'] = Handler::checkUrls( $this->wc, $params['site'], $urlArray, $this->id );
             }
         }        
         
@@ -715,24 +656,7 @@ class Witch
         
         return DataAccess::create($this->wc, $params);
     }
-    
-    /**
-     * If with creation is at the top leaf of matriarcal arborescence,
-     * Add a new level to witches genealogical tree
-     * @return bool
-     */
-    function addLevel(): bool
-    {
-        $depth = DataAccess::increasePlateformDepth($this->wc);
-        if( $depth == $this->wc->depth ){
-            return false;
-        }
         
-        $this->wc->depth = $depth;
-        
-        return true;
-    }
-    
     
     /**
      * Get closest ancestor url for a given site
@@ -760,59 +684,6 @@ class Witch
     
     
     /**
-     * Check new urls validity, add a suffix if it's not
-     * @param string $site
-     * @param array $urlArray
-     * @return string
-     */
-    function checkUrls( string $site, array $urlArray ): string
-    {
-        $result = DataAccess::getUrlsData($this->wc, $site, $urlArray, (int) $this->id);
-        
-        $usages         = [];
-        $returnedUrl    = [];
-        foreach( $urlArray as $key => $url  )
-        {
-            $usages[ $key ] = 0;            
-            $regex          = '/^'. str_replace('/', '\/', $url).'(?:-\d+)?$/';
-            
-            $returnedUrl[ $key ]    = $url;
-            $lastIndice             = 0;
-            foreach( $result as $row )
-            {
-                $match = [];
-                preg_match($regex, $row['url'], $match);
-
-                if( $row['url'] === $url || !empty($match) ){
-                    $usages[ $key ]++;
-                }
-                
-                if( !empty($match) )
-                {
-                    $indice = (int) substr($row['url'], (1 + strrpos($row['url'], '-') ) );
-
-                    if( $indice > $lastIndice )
-                    {
-                        $lastIndice             = $indice;
-                        $returnedUrl[ $url ]    = substr($row['url'], 0, strrpos($row['url'], '-') ).'-'.($indice + 1);
-                    }
-                }
-            }
-            
-            if( $usages[ $key ] == 1 && $lastIndice == 0 ){
-                $returnedUrl[ $key ] .= '-2';
-            }
-            
-            if( $usages[ $key ] == 0 ){
-                return $returnedUrl[ $key ];
-            }
-        }
-        
-        return array_values($returnedUrl)[0];
-    }
-    
-    
-    /**
      * Delete witch if it's not the root,
      * Delete all descendants and their associated craft if this is their only witch association
      * @param bool $fetchDescendants
@@ -825,9 +696,10 @@ class Witch
         }
         
         if( $fetchDescendants ){
-            foreach( DataAccess::fetchDescendants($this->wc, $this->id, true) as $daughter ){
-                $this->addDaughter( $daughter );
-            }
+            Handler::addDaughters( 
+                $this, 
+                DataAccess::fetchDescendants($this->wc, $this->id, true) 
+            );
         }
         
         $deleteIds = array_keys($this->daughters ?? []);
@@ -992,7 +864,7 @@ class Witch
         $depth = count($position);
         
         if( $depth == $this->wc->depth + 1 ){
-            $this->addLevel();
+            Handler::addLevel($this->wc);
         }
         
         $newPosition                    = $position;

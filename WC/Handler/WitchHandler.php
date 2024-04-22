@@ -96,7 +96,6 @@ class WitchHandler
     }
 
 
-
     /**
      * Usefull for string standardisation (urls, names)
      * @param string $string
@@ -149,6 +148,80 @@ class WitchHandler
         }
         
         return $url;
+    }
+
+    
+    /**
+     * Check new urls validity, add a suffix if it's not
+     * @param WitchCase $wc
+     * @param string $site
+     * @param array $urlArray
+     * @param ?int $excludedId
+     * @return string
+     */
+    static function checkUrls(  WitchCase $wc, string $site, array $urlArray, ?int $excludedId=null ): string
+    {
+        $result = DataAccess::getUrlsData($wc, $site, $urlArray, $excludedId);
+        
+        $usages         = [];
+        $returnedUrl    = [];
+        foreach( $urlArray as $key => $url  )
+        {
+            $usages[ $key ] = 0;            
+            $regex          = '/^'. str_replace('/', '\/', $url).'(?:-\d+)?$/';
+            
+            $returnedUrl[ $key ]    = $url;
+            $lastIndice             = 0;
+            foreach( $result as $row )
+            {
+                $match = [];
+                preg_match($regex, $row['url'], $match);
+
+                if( $row['url'] === $url || !empty($match) ){
+                    $usages[ $key ]++;
+                }
+                
+                if( !empty($match) )
+                {
+                    $indice = (int) substr($row['url'], (1 + strrpos($row['url'], '-') ) );
+
+                    if( $indice > $lastIndice )
+                    {
+                        $lastIndice             = $indice;
+                        $returnedUrl[ $url ]    = substr($row['url'], 0, strrpos($row['url'], '-') ).'-'.($indice + 1);
+                    }
+                }
+            }
+            
+            if( $usages[ $key ] == 1 && $lastIndice == 0 ){
+                $returnedUrl[ $key ] .= '-2';
+            }
+            
+            if( $usages[ $key ] == 0 ){
+                return $returnedUrl[ $key ];
+            }
+        }
+        
+        return array_values($returnedUrl)[0];
+    }
+    
+
+    /**
+     * If with creation is at the top leaf of matriarcal arborescence,
+     * Add a new level to witches genealogical tree
+     * @param WitchCase $wc
+     * @return bool
+     */
+    static function addLevel( WitchCase $wc ): bool
+    {
+        $depth = DataAccess::increasePlateformDepth($wc);
+        if( $depth == $wc->depth ){
+            return false;
+        }
+        
+        $wc->depth = $depth;
+        
+        return true;
     }
 
     /**
@@ -242,8 +315,6 @@ class WitchHandler
         return $tree;
     }
 
-
-
     /**
      * Mother witch manipulation
      * @param Witch $descendant
@@ -255,7 +326,7 @@ class WitchHandler
 
         $descendant->mother = $mother;
         if( !in_array($descendant->id, array_keys($mother->daughters ?? [])) ){
-            $mother->addDaughter($descendant);
+            self::addDaughter( $mother, $descendant );
         }
         
         return;
@@ -275,7 +346,98 @@ class WitchHandler
         
         return;
     }
+    
+    /**
+     * Daughter witches manipulation
+     * @param Witch $mother
+     * @param Witch $daughter
+     */
+    static function addDaughter( Witch $mother, Witch $daughter ){
+        return self::addDaughters( $mother, [$daughter] );
+    }
+    
+    /**
+     * Daughter witches manipulation
+     * @param Witch $mother
+     * @param Witch $daughter
+     */
+    static function addDaughters( Witch $mother, array $daughters )
+    {
+        $reorder = false;
+        foreach( $daughters as $daughter ){
+            if( is_object($daughter) && get_class($daughter) === "WC\\Witch" )
+            {
+                $mother->daughters[ $daughter->id ] = $daughter;
+                $daughter->mother                   = $mother;
+                $reorder                            = true;
+            }
+        }
         
+        if( $reorder ){
+            $mother->reorderDaughters();
+        }
+
+        return;
+    }
+    
+
+    /**
+     * Daughter witches manipulation
+     * @param Witch $mother
+     * @param Witch $daughter
+     * @return Witch
+     */
+    static function removeDaughter( Witch $mother, Witch $daughter ): Witch
+    {
+        if( !empty($mother->daughters[ $daughter->id ]) ){
+            unset($mother->daughters[ $daughter->id ]);
+        }
+        
+        if( $daughter->mother->id == $mother->id ){
+            $daughter->mother = null;
+        }
+        
+        return $mother;
+    }
+
+
+    /**
+     * Sister witches manipulation
+     * @param Witch $witch
+     * @param Witch $sister
+     * @return Witch
+     */
+    static function addSister( Witch $witch, Witch $sister ): Witch
+    {
+        if( empty($witch->sisters) ){
+            $witch->sisters = [];
+        }
+        
+        if( $sister->id != $witch->id ){
+            $witch->sisters[ $sister->id ] = $sister;
+        }
+        
+        return $witch;
+    }
+
+    /**
+     * Sister witches manipulation
+     * @param Witch $witch
+     * @param Witch $sister
+     * @return Witch
+     */
+    static function removeSister( Witch $witch, Witch $sister ): Witch
+    {
+        if( !empty($witch->sisters[ $sister->id ]) ){
+            unset($witch->sisters[ $sister->id ]);
+        }
+        
+        if( !empty($sister->sisters[ $witch->id ]) ){
+            unset($sister->sisters[ $witch->id ]);
+        }
+        
+        return $witch;
+    }
 
 
 }

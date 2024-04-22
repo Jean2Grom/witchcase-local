@@ -99,12 +99,16 @@ class WitchSummoning
         }
         
         for( $i=0; $i < $wc->depth; $i++ ){
-            foreach( $depthArray[ $i ] as $potentialMotherId ){
+            foreach( $depthArray[ $i ] as $potentialMotherId )
+            {
+                $daughters = [];
                 foreach( $depthArray[ ($i+1) ] as $potentialDaughterId ){
                     if( $witchesList[ $potentialMotherId ]->isMotherOf( $witchesList[ $potentialDaughterId ] ) ){
-                        $witchesList[ $potentialMotherId ]->addDaughter( $witchesList[ $potentialDaughterId ] );
+                        $daughters[] = $witchesList[ $potentialDaughterId ];
                     }
                 }
+                
+                Handler::addDaughters( $witchesList[ $potentialMotherId ], $daughters );
             }
         }
         
@@ -182,7 +186,7 @@ class WitchSummoning
                         foreach( $witches[ $witchRef ]->mother->daughters as $daughterWitch )
                         {
                             if( $witches[ $witchRef ]->id !== $daughterWitch->id ){
-                                $witches[ $witchRef ]->addSister($daughterWitch);
+                                Handler::addSister( $witches[ $witchRef ], $daughterWitch );
                             }
                             self::initChildren( $daughterWitch, $depthLimit );
                         }
