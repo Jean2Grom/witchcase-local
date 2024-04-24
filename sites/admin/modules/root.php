@@ -52,9 +52,7 @@ switch( $action )
                 $success[] = "La priorité de <strong>".$daughters[ $witchId ]->name."</strong> a été mise à jour.";
             }
         }
-        
-        $this->witch->reorderDaughters();
-        
+                
         if( empty($errors) && empty($success) ){
             $alerts[] = [
                 'level'     =>  'warning',

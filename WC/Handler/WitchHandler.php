@@ -241,7 +241,7 @@ class WitchHandler
         {
             $priority = $refMaxPossiblrPriority - $witchItem->priority;
             
-            for( $i=strlen($priority); $i < self::MAX_INT_ID_LENGTH; $i++  ){
+            for( $i=strlen($priority); $i <= self::MAX_INT_ID_LENGTH; $i++ ){
                 $priority = "0".$priority;
             }
             
