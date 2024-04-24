@@ -5,9 +5,9 @@ $this->addJsFile('triggers.js');
 ?>
 <h1>
     <i class="fa fa-feather-alt"></i>
-    <?=$this->witch->name ?>
+    <?=$this->witch()->name ?>
 </h1>
-<p><em><?=$this->witch->data?></em></p>
+<p><em><?=$this->witch()->data?></em></p>
     
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
 

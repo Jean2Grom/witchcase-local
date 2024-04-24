@@ -16,7 +16,8 @@ if( !in_array($action, $possibleActionsList) ){
 
 $alerts         = $this->wc->user->getAlerts();
 $targetWitch    = $this->witch("target");
-if( !$targetWitch )
+
+if( is_null($this->witch("target")) )
 {
     $alerts[] = [
         'level'     =>  'error',
@@ -29,10 +30,9 @@ if( !$targetWitch )
 }
 
 // TODO 
-if( $targetWitch->cauldron )
+if( $this->witch("target")->hasCauldron() )
 {
-    $result     = CauldronHandler::fetch($this->wc, [ $targetWitch->cauldron ]);
-    $cauldron   = $result[ $targetWitch->cauldron ];
+    $cauldron   = $targetWitch->cauldron();
 }
 
 //$craft      = $targetWitch->craft() ?? false;

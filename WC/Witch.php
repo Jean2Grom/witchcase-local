@@ -5,6 +5,8 @@ use WC\Handler\WitchHandler as Handler;
 use WC\DataAccess\Witch as DataAccess;
 use WC\Structure;
 
+use WC\Handler\CauldronHandler;
+
 /**
  * A witch is an element of global arborescence, that we call matriarcat. 
  * Each witch except root (ID 1) has a mother witch, and can have daughters witch
@@ -51,6 +53,13 @@ class Witch
     public $mother;
     public $sisters;
     public $daughters;
+
+    public $cauldronId;
+    
+    /**
+     * @var Cauldron
+     */
+    public Cauldron $cauldron;
     
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -129,6 +138,14 @@ class Witch
      */
     function hasCraft(): bool {
         return !empty($this->properties[ 'craft_table' ]) && !empty($this->properties[ 'craft_fk' ]);
+    }
+    
+    /**
+     * Determine if the witch is associated with a craft (ie a content)
+     * @return bool
+     */
+    function hasCauldron(): bool {
+        return !empty($this->properties[ 'cauldron' ]);
     }
     
     /**
@@ -971,4 +988,29 @@ class Witch
         return;
     }
     
+    /**
+     * Craft witch content, store it in the Cairn (if exists, only read it)
+     * @return mixed
+     */
+    function cauldron()
+    {
+        if( !$this->hasCauldron() ){
+            return false;
+        }
+
+        if( empty($this->cauldron) )
+        {
+            $result             =   CauldronHandler::fetch(
+                                        $this->wc, 
+                                        [ $this->properties["cauldron"] ]
+                                    );
+            $this->cauldron     =   $result[ $this->properties[ "cauldron" ] ];
+            $this->cauldronId   =   $this->cauldron->id;
+        }
+        
+        return $this->cauldron;
+    }
+    
+
+
 }

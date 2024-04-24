@@ -73,6 +73,10 @@ class WitchHandler
             $witch->statusLevel = (int) $witch->properties['status'];
         }
         
+        if( isset($witch->properties['cauldron']) ){
+            $witch->cauldronId = (int) $witch->properties['cauldron'];
+        }
+        
         $witch->status = null;
         
         return;

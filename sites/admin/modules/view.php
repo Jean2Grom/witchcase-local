@@ -102,10 +102,10 @@ $this->addContextVar( 'breadcrumb', array_reverse($breadcrumb) );
 //$this->wc->debug( $targetWitch );
 //$this->wc->debug( $targetWitch->cauldron );
 
-if( $targetWitch->cauldron )
+if( $targetWitch->hasCauldron() )
 {
-    $result = CauldronHandler::fetch($this->wc, [ $targetWitch->cauldron ]);
-    $cauldron = $result[ $targetWitch->cauldron ];
+    //$result = CauldronHandler::fetch($this->wc, [ $targetWitch->cauldron ]);
+    $cauldron = $targetWitch->cauldron();
 
     //$this->wc->dump( $cauldron );
     //$this->wc->debug( $cauldron );
