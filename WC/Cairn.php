@@ -317,7 +317,7 @@ class Cairn
         return $this->witches; 
     }
     
-    function witch( ?string $witchName=null ){
+    function witch( ?string $witchName=null ): ?Witch {
         return  $this->witches[ $witchName ?? self::DEFAULT_WITCH ] ?? null;
     }
     

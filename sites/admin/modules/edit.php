@@ -10,8 +10,10 @@ $possibleActionsList = [
     'edit-priorities',
     'create-new-witch',
     'delete-witch',
+
     'save-witch-menu-info',
     'save-witch-info',
+    
     'create-craft',
     'import-craft',
     'remove-craft',
@@ -25,9 +27,9 @@ $action = $this->wc->request->param('action');
 if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
-
+    
 $alerts         = [];
-$targetWitch    = $this->wc->witch("target");
+$targetWitch    = $this->witch("target");
 if( !$targetWitch )
 {
     $alerts[] = [

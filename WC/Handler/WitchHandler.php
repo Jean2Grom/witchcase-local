@@ -262,7 +262,7 @@ class WitchHandler
     /**
      * 
      */
-    static function recursiveTree( Witch $witch, $sitesRestrictions=false, $currentId=false, $maxStatus=false, ?array $hrefCallBack=null )
+    static function recursiveTree( Witch $witch, $sitesRestrictions=false, ?int $currentId=null, $maxStatus=false, ?array $hrefCallBack=null )
     {
         if( !is_null($witch->site) 
             && is_array($sitesRestrictions)
@@ -271,7 +271,7 @@ class WitchHandler
         }
 
         $path       = false;
-        if( $currentId && $currentId == $witch->id ){
+        if( !is_null($currentId) && $currentId == $witch->id ){
             $path = true;
         }
         

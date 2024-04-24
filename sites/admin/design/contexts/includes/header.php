@@ -1,8 +1,10 @@
 <?php /** @var WC\Context $this */ ?>
 
-<a class="side-nav-toggler">
-    <i class="fa fa-bars"></i>
-</a>
+<?php if( count($this->witch('menu')?->daughters() ?? []) > 0 ): ?>
+    <a class="side-nav-toggler">
+        <i class="fa fa-bars"></i>
+    </a>
+<?php endif; ?>
 
 <div class="logo">
     <a href="<?=$this->website->getRootUrl()?>">
@@ -16,7 +18,7 @@
     <?php if( $this->wc->user->connexion ): ?>
         <i class="fa fa-user"></i>
         &nbsp;
-        <a  href="<?=$this->website->getUrl( "view?id=".$this->wc->witch("user")->id ) ?>">
+        <a  href="<?=$this->website->getUrl( "view?id=".$this->witch("user")->id ) ?>">
             <?=$this->wc->user->name ?>
         </a>
         &nbsp;

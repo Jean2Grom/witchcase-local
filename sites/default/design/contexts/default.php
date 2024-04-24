@@ -25,7 +25,7 @@ $this->addCssFile('basic.css');
     
     <body>
         <div class="container">
-            <main><?=$this->wc->witch()->result() ?></main>
+            <main><?=$this->witch()->result() ?></main>
         </div>
         
         <?php foreach( $this->getJsFiles() as $jsFile ): ?>

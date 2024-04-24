@@ -64,16 +64,16 @@ const ArborescenceMenu = function ( key ) {
                 
                 if( daughterData['craft'] && daughterData['invoke'] ){
                     newArborescenceLevelHtml    +=      '<i  class="fas fa-hat-wizard" ';
-                    newArborescenceLevelHtml    +=          'title="craft & invoke"></i>';
+                    newArborescenceLevelHtml    +=          'title="witch can craft & invoke"></i>';
                 } else if( daughterData['craft'] ){
                     newArborescenceLevelHtml    +=      '<i  class="fas fa-mortar-pestle" ';
-                    newArborescenceLevelHtml    +=          'title="craft"></i>';                 
+                    newArborescenceLevelHtml    +=          'title="witch can craft"></i>';                 
                 } else if( daughterData['invoke'] ){    
                     newArborescenceLevelHtml    +=      '<i  class="fas fa-hand-sparkles" ';
-                    newArborescenceLevelHtml    +=          'title="invoke"></i>';
+                    newArborescenceLevelHtml    +=          'title="witch can invoke"></i>';
                 } else {
                     newArborescenceLevelHtml    +=      '<i class="fa fa-folder" ';
-                    newArborescenceLevelHtml    +=          'title="simple folder witch"></i>';
+                    newArborescenceLevelHtml    +=          'title="witch"></i>';
                 }
 
                 newArborescenceLevelHtml    +=          '<a class="arborescence-level__witch__name" ';

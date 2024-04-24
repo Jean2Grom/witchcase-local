@@ -1,6 +1,8 @@
 <?php
 namespace WC;
 
+use WC\Trait\WitchAccessTrait;
+
 /**
  * Layout class that handle display
  * 
@@ -8,6 +10,8 @@ namespace WC;
  */
 class Context 
 {
+    use WitchAccessTrait;
+
     const DEFAULT_FILE  = "default";    
     const DIR           = "contexts";
     

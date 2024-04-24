@@ -1,17 +1,15 @@
 <?php /** @var WC\Context $this */
 
-$initialWitch = $this->wc->witch("target") ?? $this->wc->witch();
-
 if( $this->breadcrumb ){
     $breadcrumb = $this->breadcrumb;
 }
 else
 {
     $breadcrumb         = [];
-    $breadcrumbWitch    = $initialWitch;
+    $breadcrumbWitch    = $this->witch("target") ?? $this->witch();
     while( !empty($breadcrumbWitch) )
     {
-        if( $breadcrumbWitch  === $initialWitch ){
+        if( empty($breadcrumb) ){
             $url    = "javascript: location.reload();";
         }
         else {
@@ -26,7 +24,7 @@ else
             ];
         }
 
-        if( $this->wc->witch('root') === $breadcrumbWitch ){
+        if( $this->witch('root') === $breadcrumbWitch ){
             break;
         }
 

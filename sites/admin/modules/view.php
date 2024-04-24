@@ -4,7 +4,7 @@ use WC\Handler\CauldronHandler;
 use WC\Structure;
 use WC\Website;
 
-$targetWitch = $this->wc->witch("target");
+$targetWitch = $this->witch("target");
 
 if( !$targetWitch->exist() ){
     $alert = [
@@ -90,7 +90,7 @@ while( !empty($breadcrumbWitch) )
         "href"  => $url,
     ];
 
-    if( $this->wc->witch('root') === $breadcrumbWitch ){
+    if( $this->witch('root') === $breadcrumbWitch ){
         break;
     }
     

@@ -1,6 +1,8 @@
 <?php
 namespace WC;
 
+use WC\Trait\WitchAccessTrait;
+
 /**
  * Class dedicated to module invokation (execution)
  * and display insertion in a Context class
@@ -9,6 +11,8 @@ namespace WC;
  */
 class Module 
 {
+    use WitchAccessTrait;
+
     const DEFAULT_FILE  = "default";   
     const DIR           = "modules";
     

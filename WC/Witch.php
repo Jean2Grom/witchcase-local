@@ -69,6 +69,7 @@ class Witch
         $this->properties[$name] = $value;
     }
     
+
     /**
      * Property reading
      * @param string $name
@@ -78,6 +79,7 @@ class Witch
         return $this->properties[$name] ?? null;
     }
     
+
     /**
      * Name reading
      * @return string
@@ -86,6 +88,7 @@ class Witch
         return ($this->id)? $this->name: "";
     }
     
+
     /**
      * Is this witch exist in database ?
      * @return bool
@@ -93,6 +96,7 @@ class Witch
     function exist(): bool {
         return !empty($this->id);
     }
+    
     
     /**
      * Resolve status label with Website generation

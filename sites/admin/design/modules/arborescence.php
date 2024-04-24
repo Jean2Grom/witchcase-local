@@ -16,7 +16,7 @@ $key = "arborescence_".md5(microtime().rand());
     
     arborescencesInputs[ "<?=$key ?>" ] = {
         "treeData": <?=json_encode($tree)?>,
-        "currentId": <?=$currentId?>,
+        "currentId": <?=$currentId ?? 0?>,
         "currentSite": "<?=$this->wc->website->name?>",
         "breadcrumb": <?=json_encode($breadcrumb)?>
     };

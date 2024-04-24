@@ -2,7 +2,7 @@
 
 use WC\Handler\WitchHandler;
 
-$currentId  = $this->wc->request->param("id", "get", FILTER_VALIDATE_INT) ?? $this->wc->witch()->id ?? 0;
+$currentId  = $this->witch("target")?->id ?? $this->witch()?->id;
 $root       = WitchHandler::recursiveTree( $this->witch, $this->wc->website->sitesRestrictions, $currentId, $this->maxStatus );
 $tree       = [ $this->witch->id => $root ];
 $breadcrumb = [ $this->witch->id ];

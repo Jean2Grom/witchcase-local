@@ -13,7 +13,7 @@ if( !in_array($action, $possibleActionsList) ){
 }
 
 $alerts         = $this->wc->user->getAlerts();
-$targetWitch    = $this->wc->witch("target");
+$targetWitch    = $this->witch("target");
 if( !$targetWitch )
 {
     $alerts[] = [

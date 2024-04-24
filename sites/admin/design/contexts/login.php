@@ -13,7 +13,7 @@ $this->addCssFile('header-footer.css');
     <body>
         <div class="container">
             <header><?php include $this->getIncludeDesignFile('header.php'); ?></header>
-            <main><?=$this->wc->witch()->result() ?></main>
+            <main><?=$this->witch()->result() ?></main>
             <footer><?php include $this->getIncludeDesignFile('footer.php'); ?></footer>
         </div>
         

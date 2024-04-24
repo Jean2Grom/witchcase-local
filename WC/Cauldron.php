@@ -1,7 +1,7 @@
 <?php 
 namespace WC;
 
-use WC\Traits\DisplayTrait;
+use WC\Trait\DisplayTrait;
 
 class Cauldron
 {

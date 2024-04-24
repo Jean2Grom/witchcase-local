@@ -1,7 +1,5 @@
 <?php
-namespace WC\Traits;
-
-
+namespace WC\Trait;
 
 trait DisplayTrait
 {

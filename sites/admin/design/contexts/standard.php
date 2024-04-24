@@ -17,24 +17,26 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
         <div class="container">
             <header><?php include $this->getIncludeDesignFile('header.php'); ?></header>
             
-            <nav>
-                <a class="side-nav-toggler">
-                    <i class="fa fa-times"></i>
-                </a>
-                <?php if( $this->wc->witch('menu')->id ): foreach( $this->wc->witch('menu')->daughters() as $menuItemWitch ): ?>
-                    <a href="<?=$menuItemWitch->url() ?>">
-                        <?=$menuItemWitch->name?>
+            <?php if( count($this->witch('menu')?->daughters() ?? []) > 0 ): ?>
+                <nav>
+                    <a class="side-nav-toggler">
+                        <i class="fa fa-times"></i>
                     </a>
-                <?php endforeach; endif; ?>
-            </nav>
-            
+                    <?php foreach( $this->witch('menu')->daughters() as $menuItemWitch ): ?>
+                        <a href="<?=$menuItemWitch->url() ?>">
+                            <?=$menuItemWitch->name?>
+                        </a>
+                    <?php endforeach; ?>
+                </nav>
+            <?php endif; ?>
+
             <main>
-                <h1 class="breadcrumb__label" title="<?=$this->wc->witch()->data ?>">
-                    <a href="javascript: location.reload();"><?=$this->wc->witch()->name ?></a>
+                <h1 class="breadcrumb__label" title="<?=$this->witch()->data ?>">
+                    <a href="javascript: location.reload();"><?=$this->witch()->name ?></a>
                 </h1>
                 
                 <div class="breadcrumb">
-                    <?php if( $this->wc->witch()->id ): foreach( $breadcrumb as $i => $breadcrumbItem ): ?>
+                    <?php if( $this->witch()->id ): foreach( $breadcrumb as $i => $breadcrumbItem ): ?>
                         <?=( $i > 0 )? "&nbsp;>&nbsp": "" ?>
                         <span class="breadcrumb__item" title="<?=$breadcrumbItem['data'] ?>">
                             <a href="<?=$breadcrumbItem['href'] ?>">
@@ -54,7 +56,7 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
                          </div>
                     <?php endif; ?>
 
-                    <?php if( !$this->wc->witch()->id ): ?>
+                    <?php if( !$this->witch()->id ): ?>
                         <div class="tabs__item selected">
                             <a href="#tab-current">
                                 <i class="fas fa-bomb"></i> 404
@@ -77,31 +79,31 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
                     <?php endforeach; else: ?>
                         <div class="tabs__item selected">
                             <a href="#tab-current">
-                                <?php if( $this->wc->witch()->hasCraft() && $this->wc->witch()->invoke ): ?>
+                                <?php if( $this->witch()->hasCraft() && $this->witch()->invoke ): ?>
                                     <i  class="fas fa-hat-wizard"></i>
-                                <?php elseif( $this->wc->witch()->hasCraft() ): ?>
+                                <?php elseif( $this->witch()->hasCraft() ): ?>
                                     <i  class="fas fa-mortar-pestle"></i>
-                                <?php elseif( $this->wc->witch()->invoke ): ?>
+                                <?php elseif( $this->witch()->invoke ): ?>
                                     <i  class="fas fa-hand-sparkles"></i>
                                 <?php else: ?>
                                     <i class="fas fa-folder"></i>
                                 <?php endif; ?>
 
-                                <?=$this->wc->witch()->name ?>
+                                <?=$this->witch()->name ?>
 
-                                <?php if( $this->wc->witch("target") ): ?>
+                                <?php if( $this->witch("target") ): ?>
                                     &nbsp;:
-                                <?php elseif( $this->wc->witch("mother") ): ?>
+                                <?php elseif( $this->witch("mother") ): ?>
                                     from&nbsp;:
                                 <?php endif; ?>
-                                <?=$this->wc->witch("target").$this->wc->witch("mother")?>
+                                <?=$this->witch("target").$this->witch("mother")?>
                             </a>
                         </div>
                     <?php endif; ?>
                 </div>
 
                 <div class="tabs-target">
-                    <?php if( !$this->wc->witch() ): ?>
+                    <?php if( !$this->witch() ): ?>
                         <div class="tabs-target__item selected" id="tab-current">404</div>
                     <?php elseif( !$this->tabs ): ?>
                         <div class="tabs-target__item selected" id="tab-current"><?=$this->wc->cairn->invokation() ?></div>
@@ -109,7 +111,7 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
                         <?=$this->wc->cairn->invokation() ?>
                     <?php endif; ?>
 
-                    <?php if( $this->wc->witch("arborescence") ): ?>
+                    <?php if( $this->witch("arborescence") ): ?>
                         <div class="tabs-target__item" id="tab-navigation">
                             <?=$this->wc->cairn->invokation("arborescence") ?>
                         </div>
@@ -117,7 +119,7 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
                 </div>
             </main>
             
-            <?php if( $this->wc->witch("chooseWitch") ): ?>
+            <?php if( $this->witch("chooseWitch") ): ?>
                 <?=$this->wc->cairn->invokation("chooseWitch") ?>
             <?php endif; ?>
             
