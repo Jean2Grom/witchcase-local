@@ -175,4 +175,25 @@ class Cauldron
         return $this->content;
     }
 
+
+    function draft()
+    {
+        $this->wc->debug($this);
+        
+        if( $this->isDraft() ){
+            return $this;
+        }
+
+
+        return $this;
+        if( empty($this->getRelatedCraftsIds(Draft::TYPE)) ){
+            return $this->createDraft();
+        }
+        
+        $draftStructure = new Structure( $this->wc, $this->structure->name, Draft::TYPE );
+        $craftData      = WitchCrafting::getCraftDataFromIds($this->wc, $draftStructure->table, $this->getRelatedCraftsIds(Draft::TYPE) );
+        
+        return Craft::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
+
+    }
 }

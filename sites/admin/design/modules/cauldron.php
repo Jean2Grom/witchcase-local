@@ -1,17 +1,17 @@
-<?php /** @var WC\Module $this */
+<?php   /** @var WC\Module $this @var WC\Cauldron $draft */
 
 $this->addCssFile('content-edit.css');
 $this->addJsFile('triggers.js');
 ?>
 <h1>
     <i class="fa fa-feather-alt"></i>
-    <?=$this->witch()->name ?>
+    <?=$this->witch("target")->name ?>
 </h1>
-<p><em><?=$this->witch()->data?></em></p>
+<p><em><?=$this->witch("target")->data?></em></p>
     
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
-<h3>[<?=$draft->structure->name ?>] <em><?=$draft->name ?></em></h3>
+<h3>[<?=$draft->data->structure ?>] <em><?=$draft->name ?></em></h3>
 <p>
     <?php if( $draft->created ): ?>
         <em>Draft created by <?=$draft->created->actor?>: <?=$draft->created->format( \DateTimeInterface::RFC2822 )?></em>
@@ -38,7 +38,7 @@ $this->addJsFile('triggers.js');
         <?php endforeach; ?>
     </div>
     
-    <?php if( $targetWitch ): ?>
+    <?php if( $this->witch("target") ): ?>
         <button class="trigger-action" 
                 data-action="publish"
                 data-target="edit-action">

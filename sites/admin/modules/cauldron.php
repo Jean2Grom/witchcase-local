@@ -1,7 +1,5 @@
 <?php /** @var WC\Module $this */
 
-use WC\Handler\CauldronHandler;
-
 $possibleActionsList = [
     'save',
     'save-and-return',
@@ -14,8 +12,7 @@ if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$alerts         = $this->wc->user->getAlerts();
-$targetWitch    = $this->witch("target");
+$alerts = $this->wc->user->getAlerts();
 
 if( is_null($this->witch("target")) )
 {
@@ -28,15 +25,7 @@ if( is_null($this->witch("target")) )
     header( 'Location: '.$this->wc->website->getFullUrl() );
     exit();
 }
-
-// TODO 
-if( $this->witch("target")->hasCauldron() )
-{
-    $cauldron   = $targetWitch->cauldron();
-}
-
-//$craft      = $targetWitch->craft() ?? false;
-if( !$cauldron )
+elseif( !$this->witch("target")->cauldron() )
 {
     $alerts[] = [
         'level'     =>  'error',
@@ -44,12 +33,12 @@ if( !$cauldron )
     ];
     
     $this->wc->user->addAlerts($alerts);
-    header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+    header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$this->witch("target")->id) );
     exit();
 }
 
 // TODO multi draft management
-//$draft = $craft->getDraft();
+$draft = $this->witch("target")->cauldron()->draft();
 
 if( empty($draft) ){
     $alerts[] = [
@@ -58,6 +47,7 @@ if( empty($draft) ){
     ];
 }
 
+$this->wc->debug($action);
 switch( $action )
 {
     case 'publish':
@@ -124,7 +114,7 @@ switch( $action )
         {
             $this->wc->user->addAlerts($alerts);
 
-            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$this->witch("target")->id) );
             exit();
         }
     break;
@@ -145,13 +135,13 @@ switch( $action )
             
             $this->wc->user->addAlerts($alerts);
             
-            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$this->witch("target")->id) );
             exit();
         }
     break;    
 }
 
-$cancelHref = $this->wc->website->getUrl("view?id=".$targetWitch->id);
+$cancelHref = $this->wc->website->getUrl("view?id=".$this->witch("target")->id);
 
 foreach( $this->wc->user->getAlerts() as $treatmentAlert ){
     $alerts[] = $treatmentAlert;

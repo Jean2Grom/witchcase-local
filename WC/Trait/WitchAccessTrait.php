@@ -1,9 +1,11 @@
 <?php
 namespace WC\Trait;
 
+use WC\Witch;
+
 trait WitchAccessTrait
 {
-    function witch( ?string $witchName=null )
+    function witch( ?string $witchName=null ): ?Witch
     {
         if( is_null($witchName) )
         {
