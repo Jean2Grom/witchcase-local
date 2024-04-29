@@ -14,9 +14,11 @@ class Cauldron
         'children' => "childrenJointure",
     ];
 
-    static function getDepth( WitchCase $wc ): int
+    static function getDepth( WitchCase $wc, bool $useCache=true ): int
     {
-        $depth = $wc->cache->read( 'system', 'depth-cauldron' );
+        if( $useCache ){
+            $depth = $wc->cache->read( 'system', 'depth-cauldron' );
+        }
         
         if( empty($depth) )
         {
@@ -24,7 +26,9 @@ class Cauldron
             $result =   $wc->db->selectQuery($query);
             $depth  =   count($result);
             
-            $wc->cache->create('system', 'depth-cauldron', $depth);
+            if( $useCache ){
+                $wc->cache->create('system', 'depth-cauldron', $depth);
+            }
         }
         
         return (int) $depth;
@@ -40,7 +44,7 @@ class Cauldron
             $query      .=  $separator."`c`.`".$field."` ";
             $separator  =   ", ";
         }
-        for( $i=1; $i<=$wc->caudronDepth; $i++ ){
+        for( $i=1; $i<=$wc->cauldronDepth; $i++ ){
             $query      .=  $separator."`c`.`level_".$i."` ";
         }
         
@@ -75,7 +79,7 @@ class Cauldron
         {
             $query  .= "LEFT JOIN `cauldron` AS `c_".$conf."` ";
             $query  .=  "ON ( ";
-            $query  .=  self::childrenJointure( $wc->caudronDepth, "c_".$conf, 'c', '*' );
+            $query  .=  self::childrenJointure( $wc->cauldronDepth, "c_".$conf, 'c', '*' );
             $query  .=  ") ";            
         }
 
@@ -208,5 +212,108 @@ class Cauldron
         
         return $jointure;
     }
+
+
+    static function increaseDepth( WitchCase $wc ): int
+    {
+        $wc->cache->delete( 'system', 'depth-cauldron' );
+        $newLevelDepth = self::getDepth($wc, false) + 1;
+        
+        $query  =   "ALTER TABLE `cauldron` ";
+        $query  .=  "ADD `level_".$newLevelDepth."` INT(11) UNSIGNED NULL DEFAULT NULL ";
+        $query  .=  ", ADD KEY `IDX_level_".$newLevelDepth."` (`level_".$newLevelDepth."`) ";
+        
+        $wc->db->alterQuery($query);
+        $wc->cauldronDepth = $newLevelDepth;
+        
+        return $newLevelDepth;
+    }
+
+    static function getNewPosition( CauldronObj $cauldron )
+    {
+        $depth = count($cauldron->position) + 1;
+        
+        $params = [];
+        $query  = "SELECT MAX(`level_".$depth."`) AS `maxIndex` FROM `cauldron` ";
+        
+        $linkingCondition = "WHERE ";
+        foreach( $cauldron->position as $level => $levelPosition )
+        {
+            $field              =   "level_".$level;
+            $query              .=  $linkingCondition."`".$field."` = :".$field." ";
+            $params[ $field ]   =   $levelPosition;
+            $linkingCondition   =   "AND ";
+        }
+        
+        $result = $cauldron->wc->db->fetchQuery($query, $params);
+        
+        if( !$result ){
+            return false;
+        }
+        
+        $max = (int) $result["maxIndex"];
+        
+        return $max + 1;
+    }
+
+    static function insert( CauldronObj $cauldron )
+    {
+        if( isset($cauldron->properties['id']) ){
+            unset($cauldron->properties['id']);
+        }
+        if( isset($cauldron->properties['datetime']) ){
+            unset($cauldron->properties['datetime']);
+        }
+        
+        $query = "";
+        $query  .=  "INSERT INTO `cauldron` ";
+        
+        $separator = "( ";
+        foreach( array_keys($cauldron->properties) as $field )
+        {
+            $query  .=  $separator."`".$field."` ";
+            $separator = ", ";
+        }
+        $query  .=  ") VALUES ";
+        
+        $separator = "( ";
+        foreach( array_keys($cauldron->properties) as $field )
+        {
+            $query  .=  $separator.":".$field." ";
+            $separator = ", ";
+        }
+        $query  .=  ") ";
+        
+        return $cauldron->wc->db->insertQuery($query, $cauldron->properties);
+    }
+
+
+    // TODO
+    static function update( WitchCase $wc, array $params, array $conditions )
+    {
+        if( empty($params) || empty($conditions) ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "UPDATE `cauldron` ";
+        
+        $separator = "SET ";
+        foreach( array_keys($params) as $field )
+        {
+            $query      .=  $separator.'`'.$wc->db->escape_string($field)."` = :".$field." ";
+            $separator  =  ", ";
+        }
+        
+        $separator = "WHERE ";
+        foreach( array_keys($conditions) as $field )
+        {
+            $query      .=  $separator.'`'.$wc->db->escape_string($field)."` = :".$field." ";
+            $separator  =  "AND ";
+        }
+        
+        return $wc->db->updateQuery( $query, array_replace($params, $conditions) );
+    }
+
 
 }

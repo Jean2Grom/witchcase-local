@@ -76,7 +76,7 @@ class WitchCase
      * Current depth of cauldron arborescence tree
      * @var int 
      */
-    public int $caudronDepth;
+    public int $cauldronDepth;
     
     
     public function __construct() 
@@ -97,7 +97,7 @@ class WitchCase
     {
         try {
             $this->depth        = WitchSummoning::getDepth( $this );
-            $this->caudronDepth = Cauldron::getDepth( $this );
+            $this->cauldronDepth= Cauldron::getDepth( $this );
             $this->request      = new Request( $this );
             $this->website      = $this->request->getWebsite();
             $this->debug->addEnableCondition($this->website->debug);

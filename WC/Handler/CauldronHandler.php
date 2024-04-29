@@ -3,7 +3,7 @@ namespace WC\Handler;
 
 use WC\WitchCase;
 use WC\Cauldron;
-use WC\DataAccess\Cauldron AS CauldronDA;
+use WC\DataAccess\Cauldron AS DataAccess;
 use WC\Datatype\ExtendedDateTime;
 
 class CauldronHandler
@@ -20,7 +20,7 @@ class CauldronHandler
     static function fetch( WitchCase $wc, array $configuration )
     {
         
-        $result = CauldronDA::cauldronRequest($wc, $configuration);
+        $result = DataAccess::cauldronRequest($wc, $configuration);
         
         if( $result === false ){
             return false;
@@ -37,7 +37,7 @@ class CauldronHandler
         $return         = [];
         $cauldronsList  = [];
         $depthArray     = [];
-        foreach( range(0, $wc->caudronDepth) as $d ){
+        foreach( range(0, $wc->cauldronDepth) as $d ){
             $depthArray[ $d ] = [];
         }
         
@@ -67,7 +67,7 @@ class CauldronHandler
 
         }
         
-        for( $i=0; $i < $wc->caudronDepth; $i++ ){
+        for( $i=0; $i < $wc->cauldronDepth; $i++ ){
             foreach( $depthArray[ $i ] as $potentialParentId ){
                 foreach( $depthArray[ ($i+1) ] as $potentialDaughterId ){
                     if( $cauldronsList[ $potentialParentId ]->isParentOf($cauldronsList[ $potentialDaughterId ]) ){
@@ -96,7 +96,7 @@ class CauldronHandler
             $cauldron->properties[ $field ] = $data[ $field ] ?? null;
         }
         
-        for( $i=1; $i <= $wc->caudronDepth; $i++ ){
+        for( $i=1; $i <= $wc->cauldronDepth; $i++ ){
             $cauldron->properties[ 'level_'.$i ] = $data[ 'level_'.$i ] ?? null;
         }
 
@@ -246,8 +246,27 @@ class CauldronHandler
             }
         }
 
-        if( !$draftFolder ){
+        if( !$draftFolder )
+        {
+            $params = [
+                'name'  =>  "wc-drafts-folder",
+                'data'  =>  json_encode([ "structure" => "array" ]),
+            ];
+            /*
+            foreach( $cauldron->position as $level => $value ){
+                $params[ 'level_'.$level ] = $value;
+            }
             
+            $params[ 'level_'.($cauldron->depth+1) ] = DataAccess::getNewDaughterIndex($cauldron->wc, $cauldron->position);
+            */
+
+            $draftFolder = self::createFromData( $cauldron->wc, $params );
+
+            $cauldron->add( $draftFolder );
+
+            //$draftFolder->save();
+
+            $cauldron->wc->dump($draftFolder, "ici");
         }
 
 

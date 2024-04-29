@@ -4,6 +4,11 @@
     "composition": [
         {
             "mandatory": true,
+            "name": "name",
+            "type": "string"
+        },
+        {
+            "mandatory": true,
             "name" : "options",
             "type": "array",
             "require": {

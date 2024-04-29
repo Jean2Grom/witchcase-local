@@ -19,9 +19,11 @@ class WitchSummoning
         'children',
     ];
     
-    static function getDepth( WitchCase $wc ): int
+    static function getDepth( WitchCase $wc, bool $useCache=true ): int
     {
-        $depth = $wc->cache->read( 'system', 'depth' );
+        if( $useCache ){
+            $depth = $wc->cache->read( 'system', 'depth' );
+        }
         
         if( empty($depth) )
         {
@@ -29,7 +31,9 @@ class WitchSummoning
             $result =   $wc->db->selectQuery($query);
             $depth  =   count($result);
             
-            $wc->cache->create('system', 'depth', $depth);
+            if( $useCache ){
+                $wc->cache->create('system', 'depth', $depth);
+            }
         }
         
         return (int) $depth;

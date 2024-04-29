@@ -26,4 +26,4 @@ $this->wc->dump( $cauldron );
 */
 
 
-echo $this->wc->caudronDepth;
+echo $this->wc->cauldronDepth;

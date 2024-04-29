@@ -87,16 +87,16 @@ class Witch
     static function increasePlateformDepth( WitchCase $wc ): int
     {
         $wc->cache->delete( 'system', 'depth' );
-        $newLevelDepth = WitchSummoning::getDepth($wc) + 1;
+        $newLevelDepth = WitchSummoning::getDepth($wc, false) + 1;
         
         $query  =   "ALTER TABLE `witch` ";
         $query  .=  "ADD `level_".$newLevelDepth."` INT(11) UNSIGNED NULL DEFAULT NULL ";
         $query  .=  ", ADD KEY `IDX_level_".$newLevelDepth."` (`level_".$newLevelDepth."`) ";
         
         $wc->db->alterQuery($query);
-        $wc->cache->delete( 'system', 'depth' );
+        $wc->depth = $newLevelDepth;
         
-        return WitchSummoning::getDepth($wc);
+        return $newLevelDepth;
     }
     
     static function getNewDaughterIndex( WitchCase $wc, array $position=[] )

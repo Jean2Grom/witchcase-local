@@ -1,6 +1,8 @@
 <?php 
 namespace WC;
 
+use WC\DataAccess\Cauldron as DataAccess;
+use WC\Handler\CauldronHandler as Handler;
 use WC\Trait\DisplayTrait;
 
 class Cauldron
@@ -178,11 +180,62 @@ class Cauldron
         return $this->content;
     }
 
+    function save(): bool
+    {
+        if( $this->depth > $this->wc->cauldronDepth ){
+            DataAccess::increaseDepth( $this->wc );
+        }
+
+        if( !$this->exist() )
+        {            
+            Handler::writeProperties($this);
+            DataAccess::insert($this);
+        }
+        else {
+            //DataAccess::update($this);
+        }
+
+        return true;
+    }
+
+    function add( Cauldron|Ingredient $content ): bool
+    {
+        // Ingredient case
+        if( get_class($content) !== __CLASS__ )
+        {
+            // TODO writeProperties 
+            $content->cauldron_fk = $this->id;
+            // TODO save 
+            $this->content = null;
+
+            return true;
+        }
+
+        // Cauldron case
+        if( $this->depth == $this->wc->cauldronDepth ){
+            DataAccess::increaseDepth( $this->wc );
+        }
+
+        foreach( $this->position as $level => $value ){
+            $content->position[ $level ] = $value;
+        }
+        $content->position[ $this->depth + 1 ] = DataAccess::getNewPosition( $this );
+
+        //Handler::writeProperties( $content );
+        $content->save();
+        // TODO mode transactionnel
+        foreach( $content->content() as $subcontent ){
+            $content->add( $subcontent );
+        }
+
+        return true;
+    }
+
 
     function draft()
     {
-        $this->wc->debug($this, "" , 2);
-        $this->wc->debug( in_array(null, [ 1, null, 23]) );
+        //$this->wc->debug($this, "" , 2);
+        //$this->wc->debug( in_array(null, [ 1, null, 23]) );
         
         if( $this->isDraft() ){
             return $this;
@@ -191,7 +244,10 @@ class Cauldron
         // TODO : look for draft
 
 
-        return $this;
+        return Handler::createDraft( $this );
+
+        //return $this;
+        /*
         if( empty($this->getRelatedCraftsIds(Draft::TYPE)) ){
             return $this->createDraft();
         }
@@ -200,6 +256,6 @@ class Cauldron
         $craftData      = WitchCrafting::getCraftDataFromIds($this->wc, $draftStructure->table, $this->getRelatedCraftsIds(Draft::TYPE) );
         
         return Craft::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
-
+        */
     }
 }
