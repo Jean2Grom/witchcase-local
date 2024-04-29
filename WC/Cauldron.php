@@ -9,38 +9,41 @@ class Cauldron
 
     const FIELDS = [
         "id",
-        "content_key",
+        "target",
         "status",
         "name",
-        "resume",
         "data",
         "priority",
         "datetime",
     ];
 
+    const STATUS_PUBLISHED      = null;
+    const STATUS_DRAFT          = 0;
+    const STATUS_ARCHIVED       = 1;
+
     const DIR                   = "cauldron/structures";
     const DESIGN_SUBFOLDER      = "design/cauldron/structures";
 
-    public $properties  = [];
+    public array $properties  = [];
 
-    public $id;
-    public $status      = 'content';
-    public $contentCauldronID;
-    public $contentCauldron;
-    public $name;
-    public $resume;
-    public $data;
-    public $priority;
-    public $datetime;
+    public ?int $id;
+    public ?int $status;
+    public ?int $targetID;
+    public ?string $name;
+    public ?\stdClass $data;
+    public ?int $priority;
+    public ?\DateTime $datetime;
     
-    public $depth       = 0;
-    public $position    = [];
+    public int $depth       = 0;
+    public array $position  = [];
 
-    public $parent;
-    public $children    = [];
-    public $ingredients = [];
+    public ?self $parent;
+    public array $children    = [];
+    public array $ingredients = [];
 
     protected $content;
+
+    public ?self $target;
 
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -76,7 +79,7 @@ class Cauldron
      * @return string
      */
     public function __toString(): string {
-        return $this->name ?? "";
+        return $this->name ?? "Cauldron".(isset($this->id)? ": ".$this->id : "");
     }
     
     /**
@@ -88,11 +91,11 @@ class Cauldron
     }
     
     /**
-     * Is this cauldron a content ?
+     * Is this cauldron a published content ?
      * @return bool
      */
-    function isContent(): bool {
-        return empty( $this->properties['status'] );
+    function isPublished(): bool {
+        return $this->status === self::STATUS_PUBLISHED;
     }
     
     /**
@@ -100,7 +103,7 @@ class Cauldron
      * @return bool
      */
     function isDraft(): bool {
-        return $this->properties['status'] === 0;
+        return $this->status === self::STATUS_DRAFT;
     }
     
     /**
@@ -108,7 +111,7 @@ class Cauldron
      * @return bool
      */
     function isArchive(): bool {
-        return $this->properties['status'] === 1;
+        return $this->status === self::STATUS_ARCHIVED;
     }
     
 
@@ -178,11 +181,14 @@ class Cauldron
 
     function draft()
     {
-        $this->wc->debug($this);
+        $this->wc->debug($this, "" , 2);
+        $this->wc->debug( in_array(null, [ 1, null, 23]) );
         
         if( $this->isDraft() ){
             return $this;
         }
+
+        // TODO : look for draft
 
 
         return $this;

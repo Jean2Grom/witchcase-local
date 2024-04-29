@@ -57,9 +57,9 @@ class Witch
     public $cauldronId;
     
     /**
-     * @var Cauldron
+     * @var ?Cauldron
      */
-    public Cauldron $cauldron;
+    public ?Cauldron $cauldron;
     
     /** 
      * WitchCase container class to allow whole access to Kernel
