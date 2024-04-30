@@ -3,7 +3,7 @@ namespace WC\Handler;
 
 use WC\WitchCase;
 use WC\Cauldron;
-use WC\DataAccess\Cauldron AS DataAccess;
+use WC\DataAccess\CauldronDataAccess AS DataAccess;
 use WC\Datatype\ExtendedDateTime;
 
 class CauldronHandler
@@ -217,6 +217,7 @@ class CauldronHandler
             $cauldron->properties[ 'level_'.$i ] = $cauldron->position[ $i ];
             $i++;
         }
+        $cauldron->depth = $i - 1; 
         
         return;
     }
@@ -235,7 +236,7 @@ class CauldronHandler
     }
 
 
-    static function createDraft( Cauldron $cauldron ): Cauldron
+    static function getDraftFolder( Cauldron $cauldron ): Cauldron
     {
         $draftFolder = false;
         foreach( $cauldron->content() as $content ){
@@ -252,24 +253,16 @@ class CauldronHandler
                 'name'  =>  "wc-drafts-folder",
                 'data'  =>  json_encode([ "structure" => "array" ]),
             ];
-            /*
-            foreach( $cauldron->position as $level => $value ){
-                $params[ 'level_'.$level ] = $value;
-            }
-            
-            $params[ 'level_'.($cauldron->depth+1) ] = DataAccess::getNewDaughterIndex($cauldron->wc, $cauldron->position);
-            */
 
             $draftFolder = self::createFromData( $cauldron->wc, $params );
-
             $cauldron->add( $draftFolder );
-
-            //$draftFolder->save();
-
-            $cauldron->wc->dump($draftFolder, "ici");
         }
 
+        return $draftFolder;
+    }
 
+    static function createDraft( Cauldron $cauldron ): Cauldron
+    {
         self::writeProperties( $cauldron );
 
         $draftProperties            = $cauldron->properties;
@@ -278,10 +271,35 @@ class CauldronHandler
 
         unset( $draftProperties['id'] );
         
-        $draft = self::createFromData( $cauldron->wc, $cauldron->properties );
+        $draft = self::createFromData( $cauldron->wc, $draftProperties );
 
-
-
+        self::createDraftContent( $cauldron, $draft );
+        
         return $draft;
+    }
+
+    static private function createDraftContent( Cauldron $cauldron, Cauldron $draft )
+    {
+        foreach( $cauldron->content() as $content )
+        {
+            // Ingredient case
+            if( get_class($content) !== get_class($cauldron) ){
+                // TODO
+            }
+            // Cauldron case            
+            else 
+            {
+                self::writeProperties( $content );
+                $draftContentProperties = $content->properties;
+                unset( $draftContentProperties['id'] );
+                
+                $draftContent = self::createFromData( $cauldron->wc, $draftContentProperties );
+
+                self::setParenthood( $draft, $draftContent );
+                self::createDraftContent( $content, $draftContent );
+            }
+        }
+        
+        return;
     }
 }

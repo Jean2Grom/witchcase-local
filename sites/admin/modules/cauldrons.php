@@ -1,6 +1,6 @@
 <?php /** @var WC\Module $this */
 
-use WC\DataAccess\Cauldron as CauldronDA;
+use WC\DataAccess\CauldronDataAccess;
 use WC\Handler\CauldronHandler;
 
 $conf = [
@@ -15,7 +15,7 @@ $result = CauldronHandler::fetch($this->wc, $conf);
 $this->wc->dump( $result );
 
 /*
-$result = CauldronDA::cauldronRequest($this->wc, $conf);
+$result = CauldronDataAccess::cauldronRequest($this->wc, $conf);
 
 foreach( $result as $row )
 {

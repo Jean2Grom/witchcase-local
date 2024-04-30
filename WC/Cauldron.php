@@ -1,7 +1,7 @@
 <?php 
 namespace WC;
 
-use WC\DataAccess\Cauldron as DataAccess;
+use WC\DataAccess\CauldronDataAccess as DataAccess;
 use WC\Handler\CauldronHandler as Handler;
 use WC\Trait\DisplayTrait;
 
@@ -180,82 +180,113 @@ class Cauldron
         return $this->content;
     }
 
-    function save(): bool
+    function save(): self
     {
         if( $this->depth > $this->wc->cauldronDepth ){
             DataAccess::increaseDepth( $this->wc );
         }
 
         if( !$this->exist() )
-        {            
+        {
             Handler::writeProperties($this);
             DataAccess::insert($this);
         }
-        else {
-            //DataAccess::update($this);
+        else 
+        {
+            $properties = $this->properties;
+            Handler::writeProperties($this);
+            DataAccess::update($this, array_diff_assoc($properties, $this->properties));
         }
 
-        return true;
+        return $this;
     }
 
     function add( Cauldron|Ingredient $content ): bool
     {
         // Ingredient case
-        if( get_class($content) !== __CLASS__ )
-        {
-            // TODO writeProperties 
-            $content->cauldron_fk = $this->id;
-            // TODO save 
-            $this->content = null;
-
-            return true;
+        if( get_class($content) !== __CLASS__ ){
+            return $this->addIngredient( $content );
         }
 
         // Cauldron case
+        $this->wc->db->begin();
+        try {
+            $this->addCauldron( $content );
+        } 
+        catch( \Exception $e ) 
+        {
+            $this->wc->log->error($e->getMessage());
+            $this->wc->db->rollback();
+            return false;
+        }
+        $this->wc->db->commit();
+        
+        return true;
+    }
+
+    function addCauldron( Cauldron $cauldron ): bool
+    {
+//$this->wc->debug($this, $this);
+//$this->wc->debug($cauldron, $cauldron);
+
         if( $this->depth == $this->wc->cauldronDepth ){
             DataAccess::increaseDepth( $this->wc );
         }
 
         foreach( $this->position as $level => $value ){
-            $content->position[ $level ] = $value;
+            $cauldron->position[ $level ] = $value;
         }
-        $content->position[ $this->depth + 1 ] = DataAccess::getNewPosition( $this );
+        $cauldron->position[ $this->depth + 1 ] = DataAccess::getNewPosition( $this );
 
-        //Handler::writeProperties( $content );
-        $content->save();
-        // TODO mode transactionnel
-        foreach( $content->content() as $subcontent ){
-            $content->add( $subcontent );
+        $cauldron->save();
+
+        foreach( $cauldron->content() as $subcontent ){
+            // Ingredient case
+            if( get_class($subcontent) !== __CLASS__ ){
+                $this->addIngredient( $subcontent );
+            }
+            else {
+                $cauldron->addCauldron( $subcontent );
+            }            
         }
 
         return true;
     }
 
+    function addIngredient( Ingredient $ingredient ): bool
+    {
+        $ingredient->cauldron = $this;
+
+        // TODO writeProperties 
+
+        // TODO save 
+        $this->content = null;
+
+        return true;
+    }
 
     function draft()
     {
-        //$this->wc->debug($this, "" , 2);
-        //$this->wc->debug( in_array(null, [ 1, null, 23]) );
-        
         if( $this->isDraft() ){
             return $this;
         }
 
+        $folder = Handler::getDraftFolder( $this );
+
         // TODO : look for draft
-
-
-        return Handler::createDraft( $this );
-
-        //return $this;
-        /*
-        if( empty($this->getRelatedCraftsIds(Draft::TYPE)) ){
-            return $this->createDraft();
+        $draft = false;
+        foreach( $folder->content() as $content ){
+            if( true ){
+                $draft = $content;
+            }
         }
-        
-        $draftStructure = new Structure( $this->wc, $this->structure->name, Draft::TYPE );
-        $craftData      = WitchCrafting::getCraftDataFromIds($this->wc, $draftStructure->table, $this->getRelatedCraftsIds(Draft::TYPE) );
-        
-        return Craft::factory( $this->wc, $draftStructure, array_values($craftData)[0] );
-        */
+
+        if( !$draft )
+        {
+            $draft  = Handler::createDraft( $this );
+            $folder->add($draft);
+        }
+
+        return $draft;
     }
 }

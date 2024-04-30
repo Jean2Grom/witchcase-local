@@ -2,7 +2,7 @@
 namespace WC;
 
 use WC\DataAccess\WitchSummoning;
-use WC\DataAccess\Cauldron;
+use WC\DataAccess\CauldronDataAccess;
 
 /**
  * WitchCase container class to allow whole access to Kernel
@@ -96,10 +96,10 @@ class WitchCase
     public function injest(): self
     {
         try {
-            $this->depth        = WitchSummoning::getDepth( $this );
-            $this->cauldronDepth= Cauldron::getDepth( $this );
-            $this->request      = new Request( $this );
-            $this->website      = $this->request->getWebsite();
+            $this->depth            = WitchSummoning::getDepth( $this );
+            $this->cauldronDepth    = CauldronDataAccess::getDepth( $this );
+            $this->request          = new Request( $this );
+            $this->website          = $this->request->getWebsite();
             $this->debug->addEnableCondition($this->website->debug);
             
             $this->cairn    = $this->website->getCairn();

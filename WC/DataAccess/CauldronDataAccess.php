@@ -2,11 +2,11 @@
 namespace WC\DataAccess;
 
 use WC\WitchCase;
-use WC\Cauldron as CauldronObj;
+use WC\Cauldron;
 use WC\Ingredient;
 use WC\Handler\IngredientHandler;
 
-class Cauldron
+class CauldronDataAccess
 {    
     const RELATIONSHIPS_JOINTURE = [
         'siblings' => "siblingsJointure",
@@ -39,7 +39,7 @@ class Cauldron
         // Determine the list of fields in select part of query
         $query = "";
         $separator = "SELECT DISTINCT ";
-        foreach( CauldronObj::FIELDS as $field )
+        foreach( Cauldron::FIELDS as $field )
         {
             $query      .=  $separator."`c`.`".$field."` ";
             $separator  =   ", ";
@@ -229,7 +229,7 @@ class Cauldron
         return $newLevelDepth;
     }
 
-    static function getNewPosition( CauldronObj $cauldron )
+    static function getNewPosition( Cauldron $cauldron )
     {
         $depth = count($cauldron->position) + 1;
         
@@ -256,7 +256,7 @@ class Cauldron
         return $max + 1;
     }
 
-    static function insert( CauldronObj $cauldron )
+    static function insert( Cauldron $cauldron )
     {
         if( isset($cauldron->properties['id']) ){
             unset($cauldron->properties['id']);
@@ -288,10 +288,9 @@ class Cauldron
     }
 
 
-    // TODO
-    static function update( WitchCase $wc, array $params, array $conditions )
+    static function update( Cauldron $cauldron, array $params )
     {
-        if( empty($params) || empty($conditions) ){
+        if( empty($params) ){
             return false;
         }
         
@@ -301,18 +300,13 @@ class Cauldron
         $separator = "SET ";
         foreach( array_keys($params) as $field )
         {
-            $query      .=  $separator.'`'.$wc->db->escape_string($field)."` = :".$field." ";
+            $query      .=  $separator.'`'.$cauldron->wc->db->escape_string($field)."` = :".$field." ";
             $separator  =  ", ";
         }
         
-        $separator = "WHERE ";
-        foreach( array_keys($conditions) as $field )
-        {
-            $query      .=  $separator.'`'.$wc->db->escape_string($field)."` = :".$field." ";
-            $separator  =  "AND ";
-        }
-        
-        return $wc->db->updateQuery( $query, array_replace($params, $conditions) );
+        $query  .=  "WHERE `id` = :id ";
+
+        return $cauldron->wc->db->updateQuery( $query, array_replace($params, [ 'id' => $cauldron->id ]) );
     }
 
 
