@@ -2,6 +2,8 @@
 namespace WC;
 
 use WC\Trait\DisplayTrait;
+use WC\Handler\IngredientHandler as Handler;
+use WC\DataAccess\IngredientDataAccess as DataAccess;
 
 abstract class Ingredient 
 {
@@ -41,26 +43,27 @@ abstract class Ingredient
     const DIR                   = "cauldron/ingredients";
     const DESIGN_SUBFOLDER      = "design/cauldron/ingredients";
 
-    public $type;
-    public $valueFields;
+    public string $type;
+    public array $valueFields;
     public $value;
 
-    public $properties;
+    public array $properties = [];
 
-    public $id;
-    public $name;
-    public $priority;
+    public ?int $id;
+    public ?int $cauldronID;
+    public ?string $name;
+    public ?int $priority;
 
-    public $creator;
-    public $created;
-    public $modificator;
-    public $modified;
+    public ?int $creator;
+    public ?\DateTime $created;
+    public ?int $modificator;
+    public ?\DateTime $modified;
 
     /** 
      * Cauldron witch contains this ingredient
-     * @var Cauldron
+     * @var ?Cauldron
      */
-    public Cauldron $cauldron;
+    public ?Cauldron $cauldron = null;
     
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -96,6 +99,14 @@ abstract class Ingredient
     }    
 
     /**
+     * Is this ingredient exist in database ?
+     * @return bool
+     */
+    function exist(): bool {
+        return !empty($this->id);
+    }
+
+    /**
      * Init function used to setup ingredient
      * @param mixed $value : if left to null, read from properties values 'value'
      * @return self
@@ -103,6 +114,36 @@ abstract class Ingredient
     function init( mixed $value=null ): self {
         return $this->set( $value ?? $this->properties[ 'value' ] ?? null );
     }
+
+    /**
+     * write values to properties value
+     * @return self
+     */
+    function prepare(): self 
+    {
+        if( !is_array($this->value) )
+        {
+            $this->properties[ array_values($this->valueFields)[0] ] = $this->value;
+            return $this;
+        }
+
+        $elementMap = [];
+        foreach( $this->valueFields as $key => $valueField ){
+            if( is_int($key) ){
+                $elementMap[ $valueField ] = $valueField;
+            }
+            else {
+                $elementMap[ $key ] = $valueField;
+            }
+        }
+
+        foreach( $this->content() as $element => $value ){
+            $this->properties[ $elementMap[$element] ] = $value;
+        } 
+
+        return $this;
+    }
+
 
     /**
      * Default function to set value
@@ -135,4 +176,21 @@ abstract class Ingredient
         return $this->value[ $element ] ?? null;
     }
 
+
+    function save(): self
+    {
+        if( !$this->exist() )
+        {
+            Handler::writeProperties($this);
+            DataAccess::insert($this);
+        }
+        else 
+        {
+            $properties = $this->properties;
+            Handler::writeProperties($this);
+            DataAccess::update($this, array_diff_assoc($properties, $this->properties));
+        }
+        
+        return $this;
+    }
 }

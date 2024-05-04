@@ -6,8 +6,8 @@ class IdentifierIngredient extends \WC\Ingredient
     const TYPE  = 'identifier';
 
     const VALUE_FIELDS = [
-        "value_table",
-        "value_id",
+        "table" =>  "value_table",
+        "id"    =>  "value_id",
     ];
     
 

@@ -3,6 +3,7 @@ namespace WC\Handler;
 
 use WC\WitchCase;
 use WC\Cauldron;
+use WC\Ingredient;
 use WC\DataAccess\CauldronDataAccess AS DataAccess;
 use WC\Datatype\ExtendedDateTime;
 
@@ -46,7 +47,8 @@ class CauldronHandler
             $id                     = $row['id'];
             $cauldronsList[ $id ]   = $cauldronsList[ $id ] ?? self::createFromData( $wc, $row );
             
-            IngredientHandler::createFromData( $cauldronsList[ $id ], $row );
+            //IngredientHandler::createFromData( $cauldronsList[ $id ], $row );
+            IngredientHandler::createFromDBRow( $cauldronsList[ $id ], $row );
             if( !in_array($id, $depthArray[ $cauldronsList[ $id ]->depth ]) ){
                 $depthArray[ $cauldronsList[ $id ]->depth ][] = $id;
             }
@@ -122,11 +124,14 @@ class CauldronHandler
         }
         
         $cauldron->targetID = null;
-        $cauldron->target   = null;
         if( isset($cauldron->properties['target']) && ctype_digit(strval($cauldron->properties['target'])) ){
             $cauldron->targetID = (int) $cauldron->properties['target'];
         }
         
+        if( $cauldron->targetID !== $cauldron->target?->id ){
+            $cauldron->target   = null;
+        }
+
         $cauldron->name = null;
         if( isset($cauldron->properties['name']) ){
             $cauldron->name = $cauldron->properties['name'];
@@ -169,7 +174,7 @@ class CauldronHandler
      */
     static function writeProperties( Cauldron $cauldron ): void
     {
-        $cauldron->properties= [] ;
+        $cauldron->properties= [];
 
         if( isset($cauldron->id) && is_int($cauldron->id) ){
             $cauldron->properties['id'] = $cauldron->id;
@@ -221,7 +226,6 @@ class CauldronHandler
         
         return;
     }
-        
 
     static function setParenthood( Cauldron $parent, Cauldron $child ): void
     {
@@ -233,6 +237,18 @@ class CauldronHandler
         $child->parent      = $parent;
         
         return;
+    }
+
+    static function setIngredient( Cauldron $cauldron, Ingredient $ingredient ): bool
+    {
+        if( !in_array($ingredient, $cauldron->ingredients) )
+        {
+            $ingredient->cauldron       = $cauldron;
+            $cauldron->ingredients[]    = $ingredient;
+            return true;
+        }
+        
+        return false;
     }
 
 
@@ -272,7 +288,7 @@ class CauldronHandler
         unset( $draftProperties['id'] );
         
         $draft = self::createFromData( $cauldron->wc, $draftProperties );
-
+        
         self::createDraftContent( $cauldron, $draft );
         
         return $draft;
@@ -283,8 +299,14 @@ class CauldronHandler
         foreach( $cauldron->content() as $content )
         {
             // Ingredient case
-            if( get_class($content) !== get_class($cauldron) ){
-                // TODO
+            if( get_class($content) !== get_class($cauldron) )
+            {
+                IngredientHandler::writeProperties($content);
+                $draftContentProperties = $content->properties;
+                unset( $draftContentProperties['id'] );
+                unset( $draftContentProperties['cauldron_fk'] );
+
+                IngredientHandler::createFromData( $draft, $content->type, $draftContentProperties );
             }
             // Cauldron case            
             else 
@@ -299,7 +321,7 @@ class CauldronHandler
                 self::createDraftContent( $content, $draftContent );
             }
         }
-        
+
         return;
     }
 }

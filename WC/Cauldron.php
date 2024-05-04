@@ -45,7 +45,7 @@ class Cauldron
 
     protected $content;
 
-    public ?self $target;
+    public ?self $target    = null;
 
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -144,16 +144,14 @@ class Cauldron
         $buffer     = [];
         $defaultId  = 0;
 
-        foreach( $this->ingredients as $ingredientsTypeArray  ){
-            foreach( $ingredientsTypeArray as $ingredient )
-            {
-                $priority   = $ingredient->priority ?? 0;
-                $key        = ($ingredient->name ?? "")."_".($ingredient->id ?? $defaultId++);
-                $buffer[ $priority ] = array_replace( 
-                    $buffer[ $priority ] ?? [], 
-                    [ $key => $ingredient ]
-                );
-            }
+        foreach( $this->ingredients as $ingredient )
+        {
+            $priority   = $ingredient->priority ?? 0;
+            $key        = ($ingredient->name ?? "")."_".($ingredient->id ?? $defaultId++);
+            $buffer[ $priority ] = array_replace( 
+                $buffer[ $priority ] ?? [], 
+                [ $key => $ingredient ]
+            );
         }
         
         foreach( $this->children as $child )
@@ -180,6 +178,7 @@ class Cauldron
         return $this->content;
     }
 
+
     function save(): self
     {
         if( $this->depth > $this->wc->cauldronDepth ){
@@ -198,6 +197,10 @@ class Cauldron
             DataAccess::update($this, array_diff_assoc($properties, $this->properties));
         }
 
+        foreach( $this->content() as $content ){
+            $content->save();
+        }
+
         return $this;
     }
 
@@ -212,6 +215,7 @@ class Cauldron
         $this->wc->db->begin();
         try {
             $this->addCauldron( $content );
+            $this->save();
         } 
         catch( \Exception $e ) 
         {
@@ -226,9 +230,6 @@ class Cauldron
 
     function addCauldron( Cauldron $cauldron ): bool
     {
-//$this->wc->debug($this, $this);
-//$this->wc->debug($cauldron, $cauldron);
-
         if( $this->depth == $this->wc->cauldronDepth ){
             DataAccess::increaseDepth( $this->wc );
         }
@@ -238,7 +239,8 @@ class Cauldron
         }
         $cauldron->position[ $this->depth + 1 ] = DataAccess::getNewPosition( $this );
 
-        $cauldron->save();
+        Handler::setParenthood($this, $cauldron);
+        $this->content = null;
 
         foreach( $cauldron->content() as $subcontent ){
             // Ingredient case
@@ -255,11 +257,7 @@ class Cauldron
 
     function addIngredient( Ingredient $ingredient ): bool
     {
-        $ingredient->cauldron = $this;
-
-        // TODO writeProperties 
-
-        // TODO save 
+        Handler::setIngredient($this, $ingredient);
         $this->content = null;
 
         return true;
@@ -277,15 +275,23 @@ class Cauldron
         $draft = false;
         foreach( $folder->content() as $content ){
             if( true ){
-                $draft = $content;
+                //$draft = $content;
             }
         }
 
         if( !$draft )
         {
             $draft  = Handler::createDraft( $this );
-            $folder->add($draft);
+
+            $this->wc->debug($draft);
+            $this->wc->debug($draft->ingredients);
+            $this->wc->debug($draft->children, "draft", 2);
+            $this->wc->debug($this->children, "this", 2);
+
+            //$folder->add($draft);
         }
+
+        //$this->wc->dump($draft);
 
         return $draft;
     }
