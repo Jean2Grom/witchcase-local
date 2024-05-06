@@ -1,7 +1,7 @@
 <?php
 namespace WC\Trait;
 
-trait DisplayTrait
+trait CauldronContentTrait
 {
     function display( ?string $filename=null, ?int $maxChars=null )
     {
@@ -37,8 +37,29 @@ trait DisplayTrait
             }
         }
 
-
         return;
     }
+
+
+    function edit( ?string $filename=null, array $callArray=[] )
+    {
+        if( !$filename ){
+            $filename = strtolower( $this->type );
+        }
+        
+        $instanciedClass    = (new \ReflectionClass($this))->getName();
+        $file               = $this->wc->website->getFilePath( $instanciedClass::DIR."/edit/".$filename.'.php');
+        
+        if( !$file ){
+            $file = $this->wc->website->getFilePath( $instanciedClass::DIR."/edit/default.php");
+        }
+        
+        if( $file ){
+            include $file;
+        }
+        
+        return;
+    }
+
 
 }

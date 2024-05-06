@@ -3,11 +3,11 @@ namespace WC;
 
 use WC\DataAccess\CauldronDataAccess as DataAccess;
 use WC\Handler\CauldronHandler as Handler;
-use WC\Trait\DisplayTrait;
+use WC\Trait\CauldronContentTrait;
 
 class Cauldron
 {
-    use DisplayTrait;
+    use CauldronContentTrait;
 
     const FIELDS = [
         "id",
@@ -22,6 +22,8 @@ class Cauldron
     const STATUS_PUBLISHED      = null;
     const STATUS_DRAFT          = 0;
     const STATUS_ARCHIVED       = 1;
+
+    const DRAFT_FOLDER_NAME     = "wc-drafts-folder";
 
     const DIR                   = "cauldron/structures";
     const DESIGN_SUBFOLDER      = "design/cauldron/structures";
@@ -135,6 +137,7 @@ class Cauldron
         return $isParent;
     }
 
+
     function content(): array
     {
         if( !is_null($this->content) ){
@@ -156,6 +159,11 @@ class Cauldron
         
         foreach( $this->children as $child )
         {
+            if( $child->name === Cauldron::DRAFT_FOLDER_NAME 
+                && $child->data->structure === "folder" ){
+                continue;
+            }
+
             $priority   = $child->priority ?? 0;
             $key        = ($child->name ?? "")."_".($child->id ?? $defaultId++);
             $buffer[ $priority ] = array_replace( 
@@ -282,13 +290,15 @@ class Cauldron
         if( !$draft )
         {
             $draft  = Handler::createDraft( $this );
-
-            $this->wc->debug($draft);
+            //$folder->add($draft);
+            
+            //$this->wc->debug($draft);
+            /*
             $this->wc->debug($draft->ingredients);
             $this->wc->debug($draft->children, "draft", 2);
             $this->wc->debug($this->children, "this", 2);
-
-            //$folder->add($draft);
+            $this->wc->debug($this->content(), "this", 2);
+            */
         }
 
         //$this->wc->dump($draft);

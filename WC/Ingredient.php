@@ -1,13 +1,13 @@
 <?php 
 namespace WC;
 
-use WC\Trait\DisplayTrait;
+use WC\Trait\CauldronContentTrait;
 use WC\Handler\IngredientHandler as Handler;
 use WC\DataAccess\IngredientDataAccess as DataAccess;
 
 abstract class Ingredient 
 {
-    use DisplayTrait;
+    use CauldronContentTrait;
 
     const FIELDS = [
         "id",

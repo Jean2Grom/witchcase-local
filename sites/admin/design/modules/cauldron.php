@@ -26,14 +26,14 @@ $this->addJsFile('triggers.js');
     
     <div class="fieldsets-container">
         <fieldset>
-            <legend>Craft Name</legend>
+            <legend>Draft Name</legend>
             <input type="text" name="name" value="<?=$draft->name ?>" />
         </fieldset>
         
-        <?php foreach( $draft->attributes as $attribute ): ?>
+        <?php foreach( $draft->content() as $content ): ?>
             <fieldset>
-                <legend><?=$attribute->name?> [<?=$attribute->type?>]</legend>
-                    <?php $attribute->edit() ?>
+                <legend><?=$content->name?> [<?=$content->type?>]</legend>
+                    <?php $content->edit() ?>
             </fieldset>
         <?php endforeach; ?>
     </div>

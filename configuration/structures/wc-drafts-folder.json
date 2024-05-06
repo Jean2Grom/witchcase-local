@@ -1,5 +1,4 @@
 {
     "name": "wc-drafts-folder",
-    "type": "array",
-    "composition": []
+    "type": "folder"
 }

@@ -47,7 +47,8 @@ if( empty($draft) ){
     ];
 }
 
-$this->wc->debug($action);
+$this->wc->debug($action, "action");
+$this->wc->debug($draft, "draft");
 switch( $action )
 {
     case 'publish':
@@ -58,7 +59,9 @@ switch( $action )
         $publish    = $publish ?? false;
         $return     = $return ?? false;
         
+        $this->wc->dump($_POST);
         $params = [];
+        /*
         foreach( $draft->getEditParams() as $param )
         {
             $value = $this->wc->request->param($param['name'] ?? $param, 'post', $param['filter'] ??  FILTER_DEFAULT, $param['option'] ??  0 );                
@@ -69,7 +72,7 @@ switch( $action )
         }
         
         $saved = $draft->update( $params );
-
+        */
         if( $saved === false )
         {
             $alerts[] = [

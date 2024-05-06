@@ -227,16 +227,16 @@ class CauldronHandler
         return;
     }
 
-    static function setParenthood( Cauldron $parent, Cauldron $child ): void
+    static function setParenthood( Cauldron $parent, Cauldron $child ): bool
     {
-        if( $parent->children && in_array($child->id, array_keys( $parent->children )) ){
-            return;
+        if( !in_array($child, $parent->children) )
+        {
+            $child->parent      = $parent;
+            $parent->children[] = $child;
+            return true;
         }
-
-        $parent->children   = array_replace( $parent->children ?? [], [$child->id => $child] );
-        $child->parent      = $parent;
         
-        return;
+        return false;
     }
 
     static function setIngredient( Cauldron $cauldron, Ingredient $ingredient ): bool
@@ -255,10 +255,11 @@ class CauldronHandler
     static function getDraftFolder( Cauldron $cauldron ): Cauldron
     {
         $draftFolder = false;
-        foreach( $cauldron->content() as $content ){
-            if( $content->name === 'wc-drafts-folder' )
-            {
-                $draftFolder = $content;
+        foreach( $cauldron->children as $child ){
+            if( $child->name === Cauldron::DRAFT_FOLDER_NAME 
+                && $child->data->structure === "folder" 
+            ){
+                $draftFolder = $child;
                 break;
             }
         }
@@ -266,8 +267,8 @@ class CauldronHandler
         if( !$draftFolder )
         {
             $params = [
-                'name'  =>  "wc-drafts-folder",
-                'data'  =>  json_encode([ "structure" => "array" ]),
+                'name'  =>  Cauldron::DRAFT_FOLDER_NAME,
+                'data'  =>  json_encode([ "structure" => "folder" ]),
             ];
 
             $draftFolder = self::createFromData( $cauldron->wc, $params );
