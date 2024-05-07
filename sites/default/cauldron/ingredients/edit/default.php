@@ -15,10 +15,6 @@ foreach( $callArray as $caller )
     $suffix .= "[]";
 }
 
-$this->wc->debug( $prefix, "ingredient" );
-$this->wc->debug( $suffix, "ingredient-suffix" );
-
-
 if( $designFile ){
     include $designFile;
 }

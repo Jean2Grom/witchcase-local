@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */ ?>
+<?php /** @var WC\Module $this @var WC\Cauldron $cauldron*/ ?>
 
 <div class="box view__cauldron">
     <?php if( !isset($cauldron) ): ?>
@@ -47,9 +47,13 @@
             <i class="fa fa-feather-alt"></i>
             <?=$cauldron->name ?>
         </h3>
-        <h4>
+        <h4 title="ID <?=$cauldron->id ?>">
             <?=$cauldron->data->structure ?>
-            <em>[<?=$cauldron->status ?> <?=$cauldron->id ?>]</em>
+            <em>[<?=$cauldron->isPublished()? 
+                        "Published": 
+                        ($cauldron->isDraft()? 
+                            "Draft": 
+                            "Archive")?>]</em>
         </h4>
         
         <p><em>Cauldron (data) associated with this Witch</em></p>
