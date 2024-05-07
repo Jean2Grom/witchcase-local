@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : db
--- Généré le : mar. 26 mars 2024 à 17:53
+-- Généré le : mar. 07 mai 2024 à 16:30
 -- Version du serveur : 8.0.36
 -- Version de PHP : 8.2.8
 
@@ -69,10 +69,9 @@ CREATE TABLE `archive__wc-user` (
 
 CREATE TABLE `cauldron` (
   `id` int UNSIGNED NOT NULL,
-  `content_key` int UNSIGNED DEFAULT NULL,
+  `target` int UNSIGNED DEFAULT NULL,
   `status` bit(1) DEFAULT NULL COMMENT 'Null for content, 0 for draft, 1 for archive',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `resume` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data` json DEFAULT NULL,
   `priority` int NOT NULL DEFAULT '0',
   `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -80,21 +79,23 @@ CREATE TABLE `cauldron` (
   `level_2` int UNSIGNED DEFAULT NULL,
   `level_3` int UNSIGNED DEFAULT NULL,
   `level_4` int UNSIGNED DEFAULT NULL,
-  `level_5` int UNSIGNED DEFAULT NULL
+  `level_5` int UNSIGNED DEFAULT NULL,
+  `level_6` int UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `cauldron`
 --
 
-INSERT INTO `cauldron` (`id`, `content_key`, `status`, `name`, `resume`, `data`, `priority`, `datetime`, `level_1`, `level_2`, `level_3`, `level_4`, `level_5`) VALUES
-(1, NULL, NULL, 'Root', NULL, NULL, 0, '2024-03-13 17:08:26', NULL, NULL, NULL, NULL, NULL),
-(2, NULL, NULL, 'Admin', NULL, NULL, 0, '2024-03-08 15:22:33', 1, NULL, NULL, NULL, NULL),
-(3, NULL, NULL, 'Users', NULL, NULL, 0, '2024-03-08 15:22:40', 1, 1, NULL, NULL, NULL),
-(4, NULL, NULL, 'Administrateur', NULL, '{\"structure\": \"wc-user\"}', 0, '2024-03-13 15:40:06', 1, 1, 1, NULL, NULL),
-(5, NULL, NULL, 'profiles', NULL, '{\"structure\": \"array\"}', 0, '2024-03-26 17:35:47', 1, 1, 1, 1, NULL),
-(7, NULL, NULL, 'Jean', NULL, '{\"structure\": \"wc-user\"}', 0, '2024-03-13 15:39:12', 1, 1, 2, NULL, NULL),
-(8, NULL, NULL, 'profiles', NULL, '{\"stucture\": \"array\"}', 0, '2024-03-26 17:40:19', 1, 1, 2, 1, NULL);
+INSERT INTO `cauldron` (`id`, `target`, `status`, `name`, `data`, `priority`, `datetime`, `level_1`, `level_2`, `level_3`, `level_4`, `level_5`, `level_6`) VALUES
+(1, NULL, NULL, 'Root', NULL, 0, '2024-03-13 17:08:26', NULL, NULL, NULL, NULL, NULL, NULL),
+(2, NULL, NULL, 'Admin', NULL, 0, '2024-03-08 15:22:33', 1, NULL, NULL, NULL, NULL, NULL),
+(3, NULL, NULL, 'Users', NULL, 0, '2024-03-08 15:22:40', 1, 1, NULL, NULL, NULL, NULL),
+(4, NULL, NULL, 'Administrateur', '{\"structure\": \"wc-user\"}', 0, '2024-03-13 15:40:06', 1, 1, 1, NULL, NULL, NULL),
+(5, NULL, NULL, 'profiles', '{\"structure\": \"array\"}', 0, '2024-03-29 16:31:52', 1, 1, 1, 1, NULL, NULL),
+(7, NULL, NULL, 'Jean', '{\"structure\": \"wc-user\"}', 0, '2024-04-29 10:31:01', 1, 1, 2, NULL, NULL, NULL),
+(8, NULL, NULL, 'profiles', '{\"structure\": \"array\"}', 0, '2024-04-04 14:17:16', 1, 1, 2, 1, NULL, NULL),
+(10, NULL, NULL, 'wc-drafts-folder', '{\"structure\": \"folder\"}', 0, '2024-05-06 12:37:16', 1, 1, 2, 2, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -187,6 +188,13 @@ CREATE TABLE `draft__wc-user` (
   `connection@connexion#id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Déchargement des données de la table `draft__wc-user`
+--
+
+INSERT INTO `draft__wc-user` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `content_key`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
+(1, 'Administrateur', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34', 1, 'Witchcase', 'Administrateur', 3);
+
 -- --------------------------------------------------------
 
 --
@@ -210,25 +218,7 @@ CREATE TABLE `ingredient__boolean` (
 --
 
 INSERT INTO `ingredient__boolean` (`id`, `cauldron_fk`, `name`, `value`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
-(1, 7, 'test_boolean', b'1', 0, NULL, '2024-03-20 10:48:01', NULL, '2024-03-20 10:48:01');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `ingredient__cauldron_link`
---
-
-CREATE TABLE `ingredient__cauldron_link` (
-  `id` int UNSIGNED NOT NULL,
-  `cauldron_fk` int UNSIGNED NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `value` int DEFAULT NULL,
-  `priority` int NOT NULL DEFAULT '0',
-  `creator` int UNSIGNED DEFAULT NULL,
-  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modificator` int UNSIGNED DEFAULT NULL,
-  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+(1, 8, 'test_boolean', b'1', 0, NULL, '2024-03-20 10:48:01', NULL, '2024-04-04 14:37:47');
 
 -- --------------------------------------------------------
 
@@ -248,6 +238,13 @@ CREATE TABLE `ingredient__datetime` (
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Déchargement des données de la table `ingredient__datetime`
+--
+
+INSERT INTO `ingredient__datetime` (`id`, `cauldron_fk`, `name`, `value`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
+(1, 7, 'test', '2024-04-04 16:19:21', 0, NULL, '2024-04-04 14:20:15', NULL, '2024-04-04 14:37:17');
+
 -- --------------------------------------------------------
 
 --
@@ -266,34 +263,12 @@ CREATE TABLE `ingredient__float` (
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Structure de la table `ingredient__identifier`
+-- Déchargement des données de la table `ingredient__float`
 --
 
-CREATE TABLE `ingredient__identifier` (
-  `id` int UNSIGNED NOT NULL,
-  `cauldron_fk` int UNSIGNED NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `value_table` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `value_id` int UNSIGNED DEFAULT NULL,
-  `priority` int NOT NULL DEFAULT '0',
-  `creator` int UNSIGNED DEFAULT NULL,
-  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modificator` int UNSIGNED DEFAULT NULL,
-  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Déchargement des données de la table `ingredient__identifier`
---
-
-INSERT INTO `ingredient__identifier` (`id`, `cauldron_fk`, `name`, `value_table`, `value_id`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
-(1, 4, 'connexion', 'user__connexion', 1, 0, NULL, '2024-03-08 16:01:35', NULL, '2024-03-26 17:34:16'),
-(2, 5, NULL, 'user__profile', 1, 0, NULL, '2024-03-08 16:18:39', NULL, '2024-03-26 17:36:13'),
-(3, 7, 'connexion', 'user__connexion', 2, 0, NULL, '2024-03-08 16:01:35', NULL, '2024-03-26 17:39:36'),
-(4, 8, NULL, 'user__profile', 1, 0, NULL, '2024-03-08 16:18:39', NULL, '2024-03-26 17:39:44');
+INSERT INTO `ingredient__float` (`id`, `cauldron_fk`, `name`, `value`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
+(1, 7, 'test float', 12.4344, 0, NULL, '2024-04-04 15:22:10', NULL, '2024-04-04 15:22:51');
 
 -- --------------------------------------------------------
 
@@ -312,6 +287,17 @@ CREATE TABLE `ingredient__integer` (
   `modificator` int UNSIGNED DEFAULT NULL,
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `ingredient__integer`
+--
+
+INSERT INTO `ingredient__integer` (`id`, `cauldron_fk`, `name`, `value`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
+(2, 7, 'user__connexion', 2, 0, NULL, '2024-05-07 13:41:24', NULL, '2024-05-07 13:41:24'),
+(3, 4, 'user__connexion', 1, 0, NULL, '2024-05-07 13:50:50', NULL, '2024-05-07 13:50:50'),
+(4, 5, 'user__profile', 1, 0, NULL, '2024-05-07 16:00:59', NULL, '2024-05-07 16:00:59'),
+(5, 8, 'user__profile', 1, 0, NULL, '2024-05-07 16:03:25', NULL, '2024-05-07 16:03:25'),
+(6, 8, 'user__profile', 2, 0, NULL, '2024-05-07 16:03:25', NULL, '2024-05-07 16:03:25');
 
 -- --------------------------------------------------------
 
@@ -355,7 +341,7 @@ CREATE TABLE `ingredient__string` (
 
 INSERT INTO `ingredient__string` (`id`, `cauldron_fk`, `name`, `value`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
 (1, 4, 'last-name', 'Witchcase', 0, NULL, '2024-03-08 15:46:14', NULL, '2024-03-08 15:46:14'),
-(2, 4, 'fist-name', 'Administrateur', 0, NULL, '2024-03-08 15:46:14', NULL, '2024-03-08 15:46:14'),
+(2, 4, 'fist-name', 'Administrateur', 0, NULL, '2024-03-08 15:46:14', NULL, '2024-03-29 16:26:46'),
 (3, 7, 'last-name', 'Gromard', 0, NULL, '2024-03-12 18:32:49', NULL, '2024-03-12 18:32:49'),
 (4, 7, 'fist-name', 'Jean', 0, NULL, '2024-03-12 18:32:49', NULL, '2024-03-12 18:32:49');
 
@@ -376,6 +362,13 @@ CREATE TABLE `ingredient__text` (
   `modificator` int UNSIGNED DEFAULT NULL,
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `ingredient__text`
+--
+
+INSERT INTO `ingredient__text` (`id`, `cauldron_fk`, `name`, `value`, `priority`, `creator`, `created`, `modificator`, `modified`) VALUES
+(1, 8, 'text', 'htdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfx', 0, NULL, '2024-04-04 15:33:46', NULL, '2024-04-04 15:34:29');
 
 -- --------------------------------------------------------
 
@@ -405,7 +398,8 @@ CREATE TABLE `user__connexion` (
 
 INSERT INTO `user__connexion` (`id`, `name`, `email`, `login`, `pass_hash`, `craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name`, `modifier`, `modified`, `creator`, `created`) VALUES
 (1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
-(2, 'Jean', 'jean.de.gromard@gmail.com', 'jean', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01');
+(2, 'Jean', 'jean.de.gromard@gmail.com', 'jean', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
+(3, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'draft__wc-user', 'connexion', 'id', 'connection', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34');
 
 -- --------------------------------------------------------
 
@@ -474,7 +468,8 @@ CREATE TABLE `user__rel__connexion__profile` (
 
 INSERT INTO `user__rel__connexion__profile` (`fk_connexion`, `fk_profile`, `created`) VALUES
 (1, 1, '2024-03-01 15:46:01'),
-(2, 1, '2024-03-01 15:46:01');
+(2, 1, '2024-03-01 15:46:01'),
+(3, 1, '2024-04-04 14:58:34');
 
 -- --------------------------------------------------------
 
@@ -511,19 +506,20 @@ CREATE TABLE `witch` (
 INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `cauldron`, `craft_table`, `craft_fk`, `alias`, `is_main`, `context`, `datetime`, `priority`, `level_1`, `level_2`, `level_3`, `level_4`) VALUES
 (1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, NULL, NULL, NULL, NULL),
 (2, 'Admin WitchCase', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, NULL, NULL, NULL),
-(3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 10, 1, 1, NULL, NULL),
+(3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 100, 1, 1, NULL, NULL),
 (4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 4, 'content__wc-user', 1, NULL, 1, '', '2024-03-01 15:46:01', 0, 1, 1, 1, NULL),
 (5, 'Home', '', 'admin', '', 0, 'root', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, NULL, NULL),
 (6, 'Login', 'Module de déconnexion/connexion', 'admin', 'login', 0, 'login', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 40, 1, 2, 1, NULL),
-(7, 'Witch', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'view', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 30, 1, 2, 2, NULL),
+(7, 'Witch visualization', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'view', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 30, 1, 2, 2, NULL),
 (8, 'Edit Witch', '', 'admin', 'edit', 0, 'edit', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 20, 1, 2, 3, NULL),
 (9, 'Edit Craft', 'This is the draft of craft, you can publish it, save it for later, or remove draft to cancel modification.', 'admin', 'edit-content', 0, 'contents/edit', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 10, 1, 2, 4, NULL),
 (10, 'Menu', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, NULL),
 (11, 'Profiles', 'Permissions handeling is based on user profiles.', 'admin', 'profiles', 0, 'profiles', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 1),
 (12, 'Structures', '', 'admin', 'structures', 0, 'structures', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 2),
 (13, 'Apply', '', 'admin', 'apply', 0, 'emptyCache', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:28', -1, 1, 2, 5, 3),
-(14, 'test', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-08 17:35:00', 0, 2, NULL, NULL, NULL),
-(15, 'Chaudrons', '', 'admin', 'chaudrons', 0, 'cauldron', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-09 15:48:02', 0, 1, 2, 5, 4);
+(14, 'test', 'test pour le chaudron', NULL, NULL, 0, NULL, 7, NULL, NULL, NULL, 0, NULL, '2024-03-08 17:35:00', 0, 2, NULL, NULL, NULL),
+(15, 'Chaudrons', '', 'admin', 'chaudrons', 0, 'cauldrons', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-09 15:48:02', 0, 1, 2, 5, 4),
+(16, 'cauldron', '', 'admin', 'cauldron', 0, 'cauldron', NULL, NULL, NULL, NULL, 1, NULL, '2024-04-08 15:04:18', 50, 1, 2, 6, NULL);
 
 --
 -- Index pour les tables déchargées
@@ -547,11 +543,12 @@ ALTER TABLE `archive__wc-user`
 ALTER TABLE `cauldron`
   ADD PRIMARY KEY (`id`),
   ADD KEY `IDX_level_1` (`level_1`),
-  ADD KEY `CONTENT_KEY` (`content_key`),
-  ADD KEY `IDX_level_"2` (`level_2`),
+  ADD KEY `target` (`target`),
+  ADD KEY `IDX_level_2` (`level_2`),
   ADD KEY `IDX_level_3` (`level_3`),
   ADD KEY `IDX_level_4` (`level_4`),
-  ADD KEY `IDX_level_5` (`level_5`);
+  ADD KEY `IDX_level_5` (`level_5`),
+  ADD KEY `IDX_level_6` (`level_6`);
 
 --
 -- Index pour la table `content__test`
@@ -585,13 +582,6 @@ ALTER TABLE `ingredient__boolean`
   ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
 
 --
--- Index pour la table `ingredient__cauldron_link`
---
-ALTER TABLE `ingredient__cauldron_link`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
-
---
 -- Index pour la table `ingredient__datetime`
 --
 ALTER TABLE `ingredient__datetime`
@@ -602,13 +592,6 @@ ALTER TABLE `ingredient__datetime`
 -- Index pour la table `ingredient__float`
 --
 ALTER TABLE `ingredient__float`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
-
---
--- Index pour la table `ingredient__identifier`
---
-ALTER TABLE `ingredient__identifier`
   ADD PRIMARY KEY (`id`),
   ADD KEY `IDX_CAULDRON` (`cauldron_fk`);
 
@@ -694,7 +677,7 @@ ALTER TABLE `archive__wc-user`
 -- AUTO_INCREMENT pour la table `cauldron`
 --
 ALTER TABLE `cauldron`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT pour la table `content__test`
@@ -718,7 +701,7 @@ ALTER TABLE `draft__test`
 -- AUTO_INCREMENT pour la table `draft__wc-user`
 --
 ALTER TABLE `draft__wc-user`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__boolean`
@@ -727,34 +710,22 @@ ALTER TABLE `ingredient__boolean`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT pour la table `ingredient__cauldron_link`
---
-ALTER TABLE `ingredient__cauldron_link`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT pour la table `ingredient__datetime`
 --
 ALTER TABLE `ingredient__datetime`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__float`
 --
 ALTER TABLE `ingredient__float`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `ingredient__identifier`
---
-ALTER TABLE `ingredient__identifier`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__integer`
 --
 ALTER TABLE `ingredient__integer`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__price`
@@ -772,13 +743,13 @@ ALTER TABLE `ingredient__string`
 -- AUTO_INCREMENT pour la table `ingredient__text`
 --
 ALTER TABLE `ingredient__text`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `user__connexion`
 --
 ALTER TABLE `user__connexion`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `user__policy`
@@ -796,5 +767,5 @@ ALTER TABLE `user__profile`
 -- AUTO_INCREMENT pour la table `witch`
 --
 ALTER TABLE `witch`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 COMMIT;

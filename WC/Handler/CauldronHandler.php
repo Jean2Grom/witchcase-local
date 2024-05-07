@@ -47,7 +47,6 @@ class CauldronHandler
             $id                     = $row['id'];
             $cauldronsList[ $id ]   = $cauldronsList[ $id ] ?? self::createFromData( $wc, $row );
             
-            //IngredientHandler::createFromData( $cauldronsList[ $id ], $row );
             IngredientHandler::createFromDBRow( $cauldronsList[ $id ], $row );
             if( !in_array($id, $depthArray[ $cauldronsList[ $id ]->depth ]) ){
                 $depthArray[ $cauldronsList[ $id ]->depth ][] = $id;
@@ -61,8 +60,8 @@ class CauldronHandler
 
             if(  in_array('user', $configuration) 
                 &&  empty($return['user'])
-                &&  $row['identifier_value_table'] === 'user__connexion'
-                &&  $row['identifier_value_id'] === $wc->user->id 
+                &&  $row['i_name'] === 'user__connexion'
+                &&  $row['i_value'] === $wc->user->id 
             ){
                 $return['user'] = $cauldronsList[ $id ];
             }

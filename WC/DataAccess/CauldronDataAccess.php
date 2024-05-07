@@ -52,7 +52,7 @@ class CauldronDataAccess
             'cauldron_fk',
         ];
         foreach( Ingredient::DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX as $type => $prefix ){
-            foreach( IngredientHandler::getTypeFields( $type ) as $field ){
+            foreach( Ingredient::FIELDS as $field ){
                 if( !in_array($field, $excludFields) ){
                     $query  .=  ", `".$prefix."`.`".$field."` AS `".$prefix."_".$field."` ";
                 }
@@ -65,7 +65,7 @@ class CauldronDataAccess
         if( in_array('user', $configuration) && $wc->user->connexion )
         {
             $userConnexionJointure = true;
-            $query  .= "`ingredient__identifier` AS `user_connexion`, ";
+            $query  .= "`ingredient__integer` AS `user_connexion`, ";
         }
         
         $query  .= "`cauldron` AS `c` ";
@@ -114,8 +114,8 @@ class CauldronDataAccess
             $query  .=  ") ";
 
             $query  .=  "AND `user_connexion`.`id` IS NOT NULL ";
-            $query  .=  "AND `user_connexion`.`value_table` = \"user__connexion\" ";
-            $query  .=  "AND `user_connexion`.`value_id` = :user_id ";
+            $query  .=  "AND `user_connexion`.`name` = \"user__connexion\" ";
+            $query  .=  "AND `user_connexion`.`value` = :user_id ";
 
             $parameters[ 'user_id' ] = (int) $wc->user->id;
         }

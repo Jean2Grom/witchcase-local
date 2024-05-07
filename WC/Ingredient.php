@@ -13,13 +13,10 @@ abstract class Ingredient
         "id",
         "cauldron_fk",
         "name",
+        "value",
         "priority",
     ];
     
-    const VALUE_FIELDS = [
-        "value",
-    ];
-
     const HISTORY_FIELDS = [
         "creator",
         "created",
@@ -29,10 +26,8 @@ abstract class Ingredient
 
     const DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX = [
         'boolean'       => 'b', 
-        'cauldron_link' => 'cl', 
         'datetime'      => 'dt', 
         'float'         => 'f', 
-        'identifier'    => 'identifier', 
         'integer'       => 'i', 
         'price'         => 'p', 
         'string'        => 's', 
@@ -44,7 +39,6 @@ abstract class Ingredient
     const DESIGN_SUBFOLDER      = "design/cauldron/ingredients";
 
     public string $type;
-    public array $valueFields;
     public $value;
 
     public array $properties = [];
@@ -76,26 +70,11 @@ abstract class Ingredient
     {
         $instanciedClass    = (new \ReflectionClass($this))->getName();
         $this->type         = $instanciedClass::TYPE;
-        $this->valueFields  = $instanciedClass::VALUE_FIELDS;
     }
 
 
-    function __toString()
-    {
-        if( is_array($this->value) )
-        {
-            $return     = "";
-            $separator  = "";
-            foreach( $this->value as $key => $value )
-            {
-                $return .= $separator.$key." => ".$value;
-                $separator = "; ";
-            }
-            
-            return $return;
-        }
-
-        return $this->value;
+    function __toString(){
+        return $this->value ?? ( $this->id? ($this->name ?? $this->type).": ".$this->id : "" );
     }    
 
     /**
@@ -114,36 +93,6 @@ abstract class Ingredient
     function init( mixed $value=null ): self {
         return $this->set( $value ?? $this->properties[ 'value' ] ?? null );
     }
-
-    /**
-     * write values to properties value
-     * @return self
-     */
-    function prepare(): self 
-    {
-        if( !is_array($this->value) )
-        {
-            $this->properties[ array_values($this->valueFields)[0] ] = $this->value;
-            return $this;
-        }
-
-        $elementMap = [];
-        foreach( $this->valueFields as $key => $valueField ){
-            if( is_int($key) ){
-                $elementMap[ $valueField ] = $valueField;
-            }
-            else {
-                $elementMap[ $key ] = $valueField;
-            }
-        }
-
-        foreach( $this->content() as $element => $value ){
-            $this->properties[ $elementMap[$element] ] = $value;
-        } 
-
-        return $this;
-    }
-
 
     /**
      * Default function to set value

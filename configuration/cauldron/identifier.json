@@ -1,15 +1,16 @@
 {
-    "name": "option",
+    "name": "identifier",
     "type": "structure",
     "composition": [
         {
             "mandatory": true,
-            "name": "value",
+            "name": "table",
             "type": "string"
         },
         {
-            "name": "label",
-            "type": "string"
+            "mandatory": true,
+            "name": "identifier",
+            "type": "integer"
         }
     ]
 }

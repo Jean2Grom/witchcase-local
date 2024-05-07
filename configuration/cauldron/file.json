@@ -4,7 +4,7 @@
     "composition": [
         {
             "mandatory": true,
-            "name": "file",
+            "name": "path",
             "type": "string"
         },
         {

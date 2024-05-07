@@ -49,9 +49,6 @@ class IngredientHandler
             foreach( Ingredient::FIELDS as $field ){
                 $properties[ $field ] = $row[ $prefix.'_'.$field ] ?? null;
             }
-            foreach( $ingredient->valueFields as $field ){
-                $properties[ $field ] = $row[ $prefix.'_'.$field ] ?? null;
-            }
 
             self::createFromData( $cauldron, $type, $properties );
         }
@@ -117,35 +114,17 @@ class IngredientHandler
             $ingredient->properties['name'] = $ingredient->name;
         }
 
-        if( $ingredient->priority ){
+        if( isset($ingredient->priority) ){
             $ingredient->properties['priority'] = $ingredient->priority;
         }
         
-        $ingredient->prepare();
-        
+        if( is_scalar($ingredient->value) ){
+            $ingredient->properties['value'] = $ingredient->value;
+        }
+
         return;
     }
     
-
-    static function getTypeFields( string $type ): array 
-    {
-        $ingredient = self::factory($type);
-        if( !$ingredient ){
-            return [];
-        }
-
-        $return = [];
-        foreach( Ingredient::FIELDS as $field ){
-            $return[] = $field;
-        }
-
-        foreach( $ingredient->valueFields as $field ){
-            $return[] = $field;
-        }
-
-        return $return;
-    }
-
     static function factory( string $type ): ?Ingredient
     {
         $className  =   "\\WC\\Ingredient\\";

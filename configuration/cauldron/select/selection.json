@@ -5,7 +5,7 @@
         {
             "mandatory": true,
             "name" : "select",
-            "type": "cauldron_link",
+            "type": "cauldron-link",
             "require": {
                 "structure": "select"
             }
@@ -16,7 +16,7 @@
             "type": "array",
             "composition" : [
                 {   
-                    "type": "cauldron_link",
+                    "type": "cauldron-link",
                     "require": {
                         "structure": "select/option"
                     }

@@ -1,14 +1,14 @@
 {
-    "name": "image",
+    "name": "select/option",
     "type": "structure",
     "composition": [
         {
             "mandatory": true,
-            "name": "file",
+            "name": "value",
             "type": "string"
         },
         {
-            "name": "title",
+            "name": "label",
             "type": "string"
         }
     ]

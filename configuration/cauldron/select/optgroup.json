@@ -1,5 +1,5 @@
 {
-    "name": "optgroup",
+    "name": "select/optgroup",
     "type": "structure",
     "composition": [
         {

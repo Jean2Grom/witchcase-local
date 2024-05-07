@@ -14,11 +14,8 @@
         },
         {
             "mandatory": true,
-            "name" : "connexion",
-            "type": "identifier",
-            "require":{
-                "value_table" : "user__connexion"
-            }
+            "name" : "user__connexion",
+            "type": "integer"
         }, 
         {
             "mandatory": true,
@@ -29,10 +26,8 @@
             },
             "composition" : [
                 {
-                    "type": "identifier",
-                    "require":{
-                        "value_table" : "user__profile"
-                    }
+                    "name": "user__profile",
+                    "type": "integer"
                 }
             ]
         }
