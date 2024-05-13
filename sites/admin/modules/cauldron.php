@@ -60,8 +60,13 @@ switch( $action )
         $return     = $return ?? false;
         
         $this->wc->dump($_POST);
-        $params = [];
+        //$this->wc->dump($draft->content());
+
+        $draft->readInput();
+
+        //$this->wc->dump($draft->content());
         /*
+        $params = [];
         foreach( $draft->getEditParams() as $param )
         {
             $value = $this->wc->request->param($param['name'] ?? $param, 'post', $param['filter'] ??  FILTER_DEFAULT, $param['option'] ??  0 );                

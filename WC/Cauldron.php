@@ -3,11 +3,11 @@ namespace WC;
 
 use WC\DataAccess\CauldronDataAccess as DataAccess;
 use WC\Handler\CauldronHandler as Handler;
-use WC\Trait\CauldronContentTrait;
+use WC\Trait\CauldronIngredientTrait;
 
 class Cauldron
 {
-    use CauldronContentTrait;
+    use CauldronIngredientTrait;
 
     const FIELDS = [
         "id",
@@ -47,7 +47,9 @@ class Cauldron
 
     protected $content;
 
-    public ?self $target    = null;
+    public ?self $target        = null;
+
+    public string $editPrefix   = "s";
 
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -270,6 +272,41 @@ class Cauldron
 
         return true;
     }
+
+
+    function readInput( ?string $caller=null, /*?int $callerIndice=null, */array $callerIndices=[]  )
+    {
+$this->wc->debug( $callerIndices );
+
+        $prefix     = $caller? $caller."|": "";
+        $inputName  = "";
+        foreach( $this->content() as $content )
+        {
+            $indices = $callerIndices;
+$this->wc->debug( $indices, $content->name );
+
+            if( $inputName !== $content->getInputName(false) )
+            {
+                //$index      = $callerIndice? $callerIndice+1: -1;
+                $index      = -1;
+                $inputName  = $content->getInputName(false);
+
+                //$this->wc->debug( $index, $prefix.$content->getInputName(false) );
+            }
+            $index++;
+
+            if( strstr($prefix, "|") ){
+                $indices[] = $index;
+            }
+
+$this->wc->debug( $indices, $prefix.$content->getInputName(false) );
+
+            $content->readInput( $prefix.$content->getInputName(false), $indices );
+        }
+
+        return;
+    }
+
 
     function draft()
     {

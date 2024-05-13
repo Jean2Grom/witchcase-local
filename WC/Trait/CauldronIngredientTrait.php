@@ -1,7 +1,7 @@
 <?php
 namespace WC\Trait;
 
-trait CauldronContentTrait
+trait CauldronIngredientTrait
 {
     function display( ?string $filename=null, ?int $maxChars=null )
     {
@@ -41,8 +41,12 @@ trait CauldronContentTrait
     }
 
 
-    function edit( ?string $filename=null, array $callArray=[] )
+    function edit( ?string $filename=null, ?string $callerPrefix=null )
     {
+        if( $callerPrefix ){
+            $this->editPrefix = $callerPrefix."|".$this->editPrefix;
+        }
+
         if( !$filename ){
             $filename = strtolower( $this->type );
         }
@@ -61,5 +65,9 @@ trait CauldronContentTrait
         return;
     }
 
-
+    function getInputName( bool $addBrackets=true ): string 
+    {
+        $suffix = $addBrackets? str_repeat("[]", substr_count($this->editPrefix, "|")): "";
+        return $this->editPrefix."#".$this->type."#".$this->name.$suffix;
+    }
 }

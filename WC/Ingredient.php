@@ -1,13 +1,13 @@
 <?php 
 namespace WC;
 
-use WC\Trait\CauldronContentTrait;
+use WC\Trait\CauldronIngredientTrait;
 use WC\Handler\IngredientHandler as Handler;
 use WC\DataAccess\IngredientDataAccess as DataAccess;
 
 abstract class Ingredient 
 {
-    use CauldronContentTrait;
+    use CauldronIngredientTrait;
 
     const FIELDS = [
         "id",
@@ -52,6 +52,8 @@ abstract class Ingredient
     public ?\DateTime $created;
     public ?int $modificator;
     public ?\DateTime $modified;
+
+    public string $editPrefix   = "i";
 
     /** 
      * Cauldron witch contains this ingredient
@@ -142,4 +144,17 @@ abstract class Ingredient
         
         return $this;
     }
+
+    function readInput( ?string $caller=null, /*?int $callerIndice=null*/array $callerIndices=[] )
+    {
+        //$prefix     = $caller? $caller."|": "";
+        //$this->wc->debug( $callerIndices, $prefix.$this->getInputName(false) );
+        //$this->wc->debug( $callerIndice, $caller );
+        //$this->wc->debug( $callerIndices, $caller );
+        
+        $this->wc->debug( $this->wc->request->param( $caller ) );
+
+        return;
+    }
+
 }
