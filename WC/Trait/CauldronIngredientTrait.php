@@ -70,4 +70,22 @@ trait CauldronIngredientTrait
         $suffix = $addBrackets? str_repeat("[]", substr_count($this->editPrefix, "|")): "";
         return $this->editPrefix."#".$this->type."#".$this->name.$suffix;
     }
+
+    function splitInputName( string $inputName ): array
+    {
+        $return         = [];
+        $inputsArray    = explode( "|", $inputName );
+
+        foreach( $inputsArray as $inputTrunk )
+        {
+            $buffer     = explode( '#', $inputTrunk );
+            $return[]   = [
+                'class' => $buffer[0],
+                'type'  => $buffer[1],
+                'name'  => $buffer[2],
+            ];
+        }
+
+        return $return;
+    }
 }

@@ -3,6 +3,7 @@ namespace WC;
 
 use WC\DataAccess\CauldronDataAccess as DataAccess;
 use WC\Handler\CauldronHandler as Handler;
+use WC\Handler\IngredientHandler;
 use WC\Trait\CauldronIngredientTrait;
 
 class Cauldron
@@ -273,36 +274,59 @@ class Cauldron
         return true;
     }
 
-
-    function readInput( ?string $caller=null, /*?int $callerIndice=null, */array $callerIndices=[]  )
+    function readInputs( ?array $inputs=null  )
     {
-$this->wc->debug( $callerIndices );
+        $params = $inputs ?? $this->wc->request->inputs();
 
-        $prefix     = $caller? $caller."|": "";
-        $inputName  = "";
-        foreach( $this->content() as $content )
-        {
-            $indices = $callerIndices;
-$this->wc->debug( $indices, $content->name );
-
-            if( $inputName !== $content->getInputName(false) )
-            {
-                //$index      = $callerIndice? $callerIndice+1: -1;
-                $index      = -1;
-                $inputName  = $content->getInputName(false);
-
-                //$this->wc->debug( $index, $prefix.$content->getInputName(false) );
-            }
-            $index++;
-
-            if( strstr($prefix, "|") ){
-                $indices[] = $index;
-            }
-
-$this->wc->debug( $indices, $prefix.$content->getInputName(false) );
-
-            $content->readInput( $prefix.$content->getInputName(false), $indices );
+$this->wc->debug( $params );
+        
+        if( isset($params['name']) ){
+            $this->name = htmlspecialchars($params['name']);
         }
+
+        $matchedIngredients = [];
+        $newIngredients     = [];
+        $removedIngredients = [];
+        foreach( $params as $param => $value )
+        {
+            if( substr($param, 0, 2) === 'i#' )
+            {
+                $buffer = explode('#', substr($param, 2) );
+
+                $type   = $buffer[0];
+                $name   = $buffer[1] ?? "";
+
+                $match  = false;
+                foreach( $this->ingredients as $ingredient ){
+                    if( $ingredient->type === $type 
+                        && $ingredient->name === $name 
+                        && !in_array($ingredient, $matchedIngredients)
+                    ){
+                        $matchedIngredients[]   = $ingredient->readInput( $value );
+                        $match                  = true;
+                        break;
+                    }
+                }
+
+                if( !$match ){
+                    $newIngredients[] = IngredientHandler::createFromData( 
+                        $this, 
+                        $type, 
+                        [ 
+                            'name'  => $name,  
+                            'value' => $value,  
+                        ]);
+                }
+            }
+            elseif( substr($param, 0, 2) === 's#' ){
+
+                $this->wc->dump( $value, $param );
+                $this->wc->dump( $this->splitInputName($param) );
+    
+            }
+
+        }
+
 
         return;
     }

@@ -19,7 +19,7 @@ class FloatIngredient extends \WC\Ingredient
      * @param mixed $value : has to be a float
      * @return self
      */
-    public function set( mixed $value )
+    public function set( mixed $value ): self
     {
         if( !is_null($value) && !is_float($value) ){
             $this->wc->log->error( "Try to set a non float value to ".$this->type." ingredient");

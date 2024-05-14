@@ -118,10 +118,12 @@ class IngredientHandler
             $ingredient->properties['priority'] = $ingredient->priority;
         }
         
-        if( is_scalar($ingredient->value) ){
-            $ingredient->properties['value'] = $ingredient->value;
-        }
+        // if( is_scalar($ingredient->value) ){
+        //     $ingredient->properties['value'] = $ingredient->value;
+        // }
 
+        $ingredient->prepare();
+        
         return;
     }
     

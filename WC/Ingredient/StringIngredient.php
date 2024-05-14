@@ -19,7 +19,7 @@ class StringIngredient extends \WC\Ingredient
      * @param mixed $value : has to be a string
      * @return self
      */
-    public function set( mixed $value )
+    public function set( mixed $value ): self
     {
         if( !is_null($value) && !is_string($value) ){
             $this->wc->log->error( "Try to set a non string value to ".$this->type." ingredient");

@@ -97,11 +97,23 @@ abstract class Ingredient
     }
 
     /**
+     * Prepare function used to write ingredient properties
+     * @return self
+     */
+    function prepare(): self {
+        if( is_scalar($this->value) ){
+            $this->properties['value'] = $this->value;
+        }
+        
+        return $this;
+    }
+
+    /**
      * Default function to set value
      * @param mixed $value 
      * @return self
      */
-    function set( mixed $value )
+    function set( mixed $value ): self
     {
         $this->value = $value;
         return $this;
@@ -112,7 +124,7 @@ abstract class Ingredient
      * @param mixed $value 
      * @return self
      */
-    function reset()
+    function reset(): self
     {
         $this->value = null;
         return $this;
@@ -145,16 +157,8 @@ abstract class Ingredient
         return $this;
     }
 
-    function readInput( ?string $caller=null, /*?int $callerIndice=null*/array $callerIndices=[] )
-    {
-        //$prefix     = $caller? $caller."|": "";
-        //$this->wc->debug( $callerIndices, $prefix.$this->getInputName(false) );
-        //$this->wc->debug( $callerIndice, $caller );
-        //$this->wc->debug( $callerIndices, $caller );
-        
-        $this->wc->debug( $this->wc->request->param( $caller ) );
-
-        return;
+    function readInput( mixed $input ){        
+        return $this->set( $input );
     }
 
 }

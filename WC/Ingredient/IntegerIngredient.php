@@ -19,7 +19,7 @@ class IntegerIngredient extends \WC\Ingredient
      * @param mixed $value : has to be a integer
      * @return self
      */
-    public function set( mixed $value )
+    public function set( mixed $value ): self
     {
         if( !is_null($value) && !ctype_digit(strval($value)) ){
             $this->wc->log->error( "Try to set a non integer value to ".$this->type." ingredient");

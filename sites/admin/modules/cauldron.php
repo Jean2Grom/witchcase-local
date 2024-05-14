@@ -38,9 +38,9 @@ elseif( !$this->witch("target")->cauldron() )
 }
 
 // TODO multi draft management
-$draft = $this->witch("target")->cauldron()->draft();
+$draft = $this->witch("target")->cauldron()?->draft();
 
-if( empty($draft) ){
+if( is_null($draft) ){
     $alerts[] = [
         'level'     =>  'error',
         'message'   =>  "Draft can't be read"
@@ -48,7 +48,7 @@ if( empty($draft) ){
 }
 
 $this->wc->debug($action, "action");
-$this->wc->debug($draft, "draft");
+//$this->wc->debug($draft, "draft");
 switch( $action )
 {
     case 'publish':
@@ -59,10 +59,14 @@ switch( $action )
         $publish    = $publish ?? false;
         $return     = $return ?? false;
         
-        $this->wc->dump($_POST);
+        //$this->wc->dump($_POST);
         //$this->wc->dump($draft->content());
+        //$this->wc->dump($this->wc->request->param('name'));
+        //$this->wc->dump($this->wc->request->inputs());
+        //$this->wc->dump(filter_input_array(INPUT_POST));
 
-        $draft->readInput();
+        //$draft->readInputs( $this->wc->request->inputs() );
+        $draft->readInputs();
 
         //$this->wc->dump($draft->content());
         /*

@@ -990,12 +990,12 @@ class Witch
     
     /**
      * Craft witch content, store it in the Cairn (if exists, only read it)
-     * @return mixed
+     * @return ?Cauldron
      */
-    function cauldron()
+    function cauldron(): ?Cauldron
     {
         if( !$this->hasCauldron() ){
-            return false;
+            return null;
         }
 
         if( empty($this->cauldron) )
@@ -1004,8 +1004,8 @@ class Witch
                                         $this->wc, 
                                         [ $this->properties["cauldron"] ]
                                     );
-            $this->cauldron     =   $result[ $this->properties[ "cauldron" ] ];
-            $this->cauldronId   =   $this->cauldron->id;
+            $this->cauldron     =   $result[ $this->properties[ "cauldron" ] ] ?? null;
+            $this->cauldronId   =   $this->cauldron?->id;
         }
         
         return $this->cauldron;

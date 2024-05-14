@@ -23,7 +23,7 @@ class BooleanIngredient extends \WC\Ingredient
      * @param mixed $value : has to be a boolean
      * @return self
      */
-    public function set( mixed $value )
+    public function set( mixed $value ): self
     {
         if( !is_null($value) && !is_bool($value) ){
             $this->wc->log->error( "Try to set a non boolean value to ".$this->type." ingredient");

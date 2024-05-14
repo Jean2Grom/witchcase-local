@@ -64,18 +64,30 @@ class Request
         }
     }
     
-    function param( string $name, mixed $method=false, int $filter=FILTER_DEFAULT, mixed $secondaryFiler=0 )
+    function param( string $name, ?string $method=null, int $filter=FILTER_DEFAULT, array|int $options=0 )
     {
-        if( (!$method && $this->method == 'POST') || (strtolower( $method ) == 'post') ){
-            $paramType = INPUT_POST;
+        if( empty($method) ){
+            $paramType = $this->method === 'POST'? INPUT_POST: INPUT_GET;
         }
         else {
-            $paramType = INPUT_GET;
+            $paramType = strtolower($method) == 'post'? INPUT_POST: INPUT_GET;
         }
         
-        return filter_input($paramType, $name, $filter, $secondaryFiler);
+        return filter_input($paramType, $name, $filter, $options);
     }
     
+    function inputs(?string $method=null, array|int $options=FILTER_DEFAULT, bool $add_empty=true )
+    {
+        if( empty($method) ){
+            $paramType = $this->method === 'POST'? INPUT_POST: INPUT_GET;
+        }
+        else {
+            $paramType = strtolower($method) == 'post'? INPUT_POST: INPUT_GET;
+        }
+        
+        return filter_input_array($paramType, $options, $add_empty);
+    }
+
     function getWebsite()
     {
         if( empty($this->website) )
