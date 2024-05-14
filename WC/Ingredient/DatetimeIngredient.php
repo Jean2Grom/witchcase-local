@@ -28,7 +28,7 @@ class DatetimeIngredient extends \WC\Ingredient
      */
     public function set( mixed $value ): self
     {
-        if( is_null($value) ){
+        if( empty($value) ){
             $this->reset();
         }
         elseif( gettype($value) === 'object' && get_class($value) === "DateTime" ){

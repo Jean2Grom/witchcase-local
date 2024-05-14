@@ -76,7 +76,7 @@ class Cauldron
     public function __get( string $name ): mixed 
     {
         if( $name === 'type' ){
-            return $this->data->structure ?? "cauldron";
+            return str_replace(' ', '-', $this->data->structure) ?? "cauldron";
         }
         return $this->properties[ $name ] ?? null;
     }
@@ -286,8 +286,7 @@ $this->wc->debug( $params );
 
         $matchedIngredients = [];
         $newIngredients     = [];
-        $removedIngredients = [];
-        foreach( $params as $param => $value )
+        foreach( $params as $param => $valuesArray )
         {
             if( substr($param, 0, 2) === 'i#' )
             {
@@ -296,37 +295,73 @@ $this->wc->debug( $params );
                 $type   = $buffer[0];
                 $name   = $buffer[1] ?? "";
 
-                $match  = false;
-                foreach( $this->ingredients as $ingredient ){
-                    if( $ingredient->type === $type 
-                        && $ingredient->name === $name 
-                        && !in_array($ingredient, $matchedIngredients)
-                    ){
-                        $matchedIngredients[]   = $ingredient->readInput( $value );
-                        $match                  = true;
-                        break;
+                foreach( $valuesArray as $value )
+                {
+                    $match  = false;
+                    foreach( $this->ingredients as $ingredient ){
+                        if( $ingredient->type === $type 
+                            && $ingredient->getStringIdentitifer() === $name 
+                            && !in_array($ingredient, $matchedIngredients)
+                        ){
+                            $matchedIngredients[]   = $ingredient->readInput( $value );
+                            $match                  = true;
+                            break;
+                        }
+                    }
+
+                    if( !$match ){
+                        $newIngredients[] = IngredientHandler::createFromData( 
+                            $this, 
+                            $type, 
+                            [ 
+                                'name'  => $name,  
+                                'value' => $value,  
+                            ]);
                     }
                 }
-
-                if( !$match ){
-                    $newIngredients[] = IngredientHandler::createFromData( 
-                        $this, 
-                        $type, 
-                        [ 
-                            'name'  => $name,  
-                            'value' => $value,  
-                        ]);
-                }
             }
-            elseif( substr($param, 0, 2) === 's#' ){
+            elseif( substr($param, 0, 2) === 's#' )
+            {
+                $prefix = strstr( $param, '|', true );
+// TODO $prefix end whith [0], or [1] ...
+                $this->wc->dump( $prefix );
 
-                $this->wc->dump( $value, $param );
-                $this->wc->dump( $this->splitInputName($param) );
+                $innerInputs = [];
+                foreach( $params as $key => $val ){
+                    if( str_starts_with($key, $prefix.'|') )
+                    {
+                        $this->wc->dump( $param );
+                        $this->wc->dump( substr( $param, strlen($prefix)+1 ) );
+                        $innerInputs[ substr( $param, strlen($prefix)+1 ) ] = $val;
+                    } 
+                }
+
+
+                $buffer = explode('#', substr($param, 2) );
+
+                $type   = $buffer[0];
+                $name   = $buffer[1] ?? "";
+
+                $this->wc->dump( $prefix );
+                //$this->wc->dump( $value, $param );
+                //$this->wc->dump( $this->splitInputName($param) );
     
             }
-
         }
 
+        $removedIngredientsKeys = array_keys(array_diff(
+            $this->ingredients, 
+            array_merge($matchedIngredients, $newIngredients)
+        ));
+
+        // $this->wc->debug( $this->ingredients, 'this->ingredients');
+        // $this->wc->debug( $matchedIngredients, 'matchedIngredients' );
+        // $this->wc->debug( $newIngredients, 'newIngredients' );
+        // $this->wc->debug( $removedIngredients, 'removedIngredients' );
+
+        foreach( $removedIngredientsKeys as $key ){
+            unset($this->ingredients[ $key ]);
+        }
 
         return;
     }

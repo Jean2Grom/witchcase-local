@@ -44,7 +44,7 @@ trait CauldronIngredientTrait
     function edit( ?string $filename=null, ?string $callerPrefix=null )
     {
         if( $callerPrefix ){
-            $this->editPrefix = $callerPrefix."|".$this->editPrefix;
+            $this->editPrefix = str_replace(' ', '-', $callerPrefix)."|".$this->editPrefix;
         }
 
         if( !$filename ){
@@ -67,8 +67,14 @@ trait CauldronIngredientTrait
 
     function getInputName( bool $addBrackets=true ): string 
     {
-        $suffix = $addBrackets? str_repeat("[]", substr_count($this->editPrefix, "|")): "";
-        return $this->editPrefix."#".$this->type."#".$this->name.$suffix;
+        $identifier = $this->type."#".$this->getStringIdentitifer();
+        //$suffix     = $addBrackets? str_repeat("[]", substr_count($this->editPrefix, "|")): "";
+        $suffix     = $addBrackets? "[]": "";
+        return $this->editPrefix."#".$identifier.$suffix;
+    }
+
+    function getStringIdentitifer(): string {
+        return str_replace( ' ', '-', $this->name.($this->id ?? "") );
     }
 
     function splitInputName( string $inputName ): array
