@@ -67,31 +67,11 @@ trait CauldronIngredientTrait
 
     function getInputName( bool $addBrackets=true ): string 
     {
-        $identifier = $this->type."#".$this->getStringIdentitifer();
-        //$suffix     = $addBrackets? str_repeat("[]", substr_count($this->editPrefix, "|")): "";
-        $suffix     = $addBrackets? "[]": "";
-        return $this->editPrefix."#".$identifier.$suffix;
+        $inputName  =   $this->editPrefix;
+        $inputName  .=  "#".$this->type;
+        $inputName  .=  "#".$this->getInputIdentifier();
+
+        return $inputName;
     }
 
-    function getStringIdentitifer(): string {
-        return str_replace( ' ', '-', $this->name.($this->id ?? "") );
-    }
-
-    function splitInputName( string $inputName ): array
-    {
-        $return         = [];
-        $inputsArray    = explode( "|", $inputName );
-
-        foreach( $inputsArray as $inputTrunk )
-        {
-            $buffer     = explode( '#', $inputTrunk );
-            $return[]   = [
-                'class' => $buffer[0],
-                'type'  => $buffer[1],
-                'name'  => $buffer[2],
-            ];
-        }
-
-        return $return;
-    }
 }

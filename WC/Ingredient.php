@@ -140,25 +140,44 @@ abstract class Ingredient
     }
 
 
-    function save(): self
+    function save(): bool
     {
         if( !$this->exist() )
         {
             Handler::writeProperties($this);
-            DataAccess::insert($this);
+            $this->wc->debug($this->cauldron);
+            $result = DataAccess::insert($this);
         }
         else 
         {
             $properties = $this->properties;
             Handler::writeProperties($this);
-            DataAccess::update($this, array_diff_assoc($properties, $this->properties));
+            $result = DataAccess::update($this, array_diff_assoc($properties, $this->properties));
         }
         
-        return $this;
+        return $result !== false;
     }
 
-    function readInput( mixed $input ){        
+    function readInput( mixed $input ): self {        
         return $this->set( $input );
+    }
+
+    function getInputIdentifier(): string 
+    {
+        $prefix = str_replace( ' ', '-', $this->name).'#';
+
+        // if( $this->id ){
+        //     return "ID".$this->id; 
+        // }
+
+        if( $this->cauldron ){
+            return  $prefix.array_keys(array_intersect(
+                $this->cauldron->ingredients, 
+                [$this]
+            ))[0] ?? "";
+        }
+
+        return $prefix;
     }
 
 }

@@ -31,7 +31,7 @@ class FloatIngredient extends \WC\Ingredient
         return $this;
     }
 
-    function readInput( mixed $input ){
+    function readInput( mixed $input ): self {
         return $this->set( (float) $input );
     }
 

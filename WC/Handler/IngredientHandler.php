@@ -15,7 +15,9 @@ class IngredientHandler
     {
         $ingredient             = self::factory($type);
         $ingredient->wc         = $cauldron->wc;
-        $ingredient->properties = $data;
+
+        $ingredient->properties                 = $data;
+        $ingredient->properties['cauldron_fk']  = $cauldron->id;
 
         self::readProperties( $ingredient );
         CauldronHandler::setIngredient($cauldron, $ingredient);

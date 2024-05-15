@@ -15,7 +15,7 @@ class BooleanIngredient extends \WC\Ingredient
      * @return self
      */
     function init( mixed $value=null ): self {
-        return $this->set( $value ?? !is_null($this->properties[ 'value' ])? (boolean) $this->properties[ 'value' ]: null );
+        return $this->set( $value ?? !is_null($this->properties[ 'value' ])? (bool) $this->properties[ 'value' ]: null );
     }
 
     /**
@@ -33,5 +33,9 @@ class BooleanIngredient extends \WC\Ingredient
         }
 
         return $this;
+    }
+
+    function readInput( mixed $input ): self {
+        return $this->set( (bool) $input );
     }
 }

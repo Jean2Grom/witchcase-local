@@ -253,26 +253,21 @@ class CauldronHandler
 
     static function getDraftFolder( Cauldron $cauldron ): Cauldron
     {
-        $draftFolder = false;
         foreach( $cauldron->children as $child ){
             if( $child->name === Cauldron::DRAFT_FOLDER_NAME 
-                && $child->data->structure === "folder" 
-            ){
-                $draftFolder = $child;
-                break;
+                && $child->data->structure === "folder" ){
+                return $child;
             }
         }
+        
+        $params = [
+            'name'  =>  Cauldron::DRAFT_FOLDER_NAME,
+            'data'  =>  json_encode([ "structure" => "folder" ]),
+        ];
 
-        if( !$draftFolder )
-        {
-            $params = [
-                'name'  =>  Cauldron::DRAFT_FOLDER_NAME,
-                'data'  =>  json_encode([ "structure" => "folder" ]),
-            ];
-
-            $draftFolder = self::createFromData( $cauldron->wc, $params );
-            $cauldron->add( $draftFolder );
-        }
+        $draftFolder = self::createFromData( $cauldron->wc, $params );
+        $cauldron->addCauldron( $draftFolder );
+        $draftFolder->save();
 
         return $draftFolder;
     }
@@ -287,7 +282,8 @@ class CauldronHandler
 
         unset( $draftProperties['id'] );
         
-        $draft = self::createFromData( $cauldron->wc, $draftProperties );
+        $draft          = self::createFromData( $cauldron->wc, $draftProperties );
+        $draft->target  = $cauldron;
         
         self::createDraftContent( $cauldron, $draft );
         

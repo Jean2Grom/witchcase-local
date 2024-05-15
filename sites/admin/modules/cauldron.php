@@ -60,12 +60,8 @@ switch( $action )
         $return     = $return ?? false;
         
         //$this->wc->dump($_POST);
-        //$this->wc->dump($this->wc->request->param('name'));
-        //$this->wc->dump($this->wc->request->inputs());
-        //$this->wc->dump(filter_input_array(INPUT_POST));
-
-        //$draft->readInputs( $this->wc->request->inputs() );
         $draft->readInputs();
+        $saved = $draft->save();
 
         //$this->wc->dump($draft->content());
         /*
