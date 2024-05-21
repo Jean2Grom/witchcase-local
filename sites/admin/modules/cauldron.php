@@ -59,9 +59,9 @@ switch( $action )
         $publish    = $publish ?? false;
         $return     = $return ?? false;
         
-        //$this->wc->dump($_POST);
+        $this->wc->dump($_POST);
         $draft->readInputs();
-        $saved = $draft->save();
+        //$saved = $draft->save();
 
         //$this->wc->dump($draft->content());
         /*
