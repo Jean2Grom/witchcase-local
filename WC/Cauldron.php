@@ -46,6 +46,8 @@ class Cauldron
     public array $children    = [];
     public array $ingredients = [];
 
+    public array $pendingRemoveContents = [];
+
     protected $content;
 
     public ?self $target        = null;
@@ -140,6 +142,15 @@ class Cauldron
         return $isParent;
     }
 
+    function isContent(): bool
+    {
+        if( $this->name === Cauldron::DRAFT_FOLDER_NAME 
+            && $this->data?->structure === "folder" ){
+            return false;
+        }
+
+        return true;
+    }
 
     function content(): array
     {
@@ -162,8 +173,7 @@ class Cauldron
         
         foreach( $this->children as $child )
         {
-            if( $child->name === Cauldron::DRAFT_FOLDER_NAME 
-                && $child->data->structure === "folder" ){
+            if( !$child->isContent() ){
                 continue;
             }
 
@@ -369,28 +379,34 @@ class Cauldron
             }
         }
 
-        $removedIngredientsKeys = array_keys(array_diff(
-            $this->ingredients, 
-            array_merge($matchedIngredients, $newIngredients)
-        ));
-
-        foreach( $removedIngredientsKeys as $key ){
-            unset($this->ingredients[ $key ]);
+        foreach( $this->ingredients as $key => $ingredient ) 
+        {
+            if( !in_array($ingredient, $matchedIngredients) 
+                && !in_array($ingredient, $newIngredients) 
+            ){
+                $this->pendingRemoveContents[] = $ingredient;
+                unset($this->ingredients[ $key ]);
+            }
         }
 
-        $removedChildrenKeys = array_keys(array_diff(
-            $this->children, 
-            array_merge($matchedChildren, $newChildren)
-        ));
+        foreach( $this->children as $key => $child ) 
+        {
+            if( !$child->isContent() ){
+                continue;
+            }
 
-        foreach( $removedChildrenKeys as $key ){
-            unset($this->children[ $key ]);
+            if( !in_array($child, $matchedChildren) 
+                && !in_array($child, $newChildren) 
+            ){
+                $this->pendingRemoveContents[] = $child;
+                unset($this->children[ $key ]);
+            }
         }
 
         return $this;
     }
 
-    function draft()
+    function draft(): self
     {
         if( $this->isDraft() ){
             return $this;
