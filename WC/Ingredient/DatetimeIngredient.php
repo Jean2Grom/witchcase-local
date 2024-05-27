@@ -17,6 +17,9 @@ class DatetimeIngredient extends \WC\Ingredient
         if( $this->value ){
             $this->properties['value'] = $this->value->format('Y-m-d H:i:s');
         }
+        else {
+            $this->properties['value'] = null;
+        }
         
         return $this;
     }

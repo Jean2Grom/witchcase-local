@@ -199,8 +199,32 @@ class Cauldron
         return $this->content;
     }
 
+    function save( bool $transactionMode=true ): bool
+    {
+        if( !$transactionMode ){
+            return $this->saveAction();
+        }
+        $this->wc->db->begin();
 
-    function save(): bool
+        try {
+            if( !$this->saveAction() )
+            {
+                $this->wc->db->rollback();
+                return false;
+            }
+        } 
+        catch( \Exception $e ) 
+        {
+            $this->wc->log->error($e->getMessage());
+            $this->wc->db->rollback();
+            return false;
+        }
+
+        $this->wc->db->commit();
+        return true;
+    }
+
+    private function saveAction(): bool
     {
         if( $this->depth > $this->wc->cauldronDepth ){
             DataAccess::increaseDepth( $this->wc );
@@ -208,8 +232,9 @@ class Cauldron
         
         if( !$this->exist() )
         {
-            Handler::writeProperties($this);
-            $result = DataAccess::insert($this);            
+            Handler::writeProperties($this); 
+            $result = DataAccess::insert($this); 
+            
             if( $result ){
                 $this->id = (int) $result;
             }
@@ -218,43 +243,68 @@ class Cauldron
         {
             $properties = $this->properties;
             Handler::writeProperties($this);
-            $result = DataAccess::update($this, array_diff_assoc($properties, $this->properties));
+            $result = DataAccess::update( $this, array_diff_assoc($this->properties, $properties) );
         }
         
         if( $result === false ){
             return false;
         }
-        
         $result = true;
-        foreach( $this->content() as $content ){
-            $result = $result && $content->save();
+        
+        // Deletion of pending deprecated contents
+        foreach( $this->pendingRemoveContents as $removingContent ){
+            $result = $result && $removingContent->delete();
+        }
+
+        // Saving contents
+        foreach( $this->ingredients as $ingredient ){
+            $result = $result && $ingredient->save( false );
+        }
+
+        foreach( $this->children as $child ) 
+        {
+            if( !$child->isContent() ){
+                continue;
+            }
+
+            $result = $result && $child->save( false );
         }
 
         return $result;
     }
 
-    function add( Cauldron|Ingredient $content ): bool
+    function delete(): bool
     {
-        // Ingredient case
-        if( get_class($content) !== __CLASS__ ){
-            return $this->addIngredient( $content );
+        $result = true;
+        foreach( $this->ingredients as $ingredient ){
+            $result = $result && $ingredient->delete();
         }
 
-        // Cauldron case
-        $this->wc->db->begin();
-        try {
-            $this->addCauldron( $content );
-            $this->save();
-        } 
-        catch( \Exception $e ) 
+        foreach( $this->children as $child ) 
         {
-            $this->wc->log->error($e->getMessage());
-            $this->wc->db->rollback();
+            if( !is_a($child, __CLASS__) ){
+                continue;
+            }
+
+            $result = $result && $child->delete();
+        }
+
+        if( $result === false ){
             return false;
         }
-        $this->wc->db->commit();
         
-        return true;
+        return DataAccess::delete($this) !== false;
+    }
+
+    function add( Cauldron|Ingredient $content ): bool
+    {
+        // Cauldron case
+        if(  !is_a($content, __CLASS__) ){
+            return $this->addCauldron( $content );
+        }
+
+        // Ingredient case
+        return $this->addIngredient( $content );
     }
 
     function addCauldron( Cauldron $cauldron ): bool

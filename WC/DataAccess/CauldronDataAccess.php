@@ -125,7 +125,6 @@ class CauldronDataAccess
         return $wc->db->selectQuery($query, $parameters);
     }
 
-
     private static function childrenJointure( $maxDepth, $mother, $daughter, $depth=1 )
     {
         $m = function (int $level) use ($mother): string {
@@ -163,7 +162,6 @@ class CauldronDataAccess
     {
         return self::childrenJointure( $maxDepth, $mother, $daughter, $depth );
     }
-
 
     private static function siblingsJointure( $maxDepth, $witch, $sister, $depth=1 )
     {
@@ -212,7 +210,6 @@ class CauldronDataAccess
         
         return $jointure;
     }
-
 
     static function increaseDepth( WitchCase $wc ): int
     {
@@ -287,11 +284,10 @@ class CauldronDataAccess
         return $cauldron->wc->db->insertQuery($query, $cauldron->properties);
     }
 
-
     static function update( Cauldron $cauldron, array $params )
     {
-        if( empty($params) ){
-            return false;
+        if( count($params) === 0 ){
+            return 0;
         }
         
         $query = "";
@@ -307,6 +303,19 @@ class CauldronDataAccess
         $query  .=  "WHERE `id` = :id ";
 
         return $cauldron->wc->db->updateQuery( $query, array_replace($params, [ 'id' => $cauldron->id ]) );
+    }
+
+    static function delete( Cauldron $cauldron )
+    {
+        if( empty($cauldron->id) ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "DELETE FROM `cauldron` ";
+        $query  .=  "WHERE `id` = :id ";
+
+        return $cauldron->wc->db->deleteQuery( $query,  ['id' => $cauldron->id] );
     }
 
 

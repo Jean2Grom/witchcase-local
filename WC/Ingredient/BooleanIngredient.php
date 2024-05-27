@@ -19,6 +19,21 @@ class BooleanIngredient extends \WC\Ingredient
     }
 
     /**
+     * Prepare function used to write ingredient properties
+     * @return self
+     */
+    function prepare(): self {
+        if( !is_null($this->value) ){
+            $this->properties['value'] = (int) $this->value;
+        }
+        else {
+            $this->properties['value'] = null;
+        }
+        
+        return $this;
+    }
+
+    /**
      * Set value
      * @param mixed $value : has to be a boolean
      * @return self

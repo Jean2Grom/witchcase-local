@@ -104,6 +104,9 @@ abstract class Ingredient
         if( is_scalar($this->value) ){
             $this->properties['value'] = $this->value;
         }
+        else {
+            $this->properties['value'] = null;
+        }
         
         return $this;
     }
@@ -139,23 +142,34 @@ abstract class Ingredient
         return $this->value[ $element ] ?? null;
     }
 
-
     function save(): bool
     {
         if( !$this->exist() )
         {
             Handler::writeProperties($this);
-            $this->wc->debug($this->cauldron);
             $result = DataAccess::insert($this);
+
+            if( $result ){
+                $this->id = (int) $result;
+            }
         }
         else 
         {
             $properties = $this->properties;
-            Handler::writeProperties($this);
-            $result = DataAccess::update($this, array_diff_assoc($properties, $this->properties));
+            Handler::writeProperties( $this );
+            $result = DataAccess::update( $this, array_diff_assoc($this->properties, $properties) );
         }
         
         return $result !== false;
+    }
+
+    function delete(): bool
+    {
+        if( $this->exist() ){
+            return DataAccess::delete( $this ) !== false;
+        }
+
+        return true;
     }
 
     function readInput( mixed $input ): self {        

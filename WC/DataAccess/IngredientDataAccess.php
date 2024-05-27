@@ -39,8 +39,8 @@ class IngredientDataAccess
 
     static function update( Ingredient $ingredient, array $params )
     {
-        if( empty($params) ){
-            return false;
+        if( count($params) === 0 ){
+            return 0;
         }
         
         $query = "";
@@ -58,5 +58,16 @@ class IngredientDataAccess
         return $ingredient->wc->db->updateQuery( $query, array_replace($params, [ 'id' => $ingredient->id ]) );
     }
 
+    static function delete( Ingredient $ingredient )
+    {
+        if( empty($ingredient->id) ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "DELETE FROM `".IngredientHandler::table($ingredient)."` ";
+        $query  .=  "WHERE `id` = :id ";
 
+        return $ingredient->wc->db->deleteQuery( $query,  ['id' => $ingredient->id] );
+    }
 }

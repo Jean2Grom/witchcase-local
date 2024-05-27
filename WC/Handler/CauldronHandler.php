@@ -20,7 +20,6 @@ class CauldronHandler
      */
     static function fetch( WitchCase $wc, array $configuration )
     {
-        
         $result = DataAccess::cauldronRequest($wc, $configuration);
         
         if( $result === false ){
@@ -137,8 +136,10 @@ class CauldronHandler
         }
         
         $cauldron->data = null;
-        if( isset($cauldron->properties['data']) ){
+        if( isset($cauldron->properties['data']) )
+        {
             $cauldron->data = json_decode( $cauldron->properties['data'] );
+            $cauldron->properties['data'] = json_encode($cauldron->data);
         }
 
         $cauldron->priority = 0;
@@ -191,6 +192,9 @@ class CauldronHandler
         elseif( $cauldron->targetID ){
             $cauldron->properties['target'] = $cauldron->targetID;
         }
+        else {
+            $cauldron->properties['target'] = null;
+        }
         
         if( isset($cauldron->name) ){
             $cauldron->properties['name'] = $cauldron->name;
@@ -201,13 +205,11 @@ class CauldronHandler
             $jsonData = json_encode( $cauldron->data );
 
             if( $jsonData ){
-                $cauldron->properties['data'] = json_encode( $cauldron->data );
+                $cauldron->properties['data'] = $jsonData;
             }
         }
 
-        if( $cauldron->priority ){
-            $cauldron->properties['priority'] = $cauldron->priority;
-        }
+        $cauldron->properties['priority'] = $cauldron->priority ?? 0;
         
         if( isset($cauldron->datetime) ){
             $cauldron->properties['datetime'] = $cauldron->datetime->format('Y-m-d H:i:s');
@@ -223,6 +225,10 @@ class CauldronHandler
         }
         $cauldron->depth = $i - 1; 
         
+        for( $j=$i; $j<=$cauldron->wc->cauldronDepth; $j++ ){
+            $cauldron->properties[ 'level_'.$j ] = null;
+        }
+
         return;
     }
 

@@ -21,7 +21,7 @@ class IngredientHandler
 
         self::readProperties( $ingredient );
         CauldronHandler::setIngredient($cauldron, $ingredient);
-
+        
         return $ingredient;
     }
 
@@ -120,10 +120,6 @@ class IngredientHandler
             $ingredient->properties['priority'] = $ingredient->priority;
         }
         
-        // if( is_scalar($ingredient->value) ){
-        //     $ingredient->properties['value'] = $ingredient->value;
-        // }
-
         $ingredient->prepare();
         
         return;

@@ -60,8 +60,11 @@ switch( $action )
         $return     = $return ?? false;
         
         $this->wc->dump($_POST);
+        //$this->wc->dump($draft->position);
+        //$this->wc->debug($draft->children[0]->position);
+
         $draft->readInputs();
-        //$saved = $draft->save();
+        $saved = $draft->save();
 
         //$this->wc->dump($draft->content());
         /*
