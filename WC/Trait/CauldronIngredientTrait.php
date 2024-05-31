@@ -74,4 +74,15 @@ trait CauldronIngredientTrait
         return $inputName;
     }
 
+    function isIngredient(): bool {
+        return $this->editPrefix === "i";
+    }
+
+    function isCauldron(): bool {
+        return !$this->isIngredient();
+    }
+
+    function isStructure(): bool {
+        return $this->isCauldron();
+    }
 }
