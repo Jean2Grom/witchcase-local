@@ -94,6 +94,19 @@ $this->addJsFile('jquery-ui.min.js');
     .fieldsets-container.ui-sortable > fieldset.ingredient {
         cursor: move;
     }
+
+    fieldset.structure > ul > li {
+        margin: 4px;
+    }
+        fieldset.structure > ul > li h4 {
+            margin-bottom: 4px;
+        }
+        fieldset.structure > ul > li:first-child a.up-fieldset-element {
+            display: none;
+        }
+        fieldset.structure > ul > li:last-child a.down-fieldset-element {
+            display: none;
+        }
 </style>
 <script>
     $(document).ready(function() {
@@ -115,9 +128,34 @@ $this->addJsFile('jquery-ui.min.js');
         });
 
         $(".fieldsets-container").sortable();
-        //$(".fieldsets-container fieldset > ul").sortable();
         $("fieldset > legend > a.remove-fieldset").click(function(){
-            $(this).parent('legend').parent('fieldset').remove();
+            if( confirm('Confirm Remove') ){
+                $(this).parent('legend').parent('fieldset').remove();
+            }
         });
+
+        $("fieldset.structure > ul > li > h4 > a.up-fieldset-element").click(function(){
+            let index       = $(this).parent('h4').parent('li').index();
+            if( index === 0 ){
+                return;
+            }
+
+            $(this).parent('h4').parent('li').insertBefore( 
+                $(this).parent('h4').parent('li').prev() 
+            );
+        });
+
+        $("fieldset.structure > ul > li > h4 > a.down-fieldset-element").click(function(){
+            $(this).parent('h4').parent('li').insertAfter( 
+                $(this).parent('h4').parent('li').next() 
+            );
+        });
+
+        $("fieldset.structure > ul > li > h4 > a.remove-fieldset-element").click(function(){
+            if( confirm('Confirm Remove') ){
+                $(this).parent('h4').parent('li').remove();
+            }
+        });
+
     });
 </script>
