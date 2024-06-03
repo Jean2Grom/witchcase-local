@@ -130,7 +130,7 @@ switch( $action )
     break;
     
     case 'delete':
-        if( !$draft->remove() ){
+        if( !$draft->delete() ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Error, remove canceled",

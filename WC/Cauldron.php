@@ -501,4 +501,9 @@ class Cauldron
         return $prefix;
     }
 
+    function publish(): bool
+    {
+        
+        return true;
+    }
 }
