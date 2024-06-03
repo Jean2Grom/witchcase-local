@@ -341,6 +341,9 @@ class Cauldron
     {
         $params = $inputs ?? $this->wc->request->inputs();
 
+        $priorityInterval   = 100;
+        $priority           = count($params) * $priorityInterval;
+
         if( isset($params['name']) ){
             $this->name = htmlspecialchars($params['name']);
         }
@@ -366,6 +369,7 @@ class Cauldron
                         && $ingredient->getInputIdentifier() === $name.'#'.$index
                         && !in_array($ingredient, $matchedIngredients)
                     ){
+                        $ingredient->priority   = $priority;
                         $matchedIngredients[]   = $ingredient->readInput( $value );
                         $match                  = true;
                         break;
@@ -377,8 +381,9 @@ class Cauldron
                         $this, 
                         $type, 
                         [ 
-                            'name'  => $name,  
-                            'value' => $value,  
+                            'name'      => $name,  
+                            'value'     => $value,  
+                            'priority'  => $priority,
                         ]);
                 }
             }
@@ -411,6 +416,7 @@ class Cauldron
                         && $child->getInputIdentifier() === $name.'#'.$index
                         && !in_array($child, $matchedChildren)
                     ){
+                        $child->priority    = $priority;
                         $matchedChildren[]  = $child->readInputs( $innerInputs );
                         $match              = true;
                         break;
@@ -420,13 +426,16 @@ class Cauldron
                 if( !$match )
                 {
                     $newChild = Handler::createFromData($this->wc, [
-                        'name'  => $name,
-                        'data'  => json_encode([ 'structure' => $type ]),
+                        'name'      => $name,
+                        'data'      => json_encode([ 'structure' => $type ]),
+                        'priority'  => $priority,
                     ]);
                     $newChildren[] = $newChild->readInputs( $innerInputs );
                     $this->addCauldron($newChild);
                 }
             }
+
+            $priority -= $priorityInterval;
         }
 
         foreach( $this->ingredients as $key => $ingredient ) 
