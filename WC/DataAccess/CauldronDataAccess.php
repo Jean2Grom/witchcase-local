@@ -4,7 +4,6 @@ namespace WC\DataAccess;
 use WC\WitchCase;
 use WC\Cauldron;
 use WC\Ingredient;
-use WC\Handler\IngredientHandler;
 
 class CauldronDataAccess
 {    
@@ -318,5 +317,14 @@ class CauldronDataAccess
         return $cauldron->wc->db->deleteQuery( $query,  ['id' => $cauldron->id] );
     }
 
+    static function updateTargetID( WitchCase $wc, int $oldTargetID, int $newTargetID )
+    {
+        $query = "";
+        $query  .=  "UPDATE `cauldron` ";
+        $query  .=  "SET `taget` = :new ";
+        $query  .=  "WHERE `taget` = :old ";
+
+        return $wc->db->updateQuery( $query, ['old' => $oldTargetID, 'new' => $newTargetID] );
+    }
 
 }

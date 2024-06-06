@@ -47,86 +47,51 @@ if( is_null($draft) ){
     ];
 }
 
-$this->wc->debug($action, "action");
-//$this->wc->debug($draft, "draft");
+$return = false;
 switch( $action )
 {
     case 'publish':
-        $publish = true;
+        if( $draft->readInputs()->publish() === false ){
+            $alerts[] = [
+                'level'     =>  'error',
+                'message'   =>  "Error, publication canceled"
+            ];            
+        }
+        else 
+        {
+            $return     = true;
+            $alerts[]   = [
+                'level'     =>  'success',
+                'message'   =>  "Published"
+            ];                
+        }
+    break;
+
     case 'save-and-return':
         $return = true;
     case 'save':
-        $publish    = $publish ?? false;
-        $return     = $return ?? false;
-        
-        $this->wc->dump($_POST);
-        //$this->wc->dump($draft->position);
-        //$this->wc->debug($draft->children[0]->position);
+        $saved = $draft->readInputs()->save();
 
-        $draft->readInputs();
-        $saved = $draft->save();
-
-        //$this->wc->dump($draft->content());
-        /*
-        $params = [];
-        foreach( $draft->getEditParams() as $param )
-        {
-            $value = $this->wc->request->param($param['name'] ?? $param, 'post', $param['filter'] ??  FILTER_DEFAULT, $param['option'] ??  0 );                
-            
-            if( isset($value) ){
-                $params[ $param['name'] ?? $param ] = $value;
-            }
-        }
-        
-        $saved = $draft->update( $params );
-        */
         if( $saved === false )
         {
-            $alerts[] = [
+            $return     = false;
+            $alerts[]   = [
                 'level'     =>  'error',
                 'message'   =>  "Error, update canceled"
             ];
-            
-            $return = false;
         }
-        elseif( $saved === 0 && !$publish ){
+        elseif( $saved === 0 ){
             $alerts[] = [
                 'level'     =>  'warning',
                 'message'   =>  "No update"
             ];
         }
-        elseif( $publish )
-        {
-            if( $draft->publish() === false )
-            {
-                $alerts[] = [
-                    'level'     =>  'error',
-                    'message'   =>  "Error, publication canceled"
-                ];
-                
-                $return = false;
-            }
-            else {
-                $alerts[] = [
-                    'level'     =>  'success',
-                    'message'   =>  "Published"
-                ];                
-            }
-        }
         else {
             $alerts[] = [
                 'level'     =>  'success',
-                'message'   =>  "Updated"
+                'message'   =>  "Draft Updated"
             ];
-        }
-        
-        if( $return )
-        {
-            $this->wc->user->addAlerts($alerts);
-
-            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$this->witch("target")->id) );
-            exit();
-        }
+        }        
     break;
     
     case 'delete':
@@ -138,18 +103,23 @@ switch( $action )
         }
         else 
         {
-            $alerts[] = [
+            $return     = true;
+            $alerts[]   = [
                 'level'     =>  'success',
                 'message'   =>  "Draft removed"
             ];
-            
-            $this->wc->user->addAlerts($alerts);
-            
-            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$this->witch("target")->id) );
-            exit();
         }
     break;    
 }
+
+if( $return )
+{
+    $this->wc->user->addAlerts($alerts);
+
+    header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$this->witch("target")->id) );
+    exit();
+}
+
 
 $cancelHref = $this->wc->website->getUrl("view?id=".$this->witch("target")->id);
 

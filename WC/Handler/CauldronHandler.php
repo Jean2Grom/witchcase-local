@@ -109,7 +109,7 @@ class CauldronHandler
      * Update  Object current state based on var "properties" (database direct fields) 
      * @return void
      */
-    static function readProperties( Cauldron $cauldron ): void
+    static function readProperties( Cauldron $cauldron, bool $excludePostition=false ): void
     {
         $cauldron->id = null;
         if( isset($cauldron->properties['id']) && ctype_digit(strval($cauldron->properties['id'])) ){
@@ -152,6 +152,10 @@ class CauldronHandler
             $cauldron->datetime = new ExtendedDateTime($cauldron->properties['datetime']);
         }
 
+        if( $excludePostition ){
+            return;
+        }
+        
         $cauldron->position    = [];
         
         $i = 1;
@@ -249,6 +253,7 @@ class CauldronHandler
         if( !in_array($ingredient, $cauldron->ingredients) )
         {
             $ingredient->cauldron       = $cauldron;
+            $ingredient->cauldronID     = $cauldron->id;
             $cauldron->ingredients[]    = $ingredient;
             return true;
         }
@@ -257,26 +262,35 @@ class CauldronHandler
     }
 
 
-    static function getDraftFolder( Cauldron $cauldron ): Cauldron
+    static function getDraftFolder( Cauldron $cauldron ): Cauldron {
+        return self::getNamedFolder( $cauldron, Cauldron::DRAFT_FOLDER_NAME );
+    }
+
+    static function getArchiveFolder( Cauldron $cauldron ): Cauldron {
+        return self::getNamedFolder( $cauldron, Cauldron::ARCHIVE_FOLDER_NAME );
+    }
+
+    private static function getNamedFolder( Cauldron $cauldron, string $folderName ): Cauldron
     {
         foreach( $cauldron->children as $child ){
-            if( $child->name === Cauldron::DRAFT_FOLDER_NAME 
+            if( $child->name === $folderName
                 && $child->data->structure === "folder" ){
                 return $child;
             }
         }
         
         $params = [
-            'name'  =>  Cauldron::DRAFT_FOLDER_NAME,
+            'name'  =>  $folderName,
             'data'  =>  json_encode([ "structure" => "folder" ]),
         ];
 
-        $draftFolder = self::createFromData( $cauldron->wc, $params );
-        $cauldron->addCauldron( $draftFolder );
-        $draftFolder->save();
+        $folder = self::createFromData( $cauldron->wc, $params );
+        $cauldron->addCauldron( $folder );
+        $folder->save();
 
-        return $draftFolder;
+        return $folder;
     }
+
 
     static function createDraft( Cauldron $cauldron ): Cauldron
     {

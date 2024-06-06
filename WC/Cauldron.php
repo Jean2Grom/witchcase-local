@@ -25,6 +25,7 @@ class Cauldron
     const STATUS_ARCHIVED       = 1;
 
     const DRAFT_FOLDER_NAME     = "wc-drafts-folder";
+    const ARCHIVE_FOLDER_NAME   = "wc-archives-folder";
 
     const DIR                   = "cauldron/structures";
     const DESIGN_SUBFOLDER      = "design/cauldron/structures";
@@ -144,7 +145,7 @@ class Cauldron
 
     function isContent(): bool
     {
-        if( $this->name === Cauldron::DRAFT_FOLDER_NAME 
+        if( in_array($this->name, [ self::DRAFT_FOLDER_NAME, self::ARCHIVE_FOLDER_NAME ]) 
             && $this->data?->structure === "folder" ){
             return false;
         }
@@ -242,7 +243,11 @@ class Cauldron
         else 
         {
             $properties = $this->properties;
+$this->wc->debug( $properties );
+
             Handler::writeProperties($this);
+$this->wc->debug( $this->properties );            
+$this->wc->debug( array_diff_assoc($this->properties, $properties) );            
             $result = DataAccess::update( $this, array_diff_assoc($this->properties, $properties) );
         }
         
@@ -252,13 +257,11 @@ class Cauldron
         $result = true;
         
         // Deletion of pending deprecated contents
-        foreach( $this->pendingRemoveContents as $removingContent ){
-            $result = $result && $removingContent->delete();
-        }
+        $result = $result && $this->purge();
 
         // Saving contents
         foreach( $this->ingredients as $ingredient ){
-            $result = $result && $ingredient->save( false );
+            $result = $result && $ingredient->save();
         }
 
         foreach( $this->children as $child ) 
@@ -273,9 +276,52 @@ class Cauldron
         return $result;
     }
 
-    function delete(): bool
+    function purge(): bool 
     {
         $result = true;
+
+        foreach( $this->pendingRemoveContents as $removingContent ){
+            if( $removingContent->isIngredient() ){
+                $result = $result && $removingContent->delete();
+            }
+            else {
+                $result = $result && $removingContent->delete( false );
+            }
+        }
+
+        return $result;
+    }
+
+    function delete( bool $transactionMode=true ): bool
+    {
+        if( !$transactionMode ){
+            return $this->deleteAction();
+        }
+        $this->wc->db->begin();
+
+        try {
+            if( !$this->deleteAction() )
+            {
+                $this->wc->db->rollback();
+                return false;
+            }
+        } 
+        catch( \Exception $e ) 
+        {
+            $this->wc->log->error($e->getMessage());
+            $this->wc->db->rollback();
+            return false;
+        }
+
+        $this->wc->db->commit();
+        return true;
+    }
+
+    private function deleteAction(): bool
+    {
+        // Deletion of pending deprecated contents
+        $result = $this->purge();
+
         foreach( $this->ingredients as $ingredient ){
             $result = $result && $ingredient->delete();
         }
@@ -286,7 +332,7 @@ class Cauldron
                 continue;
             }
 
-            $result = $result && $child->delete();
+            $result = $result && $child->delete( false );
         }
 
         if( $result === false ){
@@ -295,11 +341,11 @@ class Cauldron
         
         return DataAccess::delete($this) !== false;
     }
-
+  
     function add( Cauldron|Ingredient $content ): bool
     {
         // Cauldron case
-        if(  !is_a($content, __CLASS__) ){
+        if( is_a($content, __CLASS__) ){
             return $this->addCauldron( $content );
         }
 
@@ -313,6 +359,7 @@ class Cauldron
             DataAccess::increaseDepth( $this->wc );
         }
 
+        $cauldron->position = [];
         foreach( $this->position as $level => $value ){
             $cauldron->position[ $level ] = $value;
         }
@@ -482,14 +529,14 @@ class Cauldron
         }
 
         $draft  = Handler::createDraft( $this );
-        $folder->addCauldron($draft);
+        $folder->addCauldron( $draft );
         
         return $draft;
     }
 
     function getInputIdentifier(): string 
     {
-        $prefix = str_replace( ' ', '-', $this->name).'#';
+        $prefix = str_replace( ' ', '-', $this->name ).'#';
 
         if( $this->parent ){
             return $prefix.array_keys(array_intersect(
@@ -501,9 +548,102 @@ class Cauldron
         return $prefix;
     }
 
-    function publish(): bool
+    function publish( bool $transactionMode=true ): bool
     {
-        
+        if( !$transactionMode ){
+            return $this->publishAction();
+        }
+        $this->wc->db->begin();
+
+        try {
+            if( !$this->publishAction() )
+            {
+                $this->wc->db->rollback();
+                return false;
+            }
+        } 
+        catch( \Exception $e ) 
+        {
+            $this->wc->log->error($e->getMessage());
+            $this->wc->db->rollback();
+            return false;
+        }
+
+        $this->wc->db->commit();
+        return true;
+    }
+
+    function publishAction(): bool
+    {
+        $target = false;
+        if( $this->target ){
+            $target = $this->target;
+        }
+        elseif( $this->targetID ){
+            $target = Handler::fetch( $this->wc, ['id' => $this->targetID] );
+        }
+
+        if( $target )
+        {
+            // Create archive 
+            $archiveFolder  = Handler::getArchiveFolder($target);
+
+            Handler::writeProperties($target);
+            $archiveProperties              = $target->properties;
+            $archiveProperties['target']    = $target->id;
+            $archiveProperties['status']    = Cauldron::STATUS_ARCHIVED;
+            unset( $archiveProperties['id'] );
+
+            $archive            = Handler::createFromData( $this->wc, $archiveProperties );
+            $archive->target    = $target;
+
+            $archiveFolder->addCauldron( $archive );
+
+            // Move published target content to created archive
+            foreach( $target->ingredients as $content ){
+                $archive->add( $content );
+            }
+            $target->ingredients = [];
+
+            foreach( $target->children as $key => $child ){
+                if( $child->isContent() )
+                {
+                    $archive->add( $content );
+                    unset( $target->children[$key] );
+                }
+            }
+
+            // Update published target
+            $target->name = $this->name;
+            $target->data = $this->data;
+
+            // Move this (draft) content to published target
+            foreach( $this->ingredients as $content ){
+                $target->add( $content );
+            }
+            $this->ingredients = [];
+
+            foreach( $this->children as $key => $child ){
+                if( $child->isContent() )
+                {
+                    $target->add( $content );
+                    unset( $this->children[$key] );
+                }
+            }
+
+            $target->save( false );
+            $archive->save( false );
+            $this->delete( false );
+        }
+        else 
+        {
+            $this->status = null;
+            $this->save( false );
+            if( $this->targetID ){
+                DataAccess::updateTargetID( $this->wc, $this->targetID, $this->id );
+            }
+        }
+
         return true;
     }
 }
