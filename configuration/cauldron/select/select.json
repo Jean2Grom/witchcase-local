@@ -15,8 +15,8 @@
                 "min": 1
             },
             "composition" : [
-                {   "type": "select/option"    },
-                {   "type": "select/optgroup"  }
+                {   "type": "option"    },
+                {   "type": "optgroup"  }
             ]
         }
     ]

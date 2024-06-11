@@ -12,10 +12,13 @@ class Configuration
     const DEFAULT_DIRECTORY = "configuration";
     const CONFIG_FILE       = 'configuration.json';
     const SITES_FILE        = 'sites.json';
-    
+    const STRUCTURES_DIR    = "configuration/cauldron";
+
     public string $dir;
     public $configuration  = [];
     public $sites          = [];
+
+    public $structures;
     
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -171,5 +174,66 @@ class Configuration
         }
         
         return array_unique($return);
-    }    
+    }
+
+
+    function structures(): array
+    {
+        if( $this->structures ){
+            return $this->structures;
+        }
+
+        $rules      = $this->readSiteMergedVar( 'structures' );
+        $whiteList  = $rules['allowed'] ?? '*';
+        $blackList  = $rules['forbidden'] ?? null;
+
+        $this->structures = [];
+         foreach( $this->getFilesRecursive(self::STRUCTURES_DIR) as $file )
+        {
+            if( !is_file($file) ){
+                continue;
+            }
+
+            $jsonString = file_get_contents($file);
+            $jsonData   = json_decode($jsonString, true);
+            
+            // White list filtering
+            if( is_array($whiteList) && !in_array($jsonData['name'], $whiteList) ){
+                continue;
+            }
+            // Black list filtering
+            if( is_array($blackList) && in_array($jsonData['name'], $blackList) ){
+                continue;
+            }
+
+            $this->structures[ $jsonData['name'] ] = $jsonData;
+        }
+
+        ksort($this->structures);
+        return $this->structures;
+    }
+
+    private function getFilesRecursive( $dir ): array
+    {
+        $files = [];
+        $handle = opendir( $dir );
+        while( false !== ($entry = readdir($handle)) ){
+            if( in_array($entry, ['.', '..']) ){
+                continue;
+            }
+            elseif( is_dir($dir.'/'.$entry) ){
+                $files = array_merge( $files, $this->getFilesRecursive($dir.'/'.$entry) );
+            }
+            else {
+                $files[] = $dir.'/'.$entry;
+            }
+        }
+
+        return $files;
+    }
+
+    function structure( string $structureName ): ?array {
+        return $this->structures()[ $structureName ] ?? null;
+    }
+
 }

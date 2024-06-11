@@ -17,13 +17,6 @@ abstract class Ingredient
         "priority",
     ];
     
-    const HISTORY_FIELDS = [
-        "creator",
-        "created",
-        "modificator",
-        "modified",
-    ];
-
     const DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX = [
         'boolean'       => 'b', 
         'datetime'      => 'dt', 

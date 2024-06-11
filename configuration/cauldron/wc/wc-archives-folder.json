@@ -1,0 +1,11 @@
+{
+    "name": "wc-archives-folder",
+    "type": "folder",
+    "restrictions": {
+        "whitelist": false,
+        "blacklist": [ 
+            "wc-drafts-folder",
+            "wc-archives-folder" 
+        ]
+    }
+}

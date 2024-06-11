@@ -241,6 +241,10 @@ class User
         
         return $this;
     }
+
+    function addAlert( array $newAlert ) {
+        return $this->addAlerts([ $newAlert ]);
+    }
     
     function getSessionData( string $varname ){
         return $this->session->read( $varname );

@@ -1,5 +1,5 @@
 {
-    "name": "select/optgroup",
+    "name": "optgroup",
     "type": "structure",
     "composition": [
         {
@@ -15,7 +15,7 @@
                 "min": 1
             },
             "composition" : [
-                {   "type": "select/option"    }
+                {   "type": "option"    }
             ]
         }
     ]

@@ -17,7 +17,13 @@ class Cauldron
         "name",
         "data",
         "priority",
-        "datetime",
+    ];
+
+    const HISTORY_FIELDS = [
+        "creator",
+        "created",
+        "modificator",
+        "modified",
     ];
 
     const STATUS_PUBLISHED      = null;
