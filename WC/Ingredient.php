@@ -72,6 +72,10 @@ abstract class Ingredient
         return $this->value ?? ( $this->id? ($this->name ?? $this->type).": ".$this->id : "" );
     }    
 
+    static function list(): array {
+        return array_values( self::DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX );
+    }
+
     /**
      * Is this ingredient exist in database ?
      * @return bool

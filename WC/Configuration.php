@@ -1,6 +1,8 @@
 <?php 
 namespace WC;
 
+use WC\Cauldron\Structure;
+use WC\Handler\StructureHandler;
 /**
  * Class handeling configuration files 
  * 
@@ -187,26 +189,33 @@ class Configuration
         $whiteList  = $rules['allowed'] ?? '*';
         $blackList  = $rules['forbidden'] ?? null;
 
-        $this->structures = [];
-         foreach( $this->getFilesRecursive(self::STRUCTURES_DIR) as $file )
+        $structures = [];
+        foreach( $this->getFilesRecursive(self::STRUCTURES_DIR) as $file )
         {
-            if( !is_file($file) ){
+            $structure = StructureHandler::createFromFile( $this->wc, $file );
+
+            if( !$structure ){
                 continue;
             }
 
-            $jsonString = file_get_contents($file);
-            $jsonData   = json_decode($jsonString, true);
-            
+            $structures[ $structure->name ] = $structure;
+        }
+
+        StructureHandler::resolve($structures);
+        //$this->wc->dump($structures);
+
+        $this->structures = [];
+        foreach( $structures  as $structure ){
             // White list filtering
-            if( is_array($whiteList) && !in_array($jsonData['name'], $whiteList) ){
+            if( is_array($whiteList) && !in_array($structure->name, $whiteList) ){
                 continue;
             }
             // Black list filtering
-            if( is_array($blackList) && in_array($jsonData['name'], $blackList) ){
+            if( is_array($blackList) && in_array($structure->name, $blackList) ){
                 continue;
             }
 
-            $this->structures[ $jsonData['name'] ] = $jsonData;
+            $this->structures[ $structure->name ] = $structure;
         }
 
         ksort($this->structures);
@@ -232,7 +241,7 @@ class Configuration
         return $files;
     }
 
-    function structure( string $structureName ): ?array {
+    function structure( string $structureName ): ?Structure {
         return $this->structures()[ $structureName ] ?? null;
     }
 

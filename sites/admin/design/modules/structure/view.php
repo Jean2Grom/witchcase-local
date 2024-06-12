@@ -11,67 +11,47 @@ $this->addJsFile('triggers.js');
     
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
-<h3>[<?=$draft->structure->name ?>] <em><?=$draft->name ?></em></h3>
-<p>
-    <?php if( $draft->created ): ?>
-        <em>Draft created by <?=$draft->created->actor?>: <?=$draft->created->format( \DateTimeInterface::RFC2822 )?></em>
-    <?php endif; ?>
-    <?php if( $draft->modified && $draft->created != $draft->modified ): ?>
-        <br/> 
-        <em>Draft modified by <?=$draft->modified->actor?>: <?=$draft->modified->format( \DateTimeInterface::RFC2822 )?></em>
-    <?php endif; ?>
-</p>
+<h3>[<?=$structure->type?>] <em><?=$structure->name?></em></h3>
 
-<form id="edit-action" method="post" enctype="multipart/form-data">
-    
-    <div class="fieldsets-container">
+<div class="fieldsets-container" style="max-width: 700px;margin-top: 10px;">
+    <?php foreach( $structure->structure?->composition ?? $structure->composition ?? [] as $item ): ?>
         <fieldset>
-            <legend>Craft Name</legend>
-            <input type="text" name="name" value="<?=$draft->name ?>" />
+            <legend><?=$item['name']?></legend>
+            <ul>
+                <!--li style="display: flex;justify-content: space-between;">
+                    <div>Name</div>
+                    <div><?=$item['name']?></div>
+                </li-->
+                <li style="display: flex;justify-content: space-between;">
+                    <div>Type</div>
+                    <div><?=$item['type']?></div>
+                </li>
+                <li style="display: flex;justify-content: space-between;">
+                    <div>Mandatory</div>
+                    <div><?=$item['mandatory'] ?? null? "true": "false"?></div>
+                </li>
+            </ul>
         </fieldset>
-        
-        <?php foreach( $draft->attributes as $attribute ): ?>
-            <fieldset>
-                <legend><?=$attribute->name?> [<?=$attribute->type?>]</legend>
-                    <?php $attribute->edit() ?>
-            </fieldset>
-        <?php endforeach; ?>
-    </div>
+    <?php endforeach; ?>
+</div>
     
-    <?php if( $targetWitch ): ?>
-        <button class="trigger-action" 
-                data-action="publish"
-                data-target="edit-action">
-            <i class="fa fa-check"></i>
-            Publish
-        </button>
-        <button class="trigger-action"
-                data-action="save-and-return"
-                data-target="edit-action">
-            <i class="fa fa-share"></i>
-            Save and Quit
-        </button>
-        <button class="trigger-action"
-                data-action="save"
-                data-target="edit-action">
-            <i class="fa fa-save"></i>
-            Save
-        </button>
-        <button class="trigger-action"
-                data-action="delete"
-                data-target="edit-action">
-            <i class="fa fa-trash"></i>
-            Delete draft
-        </button>
-    <?php endif; ?>
-    
-    <?php if( $cancelHref ): ?>
-        <button class="trigger-href" 
-                data-href="<?=$cancelHref ?>">
-            <i class="fa fa-times"></i>
-            Cancel
-        </button>
-    <?php endif; ?>
-</form>
-
-    
+<div class="box__actions">
+    <button class="trigger-action" 
+            data-confirm="Warning ! You are about to remove this structure" 
+            data-action="remove-structure" 
+            data-target="view-structure-action">
+        <i class="fa fa-trash" aria-hidden="true"></i>
+        Delete
+    </button>
+    <button class="trigger-href" 
+            data-href="#" 
+            id="cauldron__edit">
+        <i class="fa fa-pencil" aria-hidden="true"></i>
+        Edit
+    </button>
+    <button class="trigger-href" 
+            data-href="<?=$this->wc->website->getUrl('structure')?>">
+        <i class="fa fa-list" aria-hidden="true"></i>
+        Back
+    </button>
+</div>

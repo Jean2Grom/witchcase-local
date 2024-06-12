@@ -1,5 +1,6 @@
 <?php /** @var WC\Module $this */
 
+use WC\Cauldron\Structure;
 use WC\DataAccess\StructureDataAccess;
 
 $structures = $this->wc->configuration->structures();
@@ -9,15 +10,15 @@ $structureArray = StructureDataAccess::readStructuresUsage(
     array_keys($structures)
 );
 
-foreach( $structures as $structureData )
+foreach( $structures as $structure )
 {
-    $structureArray[ $structureData['name'] ]['name'] = $structureData['type'] !== "structure"? 
-                                                            "[".$structureData['type']."] ": "";
-    $structureArray[ $structureData['name'] ]['name'] .= $structureData['name'];
+    $structureArray[ $structure->name ]['name'] = $structure->type !== Structure::DEFAULT_TYPE? 
+                                                            "[".$structure->type."] ": "";
+    $structureArray[ $structure->name ]['name'] .= $structure->name;
 }
 
-$this->wc->dump($structures);
-$this->wc->dump($structureArray);
+//$this->wc->dump($structures);
+//$this->wc->dump($structureArray);
 
 $alerts = $this->wc->user->getAlerts();
 
