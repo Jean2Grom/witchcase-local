@@ -73,7 +73,7 @@ abstract class Ingredient
     }    
 
     static function list(): array {
-        return array_values( self::DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX );
+        return array_keys( self::DEFAULT_AVAILABLE_INGREDIENT_TYPES_PREFIX );
     }
 
     /**

@@ -15,8 +15,6 @@ if( !$structure )
     exit();
 }
 
-//$this->wc->dump($structure);
-
 $alerts = $this->wc->user->getAlerts();
 
 $this->view();

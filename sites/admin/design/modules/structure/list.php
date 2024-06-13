@@ -40,7 +40,7 @@ $this->addJsFile('triggers.js');
                                     <a href="<?=$this->wc->website->getUrl( 'structure/view', ['structure' => $structure] )?>">
                                         <i class="fa fa-eye"></i>
                                     </a>
-                                    <a href="<?=$structure?>">
+                                    <a href="<?=$this->wc->website->getUrl( 'structure/edit', ['structure' => $structure] )?>">
                                         <i class="fa fa-pencil"></i>
                                     </a>
                                 </div>

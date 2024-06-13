@@ -37,7 +37,7 @@ $this->addJsFile('triggers.js');
     
 <div class="box__actions">
     <button class="trigger-href" 
-            data-href="#" 
+            data-href="<?=$this->wc->website->getUrl( 'structure/edit', ['structure' => $structure->name] )?>" 
             id="cauldron__edit">
         <i class="fa fa-pencil" aria-hidden="true"></i>
         Edit
