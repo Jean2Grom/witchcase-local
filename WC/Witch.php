@@ -835,29 +835,14 @@ class Witch
             return null;
         }
         
-        if( $forcedWebsite ){            
+        if( $forcedWebsite ){
             $method = "getFullUrl";
         }
         else {
-            $method = "getUrl";   
+            $method = "getUrl";
         }
         
-        $queryString    = '';
-        $separator      = '?';
-        if( $queryParams ){
-            foreach( $queryParams as $paramKey => $paramValue )
-            {
-                if( $paramKey != '#' )
-                {
-                    $queryString    .=  $separator;
-                    $separator      =   '&';
-                }
-                
-                $queryString    .=  $paramKey.'='.$paramValue;
-            }
-        }
-        
-        return call_user_func([$website, $method], $this->url.$queryString);
+        return call_user_func([$website, $method], $this->url, $queryParams ?? null);
     }
     
     

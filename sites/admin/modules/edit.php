@@ -83,7 +83,7 @@ switch( $action )
         ];
         
         $this->wc->user->addAlerts($alerts);        
-        header('Location: '.$this->wc->website->getFullUrl('view?id='.$destinationWitch->id)  );
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $destinationWitch->id ]) );
         exit();    
     break;    
     
@@ -125,7 +125,7 @@ switch( $action )
         ];
         
         $this->wc->user->addAlerts($alerts);
-        header('Location: '.$this->wc->website->getFullUrl('view?id='.$destinationWitch->id)  );
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $destinationWitch->id ]) );
         exit();    
     break;
     
@@ -202,7 +202,7 @@ switch( $action )
         ];
         
         $this->wc->user->addAlerts($alerts);
-        header('Location: '.$this->wc->website->getFullUrl('view?id='.$newWitchId)  );
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitchId ]) );
         exit();
     break;    
     
@@ -215,7 +215,7 @@ switch( $action )
             ];
 
             $this->wc->user->addAlerts( $alerts );
-            header('Location: '.$this->wc->website->getFullUrl("view?id=".$targetWitch->mother()->id) );
+            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $targetWitch->mother()->id ]) );
             exit();
         }
         
@@ -367,7 +367,7 @@ switch( $action )
             break;
         }
         
-        header( 'Location: '.$this->wc->website->getFullUrl('edit-content?id='.$targetWitch->id) );
+        header( 'Location: '.$this->wc->website->getFullUrl('edit-content', [ 'id' => $targetWitch->id ]) );
         exit();
     break;
     
@@ -518,7 +518,7 @@ switch( $action )
         ];
         
         $this->wc->user->addAlerts($alerts);
-        header('Location: '.$this->wc->website->getFullUrl('view?id='.$newWitchId.$urlHash) );
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitchId ]).$urlHash );
         exit();
     break;
     
@@ -558,5 +558,5 @@ switch( $action )
 }
 
 $this->wc->user->addAlerts($alerts);
-header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id.$urlHash) );
+header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $targetWitch->id ]).$urlHash );
 exit();

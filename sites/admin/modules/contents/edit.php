@@ -35,7 +35,7 @@ if( !$craft )
     ];
     
     $this->wc->user->addAlerts($alerts);
-    header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+    header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $targetWitch->id ]) );
     exit();
 }
 
@@ -115,7 +115,7 @@ switch( $action )
         {
             $this->wc->user->addAlerts($alerts);
 
-            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $targetWitch->id ]) );
             exit();
         }
     break;
@@ -136,7 +136,7 @@ switch( $action )
             
             $this->wc->user->addAlerts($alerts);
             
-            header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$targetWitch->id) );
+            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $targetWitch->id ]) );
             exit();
         }
     break;    

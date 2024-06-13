@@ -36,13 +36,6 @@ $this->addJsFile('triggers.js');
 </div>
     
 <div class="box__actions">
-    <button class="trigger-action" 
-            data-confirm="Warning ! You are about to remove this structure" 
-            data-action="remove-structure" 
-            data-target="view-structure-action">
-        <i class="fa fa-trash" aria-hidden="true"></i>
-        Delete
-    </button>
     <button class="trigger-href" 
             data-href="#" 
             id="cauldron__edit">

@@ -118,13 +118,13 @@ class Request
         return $this->website;
     }
     
-    function getFullUrl( string $urlPath='', ?Website $website=null )
+    function getFullUrl( string $urlPath='', ?array $urlParams=null, ?Website $website=null )
     {
         if( !$website ){
             $website = $this->website;
         }
         
-        return $this->website->getFullUrl($urlPath, $this);
+        return $this->website->getFullUrl($urlPath, $urlParams, $this);
     }
     
     private function compareAccess( $access )

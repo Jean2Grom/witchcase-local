@@ -305,7 +305,7 @@ class Website
         return $this->rootUrl;
     }
     
-    function getFullUrl( string $urlPath='', ?Request $request=null )
+    function getFullUrl( string $urlPath='', ?array $urlParams=null, ?Request $request=null )
     {
         if( !$request ){
             $request = $this->wc->request;
@@ -323,12 +323,12 @@ class Website
             $fullUrl .= ':'.$request->port;
         }
         
-        $fullUrl    .=  $this->getUrl( $urlPath );
+        $fullUrl    .=  $this->getUrl( $urlPath, $urlParams );
         
         return $fullUrl;
     }
     
-    function getUrl( string $urlPath='' )
+    function getUrl( string $urlPath='', ?array $urlParams=null )
     {
         $url    = $this->baseUri;
         if( !empty($urlPath) && !str_starts_with($urlPath, '/') ){
@@ -337,9 +337,13 @@ class Website
         $url    .=  $urlPath;
         
         if( empty($url) ){
-            return '/';
+            $url = '/';
         }
         
+        if( !empty($urlParams) ){
+            $url .= '?'.http_build_query($urlParams);
+        }
+
         return $url;
     }
 }

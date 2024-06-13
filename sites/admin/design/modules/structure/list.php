@@ -29,7 +29,7 @@ $this->addJsFile('triggers.js');
                     <?php foreach( $structureArray as $structure => $data ): ?>
                         <tr>
                             <td>
-                                <a href="chaudrons/view?structure=<?=$structure?>">
+                                <a href="<?=$this->wc->website->getUrl( 'structure/view', ['structure' => $structure] )?>">
                                     <?=$data['name']?>
                                 </a>
                             </td>
@@ -37,14 +37,11 @@ $this->addJsFile('triggers.js');
                             <td><span class="text-center"><?=$data['witches']?></span></td>
                             <td>
                                 <div class="text-center">
-                                    <a href="chaudrons/view?structure=<?=$structure?>">
+                                    <a href="<?=$this->wc->website->getUrl( 'structure/view', ['structure' => $structure] )?>">
                                         <i class="fa fa-eye"></i>
                                     </a>
                                     <a href="<?=$structure?>">
                                         <i class="fa fa-pencil"></i>
-                                    </a>
-                                    <a href="<?=$structure?>">
-                                        <i class="fa fa-trash"></i>
                                     </a>
                                 </div>
                             </td>
