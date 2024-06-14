@@ -1,9 +1,7 @@
 {
     "name": "wc-archives-folder",
-    "type": "folder",
-    "restrictions": {
-        "whitelist": false,
-        "blacklist": [ 
+    "require": {
+        "refuse": [ 
             "wc-drafts-folder",
             "wc-archives-folder" 
         ]

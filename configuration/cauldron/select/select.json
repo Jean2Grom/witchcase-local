@@ -1,6 +1,5 @@
 {
     "name": "select",
-    "type": "structure",
     "composition": [
         {
             "mandatory": true,
@@ -10,14 +9,14 @@
         {
             "mandatory": true,
             "name" : "options",
-            "type": "array",
+            "type": "folder",
             "require": {
-                "min": 1
-            },
-            "composition" : [
-                {   "type": "option"    },
-                {   "type": "optgroup"  }
-            ]
+                "min": 1,
+                "accept": [
+                    "option",
+                    "optgroup"
+                ]
+            }
         }
     ]
 }

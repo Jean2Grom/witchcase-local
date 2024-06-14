@@ -1,6 +1,5 @@
 {
     "name": "file",
-    "type": "structure",
     "composition": [
         {
             "mandatory": true,

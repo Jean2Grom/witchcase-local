@@ -25,12 +25,8 @@ $possibleTypes = [];
 foreach( $ingredients as $ingredient ){
     $possibleTypes[ $ingredient ] = $ingredient;
 }
-foreach( $structures as $structureItem )
-{
-    $possibleTypes[ $structureItem->name ] = $structureItem->type !== Structure::DEFAULT_TYPE? 
-                                            '['.$structureItem->type.'] ': 
-                                            '';
-    $possibleTypes[ $structureItem->name ] .= $structureItem->name;
+foreach( $structures as $structureItem ){
+    $possibleTypes[ $structureItem->name ] = $structureItem->name;
 }
 
 

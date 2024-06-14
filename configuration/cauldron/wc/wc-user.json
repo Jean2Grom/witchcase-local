@@ -1,6 +1,5 @@
 {
     "name": "wc-user",
-    "type": "structure",
     "composition": [
         {
             "mandatory": true,
@@ -20,16 +19,7 @@
         {
             "mandatory": true,
             "name" : "profiles",
-            "type": "array",
-            "require": {
-                "min": 1
-            },
-            "composition" : [
-                {
-                    "name": "user__profile",
-                    "type": "integer"
-                }
-            ]
+            "type": "wc-profiles-array"
         }
     ]
 }

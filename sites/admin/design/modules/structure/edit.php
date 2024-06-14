@@ -15,10 +15,12 @@ $this->addJsFile('triggers.js');
 <form id="edit-action" method="post" enctype="multipart/form-data">
 
     <h3>
-        [<?=$structure->type?>] 
-        <em  id="name-display"><?=$structure->name?></em>
+        <span  id="name-display"><?=$structure->name?></span>
         <input id="name-input" type="text" name="name" value="<?=$structure->name ?>" />
     </h3>
+
+    <em id="file-display"><?=$structure->file ?? ''?></em>
+    <input id="file-input" type="text" name="file" value="<?=$structure->file ?>" />
 
     <div class="fieldsets-container">
         <?php foreach( $structure->structure?->composition ?? $structure->composition ?? [] as $item ): ?>
@@ -111,11 +113,13 @@ $this->addJsFile('triggers.js');
             fieldset.right button {
                 margin-left: 8px;
             }
-    #name-display {
+    #name-display,
+    #file-display {
         cursor: pointer;
     }
 
-    #name-input {
+    #name-input,
+    #file-input {
         display: none;
     }
 
@@ -130,20 +134,24 @@ $this->addJsFile('triggers.js');
 <script>
     $(document).ready(function() {
 
-        $('#name-display').click(function(){
-            $('#name-input').show();
-            $('#name-display').hide();
-        });
+        let hiddenInputs = ['name', 'file'];
 
-        $('#name-input').on('focusout', function(){
-            $('#name-input').hide();
-            $('#name-display').show();
-        });
+        ['name', 'file'].forEach((hiddenInput) => {
+            $('#'+hiddenInput+'-display').click(function(){
+                $('#'+hiddenInput+'-input').show();
+                $('#'+hiddenInput+'-display').hide();
+            });
 
-        $('#name-input').change(function(){
-            $('#name-display').html( $('#name-input').val() );
-            $('#name-input').hide();
-            $('#name-display').show();
+            $('#'+hiddenInput+'-input').on('focusout', function(){
+                $('#'+hiddenInput+'-input').hide();
+                $('#'+hiddenInput+'-display').show();
+            });
+
+            $('#'+hiddenInput+'-input').change(function(){
+                $('#'+hiddenInput+'-display').html( $('#'+hiddenInput+'-input').val() );
+                $('#'+hiddenInput+'-input').hide();
+                $('#'+hiddenInput+'-display').show();
+            });
         });
 
         $("fieldset > legend > a.remove-fieldset").click(function(){

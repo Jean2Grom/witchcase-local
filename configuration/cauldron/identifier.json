@@ -1,6 +1,5 @@
 {
     "name": "identifier",
-    "type": "structure",
     "composition": [
         {
             "mandatory": true,

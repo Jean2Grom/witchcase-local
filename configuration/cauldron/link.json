@@ -1,6 +1,5 @@
 {
     "name": "link",
-    "type": "structure",
     "composition": [
         {
             "mandatory": true,

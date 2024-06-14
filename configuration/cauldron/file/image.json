@@ -1,4 +1,14 @@
 {
     "name": "image",
-    "type": "file"
+    "composition": [
+        {
+            "mandatory": true,
+            "name": "file",
+            "type": "file"
+        },
+        {
+            "name": "legend",
+            "type": "string"
+        }
+    ]
 }

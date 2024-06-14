@@ -60,9 +60,8 @@ class StructureHandler
     static function readProperties( Structure $structure ): void
     {
         $structure->name        = $structure->properties['name'] ?? null;
-        $structure->type        = $structure->properties['type'] ?? Structure::DEFAULT_TYPE;
-
         $structure->composition = $structure->properties['composition'] ?? null;
+
         return;
     }
 
@@ -84,23 +83,23 @@ class StructureHandler
         $return = true;
         foreach( $structures as $structure )
         {
-            if( $structure->type !== Structure::DEFAULT_TYPE ){
-                if( !isset($structures[ $structure->type ]) ){
-                    $return = false;
-                }
-                else {
-                    $structure->structure =  $structures[ $structure->type ];
-                }
-            }
+            // if( $structure->type !== Structure::DEFAULT_TYPE ){
+            //     if( !isset($structures[ $structure->type ]) ){
+            //         $return = false;
+            //     }
+            //     else {
+            //         $structure->structure =  $structures[ $structure->type ];
+            //     }
+            // }
 
             foreach(  $structure->composition ?? [] as $key => $content )
             {
-                if( !isset($content['type']) || in_array($content['type'], Ingredient::list()) ){
+                if( !isset($content['type']) || in_array($content['type'] ?? "", Ingredient::list()) ){
                     continue;
                 }
-                elseif( $content['type'] === Structure::DEFAULT_TYPE ){
-                    $structure->composition[ $key ]['structure'] = self::createFromData( $structure->wc, $content );
-                }
+                // elseif( $content['type'] === Structure::DEFAULT_TYPE ){
+                //     $structure->composition[ $key ]['structure'] = self::createFromData( $structure->wc, $content );
+                // }
                 elseif( isset($structures[ $content['type'] ]) ){
                     $structure->composition[ $key ]['structure'] = $structures[ $content['type'] ] ;
                 }

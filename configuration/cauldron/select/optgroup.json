@@ -1,6 +1,5 @@
 {
     "name": "optgroup",
-    "type": "structure",
     "composition": [
         {
             "mandatory": true,
@@ -10,13 +9,13 @@
         {
             "mandatory": true,
             "name" : "options",
-            "type": "structure",
+            "type": "folder",
             "require": {
-                "min": 1
-            },
-            "composition" : [
-                {   "type": "option"    }
-            ]
+                "min": 1,
+                "accept": [
+                    "option"
+                ]
+            }
         }
     ]
 }

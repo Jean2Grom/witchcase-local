@@ -1,27 +1,20 @@
 {
     "name": "selection",
-    "type": "structure",
     "composition": [
         {
             "mandatory": true,
-            "name" : "select",
-            "type": "cauldron-link",
-            "require": {
-                "structure": "select"
-            }
+            "name" : "selected-from",
+            "type": "cauldron-link"
         },
         {
             "mandatory": true,
-            "name" : "options",
-            "type": "array",
-            "composition" : [
-                {   
-                    "type": "cauldron-link",
-                    "require": {
-                        "structure": "option"
-                    }
-                }
-            ]
+            "name" : "selected-options",
+            "type": "folder",
+            "require": {
+                "accept":[
+                    "cauldron-link"
+                ]
+            }
         }
     ]
 }

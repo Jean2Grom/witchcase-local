@@ -200,9 +200,8 @@ class Configuration
 
             $structures[ $structure->name ] = $structure;
         }
-
+        
         StructureHandler::resolve($structures);
-        //$this->wc->dump($structures);
 
         $this->structures = [];
         foreach( $structures  as $structure ){

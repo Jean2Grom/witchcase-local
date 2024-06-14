@@ -1,6 +1,5 @@
 {
     "name": "cauldron-link",
-    "type": "structure",
     "composition": [
         {
             "mandatory": true,

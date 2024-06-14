@@ -1,0 +1,10 @@
+{
+    "name": "wc-profiles-array",
+    "composition" : [
+        {
+            "mandatory": true,
+            "name": "user__profile",
+            "type": "integer"
+        }
+    ]
+}

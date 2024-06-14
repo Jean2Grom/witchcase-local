@@ -11,20 +11,23 @@ $this->addJsFile('triggers.js');
     
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
-<h3>[<?=$structure->type?>] <em><?=$structure->name?></em></h3>
+<h3><?=$structure->name?></h3>
+<em><?=$structure->file ?? ''?></em>
 
 <div class="fieldsets-container" style="max-width: 700px;margin-top: 10px;">
-    <?php foreach( $structure->structure?->composition ?? $structure->composition ?? [] as $item ): ?>
+    <?php foreach( $structure->composition ?? [] as $item ): ?>
         <fieldset>
             <legend><?=$item['name']?></legend>
             <ul>
-                <!--li style="display: flex;justify-content: space-between;">
-                    <div>Name</div>
-                    <div><?=$item['name']?></div>
-                </li-->
                 <li style="display: flex;justify-content: space-between;">
                     <div>Type</div>
-                    <div><?=$item['type']?></div>
+                    <?php if( $item['structure'] ?? false ): ?>
+                        <a href="<?=$this->witch->url( ['structure' => $item['structure']->name] )?>">
+                            <?=$item['type']?>
+                        </a>
+                    <?php else: ?>
+                        <div><?=$item['type']?></div>
+                    <?php endif; ?>
                 </li>
                 <li style="display: flex;justify-content: space-between;">
                     <div>Mandatory</div>
