@@ -61,6 +61,7 @@ class StructureHandler
     {
         $structure->name        = $structure->properties['name'] ?? null;
         $structure->composition = $structure->properties['composition'] ?? null;
+        $structure->require     = $structure->properties['require'] ?? null;
 
         return;
     }

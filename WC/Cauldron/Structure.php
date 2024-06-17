@@ -10,6 +10,7 @@ class Structure
 
     public array $properties    = [];
 
+    var ?array $require;
     var ?array $composition;
 
     /** 

@@ -13,7 +13,6 @@ $this->addJsFile('triggers.js');
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
-
     <h3>
         <span  id="name-display"><?=$structure->name?></span>
         <input id="name-input" type="text" name="name" value="<?=$structure->name ?>" />
@@ -21,6 +20,55 @@ $this->addJsFile('triggers.js');
 
     <em id="file-display"><?=$structure->file ?? ''?></em>
     <input id="file-input" type="text" name="file" value="<?=$structure->file ?>" />
+
+    <ul  class="global-data">
+        <li>
+            <div>Accepted contents</div>
+            <select id="add-accepted">
+                <option value="0">Select content type</option>
+                <?php foreach( $possibleTypes as $possibleType => $label ): ?>
+                    <option value="<?=$possibleType?>">
+                        <?=$label?>
+                    </option>
+                <?php endforeach; ?>                
+            </select>
+        </li>
+        <li>
+            <ul>
+                <?php foreach( $structure->require['accept'] ?? [] as $acceptedItem ): ?>
+                    <?=$acceptedItem?>
+                    <a><i class="fa fa-times"></i></a>
+                <?php endforeach; ?> 
+            </ul>
+        </li>
+        <li>
+            <div>Refused contents</div>
+            <select id="add-refused">
+                <option value="0">Select content type</option>
+                <?php foreach( $possibleTypes as $possibleType => $label ): ?>
+                    <option value="<?=$possibleType?>">
+                        <?=$label?>
+                    </option>
+                <?php endforeach; ?>                
+            </select>
+        </li>
+        <li>
+            <ul>
+                <?php foreach( $structure->require['refuse'] ?? [] as $refusedItem ): ?>
+                    <?=$refusedItem?>
+                    <a><i class="fa fa-times"></i></a>
+                <?php endforeach; ?> 
+            </ul>
+        </li>
+        <li>
+            <div>Minimum required</div>
+            <div><input type="number" min="0" value="<?=$structure->require['min'] ?? 0?>" /></div>
+        </li>
+        <li>
+            <div>Maximum allowed</div>
+            <div><input type="number" min="0" value="<?=$structure->require['max'] ?? 0?>" /></div>
+        </li>
+    </ul>
 
     <div class="fieldsets-container">
         <?php foreach( $structure->structure?->composition ?? $structure->composition ?? [] as $item ): ?>
@@ -90,10 +138,17 @@ $this->addJsFile('triggers.js');
 
 
 <style>
+    .global-data, 
     .fieldsets-container {
         max-width: 700px;
         margin-top: 10px;
     }
+    ul.global-data li,
+    .fieldsets-container fieldset li {
+        display: flex;
+        justify-content: space-between;
+    }
+
     fieldset {
         border: 1px solid #ccc;
         box-shadow: 5px 5px 5px #ccc;
@@ -134,11 +189,9 @@ $this->addJsFile('triggers.js');
 <script>
     $(document).ready(function() {
 
-        let hiddenInputs = ['name', 'file'];
-
         ['name', 'file'].forEach((hiddenInput) => {
             $('#'+hiddenInput+'-display').click(function(){
-                $('#'+hiddenInput+'-input').show();
+                $('#'+hiddenInput+'-input').show().focus();
                 $('#'+hiddenInput+'-display').hide();
             });
 
