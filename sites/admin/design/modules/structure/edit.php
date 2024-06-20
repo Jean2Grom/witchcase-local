@@ -13,6 +13,7 @@ $this->addJsFile('triggers.js');
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="structure" value="<?=$structureName?>" />
     <h3>
         <span  id="name-display"><?=$structure->name?></span>
         <input id="name-input" type="text" name="name" value="<?=$structure->name ?>" />
@@ -26,13 +27,12 @@ $this->addJsFile('triggers.js');
             <legend>global restrictions</legend>
             <?php 
                 $require    = $structure->require;
-                $this->wc->debug($require);
                 $name       = "global";
                 include $this->getIncludeDesignFile('edit/structure-require.php'); ?>
         </fieldset>
     </div>
 
-    <div class="fieldsets-container">
+    <div class="fieldsets-container" id="contents">
         <?php foreach( $structure->structure?->composition ?? $structure->composition ?? [] as $item ): ?>
             <fieldset>
                 <legend>
@@ -63,7 +63,7 @@ $this->addJsFile('triggers.js');
                     <li>
                         <div>Mandatory</div>
                         <input  type="checkbox" value="1" 
-                                name="<?=$item['name']?>-mandatory[] ?>" 
+                                name="<?=$item['name']?>-mandatory[]" 
                                 <?=$item['mandatory'] ?? null? "checked": ""?> />
                     </li>
                     <li <?=in_array($item['type'], $ingredients)? 'style="display: none"': ''?>
@@ -77,37 +77,70 @@ $this->addJsFile('triggers.js');
             </fieldset>
         <?php endforeach; ?>
     </div>
-    <div class="fieldsets-container">
-        <fieldset class="right">
-            <select id="add-content-type">
-                <?php foreach( $possibleTypes as $possibleType => $label ): ?>
-                    <option value="<?=$possibleType?>">
-                        <?=$label?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+</form>
 
+<div class="fieldsets-container" id="new-content">
+    <fieldset>
+        <legend class="new-content-form">new content</legend>
+        <legend>
+            NEW_CONTENT_NAME
+            <a class="up-fieldset">[&#8593;]</a>
+            <a class="down-fieldset">[&#8595;]</a>                
+            <a class="remove-fieldset">[x]</a>
+        </legend>
+        <ul>
+            <li>
+                <div>Name</div>
+                <input type="text" name="NEW_CONTENT_NAME-name[]" value="" />
+            </li>
+            <li>
+                <div>Type</div>
+                <select class="check-restriction-toggle"
+                        data-target="NEW_CONTENT_NAME-structure-type-toggle"
+                        name="NEW_CONTENT_NAME-type[]">
+                    <option value="0">Select new type</option>
+                    <?php foreach( $possibleTypes as $possibleType => $label ): ?>
+                        <option data-restrictions="<?=in_array($possibleType, $ingredients)? "off": "on"?>"
+                                value="<?=$possibleType?>">
+                            <?=$label?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </li>
+            <li>
+                <div>Mandatory</div>
+                <input  type="checkbox" value="1" 
+                        name="NEW_CONTENT_NAME-mandatory[]" />
+            </li>
+            <li style="display: none"
+                id="NEW_CONTENT_NAME-structure-type-toggle">
+                <?php 
+                    $require    = [];
+                    $name       = "NEW_CONTENT_NAME";
+                    include $this->getIncludeDesignFile('edit/structure-require.php'); ?>
+            </li>
+        </ul>
+        <div class="new-content-actions hidden">
             <button id="add-content">
                 <i class="fa fa-plus" aria-hidden="true"></i>
                 Add
             </button>
-        </fieldset>
-                </div>
-    <div class="box__actions">
-        <button class="trigger-action" 
-                data-action="publish"
-                data-target="edit-action">
-            <i class="fa fa-save" aria-hidden="true"></i>
-            Save
-        </button>
-        <button class="trigger-href" 
-                data-href="<?=$this->wc->website->getUrl('structure/view', ['structure' => $structure->name])?>">
-            <i class="fa fa-times" aria-hidden="true"></i>
-            Cancel
-        </button>
-    </div>
-</form>
-
+        </div>
+    </fieldset>
+</div>
+<div class="box__actions">
+    <button class="trigger-action" 
+            data-action="publish"
+            data-target="edit-action">
+        <i class="fa fa-save" aria-hidden="true"></i>
+        Save
+    </button>
+    <button class="trigger-href" 
+            data-href="<?=$this->wc->website->getUrl('structure/view', ['structure' => $structure->name])?>">
+        <i class="fa fa-times" aria-hidden="true"></i>
+        Cancel
+    </button>
+</div>
 
 <style>
     .restriction-settings {
@@ -120,6 +153,7 @@ $this->addJsFile('triggers.js');
     .fieldsets-container fieldset li {
         display: flex;
         justify-content: space-between;
+        margin-bottom: 4px;
     }
 
     fieldset {
@@ -128,10 +162,6 @@ $this->addJsFile('triggers.js');
     }
         fieldset > legend {
             font-weight: bold;
-        }
-        fieldset > ul > li  {
-            display: flex;
-            justify-content: space-between;
         }
         fieldset.right {
             display: flex;
@@ -156,6 +186,19 @@ $this->addJsFile('triggers.js');
     }
     .fieldsets-container > fieldset:last-child a.down-fieldset {
         display: none;
+    }
+    .new-content-actions {
+        display: flex;
+        justify-content: end;
+    }
+    .new-content-actions.hidden {
+        display: none;
+    }
+    #new-content legend {
+        display: none;
+    }
+    #new-content legend.new-content-form {
+        display: block;
     }
 </style>
 
@@ -262,5 +305,43 @@ $this->addJsFile('triggers.js');
             }
         });
 
+        $('[name="NEW_CONTENT_NAME-name[]"]').change(function(e) {
+            let name = e.target.value;
+            document.querySelector('.new-content-actions').classList.remove('hidden');
+            if( name === '' ){
+                document.querySelector('.new-content-actions').classList.add('hidden');
+            }
+        });
+
+        //$('#add-content').click( function() {
+        document.querySelector('#add-content').addEventListener("click", function() {
+
+            let fieldset    = document.getElementById('new-content').getElementsByTagName('fieldset')[0]; 
+            let name        = document.querySelector('[name="NEW_CONTENT_NAME-name[]"]').value;
+            let type        = document.querySelector('[name="NEW_CONTENT_NAME-type[]"]').value;
+
+            let newElement  = fieldset.cloneNode(true);
+
+            newElement.querySelector('legend.new-content-form').remove();
+            newElement.querySelector('.new-content-actions').remove();
+
+            //newElement.innerHTML = newElement.innerHTML.replace('NEW_CONTENT_NAME',name)
+            newElement.querySelector('legend').innerHTML = newElement.querySelector('legend').innerHTML.replace('NEW_CONTENT_NAME',name)
+            newElement.querySelector('[data-target="NEW_CONTENT_NAME-structure-type-toggle"]').setAttribute('data-target', name+'-structure-type-toggle');
+            newElement.querySelector('#NEW_CONTENT_NAME-structure-type-toggle').id = name + '-structure-type-toggle';
+
+            newElement.querySelector('[name="NEW_CONTENT_NAME-name[]"]').setAttribute('name', name+'-name[]');
+            newElement.querySelector('[name="NEW_CONTENT_NAME-type[]"]').setAttribute('name', name+'-type[]');
+            newElement.querySelector('[name="NEW_CONTENT_NAME-mandatory[]"]').setAttribute('name', name+'-mandatory[]');
+
+            //console.log(name, type);
+            //console.log(newElement);
+            //console.log(newElement.innerHTML.replace("NEW_CONTENT_NAME", name));
+
+            //$('#contents').append( newElement );
+           // document.querySelector('#contents').append( newElement );
+
+            document.querySelector('#contents').append( newElement );
+        });
     });
 </script>

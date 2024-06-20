@@ -1,11 +1,10 @@
 <?php /** @var WC\Module $this */
 
 use WC\Ingredient;
-use WC\Cauldron\Structure;
 
 $structureName = $this->wc->request->param('structure');
 if( $structureName ){
-    $structure = $this->wc->configuration->structure( $this->wc->request->param('structure') );
+    $structure = $this->wc->configuration->structure( $structureName );
 }
 
 if( !$structure )
