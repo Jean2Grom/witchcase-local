@@ -12,7 +12,7 @@
         </select>
     </li>
     <li>
-        <div id="<?=$name?>-accepted-contents">
+        <div class="accepted-contents-container">
             <?php foreach( $require['accept'] ?? [] as $acceptedItem ): ?>
                 <a class="remove-content">
                     <input type="hidden" name="<?=$name?>-accepted[]" value="<?=$acceptedItem?>" />
@@ -32,7 +32,7 @@
         </select>
     </li>
     <li>
-        <div id="<?=$name?>-refused-contents">
+        <div class="refused-contents-container">
             <?php foreach( $require['refuse'] ?? [] as $refusedItem ): ?>
                 <a class="remove-content">
                     <input type="hidden" name="<?=$name?>-refused[]" value="<?=$refusedItem?>" />

@@ -49,7 +49,6 @@ $this->addJsFile('triggers.js');
                     <li>
                         <div>Type</div>
                         <select class="check-restriction-toggle"
-                                data-target="<?=$item['name']?>-structure-type-toggle"
                                 name="<?=$item['name']?>-type[]">
                             <?php foreach( $possibleTypes as $possibleType => $label ): ?>
                                 <option <?=$possibleType === $item['type']? "selected": ""?>
@@ -67,7 +66,7 @@ $this->addJsFile('triggers.js');
                                 <?=$item['mandatory'] ?? null? "checked": ""?> />
                     </li>
                     <li <?=in_array($item['type'], $ingredients)? 'style="display: none"': ''?>
-                        id="<?=$item['name']?>-structure-type-toggle">
+                        class="structure-type-toggle">
                         <?php 
                             $require    = $item['require'] ?? [];
                             $name       = $item['name'];
@@ -96,7 +95,6 @@ $this->addJsFile('triggers.js');
             <li>
                 <div>Type</div>
                 <select class="check-restriction-toggle"
-                        data-target="NEW_CONTENT_NAME-structure-type-toggle"
                         name="NEW_CONTENT_NAME-type[]">
                     <option value="0">Select new type</option>
                     <?php foreach( $possibleTypes as $possibleType => $label ): ?>
@@ -113,7 +111,7 @@ $this->addJsFile('triggers.js');
                         name="NEW_CONTENT_NAME-mandatory[]" />
             </li>
             <li style="display: none"
-                id="NEW_CONTENT_NAME-structure-type-toggle">
+                class="structure-type-toggle">
                 <?php 
                     $require    = [];
                     $name       = "NEW_CONTENT_NAME";
@@ -206,30 +204,38 @@ $this->addJsFile('triggers.js');
     $(document).ready(function() {
 
         // RESTRICTIONS 
-        $('.check-restriction-toggle').change((e) => {
-            let idRestrictionDom = e.target.attributes["data-target"].value;
-            let enabled          = $(e.target).find('option:selected').data('restrictions') === "on";
+        document.querySelectorAll("select.check-restriction-toggle").forEach( 
+            (select) => select.addEventListener( 'change', (e) => checkRestrictionsToggle(e) )
+        );
 
-            if( enabled ){
-                $('#'+idRestrictionDom).show();
-            }
-            else {
-                $('#'+idRestrictionDom).hide();
-            }
-        });
+        function checkRestrictionsToggle( event )
+        {
+            let enabled =  event.target.selectedOptions[0].attributes["data-restrictions"].value === "on";
+            let display = enabled? 'block': 'none';
+            event.target.parentNode.parentNode.querySelector(".structure-type-toggle").style.display = display;
 
-        $('.content-add-trigger').change((e) => {
-            let candidateItem   = e.target.value;
-            let candidateLabel  = $(e.target).find('option:selected').html().trim();
-            let actionName      = e.target.attributes["data-target"].value;
-            let items           = document.querySelectorAll('[name="'+actionName+'[]"]');
+            return enabled;
+        }
 
-            $(e.target).val( 0 );
+        document.querySelectorAll("select.content-add-trigger").forEach( 
+            (select) => select.addEventListener( 'change', (e) => contentAddTrigger(e) )
+        );
+
+        function contentAddTrigger( event )
+        {
+            let candidateItem   = event.target.value;
+            let candidateLabel  = event.target.selectedOptions[0].innerHTML.trim();
+            let actionName      = event.target.attributes["data-target"].value;
+            let items           = event.target.parentNode.parentNode.querySelectorAll('[name="'+actionName+'[]"]');
+
+            event.target.value  =  0;
 
             if( Array.from(items)
                         .map( (input) => input.value )
                         .includes( candidateItem ) 
-            ){  return; }
+            ){  
+                return false; 
+            }
 
             let newEntry = document.createElement("a");
             newEntry.classList.add('remove-content');
@@ -248,30 +254,44 @@ $this->addJsFile('triggers.js');
             newIcon.classList.add('fa-times');
 
             newEntry.appendChild( newIcon );
+            newEntry.addEventListener('click', () => newEntry.remove());
+            
+            let addType         = actionName.slice( actionName.lastIndexOf('-') + 1 );
+            event.target.parentNode.parentNode.querySelector('.'+addType+"-contents-container").append( newEntry );
 
-            $('#'+actionName+'-contents').append( newEntry );
-        });
+            return true;
+        }
 
-        $('.restriction-settings').on('click', '.remove-content', function(){
-            $(this).remove();
-        });        
+        document.querySelectorAll(".remove-content").forEach( 
+            (elmt) => elmt.addEventListener('click', () => elmt.remove())
+        );
 
         // NAME / FILE (hidden inputs)
-        ['name', 'file'].forEach((hiddenInput) => {
-            $('#'+hiddenInput+'-display').click(function(){
-                $('#'+hiddenInput+'-input').show().focus();
-                $('#'+hiddenInput+'-display').hide();
+        ['name', 'file'].forEach( (hiddenInput) => {
+
+            document.querySelector('#'+hiddenInput+'-display').addEventListener('click', () => {
+                document.querySelector('#'+hiddenInput+'-input').style.display = 'block';
+                document.querySelector('#'+hiddenInput+'-input').focus();
+                document.querySelector('#'+hiddenInput+'-display').style.display = 'none';
             });
 
-            $('#'+hiddenInput+'-input').on('focusout', function(){
-                $('#'+hiddenInput+'-input').hide();
-                $('#'+hiddenInput+'-display').show();
+            document.querySelector('#'+hiddenInput+'-input').addEventListener('focusout', () => {
+                document.querySelector('#'+hiddenInput+'-input').style.display = 'none';
+                document.querySelector('#'+hiddenInput+'-display').style.display = 'block';
             });
 
-            $('#'+hiddenInput+'-input').change(function(){
-                $('#'+hiddenInput+'-display').html( $('#'+hiddenInput+'-input').val() );
-                $('#'+hiddenInput+'-input').hide();
-                $('#'+hiddenInput+'-display').show();
+            document.querySelector('#'+hiddenInput+'-input').addEventListener('change', () => {
+                let value = document.querySelector('#'+hiddenInput+'-input').value;
+
+                if( value !== '' ){
+                    document.querySelector('#'+hiddenInput+'-display').innerHTML = value;
+                }
+                else {
+                    document.querySelector('#'+hiddenInput+'-input').value = document.querySelector('#'+hiddenInput+'-display').innerHTML;
+                }
+
+                document.querySelector('#'+hiddenInput+'-input').style.display = 'none';
+                document.querySelector('#'+hiddenInput+'-display').style.display = 'block';
             });
         });
 
@@ -305,7 +325,7 @@ $this->addJsFile('triggers.js');
             }
         });
 
-        $('[name="NEW_CONTENT_NAME-name[]"]').change(function(e) {
+        document.querySelector('[name="NEW_CONTENT_NAME-name[]"]').addEventListener( 'input', (e) => {
             let name = e.target.value;
             document.querySelector('.new-content-actions').classList.remove('hidden');
             if( name === '' ){
@@ -327,8 +347,6 @@ $this->addJsFile('triggers.js');
 
             //newElement.innerHTML = newElement.innerHTML.replace('NEW_CONTENT_NAME',name)
             newElement.querySelector('legend').innerHTML = newElement.querySelector('legend').innerHTML.replace('NEW_CONTENT_NAME',name)
-            newElement.querySelector('[data-target="NEW_CONTENT_NAME-structure-type-toggle"]').setAttribute('data-target', name+'-structure-type-toggle');
-            newElement.querySelector('#NEW_CONTENT_NAME-structure-type-toggle').id = name + '-structure-type-toggle';
 
             newElement.querySelector('[name="NEW_CONTENT_NAME-name[]"]').setAttribute('name', name+'-name[]');
             newElement.querySelector('[name="NEW_CONTENT_NAME-type[]"]').setAttribute('name', name+'-type[]');
