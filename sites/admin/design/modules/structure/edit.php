@@ -44,12 +44,12 @@ $this->addJsFile('triggers.js');
                 <ul>
                     <li>
                         <div>Name</div>
-                        <input type="text" name="<?=$item['name']?>-name[]" value="<?=$item['name']?>" />
+                        <input type="text" class="ref-name" name="<?=$item['name']?>-name" value="<?=$item['name']?>" />
                     </li>
                     <li>
                         <div>Type</div>
                         <select class="check-restriction-toggle"
-                                name="<?=$item['name']?>-type[]">
+                                name="<?=$item['name']?>-type">
                             <?php foreach( $possibleTypes as $possibleType => $label ): ?>
                                 <option <?=$possibleType === $item['type']? "selected": ""?>
                                         data-restrictions="<?=in_array($possibleType, $ingredients)? "off": "on"?>"
@@ -62,7 +62,7 @@ $this->addJsFile('triggers.js');
                     <li>
                         <div>Mandatory</div>
                         <input  type="checkbox" value="1" 
-                                name="<?=$item['name']?>-mandatory[]" 
+                                name="<?=$item['name']?>-mandatory" 
                                 <?=$item['mandatory'] ?? null? "checked": ""?> />
                     </li>
                     <li <?=in_array($item['type'], $ingredients)? 'style="display: none"': ''?>
@@ -90,13 +90,13 @@ $this->addJsFile('triggers.js');
         <ul>
             <li>
                 <div>Name</div>
-                <input type="text" name="NEW_CONTENT_NAME-name[]" value="" />
+                <input type="text" class="ref-name" name="NEW_CONTENT_NAME-name" value="" />
             </li>
             <li>
                 <div>Type</div>
                 <select class="check-restriction-toggle"
-                        name="NEW_CONTENT_NAME-type[]">
-                    <option value="0">Select new type</option>
+                        name="NEW_CONTENT_NAME-type">
+                    <option value="0" data-restrictions="off">Select new type</option>
                     <?php foreach( $possibleTypes as $possibleType => $label ): ?>
                         <option data-restrictions="<?=in_array($possibleType, $ingredients)? "off": "on"?>"
                                 value="<?=$possibleType?>">
@@ -108,7 +108,7 @@ $this->addJsFile('triggers.js');
             <li>
                 <div>Mandatory</div>
                 <input  type="checkbox" value="1" 
-                        name="NEW_CONTENT_NAME-mandatory[]" />
+                        name="NEW_CONTENT_NAME-mandatory" />
             </li>
             <li style="display: none"
                 class="structure-type-toggle">
@@ -296,68 +296,96 @@ $this->addJsFile('triggers.js');
         });
 
         // FIELDSETS
-        $("fieldset > legend > a.remove-fieldset").click(function(){
-            if( confirm('Confirm Remove') ){
-                $(this).parent('legend').parent('fieldset').remove();
-            }
-        });
+        document.querySelectorAll("fieldset a.remove-fieldset").forEach( 
+            (anchor) => anchor.addEventListener( 'click', () => removeFieldSet(anchor) )
+        );
 
-        $("fieldset > legend > a.up-fieldset").click(function(){
-            let index       = $(this).parent('legend').parent('fieldset').index();
+        function removeFieldSet( anchor )
+        {
+            if( confirm('Confirm Remove') ){
+                anchor.parentNode.parentNode.remove();
+            }
+
+            return;
+        }
+        
+        document.querySelectorAll("fieldset a.up-fieldset").forEach( 
+            (anchor) => anchor.addEventListener( 'click', () => upFieldSet(anchor) )
+        );
+
+        function upFieldSet( anchor )
+        {
+            let fieldset    = anchor.parentNode.parentNode;
+            let index       = Array.prototype.slice.call( document.querySelectorAll('#contents fieldset') ).indexOf( fieldset );
             if( index === 0 ){
                 return;
             }
 
-            $(this).parent('legend').parent('fieldset').insertBefore( 
-                $(this).parent('legend').parent('fieldset').prev() 
-            );
-        });
+            document.querySelector('#contents').insertBefore(fieldset, document.querySelectorAll('#contents fieldset')[ index-1 ] );
+            return;
+        }
 
-        $("fieldset > legend > a.down-fieldset").click(function(){
-            $(this).parent('legend').parent('fieldset').insertAfter( 
-                $(this).parent('legend').parent('fieldset').next() 
-            );
-        });
+        document.querySelectorAll("fieldset a.down-fieldset").forEach( 
+            (anchor) => anchor.addEventListener( 'click', () => downFieldSet(anchor) )
+        );
 
-        $("fieldset.structure > ul > li > h4 > a.remove-fieldset-element").click(function(){
-            if( confirm('Confirm Remove') ){
-                $(this).parent('h4').parent('li').remove();
-            }
-        });
+        function downFieldSet( anchor )
+        {
+            let fieldset    = anchor.parentNode.parentNode;
+            let index       = Array.prototype.slice.call( document.querySelectorAll('#contents fieldset') ).indexOf( fieldset );
+            document.querySelector('#contents').insertBefore( document.querySelectorAll('#contents fieldset')[ index+1 ], fieldset )
+            return;
+        }
 
-        document.querySelector('[name="NEW_CONTENT_NAME-name[]"]').addEventListener( 'input', (e) => {
+        document.querySelector('[name="NEW_CONTENT_NAME-name"]').addEventListener( 'input', (e) => {
             let name = e.target.value;
             document.querySelector('.new-content-actions').classList.remove('hidden');
-            if( name === '' ){
+            let refNames = [];
+            document.querySelectorAll('#contents input.ref-name').forEach(
+                (input) =>  refNames.push( input.value )
+            );
+            
+            if( name === '' || refNames.includes(name) ){
                 document.querySelector('.new-content-actions').classList.add('hidden');
             }
         });
 
-        //$('#add-content').click( function() {
-        document.querySelector('#add-content').addEventListener("click", function() {
+
+        document.getElementById('add-content').addEventListener('click', function(){
 
             let fieldset    = document.getElementById('new-content').getElementsByTagName('fieldset')[0]; 
-            let name        = document.querySelector('[name="NEW_CONTENT_NAME-name[]"]').value;
-            let type        = document.querySelector('[name="NEW_CONTENT_NAME-type[]"]').value;
+            let name        = document.querySelector('[name="NEW_CONTENT_NAME-name"]').value;
+            let type        = document.querySelector('[name="NEW_CONTENT_NAME-type"]').value;
+            let mandatory   = document.querySelector('[name="NEW_CONTENT_NAME-mandatory"]').checked;
+            let min         = document.querySelector('[name="NEW_CONTENT_NAME-min"]').value;
+            let max         = document.querySelector('[name="NEW_CONTENT_NAME-max"]').value;
 
             let newElement  = fieldset.cloneNode(true);
+
+            fieldset.querySelector('[name="NEW_CONTENT_NAME-name"]').value          = '';
+            fieldset.querySelector('[name="NEW_CONTENT_NAME-type"]').value          = 0;
+            fieldset.querySelector('[name="NEW_CONTENT_NAME-mandatory"]').checked   = false;
+            fieldset.querySelector(".structure-type-toggle").style.display          = 'none';
+            fieldset.querySelector('[name="NEW_CONTENT_NAME-min"]').value           = 0;
+            fieldset.querySelector('[name="NEW_CONTENT_NAME-max"]').value           = -1;
+            fieldset.querySelector('.accepted-contents-container').innerHTML        = '';
+            fieldset.querySelector('.refused-contents-container').innerHTML         = '';
+
+            document.querySelector('.new-content-actions').classList.add('hidden');
 
             newElement.querySelector('legend.new-content-form').remove();
             newElement.querySelector('.new-content-actions').remove();
 
-            //newElement.innerHTML = newElement.innerHTML.replace('NEW_CONTENT_NAME',name)
             newElement.querySelector('legend').innerHTML = newElement.querySelector('legend').innerHTML.replace('NEW_CONTENT_NAME',name)
+            newElement.querySelector("a.down-fieldset").addEventListener( 'click', (e) => downFieldSet(e.target) );
+            newElement.querySelector("a.up-fieldset").addEventListener( 'click', (e) => upFieldSet(e.target) );
+            newElement.querySelector("a.remove-fieldset").addEventListener( 'click', (e) => removeFieldSet(e.target) )
 
-            newElement.querySelector('[name="NEW_CONTENT_NAME-name[]"]').setAttribute('name', name+'-name[]');
-            newElement.querySelector('[name="NEW_CONTENT_NAME-type[]"]').setAttribute('name', name+'-type[]');
-            newElement.querySelector('[name="NEW_CONTENT_NAME-mandatory[]"]').setAttribute('name', name+'-mandatory[]');
-
-            //console.log(name, type);
-            //console.log(newElement);
-            //console.log(newElement.innerHTML.replace("NEW_CONTENT_NAME", name));
-
-            //$('#contents').append( newElement );
-           // document.querySelector('#contents').append( newElement );
+            newElement.querySelector('[name="NEW_CONTENT_NAME-name"]').setAttribute('name', name+'-name');
+            newElement.querySelector('[name="NEW_CONTENT_NAME-type"]').value = type;
+            newElement.querySelector('[name="NEW_CONTENT_NAME-type"]').addEventListener( 'change', (e) => checkRestrictionsToggle(e) );
+            newElement.querySelector('[name="NEW_CONTENT_NAME-type"]').setAttribute('name', name+'-type');
+            newElement.querySelector('[name="NEW_CONTENT_NAME-mandatory"]').setAttribute('name', name+'-mandatory');
 
             document.querySelector('#contents').append( newElement );
         });
