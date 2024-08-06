@@ -27,7 +27,7 @@ $this->addJsFile('triggers.js');
             <legend>global restrictions</legend>
             <?php 
                 $require    = $structure->require;
-                $name       = "global";
+                $name       = $globalRequireInputPrefix;
                 include $this->getIncludeDesignFile('edit/structure-require.php'); ?>
         </fieldset>
     </div>

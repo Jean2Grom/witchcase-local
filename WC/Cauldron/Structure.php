@@ -20,5 +20,13 @@ class Structure
     public WitchCase $wc;
 
 
+    function save( ?string $file ): bool
+    {
+        if( !$this->file ){
+
+        }
+
+        return true;
+    }
 
 }

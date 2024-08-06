@@ -73,7 +73,35 @@ class StructureHandler
      */
     static function writeProperties( Structure $structure ): void
     {
-        $structure->properties= [];
+        $structure->properties = [];
+        if( $structure->name ){
+            $structure->properties['name'] = $structure->name;
+        }
+        if( $structure->require ){
+            $structure->properties['require'] = $structure->require;
+        }
+        if( $structure->composition )
+        {
+            $structure->properties['composition'] = [];
+            foreach( $structure->composition as $item )
+            {
+                $content = [];
+                if( !empty($item[ "mandatory" ]) ){
+                    $content["mandatory"] = $item["mandatory"];
+                }
+                if( !empty($item[ "name" ]) ){
+                    $content["name"] = $item["name"];
+                }
+                if( !empty($item[ "type" ]) ){
+                    $content["type"] = $item["type"];
+                }
+                if( !empty($item[ "require" ]) ){
+                    $content["require"] = $item["require"];
+                }
+
+                $structure->properties['composition'][] = $content;
+            }
+        }
 
         return;
     }
