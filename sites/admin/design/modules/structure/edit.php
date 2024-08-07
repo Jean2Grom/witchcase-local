@@ -13,14 +13,25 @@ $this->addJsFile('triggers.js');
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="structure" value="<?=$structureName?>" />
-    <h3>
-        <span  id="name-display"><?=$structure->name?></span>
-        <input id="name-input" type="text" name="name" value="<?=$structure->name ?>" />
-    </h3>
+    <?php if( !empty($structureName) ): ?>
+        <input type="hidden" name="structure" value="<?=$structureName?>" />
+        <h3>
+            <span  id="name-display"><?=$structure->name?></span>
+            <input id="name-input" type="text" name="name" value="<?=$structure->name ?>" />
+        </h3>
 
-    <em id="file-display"><?=$structure->file ?? ''?></em>
-    <input id="file-input" type="text" name="file" value="<?=$structure->file ?>" />
+        <em id="file-display"><?=$structure->file ?? ''?></em>
+        <input id="file-input" type="text" name="file" value="<?=$structure->file ?>" />
+
+    <?php else: ?>
+        <h3>
+            <span  id="name-display">Click to enter new structure name</span>
+            <input id="name-input" type="text" name="name" value="" />
+        </h3>
+
+        <em id="file-display">Click to customize new structure file</em>
+        <input id="file-input" type="text" name="file" value="" />
+    <?php endif; ?>
 
     <div class="fieldsets-container">
         <fieldset>
@@ -127,17 +138,32 @@ $this->addJsFile('triggers.js');
     </fieldset>
 </div>
 <div class="box__actions">
-    <button class="trigger-action" 
-            data-action="publish"
-            data-target="edit-action">
-        <i class="fa fa-save" aria-hidden="true"></i>
-        Save
-    </button>
-    <button class="trigger-href" 
-            data-href="<?=$this->wc->website->getUrl('structure/view', ['structure' => $structure->name])?>">
-        <i class="fa fa-times" aria-hidden="true"></i>
-        Cancel
-    </button>
+    <?php if( !empty($structureName) ): ?>
+        <button class="trigger-action" 
+                data-action="save"
+                data-target="edit-action">
+            <i class="fa fa-save" aria-hidden="true"></i>
+            Save
+        </button>
+        <button class="trigger-href" 
+                data-href="<?=$this->wc->website->getUrl('structure/view', ['structure' => $structure->name])?>">
+            <i class="fa fa-times" aria-hidden="true"></i>
+            Cancel
+        </button>
+
+    <?php else: ?>
+        <button class="trigger-action" 
+                data-action="publish"
+                data-target="edit-action">
+            <i class="fa fa-check" aria-hidden="true"></i>
+            Publish
+        </button>
+        <button class="trigger-href" 
+                data-href="<?=$this->wc->website->getUrl('structure')?>">
+            <i class="fa fa-times" aria-hidden="true"></i>
+            Cancel
+        </button>
+    <?php endif; ?>
 </div>
 
 <style>
@@ -386,6 +412,25 @@ $this->addJsFile('triggers.js');
             newElement.querySelector('[name="NEW_CONTENT_NAME-type"]').addEventListener( 'change', (e) => checkRestrictionsToggle(e) );
             newElement.querySelector('[name="NEW_CONTENT_NAME-type"]').setAttribute('name', name+'-type');
             newElement.querySelector('[name="NEW_CONTENT_NAME-mandatory"]').setAttribute('name', name+'-mandatory');
+            newElement.querySelector('[name="NEW_CONTENT_NAME-min"]').value = min;
+            newElement.querySelector('[name="NEW_CONTENT_NAME-min"]').setAttribute('name', name+'-min');
+            newElement.querySelector('[name="NEW_CONTENT_NAME-max"]').value = max;
+            newElement.querySelector('[name="NEW_CONTENT_NAME-max"]').setAttribute('name', name+'-max');
+
+            newElement.querySelector('[data-target="NEW_CONTENT_NAME-accepted"]').setAttribute('data-target', name+'-accepted');
+            newElement.querySelector('[data-target="'+name+'-accepted"]').addEventListener( 'change', (e) => contentAddTrigger(e) );
+            newElement.querySelectorAll('[name="NEW_CONTENT_NAME-accepted\[\]"]').forEach( 
+                (input) => input.setAttribute('name', name+'-accepted[]')
+            );
+            newElement.querySelector('[data-target="NEW_CONTENT_NAME-refused"]').setAttribute('data-target', name+'-refused');
+            newElement.querySelector('[data-target="'+name+'-refused"]').addEventListener( 'change', (e) => contentAddTrigger(e) );
+            newElement.querySelectorAll('[name="NEW_CONTENT_NAME-refused\[\]"]').forEach( 
+                (input) => input.setAttribute('name', name+'-refused[]')
+            );
+
+            newElement.querySelectorAll(".remove-content").forEach( 
+                (elmt) => elmt.addEventListener('click', () => elmt.remove())
+            );
 
             document.querySelector('#contents').append( newElement );
         });

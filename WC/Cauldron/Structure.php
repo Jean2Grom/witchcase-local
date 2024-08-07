@@ -9,7 +9,7 @@ class Structure
 {
     const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
 
-    public ?string $file;
+    public ?string $file = null;
     public ?string $name;
 
     public array $properties    = [];
@@ -41,6 +41,9 @@ class Structure
 
         if( !$file ){
             $file = Configuration::STRUCTURES_DIR."/".$this->name.".json";
+        }
+        elseif( substr($file, -5) !== ".json" ){
+            $file .= ".json";
         }
 
         $dir =  dirname($file);

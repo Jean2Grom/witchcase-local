@@ -51,9 +51,9 @@ $this->addJsFile('triggers.js');
             </table>
             
             <div class="box__actions">
-                <button class="trigger-href" data-href="/admin/view?id=24">
+                <button class="trigger-href" data-href="<?=$this->wc->website->getUrl('structure/create')?>">
                     <i class="fa fa-plus" aria-hidden="true"></i>
-                    Add Daughter
+                    Add New Structure
                 </button>
             </div>
         </form>

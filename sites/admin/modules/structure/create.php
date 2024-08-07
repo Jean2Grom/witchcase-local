@@ -1,9 +1,10 @@
 <?php /** @var WC\Module $this */
 
+use WC\Handler\StructureHandler;
 use WC\Ingredient;
 
 $possibleActionsList = [
-    'save',
+    'publish',
 ];
 
 $action = $this->wc->request->param('action');
@@ -11,20 +12,7 @@ if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$structureName = $this->wc->request->param('structure');
-if( $structureName ){
-    $structure = $this->wc->configuration->structure( $structureName );
-}
-
-if( !$structure )
-{
-    $this->wc->user->addAlert([
-        'level'     =>  'error',
-        'message'   =>  "Structure not found"
-    ]);
-    header( 'Location: '.$this->wc->website->getFullUrl('structure') );
-    exit();
-}
+$structure      = StructureHandler::createFromData($this->wc, []);
 
 $structures     = $this->wc->configuration->structures();
 $ingredients    = Ingredient::list();
@@ -39,14 +27,15 @@ foreach( $structures as $structureItem ){
 
 $globalRequireInputPrefix = "GLOBAL_STRUCTURE_REQUIREMENTS";
 
+
 switch( $action )
 {
-    case 'save':
+    case 'publish':
 
-        if( $this->wc->request->param("structure") !== $structure->name ){
+        if( empty($this->wc->request->param("name")) ){
             $this->wc->user->addAlert([
                 'level'     =>  'error',
-                'message'   =>  "Structure mismatch"
+                'message'   =>  "Structure must have a name"
            ]);        
         }
         else 
@@ -78,16 +67,16 @@ switch( $action )
             if( !$structure->save($this->wc->request->param("file")) ){
                 $this->wc->user->addAlert([
                     'level'     =>  'error',
-                    'message'   =>  "Structure update failed"
+                    'message'   =>  "Structure creation failed"
                ]);    
             }
             else 
             {
                 $this->wc->user->addAlert([
                     'level'     =>  'success',
-                    'message'   =>  "Structure \"".$possibleTypes[ $structure->name ]."\" updated"
+                    'message'   =>  "Structure \"".$structure->name."\" created"
                ]);
-               header( 'Location: '.$this->wc->website->getFullUrl('structure/view', ['structure' => $structure->name]) );
+               header( 'Location: '.$this->wc->website->getFullUrl('structure/edit', ['structure' => $structure->name]) );
                exit();
             }
         }
@@ -115,4 +104,4 @@ function getRequire( $inputs, $name )
 
 $alerts = $this->wc->user->getAlerts();
 
-$this->view();
+$this->view('structure/edit');
