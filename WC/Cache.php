@@ -7,7 +7,7 @@ namespace WC;
  * @author Jean2Grom
  */
 class Cache 
-{    
+{
     const DEFAULT_DIRECTORY     = "cache";
     const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
     const DEFAULT_DURATION      = 86400;    // 24h
@@ -145,15 +145,11 @@ class Cache
     {
         $cacheFolder = $this->dir.'/';
         
-        if( !isset($this->folders[ $folder ]) )
-        {
+        if( !isset($this->folders[ $folder ]) ){
             $cacheFolder    .=  $folder;
-            $cacheDuration  =   $this->defaultDuration;
         }
-        else 
-        {
+        else {
             $cacheFolder    .=  $this->folders[ $folder ]['directory'];
-            $cacheDuration  =   $this->folders[ $folder ]['duration'];
         }
         
         if( !is_dir($cacheFolder) ){

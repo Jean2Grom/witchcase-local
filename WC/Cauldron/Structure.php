@@ -1,10 +1,14 @@
 <?php
 namespace WC\Cauldron;
 
+use WC\Configuration;
 use WC\WitchCase;
+use WC\Handler\StructureHandler as Handler;
 
 class Structure 
 {
+    const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
+
     public ?string $file;
     public ?string $name;
 
@@ -20,10 +24,58 @@ class Structure
     public WitchCase $wc;
 
 
-    function save( ?string $file ): bool
+    /**
+     * Save structure data into file
+     * @param ?string $fileParam : provided filename, default null
+     * @return bool
+     */
+    function save( ?string $fileParam=null ): bool
     {
-        if( !$this->file ){
+        if( empty($this->name) ){
+            return false;
+        }
 
+        Handler::writeProperties($this);
+
+        $file = $fileParam ?? $this->file;
+
+        if( !$file ){
+            $file = Configuration::STRUCTURES_DIR."/".$this->name.".json";
+        }
+
+        $dir =  dirname($file);
+        $createFolderRights = $this->wc->configuration->read('system','createFolderRights') ?? self::DEFAULT_DIR_RIGHTS;
+
+        if( !is_dir($dir) 
+            && !mkdir($dir,  octdec( $createFolderRights ), true)
+        ){
+            $this->wc->log->error("Can't create structure folder : ".$dir);
+            return false;
+        }
+
+        $backupFile = false;
+        if( $this->file && $this->file !== $file ){
+            $backupFile = $this->file;
+        }
+        elseif( file_exists($file) )
+        {
+            $backupFile = $file.".sav";
+            rename( $file, $backupFile );
+        }
+
+        $cacheFileFP = fopen( $file, 'a' );
+        fwrite( $cacheFileFP, json_encode($this->properties, JSON_PRETTY_PRINT) );            
+        fclose( $cacheFileFP );
+
+        if( $backupFile && !Handler::extractJsonDataFromFile($file) )
+        {
+            unlink( $file );
+            rename( $backupFile, $file );
+            return false;
+        }
+
+        if( $backupFile ){
+            unlink( $backupFile );
         }
 
         return true;

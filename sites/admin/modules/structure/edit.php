@@ -1,6 +1,5 @@
 <?php /** @var WC\Module $this */
 
-use WC\Handler\StructureHandler;
 use WC\Ingredient;
 
 $possibleActionsList = [
@@ -40,15 +39,10 @@ foreach( $structures as $structureItem ){
 
 $globalRequireInputPrefix = "GLOBAL_STRUCTURE_REQUIREMENTS";
 
-
 switch( $action )
 {
     case 'publish':
 
-        $this->wc->dump($this->wc->request->inputs());
-        //$this->wc->debug($this->wc->request->param("structure"));
-        //$this->wc->dump($structure);
-        
         if( $this->wc->request->param("structure") !== $structure->name ){
             $this->wc->user->addAlert([
                 'level'     =>  'error',
@@ -81,63 +75,28 @@ switch( $action )
             $structure->require     = getRequire( $inputs, $globalRequireInputPrefix );
             $structure->composition = $composition;
 
-            // $structure->properties = [
-            //     //"file"          => $this->wc->request->param("file"),
-            //     "name"          => $this->wc->request->param("name"),
-            //     "require"       => getRequire( $inputs, $globalRequireInputPrefix ),
-            //     "composition"   => $composition,
-            // ];
-
-            StructureHandler::writeProperties($structure);
-
-            $structure->save( $this->wc->request->param("file") );
+            if( !$structure->save($this->wc->request->param("file")) ){
+                $this->wc->user->addAlert([
+                    'level'     =>  'error',
+                    'message'   =>  "Structure update failed"
+               ]);    
+            }
+            else 
+            {
+                $this->wc->user->addAlert([
+                    'level'     =>  'success',
+                    'message'   =>  "Structure \"".$possibleTypes[ $structure->name ]."\" updated"
+               ]);
+               header( 'Location: '.$this->wc->website->getFullUrl('structure/view', ['structure' => $structure->name]) );
+               exit();
+            }
         }
-    break;
-
-    case 'save':
-
-        //$this->wc->request->inputs();
-        $saved = $draft->readInputs()->save();
-
-        if( $saved === false )
-        {
-            $return     = false;
-            $alerts[]   = [
-                'level'     =>  'error',
-                'message'   =>  "Error, update canceled"
-            ];
-        }
-        elseif( $saved === 0 ){
-            $alerts[] = [
-                'level'     =>  'warning',
-                'message'   =>  "No update"
-            ];
-        }
-        else {
-            $alerts[] = [
-                'level'     =>  'success',
-                'message'   =>  "Draft Updated"
-            ];
-        }   
-        
-        header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$this->witch("target")->id) );
-        exit();
-            
     break;
 }
-
-
-
-// $this->wc->debug($structures);
-// $this->wc->debug($possibleTypes);
-$this->wc->dump($structure);
 
 function getRequire( $inputs, $name )
 {
     $require    = [];
-    // if( !empty($inputs[ $name."-mandatory" ]) ){
-    //     $require['mandatory'] = $inputs[ $name."-mandatory" ];
-    // }
     if( !empty($inputs[ $name."-accepted" ]) ){
         $require['accept'] = $inputs[ $name."-accepted" ];
     }

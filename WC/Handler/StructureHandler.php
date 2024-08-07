@@ -33,6 +33,23 @@ class StructureHandler
      */
     static function createFromFile(  WitchCase $wc, string $file ): ?Structure
     {
+        $jsonData = self::extractJsonDataFromFile( $file );
+        if( !$jsonData ){
+            return null;
+        }
+        
+        $structure          = self::createFromData( $wc, $jsonData );
+        $structure->file    = $file;
+        
+        return $structure;
+    }  
+
+    /**
+     * @param string $file
+     * @return ?array 
+     */
+    static function extractJsonDataFromFile( string $file ): ?array
+    {
         if( !is_file($file) ){
             return null;
         }
@@ -46,12 +63,9 @@ class StructureHandler
         if( !$jsonData ){
             return null;
         }
-        
-        $structure          = self::createFromData( $wc, $jsonData );
-        $structure->file    = $file;
-        
-        return $structure;
-    }  
+
+        return $jsonData;
+    }
 
     /**
      * Update  Object current state based on var "properties" (directly rad from JSON file) 
@@ -65,7 +79,6 @@ class StructureHandler
 
         return;
     }
-
 
     /**
      * Update var "properties" (directly rad from JSON file) based on Object current state 
@@ -106,7 +119,11 @@ class StructureHandler
         return;
     }
 
-
+    /**
+     * Insert Structure object references in compositions
+     * @param array $structures
+     * @return bool
+     */
     static function resolve( array $structures ): bool
     {
         $return = true;
