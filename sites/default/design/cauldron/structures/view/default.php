@@ -9,7 +9,9 @@
                 <?php endif; ?>
                 <?="[".$ingredient->type."] " ?>
             </div>
-            <div><?php $ingredient->display( false, 40 ); ?></div>
+            <div style="padding-left: 10px;">
+                <?php $ingredient->display( null, 40 ); ?>
+            </div>
         </li>
     <?php endforeach; ?>
 </ul>

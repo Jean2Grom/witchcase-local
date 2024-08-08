@@ -24,7 +24,7 @@ trait CauldronIngredientTrait
             ob_end_clean();
 
             $suffix = " (...)";
-            if(  $maxChars && strlen($result) > $maxChars && strlen($suffix) < $maxChars )
+            if( $this->isIngredient() && $maxChars && strlen($result) > $maxChars && strlen($suffix) < $maxChars )
             {
                 $truncated  = substr(  $result, 0, ($maxChars-strlen( $suffix )) );
                 $lastSpace  = strrpos( $truncated, " " );
