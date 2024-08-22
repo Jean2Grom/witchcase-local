@@ -1,18 +1,15 @@
 <?php /** @var WC\Cauldron $this */ ?>
 
-<ul>
-    <?php foreach( $this->content() ?? [] as $content ): ?>
-        <li>
-            <h4>
-                <?php if( $content->name ): ?>
-                    <?=$content->name ?>
-                <?php endif; ?>
-                <?="[".$content->type."] " ?>
-                <a class="up-fieldset-element">[&#8593;]</a>
-                <a class="down-fieldset-element">[&#8595;]</a>
-                <a class="remove-fieldset-element">[x]</a>
-            </h4>
-            <?php $content->edit( null, $this->getInputName(false) ); ?>
-        </li>
+<div class="fieldsets-container">
+    <?php foreach( $this->content() as $content ): ?>
+        <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">
+            <legend>
+                <span><?=$content->name?> [<?=$content->type?>]</span>
+                <a class="up-fieldset">[&#8593;]</a>
+                <a class="down-fieldset">[&#8595;]</a>
+                <a class="remove-fieldset">[x]</a>
+            </legend>
+            <?php $content->edit( null, $this->getInputName(false) ) ?>
+        </fieldset>
     <?php endforeach; ?>
-</ul>
+</div>

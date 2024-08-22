@@ -1,8 +1,10 @@
-<?php   /** @var WC\Module $this @var WC\Cauldron $draft */
+<?php   
+/** @var WC\Module $this 
+  * @var WC\Cauldron $draft */
 
 $this->addCssFile('content-edit.css');
 $this->addJsFile('triggers.js');
-$this->addJsFile('jquery-ui.min.js');
+//$this->addJsFile('jquery-ui.min.js');
 ?>
 <h1>
     <i class="fa fa-feather-alt"></i>
@@ -11,7 +13,6 @@ $this->addJsFile('jquery-ui.min.js');
 <p><em><?=$this->witch("target")->data?></em></p>
     
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
-
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
     <h3>
@@ -33,7 +34,16 @@ $this->addJsFile('jquery-ui.min.js');
         <?php foreach( $draft->content() as $content ): ?>
             <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">
                 <legend>
+                    <em id="name-display"><?=$content->name ?></em>
+                    <input id="name-input" type="text" name="name" value="<?=$content->name ?>" />
+
+
                     <span><?=$content->name?> [<?=$content->type?>]</span>
+                    <?=$content->getInputName(false)?>
+
+                    
+                    <a class="up-fieldset">[&#8593;]</a>
+                    <a class="down-fieldset">[&#8595;]</a>
                     <a class="remove-fieldset">[x]</a>
                 </legend>
                 <?php $content->edit() ?>
@@ -85,77 +95,130 @@ $this->addJsFile('jquery-ui.min.js');
     #name-input {
         display: none;
     }
-
-    fieldset.ingredient {
-        border: none;
-        box-shadow: 1px 1px 1px #ddd;
-        background-color: #fcfcfc;
+    .fieldsets-container > fieldset:first-child > *:first-child > a.up-fieldset {
+        display: none;
     }
-    .fieldsets-container.ui-sortable > fieldset.ingredient {
-        cursor: move;
+    .fieldsets-container > fieldset:last-child > *:first-child > a.down-fieldset {
+        display: none;
     }
-
-    fieldset.structure > ul > li {
-        margin: 4px;
+    fieldset > .fieldsets-container {
+        margin-left: 24px;
     }
-        fieldset.structure > ul > li h4 {
-            margin-bottom: 4px;
-        }
-        fieldset.structure > ul > li:first-child a.up-fieldset-element {
-            display: none;
-        }
-        fieldset.structure > ul > li:last-child a.down-fieldset-element {
-            display: none;
-        }
 </style>
 <script>
     $(document).ready(function() {
 
-        $('#name-display').click(function(){
-            $('#name-input').show();
-            $('#name-display').hide();
-        });
+        document.querySelectorAll("fieldset a.remove-fieldset").forEach( 
+            (anchor) => anchor.addEventListener( 'click', () => removeFieldSet(anchor) )
+        );
 
-        $('#name-input').on('focusout', function(){
-            $('#name-input').hide();
-            $('#name-display').show();
-        });
+        document.querySelectorAll("fieldset.structure > ul > li > h4 > a.remove-fieldset-element").forEach( 
+            (anchor) => anchor.addEventListener( 'click', () => removeFieldSet(anchor) )
+        );
+        
+        /*
+        document.querySelectorAll("a.remove-fieldset").forEach( 
+            (anchor) => anchor.addEventListener( 'click', () => removeFieldSet(anchor) )
+        );*/
 
-        $('#name-input').change(function(){
-            $('#name-display').html( $('#name-input').val() );
-            $('#name-input').hide();
-            $('#name-display').show();
-        });
 
-        $(".fieldsets-container").sortable();
-        $("fieldset > legend > a.remove-fieldset").click(function(){
+        function removeFieldSet( anchor )
+        {
+            console.log('removeFieldSet');
+
             if( confirm('Confirm Remove') ){
-                $(this).parent('legend').parent('fieldset').remove();
+                anchor.parentNode.parentNode.remove();
             }
-        });
 
-        $("fieldset.structure > ul > li > h4 > a.up-fieldset-element").click(function(){
-            let index       = $(this).parent('h4').parent('li').index();
+            return;
+        }
+        
+        document.querySelectorAll("fieldset a.up-fieldset").forEach( 
+            (anchor) => anchor.addEventListener( 'click', () => upFieldSet(anchor) )
+        );
+
+        document.querySelectorAll("fieldset.structure > ul > li > h4 > a.up-fieldset-element").forEach( 
+            (anchor) => anchor.addEventListener( 'click', () => upFieldSet(anchor) )
+        );
+
+        function upFieldSet( anchor )
+        {
+            console.log('upFieldSet');
+
+            let fieldset        = anchor.parentNode.parentNode;
+            let container       = fieldset.parentNode;
+            let fieldsetArray   = Array.from(fieldset.parentNode.childNodes).filter( element => element.type === fieldset.type );
+            let index           = fieldsetArray.indexOf(fieldset);
+
             if( index === 0 ){
                 return;
             }
 
-            $(this).parent('h4').parent('li').insertBefore( 
-                $(this).parent('h4').parent('li').prev() 
-            );
-        });
+            let targetPosition  = Array.prototype.slice.call( container.childNodes ).indexOf( fieldsetArray[index - 1] );    
 
-        $("fieldset.structure > ul > li > h4 > a.down-fieldset-element").click(function(){
-            $(this).parent('h4').parent('li').insertAfter( 
-                $(this).parent('h4').parent('li').next() 
-            );
-        });
+            container.insertBefore(fieldset, container.childNodes[ targetPosition ] );
+            return;
+        }
 
-        $("fieldset.structure > ul > li > h4 > a.remove-fieldset-element").click(function(){
-            if( confirm('Confirm Remove') ){
-                $(this).parent('h4').parent('li').remove();
+        document.querySelectorAll("fieldset a.down-fieldset").forEach( 
+            (anchor) => anchor.addEventListener( 'click', () => downFieldSet(anchor) )
+        );
+
+        document.querySelectorAll("fieldset.structure > ul > li > h4 > a.down-fieldset-element").forEach( 
+            (anchor) => anchor.addEventListener( 'click', () => downFieldSet(anchor) )
+        );
+
+        function downFieldSet( anchor )
+        {
+            console.log('downFieldSet');
+
+            let fieldset        = anchor.parentNode.parentNode;
+            let container       = fieldset.parentNode;
+            let fieldsetArray   = Array.from(fieldset.parentNode.childNodes).filter( element => element.type === fieldset.type );
+            let index           = fieldsetArray.indexOf(fieldset);
+
+            if( index+1 === fieldsetArray.length ){
+                return;
             }
+
+            let target  = fieldsetArray[index + 2];
+            if( target === undefined )
+            {
+                container.appendChild( fieldset );
+                return;
+            }
+
+            let targetPosition  = Array.prototype.slice.call( container.childNodes ).indexOf( target );    
+
+            container.insertBefore(fieldset, container.childNodes[ targetPosition ] );
+            return;
+        }
+        
+        document.querySelector('#name-display').addEventListener('click', () => {
+            document.querySelector('#name-input').style.display = 'inline-block';
+            document.querySelector('#name-input').focus();
+            document.querySelector('#name-display').style.display = 'none';
         });
+
+        document.querySelector('#name-input').addEventListener('focusout', () => {
+            document.querySelector('#name-input').style.display = 'none';
+            document.querySelector('#name-display').style.display = 'inline-block';
+        });
+
+        document.querySelector('#name-input').addEventListener('change', () => {
+            let value = document.querySelector('#name-input').value;
+
+            if( value !== '' ){
+                document.querySelector('#name-display').innerHTML = value;
+            }
+            else {
+                document.querySelector('#name-input').value = document.querySelector('#name-display').innerHTML;
+            }
+
+            document.querySelector('#name-input').style.display = 'none';
+            document.querySelector('#name-display').style.display = 'inline-block';
+        });
+
 
     });
 </script>

@@ -1,5 +1,9 @@
-<?php /** @var WC\Module $this */
-
+<?php /**  */
+/**
+ * @var WC\Module $this
+ * @var WC\Cauldron\Structure $structure
+ * @var array $possibleTypes
+ */
 
 //$this->addCssFile('content-edit.css');
 $this->addJsFile('triggers.js');
