@@ -4,7 +4,6 @@
 
 $this->addCssFile('content-edit.css');
 $this->addJsFile('triggers.js');
-//$this->addJsFile('jquery-ui.min.js');
 ?>
 <h1>
     <i class="fa fa-feather-alt"></i>
@@ -17,8 +16,8 @@ $this->addJsFile('triggers.js');
 <form id="edit-action" method="post" enctype="multipart/form-data">
     <h3>
         [<?=$draft->data->structure ?>] 
-        <em id="name-display"><?=$draft->name ?></em>
-        <input id="name-input" type="text" name="name" value="<?=$draft->name ?>" />
+        <span class="span-input-toggle" data-name="name"><?=$draft->name ?></span>
+        <input class="span-input-toggle" type="text" name="name" value="<?=$draft->name ?>" />
     </h3>
     <p>
         <?php if( $draft->created ): ?>
@@ -34,13 +33,10 @@ $this->addJsFile('triggers.js');
         <?php foreach( $draft->content() as $content ): ?>
             <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">
                 <legend>
-                    <em id="name-display"><?=$content->name ?></em>
-                    <input id="name-input" type="text" name="name" value="<?=$content->name ?>" />
+                    <span class="span-input-toggle" data-name="<?=$content->getInputName(false)?>-name"><?=$content->name ?></span>
+                    <input class="span-input-toggle" type="text" name="<?=$content->getInputName(false)?>-name" value="<?=$content->name ?>" />
 
-
-                    <span><?=$content->name?> [<?=$content->type?>]</span>
-                    <?=$content->getInputName(false)?>
-
+                    [<?=$content->type?>]
                     
                     <a class="up-fieldset">[&#8593;]</a>
                     <a class="down-fieldset">[&#8595;]</a>
@@ -88,11 +84,10 @@ $this->addJsFile('triggers.js');
 </form>
 
 <style>
-    #name-display {
+    span.span-input-toggle {
         cursor: pointer;
     }
-
-    #name-input {
+    input.span-input-toggle {
         display: none;
     }
     .fieldsets-container > fieldset:first-child > *:first-child > a.up-fieldset {
@@ -100,6 +95,12 @@ $this->addJsFile('triggers.js');
     }
     .fieldsets-container > fieldset:last-child > *:first-child > a.down-fieldset {
         display: none;
+    }
+    fieldset.structure {
+        background-color: #eee;
+    }
+    fieldset.ingredient {
+        background-color: #fff;
     }
     fieldset > .fieldsets-container {
         margin-left: 24px;
@@ -112,20 +113,8 @@ $this->addJsFile('triggers.js');
             (anchor) => anchor.addEventListener( 'click', () => removeFieldSet(anchor) )
         );
 
-        document.querySelectorAll("fieldset.structure > ul > li > h4 > a.remove-fieldset-element").forEach( 
-            (anchor) => anchor.addEventListener( 'click', () => removeFieldSet(anchor) )
-        );
-        
-        /*
-        document.querySelectorAll("a.remove-fieldset").forEach( 
-            (anchor) => anchor.addEventListener( 'click', () => removeFieldSet(anchor) )
-        );*/
-
-
         function removeFieldSet( anchor )
         {
-            console.log('removeFieldSet');
-
             if( confirm('Confirm Remove') ){
                 anchor.parentNode.parentNode.remove();
             }
@@ -137,14 +126,8 @@ $this->addJsFile('triggers.js');
             (anchor) => anchor.addEventListener( 'click', () => upFieldSet(anchor) )
         );
 
-        document.querySelectorAll("fieldset.structure > ul > li > h4 > a.up-fieldset-element").forEach( 
-            (anchor) => anchor.addEventListener( 'click', () => upFieldSet(anchor) )
-        );
-
         function upFieldSet( anchor )
         {
-            console.log('upFieldSet');
-
             let fieldset        = anchor.parentNode.parentNode;
             let container       = fieldset.parentNode;
             let fieldsetArray   = Array.from(fieldset.parentNode.childNodes).filter( element => element.type === fieldset.type );
@@ -164,14 +147,8 @@ $this->addJsFile('triggers.js');
             (anchor) => anchor.addEventListener( 'click', () => downFieldSet(anchor) )
         );
 
-        document.querySelectorAll("fieldset.structure > ul > li > h4 > a.down-fieldset-element").forEach( 
-            (anchor) => anchor.addEventListener( 'click', () => downFieldSet(anchor) )
-        );
-
         function downFieldSet( anchor )
         {
-            console.log('downFieldSet');
-
             let fieldset        = anchor.parentNode.parentNode;
             let container       = fieldset.parentNode;
             let fieldsetArray   = Array.from(fieldset.parentNode.childNodes).filter( element => element.type === fieldset.type );
@@ -194,31 +171,51 @@ $this->addJsFile('triggers.js');
             return;
         }
         
-        document.querySelector('#name-display').addEventListener('click', () => {
-            document.querySelector('#name-input').style.display = 'inline-block';
-            document.querySelector('#name-input').focus();
-            document.querySelector('#name-display').style.display = 'none';
-        });
+        document.querySelectorAll('span.span-input-toggle').forEach(
+            span => span.addEventListener('click', () => {
+                let input       = document.querySelector(
+                    'input.span-input-toggle[name="' 
+                    + span.attributes['data-name'].value
+                    + '"]'
+                );                
+                span.style.display  = 'none';
+                input.style.display = 'inline-block';
+                input.focus();
+            })
+        );
 
-        document.querySelector('#name-input').addEventListener('focusout', () => {
-            document.querySelector('#name-input').style.display = 'none';
-            document.querySelector('#name-display').style.display = 'inline-block';
-        });
+        document.querySelectorAll('input.span-input-toggle').forEach(
+            input => {
+                input.addEventListener('focusout', () => {
+                    let span       = document.querySelector(
+                        'span.span-input-toggle[data-name="' 
+                        + input.name
+                        + '"]'
+                    );
 
-        document.querySelector('#name-input').addEventListener('change', () => {
-            let value = document.querySelector('#name-input').value;
+                    span.style.display  = 'inline-block';
+                    input.style.display = 'none';
+                });
 
-            if( value !== '' ){
-                document.querySelector('#name-display').innerHTML = value;
+                input.addEventListener('change', () => {
+                    let span       = document.querySelector(
+                        'span.span-input-toggle[data-name="' 
+                        + input.name
+                        + '"]'
+                    );
+
+                    if( input.value !== '' ){
+                        span.innerHTML = input.value;
+                    }
+                    else {
+                        input.value = span.innerHTML;
+                    }
+
+                    input.style.display = 'none';
+                    span.style.display  = 'inline-block';
+                });
             }
-            else {
-                document.querySelector('#name-input').value = document.querySelector('#name-display').innerHTML;
-            }
-
-            document.querySelector('#name-input').style.display = 'none';
-            document.querySelector('#name-display').style.display = 'inline-block';
-        });
-
+        );
 
     });
 </script>
