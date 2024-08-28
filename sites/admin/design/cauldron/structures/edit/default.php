@@ -1,10 +1,12 @@
 <?php /** @var WC\Cauldron $this */ ?>
 
 <div class="fieldsets-container">
-    <?php foreach( $this->content() as $content ): ?>
-        <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">
+    <?php foreach( $this->content() as $content ): 
+        $integrationCountClass  = substr_count($this->editPrefix, '|') % 4;
+        $structuredName         = $this->editPrefix.'|'.$content->getInputName(false); 
+        ?>
+        <fieldset class="<?=$content->isIngredient()? 'ingredient': 'structure integration-'.$integrationCountClass?>">
             <legend>
-                <?php $structuredName = $this->editPrefix.'|'.$content->getInputName(false); ?>
                 <span   class="span-input-toggle" 
                         data-name="<?=$structuredName?>-name"><?=$content->name ?></span>
                 <input  class="span-input-toggle" 

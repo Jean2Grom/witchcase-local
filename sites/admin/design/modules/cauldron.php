@@ -45,43 +45,82 @@ $this->addJsFile('triggers.js');
                 <?php $content->edit() ?>
             </fieldset>
         <?php endforeach; ?>
-    </div>
-    
-    <?php if( $this->witch("target") ): ?>
-        <button class="trigger-action" 
-                data-action="publish"
-                data-target="edit-action">
-            <i class="fa fa-check"></i>
-            Publish
-        </button>
-        <button class="trigger-action"
-                data-action="save-and-return"
-                data-target="edit-action">
-            <i class="fa fa-share"></i>
-            Save and Quit
-        </button>
-        <button class="trigger-action"
-                data-action="save"
-                data-target="edit-action">
-            <i class="fa fa-save"></i>
-            Save
-        </button>
-        <button class="trigger-action"
-                data-action="delete"
-                data-target="edit-action">
-            <i class="fa fa-trash"></i>
-            Delete draft
-        </button>
-    <?php endif; ?>
-    
-    <?php if( $cancelHref ): ?>
-        <button class="trigger-href" 
-                data-href="<?=$cancelHref ?>">
-            <i class="fa fa-times"></i>
-            Cancel
-        </button>
-    <?php endif; ?>
+
+        <div class="cauldron-add-actions">
+            <fieldset class="add-form">
+                <legend>
+                    Add
+                    <a class="hide-form">[x]</a>
+                </legend>
+                <select name="add-type">
+                    <option value="0">Select type</option>
+                    <optgroup label="ingredients">
+                        <?php foreach( $ingredients ?? [] as $ingredient ): ?>
+                            <option value="<?=$ingredient?>">
+                                <?=$ingredient?>
+                            </option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                    <optgroup label="structures">
+                        <?php foreach( $structures ?? [] as $structure ): ?>
+                            <option value="<?=$structure->name?>">
+                                <?=$structure->name?>
+                            </option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                </select>
+                <input type="text" name="add-name" value="" />
+                <button class="trigger-action"
+                        data-action="save"
+                        data-target="edit-action">
+                    <i class="fa fa-save"></i>
+                    Save
+                </button>
+
+            </fieldset>
+            
+            <button class="show-form">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+            </button>
+        </div>
+
+    </div>    
 </form>
+
+<?php if( $this->witch("target") ): ?>
+    <button class="trigger-action" 
+            data-action="publish"
+            data-target="edit-action">
+        <i class="fa fa-check"></i>
+        Publish
+    </button>
+    <button class="trigger-action"
+            data-action="save-and-return"
+            data-target="edit-action">
+        <i class="fa fa-share"></i>
+        Save and Quit
+    </button>
+    <button class="trigger-action"
+            data-action="save"
+            data-target="edit-action">
+        <i class="fa fa-save"></i>
+        Save
+    </button>
+    <button class="trigger-action"
+            data-action="delete"
+            data-target="edit-action">
+        <i class="fa fa-trash"></i>
+        Delete draft
+    </button>
+<?php endif; ?>
+
+<?php if( $cancelHref ): ?>
+    <button class="trigger-href" 
+            data-href="<?=$cancelHref ?>">
+        <i class="fa fa-times"></i>
+        Cancel
+    </button>
+<?php endif; ?>
 
 <style>
     span.span-input-toggle {
@@ -105,9 +144,98 @@ $this->addJsFile('triggers.js');
     fieldset > .fieldsets-container {
         margin-left: 24px;
     }
+    fieldset > .fieldsets-container > fieldset.structure {
+        box-shadow: none;
+        border: 1px solid #444;
+        border-radius: 0;
+    }
+    fieldset.structure.integration-0 {
+        background-color: #ddd;
+    }
+    fieldset.structure.integration-1 {
+        background-color: #ccc;
+    }
+    fieldset.structure.integration-2 {
+        background-color: #bbb;
+    }
+    fieldset.structure.integration-3 {
+        background-color: #aaa;
+    }
+
+    .cauldron-add-actions {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        justify-items: initial;
+        width: 100%;
+    }
+    .cauldron-add-actions .add-form {
+        display: none;
+        width: auto;
+        padding: 16px;
+        flex-direction: column;
+    }
+        .cauldron-add-actions .add-form legend {
+            margin: auto;
+        }
+        .cauldron-add-actions .add-form input {
+            margin-top: 8px;
+        }
+        .cauldron-add-actions .add-form button {
+            box-shadow: inherit;
+            border-radius: inherit;
+            margin: 8px auto 4px;
+        }
+    .cauldron-add-actions .show-form {
+        border-radius: 24px;
+    }
+
+    #edit-action {
+        margin-bottom: 24px;
+    }
 </style>
 <script>
     $(document).ready(function() {
+        document.querySelectorAll(".cauldron-add-actions").forEach( 
+            container => {
+                console.log( container );
+                let showButton  = container.querySelector(".show-form");
+                let form        = container.querySelector(".add-form");
+
+                showButton.addEventListener( 'click', e => {
+                    e.preventDefault();
+                    
+                    showButton.style.display    = 'none';
+                    form.style.display          = 'flex';
+                    form.focus();
+                    
+                    return false;
+                });
+
+                form.querySelector("a.hide-form").addEventListener('click', () => {
+                    cancelAddForm(form, showButton);
+                });
+
+                document.addEventListener('click', function(e){
+                    console.log('ici', form.style.display);
+                    if( form.style.display !== 'none' 
+                        && !form.contains(e.target) 
+                        && !showButton.contains(e.target) 
+                    ){
+                        cancelAddForm(form, showButton);
+                    }                    
+                });
+            }
+        );
+
+        function cancelAddForm(form, showButton)
+        {
+            form.querySelector('select').value  = 0;
+            form.querySelector('input').value   = "";
+            showButton.style.display    = 'block';
+            form.style.display          = 'none';
+        }
 
         document.querySelectorAll("fieldset a.remove-fieldset").forEach( 
             (anchor) => anchor.addEventListener( 'click', () => removeFieldSet(anchor) )

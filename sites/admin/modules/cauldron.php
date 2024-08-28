@@ -1,5 +1,7 @@
 <?php /** @var WC\Module $this */
 
+use WC\Ingredient;
+
 $possibleActionsList = [
     'save',
     'save-and-return',
@@ -46,6 +48,9 @@ if( is_null($draft) ){
         'message'   =>  "Draft can't be read"
     ];
 }
+
+$structures     = $this->wc->configuration->structures();
+$ingredients    = Ingredient::list();
 
 $return = false;
 switch( $action )
