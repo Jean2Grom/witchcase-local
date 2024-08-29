@@ -200,6 +200,16 @@ class Module
         return $fullPath;
     }
     
+    function include( $filename, ?array $params=null ): void
+    {
+        foreach( $params ?? [] as $name => $value ){
+            $$name = $value;
+        }
+
+        include $this->getIncludeDesignFile($filename);
+        return;
+    }
+    
     function getDaughters( Witch $witch=null )
     {
         if( empty($witch) ){

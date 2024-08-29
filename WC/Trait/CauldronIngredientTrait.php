@@ -41,7 +41,7 @@ trait CauldronIngredientTrait
     }
 
 
-    function edit( ?string $filename=null, ?string $callerPrefix=null )
+    function edit( ?string $filename=null, ?array $params=null, ?string $callerPrefix=null )
     {
         if( $callerPrefix ){
             $this->editPrefix = str_replace(' ', '-', $callerPrefix)."|".$this->editPrefix;
@@ -58,10 +58,16 @@ trait CauldronIngredientTrait
             $file = $this->wc->website->getFilePath( $instanciedClass::DIR."/edit/default.php");
         }
         
-        if( $file ){
-            include $file;
+        if( !$file ){
+            return;
         }
         
+        foreach( $params ?? [] as $name => $value ){
+            $$name = $value;
+        }
+
+        include $file;
+
         return;
     }
 

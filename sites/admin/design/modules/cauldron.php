@@ -42,48 +42,25 @@ $this->addJsFile('triggers.js');
                     <a class="down-fieldset">[&#8595;]</a>
                     <a class="remove-fieldset">[x]</a>
                 </legend>
-                <?php $content->edit() ?>
+                <?php $content->edit( 
+                    null, 
+                    [
+                        'ingredients'   => $ingredients, 
+                        'structures'    => $structures,
+                        'inputName'     => $content->getInputName(false),
+                    ]
+                ); ?>
             </fieldset>
         <?php endforeach; ?>
-
-        <div class="cauldron-add-actions">
-            <fieldset class="add-form">
-                <legend>
-                    Add
-                    <a class="hide-form">[x]</a>
-                </legend>
-                <select name="add-type">
-                    <option value="0">Select type</option>
-                    <optgroup label="ingredients">
-                        <?php foreach( $ingredients ?? [] as $ingredient ): ?>
-                            <option value="<?=$ingredient?>">
-                                <?=$ingredient?>
-                            </option>
-                        <?php endforeach; ?>
-                    </optgroup>
-                    <optgroup label="structures">
-                        <?php foreach( $structures ?? [] as $structure ): ?>
-                            <option value="<?=$structure->name?>">
-                                <?=$structure->name?>
-                            </option>
-                        <?php endforeach; ?>
-                    </optgroup>
-                </select>
-                <input type="text" name="add-name" value="" />
-                <button class="trigger-action"
-                        data-action="save"
-                        data-target="edit-action">
-                    <i class="fa fa-save"></i>
-                    Save
-                </button>
-
-            </fieldset>
-            
-            <button class="show-form">
-                <i class="fa fa-plus" aria-hidden="true"></i>
-            </button>
-        </div>
-
+        
+        <?php $this->include(
+            'cauldron/add.php', 
+            [ 
+                'ingredients'   => $ingredients, 
+                'structures'    => $structures, 
+                'inputName'     => '',
+            ]
+        );?>
     </div>    
 </form>
 
@@ -144,11 +121,16 @@ $this->addJsFile('triggers.js');
     fieldset > .fieldsets-container {
         margin-left: 24px;
     }
-    fieldset > .fieldsets-container > fieldset.structure {
-        box-shadow: none;
-        border: 1px solid #444;
-        border-radius: 0;
-    }
+        fieldset > .fieldsets-container > fieldset.structure {
+            box-shadow: none;
+            border: 1px solid #444;
+            border-radius: 0;
+        }
+            fieldset > .fieldsets-container > fieldset.structure .cauldron-add-actions .add-form {
+                box-shadow: none;
+                border: 1px solid #444;
+                border-radius: 0;
+            }
     fieldset.structure.integration-0 {
         background-color: #ddd;
     }
@@ -187,6 +169,11 @@ $this->addJsFile('triggers.js');
             border-radius: inherit;
             margin: 8px auto 4px;
         }
+        .cauldron-add-actions .add-form button.disabled {
+            cursor: not-allowed;
+            opacity: 0.75;
+            font-style: italic;
+        }
     .cauldron-add-actions .show-form {
         border-radius: 24px;
     }
@@ -196,12 +183,15 @@ $this->addJsFile('triggers.js');
     }
 </style>
 <script>
-    $(document).ready(function() {
+    document.addEventListener("DOMContentLoaded", () => {
+
         document.querySelectorAll(".cauldron-add-actions").forEach( 
             container => {
-                console.log( container );
-                let showButton  = container.querySelector(".show-form");
-                let form        = container.querySelector(".add-form");
+                let showButton      = container.querySelector(".show-form");
+                let form            = container.querySelector(".add-form");
+                let saveButton      = form.querySelector("button");
+                let typeSelector    = form.querySelector("select");
+                let nameInput       = form.querySelector("input");
 
                 showButton.addEventListener( 'click', e => {
                     e.preventDefault();
@@ -218,7 +208,6 @@ $this->addJsFile('triggers.js');
                 });
 
                 document.addEventListener('click', function(e){
-                    console.log('ici', form.style.display);
                     if( form.style.display !== 'none' 
                         && !form.contains(e.target) 
                         && !showButton.contains(e.target) 
@@ -226,12 +215,42 @@ $this->addJsFile('triggers.js');
                         cancelAddForm(form, showButton);
                     }                    
                 });
+
+                saveButton.addEventListener('click', e => {
+                    e.preventDefault();
+                    
+                    if( !saveButton.classList.contains("disabled") )
+                    {
+                        let action = document.createElement('input');
+                        action.setAttribute('type', "hidden");
+                        action.setAttribute('name', "action");
+                        action.value = saveButton.dataset.action;
+
+                        let actionForm = document.querySelector('#' + saveButton.dataset.target);
+                        actionForm.append(action);
+                        actionForm.submit();
+                    }
+                    return false;
+                });
+
+                typeSelector.addEventListener('change', () => checkAddFormValidity( typeSelector, nameInput, saveButton ));
+                nameInput.addEventListener('input', () => checkAddFormValidity( typeSelector, nameInput, saveButton ));
             }
         );
 
+        function checkAddFormValidity( select, input, button )
+        {
+            if( !button.classList.contains("disabled") ){
+                button.classList.add("disabled");
+            }
+            if( select.value !== "" && input.value.trim() !== '' ){
+                button.classList.remove("disabled");
+            }
+        }
+
         function cancelAddForm(form, showButton)
         {
-            form.querySelector('select').value  = 0;
+            form.querySelector('select').value  = "";
             form.querySelector('input').value   = "";
             showButton.style.display    = 'block';
             form.style.display          = 'none';

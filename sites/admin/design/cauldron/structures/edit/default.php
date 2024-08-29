@@ -1,4 +1,11 @@
-<?php /** @var WC\Cauldron $this */ ?>
+<?php 
+/**
+ * @var WC\Cauldron $this 
+ * @var ?array $ingredients 
+ * @var ?array $structures 
+ * @var string $inputName
+ */ 
+?>
 
 <div class="fieldsets-container">
     <?php foreach( $this->content() as $content ): 
@@ -18,7 +25,25 @@
                 <a class="down-fieldset">[&#8595;]</a>
                 <a class="remove-fieldset">[x]</a>
             </legend>
-            <?php $content->edit( null, $this->getInputName(false) ) ?>
+            <?php $content->edit( 
+                null, 
+                [
+                    'ingredients'   => $ingredients, 
+                    'structures'    => $structures,
+                    'inputName'     => $inputName.'|'.$content->getInputName(false),
+                ], 
+                $this->getInputName(false) 
+            ); ?>
         </fieldset>
     <?php endforeach; ?>
+
+    <?php $this->wc->witch()?->modules['cauldron']?->include(
+            'cauldron/add.php', 
+            [ 
+                'ingredients'   => $ingredients, 
+                'structures'    => $structures, 
+                'inputName'     => $inputName,
+            ]
+        );?>
+
 </div>
