@@ -71,7 +71,7 @@ trait CauldronIngredientTrait
         return;
     }
 
-    function getInputName( bool $addBrackets=true ): string 
+    function getInputName(): string 
     {
         $inputName  =   $this->editPrefix;
         $inputName  .=  "#".$this->type;

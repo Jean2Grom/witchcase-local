@@ -9,7 +9,7 @@
                 <?php endif; ?>
                 <?="[".$content->type."] " ?>
             </h4>
-            <?php $content->edit( null, $this->getInputName(false) ); ?>
+            <?php $content->edit( null, $this->getInputName() ); ?>
         </li>
     <?php endforeach; ?>
 </ul>

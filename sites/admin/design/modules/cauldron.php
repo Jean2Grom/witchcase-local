@@ -35,7 +35,7 @@ $this->addJsFile('triggers.js');
             <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">
                 <legend>
                     <span   class="span-input-toggle" 
-                            data-input="<?=$content->getInputName(false)?>__name" 
+                            data-input="<?=$content->getInputName()?>__name" 
                             data-value="<?=$content->name ?>"><?=$content->name ?></span>
 
                     [<?=$content->type?>]
@@ -49,7 +49,7 @@ $this->addJsFile('triggers.js');
                     [
                         'ingredients'   => $ingredients, 
                         'structures'    => $structures,
-                        'inputName'     => $content->getInputName(false),
+                        'inputName'     => $content->getInputName(),
                     ]
                 ); ?>
             </fieldset>

@@ -10,7 +10,7 @@
 <div class="fieldsets-container">
     <?php foreach( $this->content() as $content ): 
         $integrationCountClass  = substr_count($this->editPrefix, '|') % 4;
-        $structuredName         = $this->editPrefix.'|'.$content->getInputName(false); 
+        $structuredName         = $this->editPrefix.'|'.$content->getInputName(); 
         ?>
         <fieldset class="<?=$content->isIngredient()? 'ingredient': 'structure integration-'.$integrationCountClass?>">
             <legend>
@@ -30,9 +30,9 @@
                 [
                     'ingredients'   => $ingredients, 
                     'structures'    => $structures,
-                    'inputName'     => $inputName.'|'.$content->getInputName(false),
+                    'inputName'     => $inputName.'|'.$content->getInputName(),
                 ], 
-                $this->getInputName(false) 
+                $this->getInputName() 
             ); ?>
         </fieldset>
     <?php endforeach; ?>
