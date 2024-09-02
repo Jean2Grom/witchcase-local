@@ -16,8 +16,9 @@ $this->addJsFile('triggers.js');
 <form id="edit-action" method="post" enctype="multipart/form-data">
     <h3>
         [<?=$draft->data->structure ?>] 
-        <span class="span-input-toggle" data-name="name"><?=$draft->name ?></span>
-        <input class="span-input-toggle" type="text" name="name" value="<?=$draft->name ?>" />
+        <span   class="span-input-toggle" 
+                data-input="__name" 
+                data-value="<?=$draft->name ?>"><?=$draft->name ?></span>
     </h3>
     <p>
         <?php if( $draft->created ): ?>
@@ -33,8 +34,9 @@ $this->addJsFile('triggers.js');
         <?php foreach( $draft->content() as $content ): ?>
             <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">
                 <legend>
-                    <span class="span-input-toggle" data-name="<?=$content->getInputName(false)?>-name"><?=$content->name ?></span>
-                    <input class="span-input-toggle" type="text" name="<?=$content->getInputName(false)?>-name" value="<?=$content->name ?>" />
+                    <span   class="span-input-toggle" 
+                            data-input="<?=$content->getInputName(false)?>__name" 
+                            data-value="<?=$content->name ?>"><?=$content->name ?></span>
 
                     [<?=$content->type?>]
                     
@@ -320,49 +322,50 @@ $this->addJsFile('triggers.js');
         
         document.querySelectorAll('span.span-input-toggle').forEach(
             span => span.addEventListener('click', () => {
-                let input       = document.querySelector(
-                    'input.span-input-toggle[name="' 
-                    + span.attributes['data-name'].value
+                
+                let oldInput = document.querySelector(
+                    'input[name="' 
+                    + span.dataset.input
                     + '"]'
-                );                
+                );
+
+                if( oldInput ){
+                    oldInput.remove();
+                }
+                
+                let input       = document.createElement('input');
+                input.setAttribute('type', "text");
+                input.setAttribute('name', span.dataset.input);
+                input.value     = span.innerHTML.trim();
+
+                span.append(input);
+                span.parentNode.insertBefore(input, span);
                 span.style.display  = 'none';
                 input.style.display = 'inline-block';
                 input.focus();
+
+
+                input.addEventListener('focusout', () => checkSpanInputToggleValidity( input, span ));
+                input.addEventListener('change', () => checkSpanInputToggleValidity( input, span ));
+
             })
         );
 
-        document.querySelectorAll('input.span-input-toggle').forEach(
-            input => {
-                input.addEventListener('focusout', () => {
-                    let span       = document.querySelector(
-                        'span.span-input-toggle[data-name="' 
-                        + input.name
-                        + '"]'
-                    );
-
-                    span.style.display  = 'inline-block';
-                    input.style.display = 'none';
-                });
-
-                input.addEventListener('change', () => {
-                    let span       = document.querySelector(
-                        'span.span-input-toggle[data-name="' 
-                        + input.name
-                        + '"]'
-                    );
-
-                    if( input.value !== '' ){
-                        span.innerHTML = input.value;
-                    }
-                    else {
-                        input.value = span.innerHTML;
-                    }
-
-                    input.style.display = 'none';
-                    span.style.display  = 'inline-block';
-                });
+        function checkSpanInputToggleValidity(input, span)
+        {
+            if( input.value === '' || input.value === span.dataset.value )
+            {
+                span.innerHTML = span.dataset.value;
+                input.remove();
             }
-        );
+            else 
+            {
+                span.innerHTML      = input.value;
+                input.style.display = 'none';
+            }
+
+            span.style.display  = 'inline-block';
+        }
 
     });
 </script>
