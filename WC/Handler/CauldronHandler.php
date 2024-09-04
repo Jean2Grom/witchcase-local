@@ -263,35 +263,33 @@ class CauldronHandler
 
 
     static function getDraftFolder( Cauldron $cauldron ): Cauldron {
-        return self::getNamedFolder( $cauldron, Cauldron::DRAFT_FOLDER_NAME );
+        return self::getWorkFolder( $cauldron, Cauldron::DRAFT_FOLDER_STRUCT );
     }
 
     static function getArchiveFolder( Cauldron $cauldron ): Cauldron {
-        return self::getNamedFolder( $cauldron, Cauldron::ARCHIVE_FOLDER_NAME );
+        return self::getWorkFolder( $cauldron, Cauldron::ARCHIVE_FOLDER_STRUCT );
     }
 
-    private static function getNamedFolder( Cauldron $cauldron, string $folderName ): Cauldron
+    private static function getWorkFolder( Cauldron $cauldron, string $folderStruct ): Cauldron
     {
         foreach( $cauldron->children as $child ){
-            if( $child->name === $folderName
-                && $child->data->structure === "folder" ){
+            if( $child->data->structure === $folderStruct ){
                 return $child;
             }
         }
         
         $params = [
-            'name'  =>  $folderName,
-            'data'  =>  json_encode([ "structure" => "folder" ]),
+            'name'  =>  $folderStruct,
+            'data'  =>  json_encode([ "structure" => $folderStruct ]),
         ];
-
+ 
         $folder = self::createFromData( $cauldron->wc, $params );
         $cauldron->addCauldron( $folder );
         $folder->save();
 
         return $folder;
     }
-
-
+    
     static function createDraft( Cauldron $cauldron ): Cauldron
     {
         self::writeProperties( $cauldron );

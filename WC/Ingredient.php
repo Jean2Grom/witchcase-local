@@ -48,6 +48,8 @@ abstract class Ingredient
 
     public string $editPrefix   = "i";
 
+    private ?string $inputID    = null;
+
     /** 
      * Cauldron witch contains this ingredient
      * @var ?Cauldron
@@ -144,8 +146,7 @@ abstract class Ingredient
         if( !$this->exist() )
         {
             Handler::writeProperties($this);
-            $result = DataAccess::insert($this);
-
+            $result = DataAccess::insert($this);            
             if( $result ){
                 $this->id = (int) $result;
             }
@@ -157,6 +158,8 @@ abstract class Ingredient
             $result = DataAccess::update( $this, array_diff_assoc($this->properties, $properties) );
         }
         
+        $this->inputID = null;
+
         return $result !== false;
     }
 
@@ -175,20 +178,20 @@ abstract class Ingredient
 
     function getInputIdentifier(): string 
     {
-        $prefix = str_replace( ' ', '-', $this->name).'#';
+        if( $this->inputID ){
+            return $this->inputID;
+        }
 
-        // if( $this->id ){
-        //     return "ID".$this->id; 
-        // }
+        $this->inputID = str_replace( ' ', '-', $this->name).'#';
 
         if( $this->cauldron ){
-            return  $prefix.array_keys(array_intersect(
+            $this->inputID .= array_keys(array_intersect(
                 $this->cauldron->ingredients, 
                 [$this]
             ))[0] ?? "";
         }
 
-        return $prefix;
+        return $this->inputID;
     }
 
 }

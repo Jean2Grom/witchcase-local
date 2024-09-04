@@ -62,7 +62,7 @@ $this->addJsFile('triggers.js');
                 'structures'    => $structures, 
                 'inputName'     => '',
             ]
-        );?>
+        ); ?>
     </div>    
 </form>
 
@@ -108,10 +108,10 @@ $this->addJsFile('triggers.js');
     input.span-input-toggle {
         display: none;
     }
-    .fieldsets-container > fieldset:first-child > *:first-child > a.up-fieldset {
+    fieldset:first-of-type > *:first-child > a.up-fieldset {
         display: none;
     }
-    .fieldsets-container > fieldset:last-child > *:first-child > a.down-fieldset {
+     fieldset:last-of-type > *:first-child > a.down-fieldset {
         display: none;
     }
     fieldset.structure {
@@ -159,9 +159,15 @@ $this->addJsFile('triggers.js');
         width: auto;
         padding: 16px;
         flex-direction: column;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        box-shadow: 5px 5px 5px #ccc;
     }
-        .cauldron-add-actions .add-form legend {
-            margin: auto;
+        .cauldron-add-actions .add-form h4 {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
         }
         .cauldron-add-actions .add-form input {
             margin-top: 8px;

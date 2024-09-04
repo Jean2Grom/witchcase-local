@@ -9,11 +9,11 @@ AAAAAA
 <?=$inputName ?>
 BBBBBB
 <div class="cauldron-add-actions">
-    <fieldset class="add-form">
-        <legend>
+    <div class="add-form">
+        <h4>
             Add 
             <a class="hide-form">[x]</a>
-        </legend>
+        </h4>
         <select name="<?=$inputName ?>__add-type">
             <option value="">Select type</option>
             <?php if( $ingredients ): ?>
@@ -42,7 +42,7 @@ BBBBBB
             <i class="fa fa-save"></i>
             Save
         </button>
-    </fieldset>
+    </div>
     
     <button class="show-form">
         <i class="fa fa-plus" aria-hidden="true"></i>

@@ -30,8 +30,8 @@ class Cauldron
     const STATUS_DRAFT          = 0;
     const STATUS_ARCHIVED       = 1;
 
-    const DRAFT_FOLDER_NAME     = "wc-drafts-folder";
-    const ARCHIVE_FOLDER_NAME   = "wc-archives-folder";
+    const DRAFT_FOLDER_STRUCT   = "wc-drafts-folder";
+    const ARCHIVE_FOLDER_STRUCT = "wc-archives-folder";
 
     const DIR                   = "cauldron/structures";
     const DESIGN_SUBFOLDER      = "design/cauldron/structures";
@@ -60,6 +60,8 @@ class Cauldron
     public ?self $target        = null;
 
     public string $editPrefix   = "s";
+
+    private ?string $inputID    = null;
 
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -151,8 +153,7 @@ class Cauldron
 
     function isContent(): bool
     {
-        if( in_array($this->name, [ self::DRAFT_FOLDER_NAME, self::ARCHIVE_FOLDER_NAME ]) 
-            && $this->data?->structure === "folder" ){
+        if( in_array($this->data?->structure, [ self::DRAFT_FOLDER_STRUCT, self::ARCHIVE_FOLDER_STRUCT ]) ){
             return false;
         }
 
@@ -279,6 +280,8 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
             $result = $result && $child->save( false );
         }
 
+        $this->inputID = null;
+
         return $result;
     }
 
@@ -395,10 +398,18 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
         $params = $inputs ?? $this->wc->request->inputs();
 
         $priorityInterval   = 100;
-        $priority           = count($params) * $priorityInterval;
+        $childrenKeysArray  = array_filter( 
+            array_keys($params), 
+            function( $key ){
+                return !strpos($key, '|') && !strpos($key, '__') && in_array(substr($key, 0, 2), ['i#', 's#']); 
+            }
+        );
 
-        if( isset($params['name']) ){
-            $this->name = htmlspecialchars($params['name']);
+        $priority           = count($childrenKeysArray) * $priorityInterval;
+
+$this->wc->dump($params);
+        if( isset($params['__name']) ){
+            $this->name = htmlspecialchars($params['__name']);
         }
 
         $matchedIngredients = [];
@@ -406,8 +417,20 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
         $doneChildPrefix    = [];
         $matchedChildren    = [];
         $newChildren        = [];
-        foreach( $params as $param => $value )
+        foreach( $params as $rawParam => $value )
         {
+            if( strpos($rawParam, '__') )
+            {
+                $buffer     = explode('__', $rawParam );
+                $param      = $buffer[0];
+                $valueType  = $buffer[1];
+            }
+            else 
+            {
+                $param      = $rawParam;
+                $valueType  = 'value';
+            }
+
             if( substr($param, 0, 2) === 'i#' )
             {
                 $buffer = explode('#', substr($param, 2) );
@@ -420,16 +443,25 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
                 foreach( $this->ingredients as $ingredient ){
                     if( $ingredient->type === $type 
                         && $ingredient->getInputIdentifier() === $name.'#'.$index
-                        && !in_array($ingredient, $matchedIngredients)
                     ){
-                        $ingredient->priority   = $priority;
-                        $matchedIngredients[]   = $ingredient->readInput( $value );
-                        $match                  = true;
-                        break;
+                        switch( $valueType )
+                        {
+                            case 'name': 
+                                $ingredient->name       = trim( $value );
+                            break 2;
+
+                            case 'value': 
+                                $ingredient->priority   = $priority;
+                                $matchedIngredients[]   = $ingredient->readInput( $value );
+                                $match      =   true;
+                                $priority   -=  $priorityInterval;
+                            break 2;
+                        }
                     }
                 }
 
-                if( !$match ){
+                if( $valueType === 'value' && !$match )
+                {
                     $newIngredients[] = IngredientHandler::createFromData( 
                         $this, 
                         $type, 
@@ -437,7 +469,9 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
                             'name'      => $name,  
                             'value'     => $value,  
                             'priority'  => $priority,
-                        ]);
+                        ]
+                    );
+                    $priority   -=  $priorityInterval;
                 }
             }
             elseif( substr($param, 0, 2) === 's#' )
@@ -488,14 +522,31 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
                 }
             }
 
-            $priority -= $priorityInterval;
+//$priority -= $priorityInterval;
         }
+
+        if( !empty($params['__add-type']) && !empty($params['__add-name']) )
+        {
+            $ingredients    = Ingredient::list();
+            if( in_array($params['__add-type'], $ingredients) ){
+                $newIngredients[] = IngredientHandler::createFromData( 
+                    $this, 
+                    $params['__add-type'], 
+                    [ 
+                        'name'      => htmlspecialchars($params['__add-name']),  
+                        'priority'  => $priority,
+                    ]);
+            }
+
+        }
+
 
         foreach( $this->ingredients as $key => $ingredient ) 
         {
             if( !in_array($ingredient, $matchedIngredients) 
                 && !in_array($ingredient, $newIngredients) 
             ){
+$this->wc->debug($ingredient, "remove");                   
                 $this->pendingRemoveContents[] = $ingredient;
                 unset($this->ingredients[ $key ]);
             }
@@ -542,16 +593,20 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
 
     function getInputIdentifier(): string 
     {
-        $prefix = str_replace( ' ', '-', $this->name ).'#';
+        if( $this->inputID ){
+            return $this->inputID;
+        }
+
+        $this->inputID = str_replace( ' ', '-', $this->name ).'#';
 
         if( $this->parent ){
-            return $prefix.array_keys(array_intersect(
+            $this->inputID .= array_keys(array_intersect(
                 $this->parent->children, 
                 [$this]
             ))[0] ?? "";
         }
 
-        return $prefix;
+        return $this->inputID;
     }
 
     function publish( bool $transactionMode=true ): bool
