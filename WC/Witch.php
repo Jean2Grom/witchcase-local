@@ -560,7 +560,7 @@ class Witch
             
             // If url is set to a value (ie not null)
             if( !is_null($params['url']) ){
-                $urlArray[] = Handler::urlCleanupString( $params['url'] );
+                $urlArray[] = Tools::urlCleanupString( $params['url'] );
             }
             else 
             {
@@ -576,7 +576,7 @@ class Witch
                     $urlArray[] = '';
                 }
                 
-                $rootUrl    .=  Handler::cleanupString($params['name'] ?? $this->name);
+                $rootUrl    .=  Tools::cleanupString($params['name'] ?? $this->name);
                 $urlArray[] =   $rootUrl;                
             }
             
@@ -646,7 +646,7 @@ class Witch
             
             // If url is set to a value (ie not null)
             if( !is_null($params['url']) ){
-                $urlArray[] = Handler::urlCleanupString( $params['url'] );
+                $urlArray[] = Tools::urlCleanupString( $params['url'] );
             }
             else 
             {
@@ -662,7 +662,7 @@ class Witch
                     $urlArray[] = '';
                 }
                 
-                $rootUrl    .=  Handler::cleanupString($params['name']);
+                $rootUrl    .=  Tools::cleanupString($params['name']);
                 $urlArray[] =   $rootUrl;                
             }
             

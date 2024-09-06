@@ -1,8 +1,6 @@
 <?php
 namespace WC;
 
-use WC\Handler\WitchHandler;
-
 /**
  * Class containing website (app) information and aggreging related objects
  * 
@@ -98,7 +96,7 @@ class Website
         $this->currentAccess    = $siteAccess ?? array_values($this->access ?? [])[0] ?? '';
         $firstSlashPosition     = strpos($this->currentAccess, '/');
         $this->baseUri          = ($firstSlashPosition !== false)? substr( $this->currentAccess, $firstSlashPosition ): '';
-        $this->urlPath          = WitchHandler::urlCleanupString( substr( $this->wc->request->access, strlen($this->currentAccess) ) );
+        $this->urlPath          = Tools::urlCleanupString( substr( $this->wc->request->access, strlen($this->currentAccess) ) );
         
         foreach( $this->modules as $moduleName => $moduleConf ){
             foreach( $moduleConf['witches'] ?? [] as $moduleWitchName => $moduleWitchConf ){
