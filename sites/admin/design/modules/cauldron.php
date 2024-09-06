@@ -1,6 +1,8 @@
 <?php   
-/** @var WC\Module $this 
-  * @var WC\Cauldron $draft */
+/** 
+ * @var WC\Module $this 
+ * @var WC\Cauldron $draft 
+ */
 
 $this->addCssFile('content-edit.css');
 $this->addJsFile('triggers.js');
@@ -14,10 +16,14 @@ $this->addJsFile('triggers.js');
 <?php include $this->getIncludeDesignFile('alerts.php'); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
+    <?php if( $draft->exist() ): ?>
+        <input  type="hidden" 
+                name="ID" value="<?=$draft->id ?>" />
+    <?php endif; ?>
     <h3>
         [<?=$draft->data->structure ?>] 
         <span   class="span-input-toggle" 
-                data-input="__name" 
+                data-input="name" 
                 data-value="<?=$draft->name ?>"><?=$draft->name ?></span>
     </h3>
     <p>
@@ -31,11 +37,13 @@ $this->addJsFile('triggers.js');
     </p>
     
     <div class="fieldsets-container">
-        <?php foreach( $draft->content() as $content ): ?>
+        <?php foreach( $draft->content() as $content ): 
+            $contentInput = "content[".$content->getInputIndex()."][".$content->type."]";
+            ?>
             <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">
                 <legend>
                     <span   class="span-input-toggle" 
-                            data-input="<?=$content->getInputName()?>__name" 
+                            data-input="<?=$contentInput?>[name]" 
                             data-value="<?=$content->name ?>"><?=$content->name ?></span>
 
                     [<?=$content->type?>]
@@ -49,7 +57,7 @@ $this->addJsFile('triggers.js');
                     [
                         'ingredients'   => $ingredients, 
                         'structures'    => $structures,
-                        'inputName'     => $content->getInputName(),
+                        'input'         => $contentInput,
                     ]
                 ); ?>
             </fieldset>
@@ -60,7 +68,7 @@ $this->addJsFile('triggers.js');
             [ 
                 'ingredients'   => $ingredients, 
                 'structures'    => $structures, 
-                'inputName'     => '',
+                'input'         => "content[new]",
             ]
         ); ?>
     </div>    

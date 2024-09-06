@@ -1,9 +1,9 @@
 <?php /** @var WC\Module $this */
 
 use WC\Structure;
-use WC\Handler\WitchHandler;
 use WC\Attribute;
 use WC\Datatype\ExtendedDateTime;
+use WC\Tools;
 
 if( $this->wc->request->param("publishStructure") ){
     $action = "publishStructure";
@@ -48,7 +48,7 @@ if( $action === "publishStructure" )
             $parameters = $attributesPostData['parameters'];
         }
         
-        $attributeName  = WitchHandler::cleanupString($attributesPostData['name']);
+        $attributeName  = Tools::cleanupString($attributesPostData['name']);
         
         $attribute      = new $attributeClass(
                                 $this->wc,
@@ -88,7 +88,7 @@ if( strcmp($action, "createStructure") == 0 )
         
         if( $nextStep )
         {
-            $name   = WitchHandler::cleanupString( $namePost );
+            $name   = Tools::cleanupString( $namePost );
             
             if( in_array($name, array_keys($structuresData)) )
             {
