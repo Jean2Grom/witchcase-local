@@ -3,23 +3,29 @@
  * @var WC\Cauldron $this 
  * @var ?array $ingredients 
  * @var ?array $structures 
- * @var string $inputName
+ * @var string $input
  */ 
 ?>
 
+<?php if( $this->exist() ): ?>
+        <input  type="hidden" 
+                name="<?=$input?>[ID]" value="<?=$this->id ?>" />
+<?php endif; ?>
+
 <div class="fieldsets-container">
-    <?php foreach( $this->content() as $content ): 
+    <?php if( empty($this->content()) ): ?>
+        <input  type="hidden" 
+                name="<?=$input?>[content]" value="" />
+
+    <?php else: foreach( $this->content() as $content ): 
         $integrationCountClass  = substr_count($this->editPrefix, '|') % 4;
-        $structuredName         = $this->editPrefix.'|'.$content->getInputName(); 
+        $contentInput = $input."[content][".$content->getInputIndex()."][".$content->type."]";
         ?>
         <fieldset class="<?=$content->isIngredient()? 'ingredient': 'structure integration-'.$integrationCountClass?>">
             <legend>
                 <span   class="span-input-toggle" 
-                        data-name="<?=$structuredName?>-name"><?=$content->name ?></span>
-                <input  class="span-input-toggle" 
-                        type="text" 
-                        name="<?=$structuredName?>-name" 
-                        value="<?=$content->name ?>" />
+                        data-input="<?=$contentInput?>[name]" 
+                        data-value="<?=$content->name ?>"><?=$content->name ?></span>
                 [<?=$content->type?>]
                 <a class="up-fieldset">[&#8593;]</a>
                 <a class="down-fieldset">[&#8595;]</a>
@@ -30,19 +36,18 @@
                 [
                     'ingredients'   => $ingredients, 
                     'structures'    => $structures,
-                    'inputName'     => $inputName.'|'.$content->getInputName(),
-                ], 
-                $this->getInputName() 
+                    'input'         => $contentInput,
+                ]
             ); ?>
         </fieldset>
-    <?php endforeach; ?>
+    <?php endforeach; endif; ?>
 
     <?php $this->wc->witch()?->modules['cauldron']?->include(
             'cauldron/add.php', 
             [ 
                 'ingredients'   => $ingredients, 
                 'structures'    => $structures, 
-                'inputName'     => $inputName,
+                'input'         => $input."[content][new]",
             ]
         );?>
 

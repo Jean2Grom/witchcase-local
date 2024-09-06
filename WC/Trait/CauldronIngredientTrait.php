@@ -80,8 +80,16 @@ trait CauldronIngredientTrait
         return $inputName;
     }
 
+    function getInputIndex()
+    {
+        return array_keys(array_intersect(
+            $this->parent?->content() ?? [], 
+            [$this]
+        ))[0] ?? 0;
+    }
+    
     function isIngredient(): bool {
-        return $this->editPrefix === "i";
+        return false;
     }
 
     function isCauldron(): bool {

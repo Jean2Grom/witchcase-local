@@ -242,7 +242,13 @@ $this->addJsFile('triggers.js');
                         action.setAttribute('name', "action");
                         action.value = saveButton.dataset.action;
 
+                        let input = document.createElement('input');
+                        input.setAttribute('type', "hidden");
+                        input.setAttribute('name', form.dataset.input + '[' + typeSelector.value + '][name]' );
+                        input.value = nameInput.value;
+                        
                         let actionForm = document.querySelector('#' + saveButton.dataset.target);
+                        actionForm.append(input);
                         actionForm.append(action);
                         actionForm.submit();
                     }

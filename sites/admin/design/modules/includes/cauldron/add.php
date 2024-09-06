@@ -2,19 +2,16 @@
 /**
  * @var ?array $ingredients 
  * @var ?array $structures 
- * @var string $inputName
+ * @var string $input
  */
 ?>
-AAAAAA
-<?=$inputName ?>
-BBBBBB
 <div class="cauldron-add-actions">
-    <div class="add-form">
+    <div class="add-form" data-input="<?=$input ?>">
         <h4>
             Add 
             <a class="hide-form">[x]</a>
         </h4>
-        <select name="<?=$inputName ?>__add-type">
+        <select>
             <option value="">Select type</option>
             <?php if( $ingredients ): ?>
                 <optgroup label="ingredients">
@@ -35,7 +32,7 @@ BBBBBB
                 </optgroup>
             <?php endif; ?>
         </select>
-        <input type="text" name="<?=$inputName ?>__add-name" value="" />
+        <input type="text" value="" />
         <button class="disabled" 
                 data-action="save" 
                 data-target="edit-action">

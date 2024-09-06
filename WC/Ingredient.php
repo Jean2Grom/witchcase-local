@@ -194,4 +194,16 @@ abstract class Ingredient
         return $this->inputID;
     }
 
+    function getInputIndex()
+    {
+        return array_keys(array_intersect(
+            $this->cauldron?->content() ?? [], 
+            [$this]
+        ))[0] ?? 0;
+    }
+
+    function isIngredient(): bool {
+        return true;
+    }
+
 }
