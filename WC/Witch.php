@@ -739,6 +739,39 @@ class Witch
     }    
     
     /**
+     * Delete associated cauldron if this is their only witch association,
+     * if not only remove this association
+     * @return bool
+     */
+    function removeCauldron(): bool
+    {
+        if( !$this->hasCauldron() ){
+            return false;
+        }
+        
+        // TODO count Witches !!! 
+        //$countCauldronWitches = $this->cauldron()->countWitches();
+        
+        //if( $countCraftWitch == 1 ){
+        if( true ){
+            $this->cauldron()->delete();
+        }
+        elseif( $this->properties['is_main'] == 1 && $countCraftWitch > 1  ){
+            foreach( $this->craft()->getWitches() as $id => $craftWitch ){
+                if( $id != $this->id )
+                {
+                    $craftWitch->edit([ 'is_main' => 1 ]);
+                    break;
+                }
+            }
+        }
+        
+        $this->cauldron = null;
+        
+        return $this->edit(['cauldron' => null]);
+    }
+    
+    /**
      * Delete associated craft if this is their only witch association,
      * if not only remove this association
      * @return bool

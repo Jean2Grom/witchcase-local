@@ -25,7 +25,7 @@ $this->addContextArrayItems( 'tabs', [
 ]);
 ?>
 
-<?php include $this->getIncludeDesignFile('alerts.php'); ?>
+<?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
 <?php include $this->getIncludeDesignFile('view/witch-menu-info.php'); ?>
 <?php include $this->getIncludeDesignFile('edit/witch-menu-info.php'); ?>
@@ -49,6 +49,8 @@ $this->addContextArrayItems( 'tabs', [
 
 <div class="tabs-target__item"  id="tab-cauldron-part">
     <div class="box-container">
-        <div><?php include $this->getIncludeDesignFile('view/cauldron.php'); ?></div>
+        <div><?php $this->include('view/cauldron.php', [
+            'cauldron' => $this->witch("target")->cauldron()
+        ]); ?></div>
     </div>
 </div>

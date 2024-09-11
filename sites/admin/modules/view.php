@@ -1,31 +1,77 @@
-<?php /** @var WC\Module $this */
+<?php 
+/** 
+ * @var WC\Module $this 
+ */
 
-use WC\Handler\CauldronHandler;
+//use WC\Handler\CauldronHandler;
 use WC\Structure;
+use WC\Tools;
 use WC\Website;
 
-$targetWitch = $this->witch("target");
+$action = Tools::filterAction(
+    $this->wc->request->param('action'),
+    [
+        'remove-cauldron',
+    ], 
+);
+$this->wc->debug($action);
 
-if( !$targetWitch->exist() ){
-    $alert = [
+
+if( !$this->witch("target") ){
+    $this->wc->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Witch not found"
-    ];
-    $this->wc->user->addAlerts([ $alert ]);
+    ]);
     
     header('Location: '.$this->wc->website->getRootUrl() );
     exit();
 }
 
-$alerts         = $this->wc->user->getAlerts();
+
+
+if( $this->witch("target")->hasCauldron() )
+{
+    //$result = CauldronHandler::fetch($this->wc, [ $this->witch("target")->cauldron ]);
+    //$structures     = $this->wc->configuration->structures();
+    //$ingredients    = WC\Ingredient::list();
+    
+    $this->wc->debug( $this->witch("target")->cauldron() );
+}
+
+$this->wc->debug( $this->wc->request->inputs() );
+
+switch( $action )
+{
+    case 'remove-cauldron':
+        if( !$this->witch("target")->cauldron() ){
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, cauldron wasn't found",
+            ]);
+        }
+        else if( !$this->witch("target")->removeCauldron() ){
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error occurred, cauldron removal was canceled",
+            ]);
+        }
+        else {
+            $this->wc->user->addAlert([
+                'level'     =>  'success',
+                'message'   =>  "Cauldron removed"
+            ]);
+        }
+    break;    
+}
+
 $structuresList = [];
 $craftWitches   = null;
-if( !$targetWitch->hasCraft() ){
+if( !$this->witch("target")->hasCraft() ){
     $structuresList = Structure::listStructures( $this->wc );
 }
 else 
 {
-    $craftWitches = $targetWitch->craft()->getWitches();
+    $craftWitches = $this->witch("target")->craft()->getWitches();
     
     foreach( $craftWitches as $key => $craftWitch )
     {
@@ -46,9 +92,9 @@ else
     }
     
     $craftWitchesTargetFirst    = [];
-    $craftWitchesTargetFirst[]  = $craftWitches[ $targetWitch->id ];
+    $craftWitchesTargetFirst[]  = $craftWitches[ $this->witch("target")->id ];
     foreach( $craftWitches as $key => $craftWitch ){
-        if( $key !=  $targetWitch->id ){
+        if( $key !=  $this->witch("target")->id ){
             $craftWitchesTargetFirst[] = $craftWitch;
         }
     }
@@ -74,10 +120,10 @@ foreach( $sites as $site ){
 }
 
 $breadcrumb         = [];
-$breadcrumbWitch    = $targetWitch;
+$breadcrumbWitch    = $this->witch("target");
 while( !empty($breadcrumbWitch) )
 {
-    if( $breadcrumbWitch  === $targetWitch ){
+    if( $breadcrumbWitch  === $this->witch("target") ){
         $url    = "javascript: location.reload();";
     }
     else {
@@ -99,17 +145,6 @@ while( !empty($breadcrumbWitch) )
 
 $this->addContextVar( 'breadcrumb', array_reverse($breadcrumb) );
 
-//$this->wc->debug( $targetWitch );
-//$this->wc->debug( $targetWitch->cauldron );
-
-if( $targetWitch->hasCauldron() )
-{
-    //$result = CauldronHandler::fetch($this->wc, [ $targetWitch->cauldron ]);
-    $cauldron = $targetWitch->cauldron();
-
-    //$this->wc->dump( $cauldron );
-    //$this->wc->debug( $cauldron );
-}
-
+$targetWitch    = $this->witch("target");
 
 $this->view();

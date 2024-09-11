@@ -38,7 +38,7 @@ $this->addJsFile('triggers.js');
     
     <div class="fieldsets-container">
         <?php foreach( $draft->content() as $content ): 
-            $contentInput = "content[".$content->getInputIndex()."][".$content->type."]";
+            $contentInput = "content[".$content->getInputIndex()."]";
             ?>
             <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">
                 <legend>
@@ -52,6 +52,8 @@ $this->addJsFile('triggers.js');
                     <a class="down-fieldset">[&#8595;]</a>
                     <a class="remove-fieldset">[x]</a>
                 </legend>
+                <input  type="hidden" 
+                        name="<?=$contentInput ?>[type]" value="<?=$content->type ?>" />
                 <?php $content->edit( 
                     null, 
                     [
@@ -61,17 +63,17 @@ $this->addJsFile('triggers.js');
                     ]
                 ); ?>
             </fieldset>
-        <?php endforeach; ?>
-        
-        <?php $this->include(
-            'cauldron/add.php', 
-            [ 
-                'ingredients'   => $ingredients, 
-                'structures'    => $structures, 
-                'input'         => "content[new]",
-            ]
-        ); ?>
-    </div>    
+        <?php endforeach; ?>        
+    </div>
+    
+    <?php $this->include(
+        'cauldron/add.php', 
+        [ 
+            'ingredients'   => $ingredients, 
+            'structures'    => $structures, 
+            'input'         => "content[new]",
+        ]
+    ); ?>
 </form>
 
 <?php if( $this->witch("target") ): ?>
@@ -242,13 +244,19 @@ $this->addJsFile('triggers.js');
                         action.setAttribute('name', "action");
                         action.value = saveButton.dataset.action;
 
-                        let input = document.createElement('input');
-                        input.setAttribute('type', "hidden");
-                        input.setAttribute('name', form.dataset.input + '[' + typeSelector.value + '][name]' );
-                        input.value = nameInput.value;
+                        let inputName = document.createElement('input');
+                        inputName.setAttribute('type', "hidden");
+                        inputName.setAttribute('name', form.dataset.input + '[name]' );
+                        inputName.value = nameInput.value;
+                        
+                        let inputType = document.createElement('input');
+                        inputType.setAttribute('type', "hidden");
+                        inputType.setAttribute('name', form.dataset.input + '[type]' );
+                        inputType.value = typeSelector.value;
                         
                         let actionForm = document.querySelector('#' + saveButton.dataset.target);
-                        actionForm.append(input);
+                        actionForm.append(inputName);
+                        actionForm.append(inputType);
                         actionForm.append(action);
                         actionForm.submit();
                     }

@@ -172,6 +172,19 @@ abstract class Ingredient
         return true;
     }
 
+    function readInputs( mixed $input ): self 
+    {
+        if( !empty($input['name']) ){
+            $this->name = htmlspecialchars($input['name']);
+        }
+
+        if( isset($input['priority']) && is_int($input['priority']) ){
+            $this->priority = $input['priority'];
+        }
+
+        return $this->readInput( $input['value'] );
+    }
+
     function readInput( mixed $input ): self {        
         return $this->set( $input );
     }

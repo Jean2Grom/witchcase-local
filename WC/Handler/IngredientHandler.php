@@ -9,7 +9,7 @@ class IngredientHandler
     /**
      * @param Cauldron $cauldron
      * @param array $row
-     * @return void
+     * @return Ingredient
      */
     static function createFromData(  Cauldron $cauldron, string $type, array $data ): Ingredient
     {

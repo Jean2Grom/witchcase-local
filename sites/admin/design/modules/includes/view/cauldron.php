@@ -1,44 +1,48 @@
-<?php /** @var WC\Module $this @var WC\Cauldron $cauldron*/ ?>
+<?php 
+/** 
+ * @var WC\Module $this 
+ * @var WC\Cauldron $cauldron
+ */
+?>
 
 <div class="box view__cauldron">
-    <?php if( !isset($cauldron) ): ?>
+    <?php if( !$this->witch("target")->hasCauldron() ): ?>
         <h3>
             <i class="fa fa-feather-alt"></i>
             No cauldron
         </h3>
-        <form method="post" 
-              action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>"
-              id="witch-add-new-content">
-            <select name="witch-content-structure" id="witch-content-structure">
+        <form method="post" id="witch-add-new-cauldron">
+
+            <select name="witch-cauldron-structure" id="witch-cauldron-structure">
                 <option value="">
                     Select new cauldron structure
                 </option>
-                <?php foreach( $structuresList as $structureData ): ?>
-                    <option value="<?=$structureData['name']?>">
-                        <?=$structureData['name']?>
+                <?php foreach( $this->wc->configuration->structures() as $structure ): ?>
+                    <option value="<?=$structure->name?>">
+                        <?=$structure->name?>
                     </option>
                 <?php endforeach; ?>
             </select>
             
-            <input type="hidden" id="imported-craft-witch" name="imported-craft-witch" value="" />
+            <input type="hidden" id="imported-cauldron-witch" name="imported-cauldron-witch" value="" />
         </form>
         
         <div class="box__actions">
-            <button id="import-craft-action" 
+            <button id="import-cauldron-action" 
                     class="trigger-action"
                     style="display: none;"
-                    data-action="import-craft"
-                    data-target="witch-add-new-content">Import craft</button>
-            <button id="witch-get-existing-craft">
+                    data-action="import-cauldron"
+                    data-target="witch-add-new-cauldron">Import craft</button>
+            <button id="witch-get-existing-cauldron">
                 <i class="fa fa-project-diagram"></i>
-                Get existing craft
+                Get existing cauldron
             </button>
-            <button id="witch-create-craft" disabled
+            <button id="witch-create-cauldron" disabled
                     class="trigger-action"
-                    data-action="create-craft"
-                    data-target="witch-add-new-content">
+                    data-action="create-cauldron"
+                    data-target="witch-add-new-cauldron">
                 <i class="fa fa-plus"></i>
-                Create craft
+                Create new cauldron
             </button>
         </div>
 
@@ -58,7 +62,7 @@
         
         <p><em>Cauldron (data) associated with this Witch</em></p>
         
-        <?php  //$this->wc->debug($cauldron->content(), "ingredients", 2); ?>
+        <?php  $this->wc->debug($cauldron->content(), "ingredients", 2); ?>
 
         <?php foreach( $cauldron->content() as $ingredient ): ?>
             <fieldset>
@@ -80,9 +84,9 @@
         <div class="box__actions">
             <button class="trigger-action"
                     data-confirm="Warning ! You are about to remove this content"
-                    data-action="remove-craft"
-                    data-target="view-craft-action">
-                <?php //if( count($craftWitches) == 1 ): ?>
+                    data-action="remove-cauldron"
+                    data-target="view-cauldron-action">
+                <?php //if( count($cauldronWitches) == 1 ): ?>
                 <?php if( true ): ?>
                     <i class="fa fa-trash"></i>
                     Delete
@@ -101,8 +105,7 @@
                 </button>
             <?php endif; */?>
             <button class="trigger-href" 
-                    data-href="<?=$this->wc->website->getUrl("cauldron?id=".$this->witch("target")->id) ?>"
-                    id="cauldron__edit">
+                    data-href="<?=$this->wc->website->getUrl("cauldron?id=".$this->witch("target")->id) ?>">
                 <i class="fa fa-pencil"></i>
                 Edit
             </button>
@@ -110,6 +113,4 @@
     <?php endif; ?>
 </div>
 
-<form method="post" 
-      action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>"
-      id="view-craft-action"></form>
+<form method="post" id="view-cauldron-action"></form>

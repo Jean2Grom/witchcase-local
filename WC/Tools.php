@@ -62,4 +62,7 @@ class Tools
         return $url;
     }
 
+    static function filterAction( ?string $action, array $possibleActions ): string|bool {
+        return !in_array($action, $possibleActions)? false: $action;
+    }
 }

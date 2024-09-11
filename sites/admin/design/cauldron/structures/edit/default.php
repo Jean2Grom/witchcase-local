@@ -18,8 +18,8 @@
                 name="<?=$input?>[content]" value="" />
 
     <?php else: foreach( $this->content() as $content ): 
-        $integrationCountClass  = substr_count($this->editPrefix, '|') % 4;
-        $contentInput = $input."[content][".$content->getInputIndex()."][".$content->type."]";
+        $integrationCountClass  = substr_count($this->editPrefix, '[') % 4;
+        $contentInput           = $input."[content][".$content->getInputIndex()."]";
         ?>
         <fieldset class="<?=$content->isIngredient()? 'ingredient': 'structure integration-'.$integrationCountClass?>">
             <legend>
@@ -31,6 +31,8 @@
                 <a class="down-fieldset">[&#8595;]</a>
                 <a class="remove-fieldset">[x]</a>
             </legend>
+            <input  type="hidden" 
+                    name="<?=$contentInput ?>[type]" value="<?=$content->type ?>" />
             <?php $content->edit( 
                 null, 
                 [
@@ -41,14 +43,13 @@
             ); ?>
         </fieldset>
     <?php endforeach; endif; ?>
-
-    <?php $this->wc->witch()?->modules['cauldron']?->include(
-            'cauldron/add.php', 
-            [ 
-                'ingredients'   => $ingredients, 
-                'structures'    => $structures, 
-                'input'         => $input."[content][new]",
-            ]
-        );?>
-
 </div>
+
+<?php $this->wc->witch()?->modules['cauldron']?->include(
+    'cauldron/add.php', 
+    [ 
+        'ingredients'   => $ingredients, 
+        'structures'    => $structures, 
+        'input'         => $input."[content][new]",
+    ]
+);?>
