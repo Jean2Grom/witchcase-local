@@ -252,6 +252,7 @@ class WitchHandler
             'site'              => $witch->site ?? "",
             'description'       => $witch->data,
             'craft'             => $witch->hasCraft(),
+            'cauldron'          => $witch->hasCauldron(),
             'invoke'            => $witch->hasInvoke(),
             'daughters'         => $daughters,
             'daughters_orders'  => array_keys( $daughters ),

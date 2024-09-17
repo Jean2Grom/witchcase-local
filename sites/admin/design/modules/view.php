@@ -49,8 +49,6 @@ $this->addContextArrayItems( 'tabs', [
 
 <div class="tabs-target__item"  id="tab-cauldron-part">
     <div class="box-container">
-        <div><?php $this->include('view/cauldron.php', [
-            'cauldron' => $this->witch("target")->cauldron()
-        ]); ?></div>
+        <div><?php $this->include('view/cauldron.php'); ?></div>
     </div>
 </div>

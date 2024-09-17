@@ -1,4 +1,4 @@
-$(document).ready(function()
+document.addEventListener("DOMContentLoaded", () => 
 {
     // Menu info edition behaviour
     $('.edit__witch-menu-info').hide();
@@ -132,6 +132,29 @@ $(document).ready(function()
     });    
     
     
+    // Cauldron part
+    document.getElementById('witch-cauldron-structure').addEventListener('change', e => {
+        if( e.target.value === '' ){
+            document.getElementById('witch-create-cauldron').classList.add("disabled");
+        }
+        else {
+            document.getElementById('witch-create-cauldron').classList.remove('disabled')
+        }
+    });
+
+    document.getElementById('witch-get-existing-cauldron').addEventListener('click', () => {
+        chooseWitch({ cauldron: true }, "Choose importing cauldron witch").then( witchId => 
+        { 
+            if( witchId === false ){
+                return;
+            }
+
+            document.getElementById('imported-cauldron-witch').value = witchId;
+            document.getElementById('import-cauldron-action').click();
+        });
+    });    
+    
+
     // Daughters cut/copy
     $('.cut-descendants').on('click', function()
     {

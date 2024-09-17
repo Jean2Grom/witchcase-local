@@ -1,7 +1,6 @@
 <?php 
 /** 
  * @var WC\Module $this 
- * @var WC\Cauldron $cauldron
  */
 ?>
 
@@ -37,8 +36,8 @@
                 <i class="fa fa-project-diagram"></i>
                 Get existing cauldron
             </button>
-            <button id="witch-create-cauldron" disabled
-                    class="trigger-action"
+            <button id="witch-create-cauldron" 
+                    class="trigger-action disabled"
                     data-action="create-cauldron"
                     data-target="witch-add-new-cauldron">
                 <i class="fa fa-plus"></i>
@@ -49,22 +48,18 @@
     <?php else: ?>
         <h3>
             <i class="fa fa-feather-alt"></i>
-            <?=$cauldron->name ?>
+            <?=$this->witch("target")->cauldron()->name ?>
         </h3>
-        <h4 title="ID <?=$cauldron->id ?>">
-            <?=$cauldron->data->structure ?>
-            <em>[<?=$cauldron->isPublished()? 
+        <h4 title="ID <?=$this->witch("target")->cauldron()->id ?>">
+            <?=$this->witch("target")->cauldron()->type ?>
+            <em>[<?=$this->witch("target")->cauldron()->isPublished()? 
                         "Published": 
-                        ($cauldron->isDraft()? 
-                            "Draft": 
-                            "Archive")?>]</em>
+                        ($this->witch("target")->cauldron()->isDraft()? "Draft": "Archive")?>]</em>
         </h4>
-        
-        <p><em>Cauldron (data) associated with this Witch</em></p>
-        
-        <?php  $this->wc->debug($cauldron->content(), "ingredients", 2); ?>
 
-        <?php foreach( $cauldron->content() as $ingredient ): ?>
+        <p><em>Cauldron is a content associated with the Witch</em></p>
+                
+        <?php foreach( $this->witch("target")->cauldron()->content() as $ingredient ): ?>
             <fieldset>
                 <legend><?=$ingredient->name?> [<?=$ingredient->type?>]</legend>                    
                 <?php $ingredient->display() ?>
@@ -72,18 +67,18 @@
         <?php endforeach; ?>
         
         <p>
-            <?php /*if( $this->witch("target")->craft()->created ): ?>
-                <em>Created by <?=$this->witch("target")->craft()->created->actor?>: <?=$this->witch("target")->craft()->created->format( \DateTimeInterface::RFC2822 )?></em>
+            <?php if( $this->witch("target")->cauldron()->created ): ?>
+                <em>Created by <?=$this->witch("target")->cauldron()->created->actor?>: <?=$this->witch("target")->cauldron()->created->format( \DateTimeInterface::RFC2822 )?></em>
             <?php endif; ?>
-            <?php if( $this->witch("target")->craft()->modified && $this->witch("target")->craft()->created != $this->witch("target")->craft()->modified ): ?>
+            <?php if( $this->witch("target")->cauldron()->modified && $this->witch("target")->cauldron()->created != $this->witch("target")->cauldron()->modified ): ?>
                 <br/> 
-                <em>Modified by <?=$this->witch("target")->craft()->modified->actor?>: <?=$this->witch("target")->craft()->modified->format( \DateTimeInterface::RFC2822 )?></em>
-            <?php endif;*/ ?>
+                <em>Modified by <?=$this->witch("target")->cauldron()->modified->actor?>: <?=$this->witch("target")->cauldron()->modified->format( \DateTimeInterface::RFC2822 )?></em>
+            <?php endif; ?>
         </p>
         
         <div class="box__actions">
             <button class="trigger-action"
-                    data-confirm="Warning ! You are about to remove this content"
+                    data-confirm="Confirm removal"
                     data-action="remove-cauldron"
                     data-target="view-cauldron-action">
                 <?php //if( count($cauldronWitches) == 1 ): ?>
@@ -95,15 +90,15 @@
                     Remove
                 <?php endif;?>
             </button>
-            <?php /*if( $this->witch("target")->craft()->structure->type === WC\Craft\Content::TYPE ): ?>
+            <?php if( !$this->witch("target")->cauldron()->isArchive() ): ?>
                 <button class="trigger-action"
-                        data-confirm="Are you sure to archive this content ?"
-                        data-action="archive-craft"
-                        data-target="view-craft-action">
+                        data-confirm="Confirm archive"
+                        data-action="archive-cauldron"
+                        data-target="view-cauldron-action">
                     <i class="fa fa-archive"></i>
                     Archive
                 </button>
-            <?php endif; */?>
+            <?php endif; ?>
             <button class="trigger-href" 
                     data-href="<?=$this->wc->website->getUrl("cauldron?id=".$this->witch("target")->id) ?>">
                 <i class="fa fa-pencil"></i>

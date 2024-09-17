@@ -2,14 +2,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll(".trigger-href").forEach( 
         trigger => trigger.addEventListener('click', () => {
-            window.location.href = trigger.dataset.href;
+            if( !trigger.classList.contains("disabled") ){
+                window.location.href = trigger.dataset.href;
+            }
             return false;
         })    
     );
 
     document.querySelectorAll(".trigger-action").forEach( 
         trigger => trigger.addEventListener('click', () => {
-            if( trigger.dataset.action === undefined 
+            if( trigger.classList.contains("disabled")
+                || trigger.dataset.action === undefined 
                 ||  trigger.dataset.target === undefined 
                 || (trigger.dataset.confirm !== undefined && !confirm( trigger.dataset.confirm ))
             ){

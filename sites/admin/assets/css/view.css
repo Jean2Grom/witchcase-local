@@ -38,7 +38,10 @@
     .url-input-prefix {
         margin-right: 4px;
     }
-
+#witch-add-new-cauldron {
+    display: flex;
+    justify-content: end;
+}
 @media screen and (min-device-width: 480px) {
     .view__witch-menu-info {
         margin: 1.5vw 0;

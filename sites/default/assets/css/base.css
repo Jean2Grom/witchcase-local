@@ -43,6 +43,12 @@ button:active {
     background-color: #CCC;
     box-shadow: none;
 }
+button.disabled {
+    cursor: not-allowed;
+    font-style: italic;
+    background-color: #eee;
+    box-shadow: none;
+}
 @media screen and (min-device-width: 480px) {
     body {
         font-size: 3vw;

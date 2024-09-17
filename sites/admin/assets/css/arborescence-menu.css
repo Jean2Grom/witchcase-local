@@ -55,7 +55,7 @@
             .arborescence-level__witch__name {
                 cursor: pointer;
                 font-weight: normal;
-                margin-left: 5px;
+                margin: 0 8px;
             }
                 .arborescence-level__witch__name:hover {
                     color: #ff9900;
