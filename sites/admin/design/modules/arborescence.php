@@ -18,7 +18,8 @@ $key = "arborescence_".md5(microtime().rand());
         "treeData": <?=json_encode($tree)?>,
         "currentId": <?=$currentId ?? 0?>,
         "currentSite": "<?=$this->wc->website->name?>",
-        "breadcrumb": <?=json_encode($breadcrumb)?>
+        "breadcrumb": <?=json_encode($breadcrumb)?>,
+        "draggable": <?=$draggble ?? null ? "true": "false"?>
     };
 </script>
 

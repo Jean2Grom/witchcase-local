@@ -32,6 +32,7 @@ $tree       = [ $this->witch->id => $root ];
 $breadcrumb = [ $this->witch->id ];
 $pathFound  = true;
 $daughters  = $root["daughters"];
+$draggble   = true;
 
 while( $pathFound )
 {
