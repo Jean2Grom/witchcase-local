@@ -17,16 +17,57 @@ const ArborescenceMenu = function( key ){
             this.breadcrumb     = entries.breadcrumb;
             this.draggable      = entries.draggable ?? false;
 
-console.log(this.draggable);
+//console.log(this.draggable);
             this.addArborescenceLevel( this.treeData )
             .then( 
                 this.open( this.breadcrumb )
             )
             .then(
                 this.scrollToLastLevel()
+            )
+            .then(
+                () => {
+                    if( !this.draggable ){
+                        return;
+                    }
+
+                    let container   = document.querySelector('#' + this.key + '.arborescence-menu-container.module');
+                    container.addEventListener("contextmenu", 
+                        e => {
+                            e.preventDefault();
+
+                            console.log('X:',e.x);
+                            console.log('Y:',e.y);
+
+                            this.triggerContextual(e);
+                        }
+                    );
+
+                    container.addEventListener("click", 
+                        e => {
+                            let clickedMenu = e.target.closest('.arborescence-menu-context-menu');
+
+                            if( !clickedMenu ){
+                                container.querySelector('.arborescence-menu-context-menu').remove();
+                            }
+                        }
+                    );
+                }
             );
 
             return this;            
+        },
+        triggerContextual: function( e )
+        {
+            let container   = document.querySelector('#' + this.key + '.arborescence-menu-container.module');
+            let menu        = document.createElement('menu');
+
+            menu.classList.add("arborescence-menu-context-menu");
+            menu.style.left = e.x +'px';
+            menu.style.top  = e.y +'px';
+
+            container.append(menu);
+            console.log( container );
         },
         addArborescenceLevel: async function( subTree, order=false )
         {
@@ -171,6 +212,11 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                         e.preventDefault();
 
                         this.dragleave( e.target );
+
+                        console.log('drop X:',e.x);
+                        console.log('drop Y:',e.y);
+
+                        this.triggerContextual(e);
                     }
                 );
             }
@@ -181,7 +227,9 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
         }, 
         dragOver: function( target )
         {
-            let witch = target.closest('.arborescence-level__witch');
+            let witch       = target.closest('.arborescence-level__witch');
+            let position    = target.closest('.arborescence-level__position');
+
             //console.log(witch.classList);
             if( witch && witch.dataset.id !== (this.draggedId ?? 0) )
             {
@@ -194,17 +242,40 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                     }
 
                     document.querySelectorAll('#' + this.key + '.arborescence-menu-container .arborescence-level__position').forEach(
-                        position => position.remove()
+                        positionDom => positionDom.remove()
                     );
 
-                    let positionTop = document.createElement('div');
-                    positionTop.classList.add('arborescence-level__position');
-                    let positionBottom = positionTop.cloneNode();
+                    if( !witch.previousSibling || this.draggedId !== witch.previousSibling.dataset.id )
+                    {
+                        let positionTop = document.createElement('div');
+                        positionTop.classList.add('arborescence-level__position');
+                        positionTop.setAttribute('rel', 'before');
+                        positionTop.setAttribute('ref', witch.dataset.id);
+                        target.closest('.arborescence-level').insertBefore(  positionTop, witch );  
+                    }
                     
-                    target.closest('.arborescence-level').insertBefore(  positionTop, witch );  
-                    witch.after(positionBottom);
+                    if( !witch.nextSibling || this.draggedId !== witch.nextSibling.dataset.id )
+                    {
+                        let positionBottom = document.createElement('div');
+                        positionBottom.classList.add('arborescence-level__position');
+                        positionBottom.setAttribute('rel', 'after');
+                        positionBottom.setAttribute('ref', witch.dataset.id);
+                        witch.after(positionBottom);
+                    }
                 }
             }
+            else if( position && !position.classList.contains('drag-over') )
+            {
+                position.classList.add('drag-over');
+
+                document.querySelectorAll('#' + this.key + '.arborescence-menu-container .arborescence-level__position').forEach(
+                    positionDom => {
+                        if( positionDom !== position ){
+                            positionDom.remove();
+                        }
+                    }
+                );
+        }
 
         },
         dragleave: function( target )
