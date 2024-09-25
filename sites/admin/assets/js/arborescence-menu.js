@@ -18,7 +18,6 @@ const ArborescenceMenu = function( key ){
             this.breadcrumb     = entries.breadcrumb;
             this.draggable      = entries.draggable ?? false;
 
-//console.log(this.draggable);
             this.addArborescenceLevel( this.treeData )
             .then( 
                 this.open( this.breadcrumb )
@@ -37,11 +36,60 @@ const ArborescenceMenu = function( key ){
                         e => {
                             e.preventDefault();
 
-                            let threshold   =   container.querySelector('.arborescence-level').offsetLeft;
-                            threshold       +=  container.querySelector('.arborescence-level').offsetWidth;
+                            this.closeDragAndCOntext();
 
-                            if( e.x > threshold ){
-                                this.triggerContextual(e);
+                            let targetedWitch = e.target.closest('.arborescence-level__witch');
+                            if( targetedWitch )
+                            {
+                                targetedWitch.classList.add('drag-over');
+
+                                this.triggerContextual( e, [
+                                    { 
+                                        url: "/admin/create-witch?id="+targetedWitch.dataset.id, 
+                                        icon: "fa fa-plus", 
+                                        text: "Create daughter witch" 
+                                    },
+                                    { icon: "fa fa-times", text: "Cancel" },
+                                ]);
+
+                                return;
+                            }
+
+                            let levels      = container.querySelectorAll('.arborescence-level');
+
+                            targetedWitch   =   levels[ 0 ].querySelector('.arborescence-level__witch');
+                            let threshold   =   levels[ 0 ].offsetLeft;
+                            threshold       +=  levels[ 0 ].offsetWidth;
+
+                            for( let i = 1; i < levels.length; i++) 
+                            {
+
+                                threshold   =   levels[ i ].offsetLeft;
+                                threshold   +=  levels[ i ].offsetWidth;
+
+                                if( e.x > threshold )
+                                {
+                                    let selectedTarget = levels[ i ].querySelector('.arborescence-level__witch.selected');
+                                    
+                                    if( selectedTarget ){
+                                        targetedWitch = selectedTarget;
+                                    }
+                                }
+
+                            }
+
+                            if( targetedWitch )
+                            {
+                                targetedWitch.classList.add('drag-over');
+
+                                this.triggerContextual( e, [
+                                    { 
+                                        url: "/admin/create-witch?id="+targetedWitch.dataset.id, 
+                                        icon: "fa fa-plus", 
+                                        text: "Create daughter witch" 
+                                    },
+                                    { icon: "fa fa-times", text: "Cancel" },
+                                ]);
                             }
                         }
                     );
@@ -51,9 +99,7 @@ const ArborescenceMenu = function( key ){
                             let clickedMenu = e.target.closest('.arborescence-menu-context-menu');
 
                             if( !clickedMenu ){
-                                container.querySelectorAll('.arborescence-menu-context-menu').forEach( 
-                                    contextMenuDom => contextMenuDom.remove() 
-                                );
+                                this.closeDragAndCOntext();
                             }
                         }
                     );
@@ -62,7 +108,25 @@ const ArborescenceMenu = function( key ){
 
             return this;            
         },
-        triggerContextual: function( e )
+        closeDragAndCOntext: function( )
+        {
+            let container   = document.querySelector('#' + this.key + '.arborescence-menu-container.module');
+
+            container.querySelectorAll('.arborescence-menu-context-menu').forEach( 
+                contextMenuDom => contextMenuDom.remove() 
+            );
+
+            container.querySelectorAll('.arborescence-level__position').forEach(
+                positionDom => positionDom.remove()
+            );
+
+            container.querySelectorAll('.drag-over').forEach(
+                dragOverDom => dragOverDom.classList.remove('drag-over')
+            );                    
+
+            this.dropped = false;
+        },
+        triggerContextual: function( e, menuItems )
         {
             let container   = document.querySelector('#' + this.key + '.arborescence-menu-container.module');
 
@@ -76,42 +140,43 @@ const ArborescenceMenu = function( key ){
             menu.style.left = e.x +'px';
             menu.style.top  = e.y +'px';
 
+            /*
             let menuItems = [
-                { url: "/admin/view?id=2", icon: "fa fa-copy", text: "Copy to witch" },
-                { url: "/admin/view?id=2", icon: "fa fa-move", text: "Move to witch" },
+                { url: "/admin/view?id=2", icon: "fa fa-clone", text: "Copy to witch" },
+                { url: "/admin/view?id=2", icon: "fa fa-arrows", text: "Move to witch" },
                 { icon: "fa fa-times", text: "Cancel" },
             ];
+            */
 
             menuItems.forEach(  
                 item => {
                     let itemDom = document.createElement('li');
-                    let icon    = false;
+                    let aDom    = document.createElement('a');
+
                     if( item.icon !== undefined )
                     {
-                        icon = document.createElement('i');
+                        let icon = document.createElement('i');
                         icon.setAttribute('class', item.icon);
+                        aDom.append(icon);
                     }
 
-                    if( item.url === undefined )
-                    {
-                        if( icon ){
-                            itemDom.append( icon );
-                        }
+                    aDom.append( item.text );
 
-                        itemDom.append( item.text );
-
-                        itemDom.addEventListener( 'click', () => {
-                            alert('youpi');
+                    if( item.url === undefined ){
+                        aDom.addEventListener( 'click', () => {
+                            this.closeDragAndCOntext();
                         });
-                        menu.append( itemDom );
+                    }
+                    else {
+                        aDom.href = item.url;
                     }
 
-                    //menu.append( itemDom );
+                    itemDom.append( aDom );
+                    menu.append( itemDom );
                 }
             );
 
             container.append(menu);
-            //console.log( container );
         },
         addArborescenceLevel: async function( subTree, order=false )
         {
@@ -199,14 +264,11 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
 
                         arborescenceLevelWitchDom.addEventListener( 'dragstart', 
                             e => {
-                                //console.log( 'dragstart', e );
-                                //arborescenceLevelWitchDom.style.cursor = 'grabbing';
+                                this.closeDragAndCOntext();
 
-                                this.draggedId = arborescenceLevelWitchDom.dataset.id;
-                                console.log( 'dragstart2', this.draggedId );
+                                this.draggedId  = arborescenceLevelWitchDom.dataset.id;
 
-                                //let openDom = arborescenceLevelWitchDom.querySelector('.fa-chevron-right');
-                                let openDom = arborescenceLevelWitchDom.querySelector('.fa-folder-open');
+                                let openDom     = arborescenceLevelWitchDom.querySelector('.fa-folder-open');
                                 if( openDom ){
                                     this.toggle( arborescenceLevelWitchDom.querySelector('.arborescence-level__witch__daughters-display') );
                                 }
@@ -214,20 +276,9 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                         );
                         arborescenceLevelWitchDom.addEventListener( 'dragend', 
                             e => {
-                                console.log( 'dragend');
-                                //console.log( e.target);
-
-                                if( !this.dropped )
-                                {
-                                    document.querySelectorAll('#' + this.key + '.arborescence-menu-container .arborescence-level__position').forEach(
-                                        positionDom => positionDom.remove()
-                                    );
-                    
-                                    document.querySelectorAll('#' + this.key + '.arborescence-menu-container .drag-over').forEach(
-                                        dragOverDom => dragOverDom.classList.remove('drag-over')
-                                    );                    
+                                if( !this.dropped ){
+                                    this.closeDragAndCOntext();
                                 }
-
                             }
                         );
                     }
@@ -269,10 +320,52 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
 
                         this.dropped = true;
 
-                        console.log('drop X:',e.x);
-                        console.log('drop Y:',e.y);
 
-                        this.triggerContextual(e);
+                        let witch       = e.target.closest('.arborescence-level__witch');
+
+                        if( witch )
+                        {
+                            let urlBase = "/admin/view?id="+witch.dataset.id;
+
+                            this.triggerContextual( e, [
+                                { url: urlBase+"&copied="+this.draggedId, icon: "fa fa-clone", text: "Copy to witch" },
+                                { url: urlBase+"&moved="+this.draggedId, icon: "fa fa-arrows", text: "Move to witch" },
+                                { icon: "fa fa-times", text: "Cancel" },
+                            ]);
+                            
+                            return;
+                        }
+
+                        let position    = e.target.closest('.arborescence-level__position');
+
+                        if( position )
+                        {
+                            let positionLevel = e.target.closest('.arborescence-level');
+                            
+                            let match = false;
+                            positionLevel.parentNode.childNodes.forEach(
+                                level => {
+                                    if( !match && level !== positionLevel ){
+                                        witch = level.querySelector('.arborescence-level__witch.selected');
+                                    }
+                                    else if( level === positionLevel ){
+                                        match = true
+                                    }
+                                }
+                            );
+
+                            let urlBase =   "/admin/view?id="+witch.dataset.id;
+                            urlBase     +=  "&ref="+position.attributes.ref.value;
+                            urlBase     +=  "&rel="+position.attributes.rel.value;
+                            
+                            this.triggerContextual( e, [
+                                { url: urlBase+"&copied="+this.draggedId, icon: "fa fa-clone", text: "Copy to position" },
+                                { url: urlBase+"&moved="+this.draggedId, icon: "fa fa-arrows", text: "Move to position" },
+                                { icon: "fa fa-times", text: "Cancel" },
+                            ]);
+                            
+                            return;
+                        }
                     }
                 );
             }

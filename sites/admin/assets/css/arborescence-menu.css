@@ -88,7 +88,20 @@
 .arborescence-menu-context-menu {
     position: absolute;
     z-index: 10;
-    background-color: red;
-    width: 200px;    
-    height: 200px;    
+    background-color: #F3F3F3;
+    border: 1px solid #ccc;
+    box-shadow: 5px 5px 5px #ccc;
 }
+    .arborescence-menu-context-menu li {
+        padding: 4px 10px;
+    }
+        .arborescence-menu-context-menu li:hover {
+            background-color: #ccc;
+        }
+        .arborescence-menu-context-menu li a {
+            display: flex;
+            justify-content: space-between;
+        }
+            .arborescence-menu-context-menu li a i {
+                margin-right: 4px;
+            }
