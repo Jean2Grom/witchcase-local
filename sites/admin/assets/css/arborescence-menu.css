@@ -15,7 +15,7 @@
         display: inline-block;
         vertical-align: top;
     }
-        .arborescence-level > .drag-over {
+        .arborescence-level > .targeted-witch {
             border: 2px dashed #424242;
             box-shadow: 4px 4px 2px #ccc;
         }
@@ -30,7 +30,7 @@
             border: none;
             background-color: #f0f0f0;
         }
-        .arborescence-level__position.drag-over {
+        .arborescence-level__position.targeted-witch {
             height: 20px;
         }
         .arborescence-level__witch {
@@ -103,5 +103,5 @@
             justify-content: space-between;
         }
             .arborescence-menu-context-menu li a i {
-                margin-right: 4px;
+                margin-right: 8px;
             }
