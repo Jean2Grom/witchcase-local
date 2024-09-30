@@ -53,8 +53,11 @@ const ArborescenceMenu = function( key ){
                         return;
                     }
 
-                    let container   = document.querySelector('#' + this.key + '.arborescence-menu-container.module');
-                    container.addEventListener("contextmenu", 
+                    let container   = document.querySelector(
+                        '#' + this.key + '.arborescence-menu-container.module'
+                    );
+
+                    container.addEventListener( "contextmenu", 
                         e => {
                             e.preventDefault();
 

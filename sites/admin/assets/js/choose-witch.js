@@ -1,12 +1,12 @@
 async function chooseWitch( conditions={}, label="Choose witch" )
 {
     return new Promise( (resolve) => {
-        $('#choose-witch h3 span').html( label );
-        $('#choose-witch').show();
+        let chooseWitchDom = document.getElementById('choose-witch');
+
+        chooseWitchDom.querySelector('h3 span').innerHTML = label;
+        chooseWitchDom.style.display = 'block';
         
-        $('#choose-witch').on('click', '.close' ,function(){
-            resolve( false );
-        });
+        chooseWitchDom.querySelector('.close').addEventListener( 'click', () => resolve( false ) );
         
         $('#choose-witch').on('click', '.arborescence-level__witch__name', function()
         {
