@@ -3,12 +3,8 @@
  * @var WC\Module $this 
  */
 
-
-use WC\Handler\CauldronHandler;
-use WC\Structure;
 use WC\Tools;
 use WC\Website;
-
 
 $action = Tools::filterAction(
     $this->wc->request->param('action'),
@@ -26,8 +22,6 @@ if( !$this->witch("target") ){
     header('Location: '.$this->wc->website->getRootUrl() );
     exit();
 }
-
-$this->wc->debug( $this->wc->request->inputs() );
 
 $sites  = $this->wc->website->sitesRestrictions;
 if( !$sites ){
@@ -66,7 +60,7 @@ switch( $action )
             'data'      =>  null,
             'priority'  =>  $this->wc->request->param('new-witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
             'site'      =>  null,
-            'status'    =>  $this->wc->request->param('witch-status', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
+            'status'    =>  $this->wc->request->param('new-witch-status', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
             'invoke'    =>  null,
             'url'       =>  null,
             'context'   =>  null,
@@ -88,25 +82,25 @@ switch( $action )
             $newWitchData['data'] = $data;
         }
 
-        $site = trim($this->wc->request->param('witch-site') ?? "");
+        $site = trim($this->wc->request->param('new-witch-site') ?? "");
         if( in_array($site, $sites) )
         {
             $newWitchData['site'] = $site;
-            
-            $invoke = trim($this->wc->request->param('witch-invoke') ?? "");
+
+            $invoke = trim($this->wc->request->param('new-witch-invoke') ?? "");
             if( in_array($invoke, $modules[ $site ]) )
             {
-                $witchNewData['invoke'] = $invoke;
+                $newWitchData['invoke'] = $invoke;
 
-                $context = trim($this->wc->request->param('witch-context') ?? "");
+                $context = trim($this->wc->request->param('new-witch-context') ?? "");
                 if( $context !== "" ){
-                    $witchNewData['context'] = $context;
+                    $newWitchData['context'] = $context;
                 }
 
-                $autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-                $customFullUrl  = $this->wc->request->param('witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-                $customUrl      = $this->wc->request->param('witch-url');
-
+                $autoUrl        = $this->wc->request->param('new-witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+                $customFullUrl  = $this->wc->request->param('new-witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+                $customUrl      = $this->wc->request->param('new-witch-url');
+                
                 if( !$autoUrl )
                 {
                     $url    =   "";
@@ -125,7 +119,7 @@ switch( $action )
 
                     $url    .=  $customUrl;
 
-                    $witchNewData['url'] = $url;
+                    $newWitchData['url'] = $url;
                 }
             }
         }

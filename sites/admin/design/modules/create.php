@@ -1,6 +1,5 @@
 <?php /** @var WC\Module $this */
 
-$this->addCssFile('view.css');
 $this->addCssFile('boxes.css');
 $this->addJsFile('triggers.js');
 
@@ -15,12 +14,10 @@ $this->addContextArrayItems( 'tabs', [
 
 <?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
-<div class="view__witch-menu-info">
-    <h2 title="<?=$this->witch->data ?>">
-        <?=$this->witch("target")->name ?>
-    </h2>
-    <p><em><?=$this->witch("target")->data ?></em></p>    
-</div>
+<h2 title="<?=$this->witch->data ?>">
+    <?=$this->witch("target")->name ?>
+</h2>
+<p><em><?=$this->witch("target")->data ?></em></p>    
 
 <div class="tabs-target__item selected"  id="tab-current">
     <form method="post" id="create-witch">
@@ -54,11 +51,11 @@ $this->addContextArrayItems( 'tabs', [
                     Access
                 </h3>
 
-                <label for="witch-site">
+                <label for="new-witch-site">
                     Site
                 </label>
-                <select name="witch-site" 
-                        id="witch-site"
+                <select name="new-witch-site" 
+                        id="new-witch-site"
                         data-init="<?=$this->witch("target")->site ?>">
                     <option value="">
                         no site selected
@@ -71,52 +68,52 @@ $this->addContextArrayItems( 'tabs', [
                     <?php endforeach; ?>
                 </select>
                 
-                <label for="witch-status">
+                <label for="new-witch-status">
                     Status
                 </label>
-                <select name="witch-status" 
-                        id="witch-status" 
+                <select name="new-witch-status" 
+                        id="new-witch-status" 
                         data-init="<?=$this->witch("target")->statusLevel ?>"></select>
                 
                 <div id="site-selected"
                     <?=!$this->witch("target")->site? 'style="display: none;"' :'' ?>>
                     
-                    <label for="witch-invoke">
+                    <label for="new-witch-invoke">
                         Module to invoke
                     </label>
-                    <select name="witch-invoke" 
-                            id="witch-invoke"
+                    <select name="new-witch-invoke" 
+                            id="new-witch-invoke"
                             data-init="<?=$this->witch("target")->invoke ?>"></select>
                     
                     <div    id="invoke-selected"
                             <?=!$this->witch("target")->invoke? 'style="display: none;"' :'' ?>>
 
                         <div id="auto-url-disabled" style="display: none;">
-                            <label for="witch-url">
+                            <label for="new-witch-url">
                                 URL
                             </label>
                             <div class="url-input">
                                 <span class="url-input-prefix">/</span>
                                 <input  type="text"
-                                        name="witch-url"
-                                        id="witch-url"
+                                        name="new-witch-url"
+                                        id="new-witch-url"
                                         value="" />
                             </div>
                             <label  title="uncheck if you want to input a closest URL parent relative URL"
-                                    for="witch-full-url">Full URL</label>
+                                    for="new-witch-full-url">Full URL</label>
                             <input  title="uncheck if you want to input a closest URL parent relative URL"
                                     type="checkbox" 
-                                    id="witch-full-url" 
-                                    name="witch-full-url" />
+                                    id="new-witch-full-url" 
+                                    name="new-witch-full-url" />
                         </div>
                         
-                        <label for="witch-auto-url">
+                        <label for="new-witch-auto-url">
                             Automatic URL generation
                         </label>
                         <input type="checkbox" 
-                            id="witch-auto-url" 
+                            id="new-witch-auto-url" 
                             checked="true"
-                            name="witch-automatic-url" />
+                            name="new-witch-automatic-url" />
                     </div>
                 </div>
 
@@ -128,10 +125,10 @@ $this->addContextArrayItems( 'tabs', [
                     Cauldron
                 </h3>
                 
-                <label for="witch-cauldron-structure">
+                <label for="new-witch-cauldron-structure">
                     New cauldron structure
                 </label>
-                <select name="witch-cauldron-structure" id="witch-cauldron-structure">
+                <select name="new-witch-cauldron-structure" id="new-witch-cauldron-structure">
                     <option value="">
                         No cauldron creation
                     </option>
@@ -149,8 +146,8 @@ $this->addContextArrayItems( 'tabs', [
                             class="trigger-action"
                             style="display: none;"
                             data-action="import-cauldron"
-                            data-target="witch-add-new-cauldron">Import craft</button>
-                    <button id="witch-get-existing-cauldron">
+                            data-target="new-witch-add-new-cauldron">Import craft</button>
+                    <button id="new-witch-get-existing-cauldron">
                         <i class="fa fa-project-diagram"></i>
                         Get existing cauldron
                     </button>
@@ -185,15 +182,15 @@ document.addEventListener("DOMContentLoaded", () =>
     setInvokeImpactedInputs();
     setAutoUrlImpactedInputs();
 
-    document.getElementById("witch-site").addEventListener('change', () => setSiteImpactedInputs());
-    document.getElementById("witch-invoke").addEventListener('change', () => setInvokeImpactedInputs());
-    document.getElementById("witch-auto-url").addEventListener('change', () => setAutoUrlImpactedInputs());
+    document.getElementById("new-witch-site").addEventListener('change', () => setSiteImpactedInputs());
+    document.getElementById("new-witch-invoke").addEventListener('change', () => setInvokeImpactedInputs());
+    document.getElementById("new-witch-auto-url").addEventListener('change', () => setAutoUrlImpactedInputs());
 
     function setSiteImpactedInputs()
     {
-        let site = document.getElementById('witch-site').value;
+        let site = document.getElementById('new-witch-site').value;
 
-        let statusDom       = document.getElementById('witch-status');
+        let statusDom       = document.getElementById('new-witch-status');
         statusDom.innerHTML = "";
 
         let siteStatus = status[ site ];
@@ -221,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () =>
             document.getElementById('site-selected').style.display = 'block';
         }
 
-        let modulesDom          = document.getElementById('witch-invoke');
+        let modulesDom          = document.getElementById('new-witch-invoke');
         modulesDom.innerHTML    = "";
 
         let emptyOption = document.createElement('option');
@@ -253,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () =>
 
     function setInvokeImpactedInputs()
     {
-        let invoke = document.getElementById('witch-invoke').value;
+        let invoke = document.getElementById('new-witch-invoke').value;
 
         if( invoke === '' ){
             document.getElementById('invoke-selected').style.display = 'none';
@@ -267,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () =>
 
     function setAutoUrlImpactedInputs()
     {
-        if( document.getElementById('witch-auto-url').checked ){
+        if( document.getElementById('new-witch-auto-url').checked ){
             document.getElementById('auto-url-disabled').style.display = 'none';
         }
         else {
@@ -281,12 +278,12 @@ document.addEventListener("DOMContentLoaded", () =>
     function resetCauldronInputs()
     {
         document.querySelectorAll('.importVisualizeDom').forEach( dom => dom.remove() );
-        document.getElementById('witch-cauldron-structure').value   = '';
+        document.getElementById('new-witch-cauldron-structure').value   = '';
         document.getElementById('imported-cauldron-witch').value    = '';
-        document.getElementById('witch-cauldron-structure').removeAttribute('disabled');
+        document.getElementById('new-witch-cauldron-structure').removeAttribute('disabled');
     }
 
-    let cauldronFetchButton = document.getElementById('witch-get-existing-cauldron');
+    let cauldronFetchButton = document.getElementById('new-witch-get-existing-cauldron');
     if( cauldronFetchButton ){
         cauldronFetchButton.addEventListener('click', e => 
         {
@@ -301,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () =>
 
                 resetCauldronInputs();
 
-                document.getElementById('witch-cauldron-structure').setAttribute('disabled', true); 
+                document.getElementById('new-witch-cauldron-structure').setAttribute('disabled', true); 
 
                 let importVisualizeDom = document.createElement('div');
                 importVisualizeDom.classList.add('importVisualizeDom');
