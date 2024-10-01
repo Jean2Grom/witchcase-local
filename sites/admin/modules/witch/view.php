@@ -4,6 +4,8 @@
  */
 
 //use WC\Handler\CauldronHandler;
+
+use WC\Handler\CauldronHandler;
 use WC\Structure;
 use WC\Tools;
 use WC\Website;
@@ -12,6 +14,7 @@ $action = Tools::filterAction(
     $this->wc->request->param('action'),
     [
         'remove-cauldron',
+        'create-cauldron',
     ], 
 );
 $this->wc->debug($action);
@@ -35,8 +38,16 @@ if( $this->witch("target")->hasCauldron() )
     //$structures     = $this->wc->configuration->structures();
     //$ingredients    = WC\Ingredient::list();
     
-    $this->wc->debug( $this->witch("target")->cauldron() );
+    //$this->wc->debug( $this->witch("target")->cauldron() );
+    $this->wc->debug( $this->wc->configuration->structures() );
 }
+/*
+$this->wc->debug( 
+    $this->wc->configuration->structure(
+        $this->wc->request->param('witch-cauldron-structure')
+    )
+);
+*/
 
 $this->wc->debug( $this->wc->request->inputs() );
 
@@ -61,7 +72,17 @@ switch( $action )
                 'message'   =>  "Cauldron removed"
             ]);
         }
-    break;    
+    break;
+
+    case 'create-cauldron':
+
+        $cauldron = CauldronHandler::createFromData($this->wc, [
+            'name'      =>  "NEW CAULDRON",
+            'data'      =>  json_encode([ 'structure' => $this->wc->request->param('witch-cauldron-structure') ?? "folder" ]),
+        ]);
+
+        $this->wc->dump($cauldron);
+    break;
 }
 
 $structuresList = [];
