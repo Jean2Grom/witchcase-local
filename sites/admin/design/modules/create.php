@@ -17,9 +17,9 @@ $this->addContextArrayItems( 'tabs', [
 
 <div class="view__witch-menu-info">
     <h2 title="<?=$this->witch->data ?>">
-        <?=$targetWitch->name ?>
+        <?=$this->witch("target")->name ?>
     </h2>
-    <p><em><?=$targetWitch->data ?></em></p>    
+    <p><em><?=$this->witch("target")->data ?></em></p>    
 </div>
 
 <div class="tabs-target__item selected"  id="tab-current">
@@ -59,12 +59,12 @@ $this->addContextArrayItems( 'tabs', [
                 </label>
                 <select name="witch-site" 
                         id="witch-site"
-                        data-init="<?=$targetWitch->site ?>">
+                        data-init="<?=$this->witch("target")->site ?>">
                     <option value="">
                         no site selected
                     </option>
                     <?php foreach( $websitesList as $website ): ?>
-                        <option <?=($targetWitch->site === $website->site)? 'selected' :'' ?>
+                        <option <?=($this->witch("target")->site === $website->site)? 'selected' :'' ?>
                                 value="<?=$website->site ?>">
                             <?=$website->name ?>
                         </option>
@@ -76,20 +76,20 @@ $this->addContextArrayItems( 'tabs', [
                 </label>
                 <select name="witch-status" 
                         id="witch-status" 
-                        data-init="<?=$targetWitch->statusLevel ?>"></select>
+                        data-init="<?=$this->witch("target")->statusLevel ?>"></select>
                 
                 <div id="site-selected"
-                    <?=!$targetWitch->site? 'style="display: none;"' :'' ?>>
+                    <?=!$this->witch("target")->site? 'style="display: none;"' :'' ?>>
                     
                     <label for="witch-invoke">
                         Module to invoke
                     </label>
                     <select name="witch-invoke" 
                             id="witch-invoke"
-                            data-init="<?=$targetWitch->invoke ?>"></select>
+                            data-init="<?=$this->witch("target")->invoke ?>"></select>
                     
                     <div    id="invoke-selected"
-                            <?=!$targetWitch->invoke? 'style="display: none;"' :'' ?>>
+                            <?=!$this->witch("target")->invoke? 'style="display: none;"' :'' ?>>
 
                         <div id="auto-url-disabled" style="display: none;">
                             <label for="witch-url">

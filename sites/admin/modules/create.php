@@ -16,8 +16,6 @@ $action = Tools::filterAction(
         'create-new-witch',
     ], 
 );
-$this->wc->debug($action);
-
 
 if( !$this->witch("target") ){
     $this->wc->user->addAlert([
@@ -30,82 +28,6 @@ if( !$this->witch("target") ){
 }
 
 $this->wc->debug( $this->wc->request->inputs() );
-
-switch( $action )
-{
-    case 'create-new-witch':
-        $newWitchData   = [
-            'name'      =>  trim($this->wc->request->param('new-witch-name') ?? ""),
-            'data'      =>  trim($this->wc->request->param('new-witch-data') ?? ""),
-            'priority'  =>  $this->wc->request->param('new-witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
-        ];
-        
-        if( $newWitchData['name'] === "" )
-        {
-            $alerts[] = [
-                'level'     =>  'error',
-                'message'   =>  "Witch name is missing"
-            ];
-            break;
-        }
-        
-        $newWitchId = $this->witch("target")->createDaughter( $newWitchData );
-        
-        if( !$newWitchId )
-        {
-            $alerts[] = [
-                'level'     =>  'error',
-                'message'   =>  "Error, new witch wasn't created"
-            ];
-            break;
-        }
-        
-        $alerts[] = [
-            'level'     =>  'success',
-            'message'   =>  "New witch created"
-        ];
-        
-        $this->wc->user->addAlerts($alerts);
-        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitchId ]) );
-        exit();
-    break;    
-}
-
-$structuresList = [];
-$craftWitches   = null;
-if( !$this->witch("target")->hasCraft() ){
-    $structuresList = Structure::listStructures( $this->wc );
-}
-else 
-{
-    $craftWitches = $this->witch("target")->craft()->getWitches();
-    
-    foreach( $craftWitches as $key => $craftWitch )
-    {
-        $breadcrumb         = [];
-        $breadcrumbWitch    = $craftWitch->mother();
-        while( !empty($breadcrumbWitch) )
-        {
-            $breadcrumb[] = [
-                "name"  => $breadcrumbWitch->name,
-                "data"  => $breadcrumbWitch->data,
-                "href"  => $this->witch->url([ 'id' => $breadcrumbWitch->id ]),
-            ];
-
-            $breadcrumbWitch = $breadcrumbWitch->mother();
-        }
-        
-        $craftWitches[ $key ]->breadcrumb = array_reverse($breadcrumb);
-    }
-    
-    $craftWitchesTargetFirst    = [];
-    $craftWitchesTargetFirst[]  = $craftWitches[ $this->witch("target")->id ];
-    foreach( $craftWitches as $key => $craftWitch ){
-        if( $key !=  $this->witch("target")->id ){
-            $craftWitchesTargetFirst[] = $craftWitch;
-        }
-    }
-}
 
 $sites  = $this->wc->website->sitesRestrictions;
 if( !$sites ){
@@ -136,6 +58,98 @@ foreach( $websitesList as $site => $website ){
     $modules[ $site ] = $website->listModules();
 }
 
+switch( $action )
+{
+    case 'create-new-witch':
+        $newWitchData   = [
+            'name'      =>  null,
+            'data'      =>  null,
+            'priority'  =>  $this->wc->request->param('new-witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
+            'site'      =>  null,
+            'status'    =>  $this->wc->request->param('witch-status', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
+            'invoke'    =>  null,
+            'url'       =>  null,
+            'context'   =>  null,
+        ];
+        
+        $name = trim($this->wc->request->param('new-witch-name') ?? "");
+        if( $name === "" )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Witch name is missing"
+            ]);
+            break;
+        }
+        $newWitchData['name'] = $name;
+
+        $data = trim($this->wc->request->param('new-witch-data') ?? "");
+        if( $data !== "" ){
+            $newWitchData['data'] = $data;
+        }
+
+        $site = trim($this->wc->request->param('witch-site') ?? "");
+        if( in_array($site, $sites) )
+        {
+            $newWitchData['site'] = $site;
+            
+            $invoke = trim($this->wc->request->param('witch-invoke') ?? "");
+            if( in_array($invoke, $modules[ $site ]) )
+            {
+                $witchNewData['invoke'] = $invoke;
+
+                $context = trim($this->wc->request->param('witch-context') ?? "");
+                if( $context !== "" ){
+                    $witchNewData['context'] = $context;
+                }
+
+                $autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+                $customFullUrl  = $this->wc->request->param('witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+                $customUrl      = $this->wc->request->param('witch-url');
+
+                if( !$autoUrl )
+                {
+                    $url    =   "";
+                    if( !$customFullUrl )
+                    {
+                        if( $this->witch("target")->mother() ){
+                            $url .= $this->witch("target")->mother()->getClosestUrl( $site );
+                        }
+
+                        if( substr($url, -1) != '/' 
+                                && substr($customUrl, 0, 1) != '/'  
+                        ){
+                            $url .= '/';
+                        }
+                    }
+
+                    $url    .=  $customUrl;
+
+                    $witchNewData['url'] = $url;
+                }
+            }
+        }
+        
+        $newWitchId = $this->witch("target")->createDaughter( $newWitchData );
+        
+        if( !$newWitchId ){
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, new witch wasn't created"
+            ]);
+            break;
+        }
+        
+        $this->wc->user->addAlert([
+            'level'     =>  'success',
+            'message'   =>  "New witch created"
+        ]);
+        
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitchId ]) );
+        exit();
+    break;    
+}
+
 $breadcrumb         = [];
 $breadcrumbWitch    = $this->witch("target");
 while( !empty($breadcrumbWitch) )
@@ -164,6 +178,5 @@ $this->addContextVar( 'breadcrumb', array_reverse($breadcrumb) );
 
 $cancelHref = $this->wc->website->getUrl("view?id=".$this->witch("target")->id);
 
-$targetWitch    = $this->witch("target");
 
 $this->view();
