@@ -172,5 +172,4 @@ $this->addContextVar( 'breadcrumb', array_reverse($breadcrumb) );
 
 $cancelHref = $this->wc->website->getUrl("view?id=".$this->witch("target")->id);
 
-
 $this->view();

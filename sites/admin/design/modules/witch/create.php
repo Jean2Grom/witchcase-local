@@ -116,7 +116,6 @@ $this->addContextArrayItems( 'tabs', [
                             name="new-witch-automatic-url" />
                     </div>
                 </div>
-
             </div>
         
             <div class="box">
