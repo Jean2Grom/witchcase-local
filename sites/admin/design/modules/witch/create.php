@@ -117,7 +117,7 @@ $this->addContextArrayItems( 'tabs', [
                     </div>
                 </div>
             </div>
-        
+            
             <div class="box">
                 <h3>
                     <i class="fa fa-mortar-pestle"></i>
@@ -163,12 +163,11 @@ $this->addContextArrayItems( 'tabs', [
     </button>
     
     <button class="trigger-href" 
-            data-href="<?=$cancelHref ?>">
+            data-href="<?=$this->wc->website->getUrl("view?id=".$this->witch("target")->id)?>">
         <i class="fa fa-times"></i>
         Cancel
     </button>
 </div>
-
 
 
 <script type="text/javascript">

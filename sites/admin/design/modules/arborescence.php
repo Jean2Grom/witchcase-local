@@ -1,6 +1,6 @@
 <?php /** @var WC\Module $this */
 
-$this->addJsLibFile('jquery-3.6.0.min.js');
+//$this->addJsLibFile('jquery-3.6.0.min.js');
 $this->addJsFile('fontawesome.js');
 $this->addCssFile('arborescence-menu.css');
 $this->addJsFile('arborescence-menu.js');
@@ -19,7 +19,9 @@ $key = "arborescence_".md5(microtime().rand());
         "currentId": <?=$currentId ?? 0?>,
         "currentSite": "<?=$this->wc->website->name?>",
         "breadcrumb": <?=json_encode($breadcrumb)?>,
-        "draggable": <?=$draggble ?? null ? "true": "false"?>
+        "draggable": <?=$draggble ?? null ? "true": "false"?>,
+        "clipboardUrl": <?=($clipboardUrl ?? null)? '"'.$clipboardUrl.'"': "null" ?>,
+        "createUrl": <?=($createUrl ?? null)? '"'.$createUrl.'"': "null" ?>
     };
 </script>
 

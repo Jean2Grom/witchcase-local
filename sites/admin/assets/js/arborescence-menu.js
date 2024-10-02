@@ -6,9 +6,12 @@ const ArborescenceMenu = function( key ){
         currentId: null,
         currentSite: null,
         breadcrumb: null,
+
         draggable: null,
         draggedId: null,
         dropped: null,
+        clipboardUrl: null,
+        createUrl: null,
 
         icons: {
             homeWitch: {dom: "i", classes: [ 'fas', 'fa-home' ]}, 
@@ -39,6 +42,8 @@ const ArborescenceMenu = function( key ){
             this.currentSite    = entries.currentSite;
             this.breadcrumb     = entries.breadcrumb;
             this.draggable      = entries.draggable ?? false;
+            this.clipboardUrl   = entries.clipboardUrl ?? null,
+            this.createUrl      = entries.createUrl ?? null,
 
             this.addArborescenceLevel( this.treeData )
             .then( 
@@ -70,7 +75,7 @@ const ArborescenceMenu = function( key ){
 
                                 this.triggerContextual( e, [
                                     { 
-                                        url: "/admin/create-witch?id="+targetedWitch.dataset.id, 
+                                        url: this.createUrl+'?id='+targetedWitch.dataset.id, 
                                         icon: this.icons.add, 
                                         text: "Create daughter" 
                                     },
@@ -109,8 +114,8 @@ const ArborescenceMenu = function( key ){
                                 let nameDom = targetedWitch.querySelector('.arborescence-level__witch__name')
 
                                 this.triggerContextual( e, [
-                                    { 
-                                        url: "/admin/create-witch?id="+targetedWitch.dataset.id, 
+                                    {
+                                        url: this.createUrl+'?id='+targetedWitch.dataset.id,
                                         icon:  this.icons.add, 
                                         text: "Add daughter to " 
                                                 + ( nameDom ? '"'+nameDom.innerHTML.trim()+'"': 'selected witch')
@@ -350,16 +355,18 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
 
                         if( witch && witch.dataset.id !== this.draggedId )
                         {
-                            let urlBase = "/admin/view?id="+witch.dataset.id;
+                            let urlBase =   this.clipboardUrl;
+                            urlBase     +=  "?dest="+witch.dataset.id;
+                            urlBase     +=  "&target="+this.draggedId;
 
                             this.triggerContextual( e, [
                                 { 
-                                    url: urlBase+"&copied="+this.draggedId, 
+                                    url: urlBase+"&action=copy", 
                                     icon: this.icons.copy, 
                                     text: "Copy to witch" 
                                 },
                                 { 
-                                    url: urlBase+"&moved="+this.draggedId, 
+                                    url: urlBase+"&action=move", 
                                     icon: this.icons.move, 
                                     text: "Move to witch" 
                                 },
@@ -395,18 +402,21 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                                 iconMoveAction = this.icons.order;
                             }
 
-                            let urlBase =   "/admin/view?id="+witch.dataset.id;
-                            urlBase     +=  "&ref="+position.attributes.ref.value;
-                            urlBase     +=  "&rel="+position.attributes.rel.value;
+                            let urlBase =   this.clipboardUrl;
+                            urlBase     +=  "?dest="+witch.dataset.id;
+                            urlBase     +=  "&target="+this.draggedId;
+
+                            urlBase     +=  "&positionRef="+position.attributes.ref.value;
+                            urlBase     +=  "&positionRel="+position.attributes.rel.value;
                             
                             this.triggerContextual( e, [
-                                { 
-                                    url: urlBase+"&copied="+this.draggedId, 
+                                {
+                                    url: urlBase+"&action=copy", 
                                     icon: this.icons.copy, 
                                     text: "Copy to position" 
                                 },
                                 { 
-                                    url: urlBase+"&moved="+this.draggedId, 
+                                    url: urlBase+"&action=move", 
                                     icon: iconMoveAction, 
                                     text: textMoveAction 
                                 },

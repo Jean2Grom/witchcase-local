@@ -26,13 +26,21 @@ $obj->baseUrl       = $this->wc->website->getUrl("view");
 $obj->unSafeMode    = $this->config['navigationUnSafeMode'] ?? false;
 $obj->currentSite   = $this->wc->website->site;
 
-$root   = WitchHandler::recursiveTree( $this->witch, $this->wc->website->sitesRestrictions, $currentId, $this->maxStatus, [$obj, "href"] );
+$root = WitchHandler::recursiveTree( 
+    $this->witch, 
+    $this->wc->website->sitesRestrictions, 
+    $currentId, 
+    $this->maxStatus, 
+    [$obj, "href"] 
+);
 
-$tree       = [ $this->witch->id => $root ];
-$breadcrumb = [ $this->witch->id ];
-$pathFound  = true;
-$daughters  = $root["daughters"];
-$draggble   = true;
+$tree           = [ $this->witch->id => $root ];
+$breadcrumb     = [ $this->witch->id ];
+$pathFound      = true;
+$daughters      = $root["daughters"];
+$draggble       = true;
+$clipboardUrl   = $this->wc->website->getUrl('clipboard');
+$createUrl      = $this->wc->website->getUrl('create-witch');
 
 while( $pathFound )
 {
