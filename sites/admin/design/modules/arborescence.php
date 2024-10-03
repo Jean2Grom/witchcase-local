@@ -1,6 +1,5 @@
 <?php /** @var WC\Module $this */
 
-//$this->addJsLibFile('jquery-3.6.0.min.js');
 $this->addJsFile('fontawesome.js');
 $this->addCssFile('arborescence-menu.css');
 $this->addJsFile('arborescence-menu.js');
@@ -21,7 +20,8 @@ $key = "arborescence_".md5(microtime().rand());
         "breadcrumb": <?=json_encode($breadcrumb)?>,
         "draggable": <?=$draggble ?? null ? "true": "false"?>,
         "clipboardUrl": <?=($clipboardUrl ?? null)? '"'.$clipboardUrl.'"': "null" ?>,
-        "createUrl": <?=($createUrl ?? null)? '"'.$createUrl.'"': "null" ?>
+        "createUrl": <?=($createUrl ?? null)? '"'.$createUrl.'"': "null" ?>,
+        "urlHash": <?=($urlHash ?? null)? '"'.$urlHash.'"': "null" ?>,
     };
 </script>
 

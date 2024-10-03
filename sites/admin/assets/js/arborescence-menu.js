@@ -12,6 +12,7 @@ const ArborescenceMenu = function( key ){
         dropped: null,
         clipboardUrl: null,
         createUrl: null,
+        urlHash: null,
 
         icons: {
             homeWitch: {dom: "i", classes: [ 'fas', 'fa-home' ]}, 
@@ -44,6 +45,7 @@ const ArborescenceMenu = function( key ){
             this.draggable      = entries.draggable ?? false;
             this.clipboardUrl   = entries.clipboardUrl ?? null,
             this.createUrl      = entries.createUrl ?? null,
+            this.urlHash        = entries.urlHash ?? null,
 
             this.addArborescenceLevel( this.treeData )
             .then( 
@@ -357,16 +359,16 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                         {
                             let urlBase =   this.clipboardUrl;
                             urlBase     +=  "?dest="+witch.dataset.id;
-                            urlBase     +=  "&target="+this.draggedId;
+                            urlBase     +=  "&origin="+this.draggedId;
 
                             this.triggerContextual( e, [
                                 { 
-                                    url: urlBase+"&action=copy", 
+                                    url: urlBase+"&action=copy" + '#'+(this.urlHash ?? ""), 
                                     icon: this.icons.copy, 
                                     text: "Copy to witch" 
                                 },
                                 { 
-                                    url: urlBase+"&action=move", 
+                                    url: urlBase+"&action=move" + '#'+(this.urlHash ?? ""), 
                                     icon: this.icons.move, 
                                     text: "Move to witch" 
                                 },
@@ -404,19 +406,19 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
 
                             let urlBase =   this.clipboardUrl;
                             urlBase     +=  "?dest="+witch.dataset.id;
-                            urlBase     +=  "&target="+this.draggedId;
+                            urlBase     +=  "&origin="+this.draggedId;
 
                             urlBase     +=  "&positionRef="+position.attributes.ref.value;
                             urlBase     +=  "&positionRel="+position.attributes.rel.value;
                             
                             this.triggerContextual( e, [
                                 {
-                                    url: urlBase+"&action=copy", 
+                                    url: urlBase+"&action=copy" + '#'+(this.urlHash ?? ""), 
                                     icon: this.icons.copy, 
                                     text: "Copy to position" 
                                 },
                                 { 
-                                    url: urlBase+"&action=move", 
+                                    url: urlBase+"&action=move" + '#'+(this.urlHash ?? ""), 
                                     icon: iconMoveAction, 
                                     text: textMoveAction 
                                 },

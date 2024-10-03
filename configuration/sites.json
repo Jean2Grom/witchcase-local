@@ -38,7 +38,7 @@
                     "depth": 1,
                     "craft": false
                 }
-            },            
+            },
             "target": {
                 "get": "id", 
                 "parents": {
@@ -54,6 +54,24 @@
                 "get": "mother", 
                 "craft": false,
                 "module": "view"
+            }, 
+            "origin": {
+                "get": "origin", 
+                "craft": false,
+                "moduleXXX": "witch/clipboard",
+                "children": {
+                    "depth": "*",
+                    "craft": false
+                }
+            }, 
+            "destination": {
+                "get": "dest", 
+                "craft": false,
+                "moduleXXX": "witch/clipboard",
+                "children": {
+                    "depth": 1,
+                    "craft": false
+                }
             }            
         },
         "modules": {
@@ -79,7 +97,11 @@
         "access": [
             "localhost",
             "localhost/blank"
-        ]
+        ], 
+        "status": {
+            "0": "public",
+            "1": "admin"
+        }
     }    
 }
     
