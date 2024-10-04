@@ -83,7 +83,7 @@ if( $action )
         {
             $daughtersArray     = $this->witch('destination')->daughters();    
             $priorityInterval   = -100;
-            $priority           = ( count($daughtersArray) + 1 ) * $priorityInterval;
+            $priority           = -( count($daughtersArray) + 1 ) * $priorityInterval;
         }
         
         $this->wc->db->begin();
@@ -99,7 +99,7 @@ if( $action )
         
                 if( $daughter->id === $positionRef )
                 {
-                    ($newWitch ?? $this->witch( 'origin' ))->edit([ 'priorityXXX' => $priority ]);
+                    ($newWitch ?? $this->witch( 'origin' ))->edit([ 'priority' => $priority ]);
                     $priority += $priorityInterval;
                 }
             }
