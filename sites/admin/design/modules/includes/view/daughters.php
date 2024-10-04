@@ -86,7 +86,8 @@
                                 </a>
                                 
                                 <a class="copy-descendants" data-id="<?=$daughter->id ?>">
-                                    <i class="fa fa-copy"></i>
+                                    <!--i class="fa fa-copy"></i-->
+                                    <i class="fa fa-clone"></i>
                                 </a>
                             </td>
                             <td class="text-right">

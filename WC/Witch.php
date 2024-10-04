@@ -952,7 +952,7 @@ class Witch
     {
         $this->wc->db->begin();
         try {
-            $this->innerTransactionCopyTo( $witch );
+            $newWitch = $this->innerTransactionCopyTo( $witch );
         } 
         catch( \Exception $e ) 
         {
@@ -962,7 +962,7 @@ class Witch
         }
         $this->wc->db->commit();
         
-        return true;        
+        return $newWitch;        
     }
 
     private function innerTransactionCopyTo( self $witch, array $urlSiteRewrite=[] )
@@ -974,6 +974,7 @@ class Witch
             "priority"      => $this->priority,
             "craft_table"   => $this->craft_table,
             "craft_fk"      => $this->craft_fk,
+            "cauldron"      => $this->cauldronId,
             "is_main"       => 0,
             "site"          => $this->site,
             "url"           => $this->url,
@@ -1003,7 +1004,7 @@ class Witch
             }
         }
         
-        return;
+        return $newWitch;
     }
     
     /**
