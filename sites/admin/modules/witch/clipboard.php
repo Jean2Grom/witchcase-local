@@ -85,22 +85,40 @@ if( $action )
             $priorityInterval   = -100;
             $priority           = ( count($daughtersArray) + 1 ) * $priorityInterval;
         }
-    
-        foreach( $daughtersArray as $daughter )
-        {
-            if( $daughter->id !== ($newWitch ?? $this->witch( 'origin' ))->id )
+        
+        $this->wc->db->begin();
+        $commit = true;
+        try {
+            foreach( $daughtersArray as $daughter )
             {
-                $daughter->edit([ 'priority' => $priority ]);
-                $priority += $priorityInterval;
+                if( $daughter->id !== ($newWitch ?? $this->witch( 'origin' ))->id )
+                {
+                    $daughter->edit([ 'priority' => $priority ]);
+                    $priority += $priorityInterval;
+                }
+        
+                if( $daughter->id === $positionRef )
+                {
+                    ($newWitch ?? $this->witch( 'origin' ))->edit([ 'priorityXXX' => $priority ]);
+                    $priority += $priorityInterval;
+                }
             }
-    
-            if( $daughter->id === $positionRef )
-            {
-                ($newWitch ?? $this->witch( 'origin' ))->edit([ 'priority' => $priority ]);
-                $priority += $priorityInterval;
-            }
+        } 
+        catch( \Exception $e ) 
+        {            
+            $this->wc->user->addAlert([
+                'level'     =>  'warning',
+                'message'   =>  "Priority update failed"
+            ]);
+
+            $this->wc->log->error($e->getMessage());
+            $this->wc->db->rollback();
+            $commit = false;
         }
-    }    
+        if( $commit ){
+            $this->wc->db->commit();
+        }
+    }
 }
 
 header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch('destination')->id ]) );
