@@ -427,6 +427,16 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                             
                             return;
                         }
+
+                        document.querySelectorAll('#' + this.key + '.arborescence-menu-container .arborescence-level__position').forEach(
+                            positionDom => {
+                                if( positionDom !== position ){
+                                    positionDom.remove();
+                                }
+                            }
+                        );
+
+                        return;
                     }
                 );
             }
