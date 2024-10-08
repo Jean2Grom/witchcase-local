@@ -14,14 +14,17 @@ const ArborescenceMenu = function( key ){
         createUrl: null,
         urlHash: null,
 
+        container: null,
+
         icons: {
             homeWitch: {dom: "i", classes: [ 'fas', 'fa-home' ]}, 
             //homeWitch: {dom: "i", classes: [ 'fa', 'fa-dungeon' ]}, 
             fullWitch: {dom: "i", classes: [ 'fa', 'fa-hat-wizard' ]}, 
             cauldronWitch: {dom: "i", classes: [ 'fa', 'fa-mortar-pestle' ]}, 
             invokeWitch: {dom: "i", classes: [ 'fa', 'fa-hand-sparkles' ]}, 
-            basicWitch: {dom: "i", classes: [ 'fa', 'fa-folder' ]}, 
+            //basicWitch: {dom: "i", classes: [ 'fa', 'fa-folder' ]}, 
             //basicWitch: {dom: "i", classes: [ 'fa', 'fa-skull' ]}, 
+            basicWitch: {dom: "i", classes: [ 'fa', 'fa-broom' ]}, 
 
 
             toggleDomClosed: {dom: "i", classes: [ 'far', 'fa-folder' ]}, 
@@ -42,10 +45,13 @@ const ArborescenceMenu = function( key ){
             this.currentId      = entries.currentId;
             this.currentSite    = entries.currentSite;
             this.breadcrumb     = entries.breadcrumb;
+
             this.draggable      = entries.draggable ?? false;
             this.clipboardUrl   = entries.clipboardUrl ?? null,
             this.createUrl      = entries.createUrl ?? null,
             this.urlHash        = entries.urlHash ?? null,
+
+            this.container      = document.querySelector('#' + this.key + '.arborescence-menu-container'),
 
             this.addArborescenceLevel( this.treeData )
             .then( 
@@ -60,11 +66,7 @@ const ArborescenceMenu = function( key ){
                         return;
                     }
 
-                    let container   = document.querySelector(
-                        '#' + this.key + '.arborescence-menu-container.module'
-                    );
-
-                    container.addEventListener( "contextmenu", 
+                    this.container.addEventListener( "contextmenu", 
                         e => {
                             e.preventDefault();
 
@@ -87,28 +89,7 @@ const ArborescenceMenu = function( key ){
                                 return;
                             }
 
-                            let levels      = container.querySelectorAll('.arborescence-level');
-
-                            targetedWitch   =   levels[ 0 ].querySelector('.arborescence-level__witch');
-                            let threshold   =   levels[ 0 ].offsetLeft;
-                            threshold       +=  levels[ 0 ].offsetWidth;
-
-                            for( let i = 1; i < levels.length; i++) 
-                            {
-
-                                threshold   =   levels[ i ].offsetLeft;
-                                threshold   +=  levels[ i ].offsetWidth;
-
-                                if( e.x > threshold )
-                                {
-                                    let selectedTarget = levels[ i ].querySelector('.arborescence-level__witch.selected');
-                                    
-                                    if( selectedTarget ){
-                                        targetedWitch = selectedTarget;
-                                    }
-                                }
-
-                            }
+                            targetedWitch = this.targetLastOpenWitch(e.x);
 
                             if( targetedWitch )
                             {
@@ -142,19 +123,43 @@ const ArborescenceMenu = function( key ){
 
             return this;            
         },
+        targetLastOpenWitch: function( x )
+        {
+            let levels      = this.container.querySelectorAll('.arborescence-level');
+
+            targetedWitch   =   levels[ 0 ].querySelector('.arborescence-level__witch');
+            let threshold   =   levels[ 0 ].offsetLeft;
+            threshold       +=  levels[ 0 ].offsetWidth;
+
+            for( let i = 1; i < levels.length; i++) 
+            {
+
+                threshold   =   levels[ i ].offsetLeft;
+                threshold   +=  levels[ i ].offsetWidth;
+
+                if( x > threshold )
+                {
+                    let selectedTarget = levels[ i ].querySelector('.arborescence-level__witch.selected');
+                    
+                    if( selectedTarget ){
+                        targetedWitch = selectedTarget;
+                    }
+                }
+            }
+            
+            return targetedWitch;
+        },
         closeDragAndCOntext: function( )
         {
-            let container   = document.querySelector('#' + this.key + '.arborescence-menu-container.module');
-
-            container.querySelectorAll('.arborescence-menu-context-menu').forEach( 
+            this.container.querySelectorAll('.arborescence-menu-context-menu').forEach( 
                 contextMenuDom => contextMenuDom.remove() 
             );
 
-            container.querySelectorAll('.arborescence-level__position').forEach(
+            this.container.querySelectorAll('.arborescence-level__position').forEach(
                 positionDom => positionDom.remove()
             );
 
-            container.querySelectorAll('.targeted-witch').forEach(
+            this.container.querySelectorAll('.targeted-witch').forEach(
                 dragOverDom => dragOverDom.classList.remove('targeted-witch')
             );                    
 
@@ -162,9 +167,7 @@ const ArborescenceMenu = function( key ){
         },
         triggerContextual: function( e, menuItems )
         {
-            let container   = document.querySelector('#' + this.key + '.arborescence-menu-container.module');
-
-            container.querySelectorAll('.arborescence-menu-context-menu').forEach( 
+            this.container.querySelectorAll('.arborescence-menu-context-menu').forEach( 
                 contextMenuDom => contextMenuDom.remove() 
             );
 
@@ -204,7 +207,7 @@ const ArborescenceMenu = function( key ){
                 }
             );
 
-            container.append(menu);
+            this.container.append(menu);
         },
         addArborescenceLevel: async function( subTree, order=false )
         {
@@ -286,9 +289,10 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                         );
                     }
 
+                    // if dragagable main menu (root element excluded)
                     if( this.draggable && !Object.keys(this.treeData).includes(daughterId) )
                     {
-                        arborescenceLevelWitchDom.style.cursor = 'grab';
+                        arborescenceLevelWitchDom.classList.add('draggable');
                         arborescenceLevelWitchDom.setAttribute('draggable', true);
 
                         arborescenceLevelWitchDom.addEventListener( 'dragstart', 
@@ -310,6 +314,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                         );
                         arborescenceLevelWitchDom.addEventListener( 'dragend', 
                             () => {
+                                this.draggedId  = null;
                                 if( !this.dropped ){
                                     this.closeDragAndCOntext();
                                 }
@@ -328,7 +333,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                     e => {
                         e.preventDefault();
 
-                        this.dragOver( e.target );
+                        this.dragOver( e );
                     }
                 );
                 arborescenceLevelDom.addEventListener(
@@ -336,7 +341,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                     e => {
                         e.preventDefault();
 
-                        this.dragOver( e.target );
+                        this.dragOver( e );
                     }
                 );
                 arborescenceLevelDom.addEventListener(
@@ -352,14 +357,20 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                     e => {
                         e.preventDefault();
 
-                        this.dropped    = true;
+                        this.dropped    = this.draggedId;
+                        this.draggedId  = null;
+
+                        if( !this.dropped ){
+                            return;
+                        }
+
                         let witch       = e.target.closest('.arborescence-level__witch');
 
-                        if( witch && witch.dataset.id !== this.draggedId )
+                        if( witch && witch.dataset.id !== this.dropped )
                         {
                             let urlBase =   this.clipboardUrl;
                             urlBase     +=  "?dest="+witch.dataset.id;
-                            urlBase     +=  "&origin="+this.draggedId;
+                            urlBase     +=  "&origin="+this.dropped;
 
                             this.triggerContextual( e, [
                                 { 
@@ -398,7 +409,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
 
                             let textMoveAction = "Move to position";
                             let iconMoveAction = this.icons.move;
-                            if( positionLevel.querySelector('.arborescence-level__witch[data-id="'+this.draggedId+'"]') )
+                            if( positionLevel.querySelector('.arborescence-level__witch[data-id="'+this.dropped+'"]') )
                             {
                                 textMoveAction = "Change witches order";
                                 iconMoveAction = this.icons.order;
@@ -406,7 +417,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
 
                             let urlBase =   this.clipboardUrl;
                             urlBase     +=  "?dest="+witch.dataset.id;
-                            urlBase     +=  "&origin="+this.draggedId;
+                            urlBase     +=  "&origin="+this.dropped;
 
                             urlBase     +=  "&positionRef="+position.attributes.ref.value;
                             urlBase     +=  "&positionRel="+position.attributes.rel.value;
@@ -428,7 +439,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                             return;
                         }
 
-                        document.querySelectorAll('#' + this.key + '.arborescence-menu-container .arborescence-level__position').forEach(
+                        this.container.querySelectorAll('.arborescence-level__position').forEach(
                             positionDom => {
                                 if( positionDom !== position ){
                                     positionDom.remove();
@@ -441,14 +452,18 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                 );
             }
 
-            document.querySelector('#' + this.key + '.arborescence-menu-container').append( arborescenceLevelDom );
+            this.container.append( arborescenceLevelDom );
 
             return true;
         }, 
-        dragOver: function( target )
+        dragOver: function( e )
         {
-            let witch       = target.closest('.arborescence-level__witch');
-            let position    = target.closest('.arborescence-level__position');
+            if( !this.draggedId ){
+                return;
+            }
+            let witch       = e.target.closest('.arborescence-level__witch');
+            let position    = e.target.closest('.arborescence-level__position');
+            let level       = e.target.closest('.arborescence-level');
 
             if( witch && witch.dataset.id !== (this.draggedId ?? 0) && !witch.classList.contains('targeted-witch')  )
             {
@@ -458,13 +473,13 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                     this.toggle( witch.querySelector('.arborescence-level__witch__daughters-display') );
                 }
 
-                document.querySelectorAll('#' + this.key + '.arborescence-menu-container .arborescence-level__position').forEach(
+                this.container.querySelectorAll('.arborescence-level__position').forEach(
                     positionDom => positionDom.remove()
                 );
 
-                let firstLevel = document.querySelector('#' + this.key + '.arborescence-menu-container .arborescence-level');
+                let firstLevel = this.container.querySelector('.arborescence-level');
 
-                if( target.closest('.arborescence-level') !== firstLevel )
+                if( level !== firstLevel )
                 {
                     if( !witch.previousSibling || this.draggedId !== witch.previousSibling.dataset.id )
                     {
@@ -472,7 +487,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                         positionTop.classList.add('arborescence-level__position');
                         positionTop.setAttribute('rel', 'before');
                         positionTop.setAttribute('ref', witch.dataset.id);
-                        target.closest('.arborescence-level').insertBefore(  positionTop, witch );  
+                        level.insertBefore(  positionTop, witch );  
                     }
                     
                     if( !witch.nextSibling || this.draggedId !== witch.nextSibling.dataset.id )
@@ -489,7 +504,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
             {
                 position.classList.add('targeted-witch');
 
-                document.querySelectorAll('#' + this.key + '.arborescence-menu-container .arborescence-level__position').forEach(
+                this.container.querySelectorAll('.arborescence-level__position').forEach(
                     positionDom => {
                         if( positionDom !== position ){
                             positionDom.remove();
@@ -497,14 +512,20 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                     }
                 );
             }
+            else 
+            {
+                // ADD LEVEL add icon to witch list
+                // level.classList.add('targeted-witch');
+                // targetWitch = this.targetLastOpenWitch(e.x);
+            }
 
             return;
         },
         dragleave: function( targetDom )
         {
-            let witch = targetDom.closest('.arborescence-level__witch');
-            if( witch ){
-                witch.classList.remove('targeted-witch');
+            let targetedWitch = targetDom.closest('.targeted-witch');
+            if( targetedWitch ){
+                targetedWitch.classList.remove('targeted-witch');
             }
 
             return;
@@ -513,8 +534,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
         {
             path.forEach( 
                 async pathWitchId => {
-                    let daughterTriggerSelector =   '#' + this.key + '.arborescence-menu-container ';
-                    daughterTriggerSelector     +=   '.arborescence-level ';
+                    let daughterTriggerSelector =   '.arborescence-level ';
                     daughterTriggerSelector     +=  '.arborescence-level__witch[data-id="' + pathWitchId + '"] ';
                     daughterTriggerSelector     +=  '.arborescence-level__witch__daughters-display ';
                     
@@ -529,16 +549,13 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
         },
         scrollToLastLevel: async function()
         {
-            let target = document.querySelector('#' + this.key + '.arborescence-menu-container.module');
-
-            if( target && target.lastChild ){
-                //target.lastChild.scrollIntoView();
-                target.lastChild.scrollIntoView({ behavior: "smooth", block: "center", inline: "end" });
+            if( this.container && this.container.lastChild ){
+                //this.container.lastChild.scrollIntoView();
+                this.container.lastChild.scrollIntoView({ behavior: "smooth", block: "center", inline: "end" });
             }
         },
         toggle: async function( target )
         {
-            let container       = document.querySelector('#' + this.key + '.arborescence-menu-container');
             let currentLevel    = target.closest('.arborescence-level');
             let currentWitch    = target.closest('.arborescence-level__witch');
 
@@ -548,7 +565,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
             }
 
             let matchedLevel    = false;
-            container.querySelectorAll('.arborescence-level').forEach(
+            this.container.querySelectorAll('.arborescence-level').forEach(
                 level => {
                     if( matchedLevel ){
                         level.remove();
@@ -588,7 +605,7 @@ arborescenceLevelWitchDom.dataset.craft     = daughterData['craft'];
                 let order   = this.treeData['daughters_orders'];
                 let subTree = this.treeData;
                 
-                container.querySelectorAll('.arborescence-level .arborescence-level__witch.selected').forEach( 
+                this.container.querySelectorAll('.arborescence-level .arborescence-level__witch.selected').forEach( 
                     element => {
                         let subTreeId = element.dataset.id;
 
