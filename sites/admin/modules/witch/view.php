@@ -15,6 +15,7 @@ $action = Tools::filterAction(
     [
         'remove-cauldron',
         'create-cauldron',
+        'import-cauldron',
     ], 
 );
 $this->wc->debug($action);
@@ -75,13 +76,25 @@ switch( $action )
     break;
 
     case 'create-cauldron':
+        $structure      = $this->wc->request->param('witch-cauldron-structure') ?? "folder";
+        $folderCauldron = CauldronHandler::getStorageStructure($this->wc, $this->wc->website->site, $structure);
 
         $cauldron = CauldronHandler::createFromData($this->wc, [
-            'name'      =>  "NEW CAULDRON",
-            'data'      =>  json_encode([ 'structure' => $this->wc->request->param('witch-cauldron-structure') ?? "folder" ]),
+            'name'      =>  $this->witch("target")->name,
+            'data'      =>  json_encode([ 'structure' => $structure ]),
         ]);
 
-        $this->wc->dump($cauldron);
+        $folderCauldron->addCauldron( $cauldron );
+        $cauldron->save();
+
+        $this->witch("target")->edit([ 'cauldron' => $cauldron->id ]);
+
+        header('Location: '.$this->wc->website->getUrl("cauldron?id=".$this->witch("target")->id) );
+        exit();    
+    break;
+
+    case 'import-cauldron':
+
     break;
 }
 

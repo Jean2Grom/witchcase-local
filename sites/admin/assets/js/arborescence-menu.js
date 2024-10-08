@@ -22,9 +22,9 @@ const ArborescenceMenu = function( key ){
             fullWitch: {dom: "i", classes: [ 'fa', 'fa-hat-wizard' ]}, 
             cauldronWitch: {dom: "i", classes: [ 'fa', 'fa-mortar-pestle' ]}, 
             invokeWitch: {dom: "i", classes: [ 'fa', 'fa-hand-sparkles' ]}, 
-            //basicWitch: {dom: "i", classes: [ 'fa', 'fa-folder' ]}, 
+            basicWitch: {dom: "i", classes: [ 'fa', 'fa-folder' ]}, 
             //basicWitch: {dom: "i", classes: [ 'fa', 'fa-skull' ]}, 
-            basicWitch: {dom: "i", classes: [ 'fa', 'fa-broom' ]}, 
+            //basicWitch: {dom: "i", classes: [ 'fa', 'fa-broom' ]}, 
 
 
             toggleDomClosed: {dom: "i", classes: [ 'far', 'fa-folder' ]}, 

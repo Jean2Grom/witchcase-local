@@ -327,4 +327,22 @@ class CauldronDataAccess
         return $wc->db->updateQuery( $query, ['old' => $oldTargetID, 'new' => $newTargetID] );
     }
 
+    static function getStorageStructure( WitchCase $wc )
+    {
+        $query = "";
+        $separator = "SELECT DISTINCT ";
+        foreach( Cauldron::FIELDS as $field )
+        {
+            $query      .=  $separator."`c`.`".$field."` ";
+            $separator  =   ", ";
+        }
+        for( $i=1; $i<=$wc->cauldronDepth; $i++ ){
+            $query      .=  $separator."`c`.`level_".$i."` ";
+        }
+        $query  .= "FROM `cauldron` AS `c` ";
+        $query  .=  "WHERE `c`.`level_3` IS NULL ";
+
+        return $wc->db->selectQuery( $query );
+    }
+
 }

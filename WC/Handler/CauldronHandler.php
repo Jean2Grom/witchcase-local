@@ -15,8 +15,11 @@ class CauldronHandler
         'archive',
     ];
 
+
     /**
-     * 
+     * Fetch cauldrons from configuration array
+     * @var Witchcase $wc
+     * @var array $configuration
      */
     static function fetch( WitchCase $wc, array $configuration )
     {
@@ -29,10 +32,15 @@ class CauldronHandler
         return self::instanciate($wc, $configuration, $result);
     }
     
+
     /**
-     * 
+     * PRIVATE instanciate Cauldrons and Ingredients from configuration and data access results
+     * @var Witchcase $wc
+     * @var array $configuration
+     * @var array $result
+     * @return array 
      */
-    private static function instanciate( WitchCase $wc, $configuration, $result ): array
+    private static function instanciate( WitchCase $wc, array $configuration, array $result ): array
     {
         $return         = [];
         $cauldronsList  = [];
@@ -105,8 +113,11 @@ class CauldronHandler
         return $cauldron;
     }  
 
+
     /**
      * Update  Object current state based on var "properties" (database direct fields) 
+     * @var Cauldron $cauldron
+     * @var bool $excludePostition
      * @return void
      */
     static function readProperties( Cauldron $cauldron, bool $excludePostition=false ): void
@@ -174,6 +185,7 @@ class CauldronHandler
 
     /**
      * Update var "properties" (database direct fields) based on Object current state 
+     * @var Cauldron $cauldron
      * @return void
      */
     static function writeProperties( Cauldron $cauldron ): void
@@ -236,6 +248,13 @@ class CauldronHandler
         return;
     }
 
+
+    /**
+     * Set a parenthood relation between two cauldrons
+     * @var Cauldron $parent
+     * @var Cauldron $child
+     * @return bool
+     */
     static function setParenthood( Cauldron $parent, Cauldron $child ): bool
     {
         if( !in_array($child, $parent->children) )
@@ -248,6 +267,13 @@ class CauldronHandler
         return false;
     }
 
+
+    /**
+     * Set ingrdient into a cauldron
+     * @var Cauldron $cauldron
+     * @var Ingredient $ingredient
+     * @return bool
+     */
     static function setIngredient( Cauldron $cauldron, Ingredient $ingredient ): bool
     {
         if( !in_array($ingredient, $cauldron->ingredients) )
@@ -262,14 +288,32 @@ class CauldronHandler
     }
 
 
+    /**
+     * Get the draft folder for a dedicated cauldron
+     * @var Cauldron $cauldron
+     * @return Cauldron 
+     */
     static function getDraftFolder( Cauldron $cauldron ): Cauldron {
         return self::getWorkFolder( $cauldron, Cauldron::DRAFT_FOLDER_STRUCT );
     }
 
+    
+    /**
+     * Get the archive folder for a dedicated cauldron
+     * @var Cauldron $cauldron
+     * @return Cauldron 
+     */
     static function getArchiveFolder( Cauldron $cauldron ): Cauldron {
         return self::getWorkFolder( $cauldron, Cauldron::ARCHIVE_FOLDER_STRUCT );
     }
 
+
+    /**
+     * PRIVATE get work (draft or archive) folder for a dedicated cauldron
+     * @var Cauldron $cauldron
+     * @var string $folderStruct
+     * @return Cauldron 
+     */
     private static function getWorkFolder( Cauldron $cauldron, string $folderStruct ): Cauldron
     {
         foreach( $cauldron->children as $child ){
@@ -290,6 +334,12 @@ class CauldronHandler
         return $folder;
     }
     
+
+    /**
+     * Create a draft from a cauldron
+     * @var Cauldron $cauldron
+     * @return Cauldron
+     */
     static function createDraft( Cauldron $cauldron ): Cauldron
     {
         self::writeProperties( $cauldron );
@@ -308,12 +358,20 @@ class CauldronHandler
         return $draft;
     }
 
-    static private function createDraftContent( Cauldron $cauldron, Cauldron $draft )
+
+    /**
+     * PRIVATE create the draft contents
+     * @var Cauldron $cauldron
+     * @var Cauldron $draft
+     * @return void
+     */
+    static private function createDraftContent( Cauldron $cauldron, Cauldron $draft ): void
     {
         foreach( $cauldron->content() as $content )
         {
             // Ingredient case
-            if( get_class($content) !== get_class($cauldron) )
+            //if( get_class($content) !== get_class($cauldron) )
+            if( is_a($content, Ingredient::class) )
             {
                 IngredientHandler::writeProperties($content);
                 $draftContentProperties = $content->properties;
@@ -338,4 +396,83 @@ class CauldronHandler
 
         return;
     }
+
+ 
+    /**
+     * @var WitchCase $wc
+     * @return Cauldron|false
+     */
+    static function getStorageStructure(  WitchCase $wc, ?string $site=null, ?string $structure=null ): Cauldron|false 
+    {
+        $result = DataAccess::getStorageStructure( $wc );
+
+        if( !$result ){
+            return false;
+        }
+
+        $data           = self::instanciate($wc, [ 1 ], $result);
+        $rootCauldron   = $data[ 1 ] ?? null;
+
+        if( !$rootCauldron ){
+            return false;
+        }
+        elseif( !$site ){
+            return $rootCauldron;
+        }
+
+        $siteCauldron = false;
+        foreach( $rootCauldron->children as $child ){
+            if( $child->name === $site )
+            {
+                $siteCauldron = $child;
+                break;
+            }
+        }
+    
+        if( !$siteCauldron )
+        {
+            $params = [
+                'name'  =>  $site,
+                'data'  =>  json_encode([ "structure" => "folder" ]),
+            ];
+
+            $siteCauldron = self::createFromData( $wc, $params );
+            $rootCauldron->addCauldron( $siteCauldron );
+            $siteCauldron->save();
+        }
+ 
+        if( !$siteCauldron ){
+            return false;
+        }
+        elseif( !$structure ){
+            return $siteCauldron;
+        }
+
+        $structureCauldron = false;
+        foreach( $siteCauldron->children as $child ){
+            if( $child->name === $structure )
+            {
+                $structureCauldron = $child;
+                break;
+            }
+        }
+    
+        if( !$structureCauldron )
+        {
+            $params = [
+                'name'  =>  $structure,
+                'data'  =>  json_encode([ "structure" => "folder" ]),
+            ];
+
+            $structureCauldron = self::createFromData( $wc, $params );
+            $siteCauldron->addCauldron( $structureCauldron );
+            $structureCauldron->save();
+        }
+ 
+        if( !$structureCauldron ){
+            return false;
+        }
+ 
+        return $structureCauldron;
+    }   
 }
