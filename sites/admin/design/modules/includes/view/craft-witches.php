@@ -1,6 +1,6 @@
 <?php /** @var WC\Module $this */
 
-if( $targetWitch->craft() ): ?>
+if( $this->witch("target")->craft() ): ?>
     <div class="box view__craft-witches">
         <h3>
             <i class="fa fa-project-diagram"></i>
@@ -23,7 +23,7 @@ if( $targetWitch->craft() ): ?>
                 </thead>
                 <tbody>
                     <form method="post" 
-                          action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
+                          action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>"
                           id="view-craft-witches-action">
                         <?php foreach( $craftWitchesTargetFirst as $craftPositionWitch ): ?>
                             <tr>
@@ -55,7 +55,7 @@ if( $targetWitch->craft() ): ?>
                                 <td>
                                     <a href="<?=$this->wc->website->getUrl("view?id=".$craftPositionWitch->id."#tab-craft-part") ?>">
                                         <?=$craftPositionWitch->name ?>
-                                        <em><?=$craftPositionWitch->id == $targetWitch->id? "(this witch)": '' ?></em>
+                                        <em><?=$craftPositionWitch->id == $this->witch("target")->id? "(this witch)": '' ?></em>
                                     </a>
                                 </td>
                             </tr>

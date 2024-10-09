@@ -2,7 +2,7 @@
 
 <div class="box create__witch">
     <form   method="post"
-            action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>"
+            action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>"
             id="create-witch-info">
         <h3>
             <i class="fa fa-folder-open"></i>

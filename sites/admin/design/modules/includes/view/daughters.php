@@ -6,20 +6,20 @@
         Arborescence
     </h3>
     
-    <?php if( $targetWitch->mother() ): ?>
+    <?php if( $this->witch("target")->mother() ): ?>
         <table class="vertical">
             <tr>
                 <td class="label"><em>Mother</em></td>
                 <td class="value">
-                    <a href="<?=$this->wc->website->getUrl("view?id=".$targetWitch->mother()->id) ?>">
-                        <?=$targetWitch->mother() ?>
+                    <a href="<?=$this->wc->website->getUrl("view?id=".$this->witch("target")->mother()->id) ?>">
+                        <?=$this->witch("target")->mother() ?>
                     </a>
                 </td>
             </tr>
         </table>
     <?php endif; ?>
     
-    <?php if( empty($targetWitch->daughters()) ): ?>
+    <?php if( empty($this->witch("target")->daughters()) ): ?>
         <p class="bottom-label"><em>No daughters for this witch</em></p>
         
     <?php else: ?>
@@ -27,7 +27,7 @@
         
         <form method="post" 
               id="view-daughters-action" 
-              action="<?=$this->wc->website->getUrl('edit?id='.$targetWitch->id) ?>">
+              action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>">
             <table >
                 <thead>
                     <tr>
@@ -48,7 +48,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach( $targetWitch->daughters() as $daughter ): ?>
+                    <?php foreach( $this->witch("target")->daughters() as $daughter ): ?>
                         <tr>
                             <td>
                                 <a href="<?=$this->wc->website->getUrl("view?id=".$daughter->id) ?>">
@@ -120,7 +120,7 @@
             <i class="fa fa-plus"></i>
             Add Daughter
         </button>
-        <?php if( !empty($targetWitch->daughters()) ): ?>
+        <?php if( !empty($this->witch("target")->daughters()) ): ?>
             <button class="trigger-action" 
                     data-action="edit-priorities"
                     data-target="view-daughters-action">

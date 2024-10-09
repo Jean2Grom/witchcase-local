@@ -29,8 +29,7 @@ if( !in_array($action, $possibleActionsList) ){
 }
     
 $alerts         = [];
-$targetWitch    = $this->witch("target");
-if( !$targetWitch )
+if( !$this->witch("target") )
 {
     $alerts[] = [
         'level'     =>  'error',
@@ -135,11 +134,11 @@ switch( $action )
         $errors     = [];
         $success    = [];
         foreach( $priorities as $witchId => $witchPriority ){
-            if( !$targetWitch->daughters( $witchId )->edit([ 'priority' => $witchPriority ]) ){
-                $errors[] = "<strong>".$targetWitch->daughters( $witchId )->name."</strong> priority not updated";
+            if( !$this->witch("target")->daughters( $witchId )->edit([ 'priority' => $witchPriority ]) ){
+                $errors[] = "<strong>".$this->witch("target")->daughters( $witchId )->name."</strong> priority not updated";
             }
             else {
-                $success[] = "<strong>".$targetWitch->daughters( $witchId )->name."</strong> priority updated";
+                $success[] = "<strong>".$this->witch("target")->daughters( $witchId )->name."</strong> priority updated";
             }
         }
         
@@ -185,7 +184,7 @@ switch( $action )
             break;
         }
         
-        $newWitchId = $targetWitch->createDaughter( $newWitchData );
+        $newWitchId = $this->witch("target")->createDaughter( $newWitchData );
         
         if( !$newWitchId )
         {
@@ -207,7 +206,7 @@ switch( $action )
     break;    
     
     case 'delete-witch':
-        if( $targetWitch->mother() && $targetWitch->delete() )
+        if( $this->witch("target")->mother() && $this->witch("target")->delete() )
         {
             $alerts[] = [
                 'level'     =>  'success',
@@ -215,7 +214,7 @@ switch( $action )
             ];
 
             $this->wc->user->addAlerts( $alerts );
-            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $targetWitch->mother()->id ]) );
+            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->mother()->id ]) );
             exit();
         }
         
@@ -237,7 +236,7 @@ switch( $action )
                 'message'   =>  "Witch name is missing"
             ];
         }
-        else if( !$targetWitch->edit( $witchNewData ) ){
+        else if( !$this->witch("target")->edit( $witchNewData ) ){
             $alerts[] = [
                 'level'     =>  'error',
                 'message'   =>  "Error, witch was not updated"
@@ -301,8 +300,8 @@ switch( $action )
                     $url    =   "";
                     if( !$customFullUrl )
                     {
-                        if( $targetWitch->mother() ){
-                            $url .= $targetWitch->mother()->getClosestUrl( $site );
+                        if( $this->witch("target")->mother() ){
+                            $url .= $this->witch("target")->mother()->getClosestUrl( $site );
                         }
 
                         if( substr($url, -1) != '/' 
@@ -319,7 +318,7 @@ switch( $action )
             }
         }
         
-        $edit = $targetWitch->edit( $witchNewData );
+        $edit = $this->witch("target")->edit( $witchNewData );
         
         if( $edit === 0 ){
             $alerts[] = [
@@ -358,7 +357,7 @@ switch( $action )
         }
         
         if( !$isValidStructure 
-            || !$targetWitch->addStructure(new Structure( $this->wc, $structure, Draft::TYPE )) 
+            || !$this->witch("target")->addStructure(new Structure( $this->wc, $structure, Draft::TYPE )) 
         ){
             $alerts[] = [
                 'level'     =>  'error',
@@ -367,14 +366,14 @@ switch( $action )
             break;
         }
         
-        header( 'Location: '.$this->wc->website->getFullUrl('edit-content', [ 'id' => $targetWitch->id ]) );
+        header( 'Location: '.$this->wc->website->getFullUrl('edit-content', [ 'id' => $this->witch("target")->id ]) );
         exit();
     break;
     
     case 'import-craft':
         $urlHash = "#tab-craft-part";
         
-        if( $targetWitch->hasCraft() )
+        if( $this->witch("target")->hasCraft() )
         {
             $alerts[] = [
                 'level'     =>  'error',
@@ -403,7 +402,7 @@ switch( $action )
             break;
         }
         
-        $targetWitch->edit([ 
+        $this->witch("target")->edit([ 
             'craft_table'   =>  $importCraftWitch->craft_table,
             'craft_fk'      =>  $importCraftWitch->craft_fk,
             'is_main'       =>  0,
@@ -419,7 +418,7 @@ switch( $action )
     case 'remove-craft':
         $urlHash = "#tab-craft-part";
         
-        if( !$targetWitch->hasCraft() )
+        if( !$this->witch("target")->hasCraft() )
         {
             $alerts[] = [
                 'level'     =>  'error',
@@ -427,7 +426,7 @@ switch( $action )
             ];
             break;
         }
-        elseif( !$targetWitch->removeCraft() )
+        elseif( !$this->witch("target")->removeCraft() )
         {
             $alerts[] = [
                 'level'     =>  'error',
@@ -445,7 +444,7 @@ switch( $action )
     case 'archive-craft':
         $urlHash = "#tab-craft-part";
         
-        if( $targetWitch->craft()->archive() === false )
+        if( $this->witch("target")->craft()->archive() === false )
         {
             $alerts[] = [
                 'level'     =>  'error',
@@ -463,7 +462,7 @@ switch( $action )
     case 'add-craft-witch':
         $urlHash = "#tab-craft-part";
         
-        if( !$targetWitch->hasCraft() )
+        if( !$this->witch("target")->hasCraft() )
         {
             $alerts[] = [
                 'level'     =>  'error',
@@ -493,11 +492,11 @@ switch( $action )
         }
         
         $newWitchData   = [
-            'name'          =>  $targetWitch->name,
-            'data'          =>  $targetWitch->data,
+            'name'          =>  $this->witch("target")->name,
+            'data'          =>  $this->witch("target")->data,
             'priority'      =>  0,
-            'craft_table'   =>  $targetWitch->craft_table,
-            'craft_fk'      =>  $targetWitch->craft_fk,
+            'craft_table'   =>  $this->witch("target")->craft_table,
+            'craft_fk'      =>  $this->witch("target")->craft_fk,
             'is_main'       =>  0,
         ];
         
@@ -525,7 +524,7 @@ switch( $action )
     case 'switch-craft-main-witch':
         $urlHash = "#tab-craft-part";
         
-        if( !$targetWitch->hasCraft() )
+        if( !$this->witch("target")->hasCraft() )
         {
             $alerts[] = [
                 'level'     =>  'error',
@@ -534,7 +533,7 @@ switch( $action )
             break;
         }
         
-        $craftWitches = $targetWitch->craft()->getWitches();
+        $craftWitches = $this->witch("target")->craft()->getWitches();
         
         $id = $this->wc->request->param('main', 'post', FILTER_VALIDATE_INT);
         if( !$id || !in_array($id, array_keys($craftWitches)) )
@@ -558,5 +557,5 @@ switch( $action )
 }
 
 $this->wc->user->addAlerts($alerts);
-header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $targetWitch->id ]).$urlHash );
+header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]).$urlHash );
 exit();

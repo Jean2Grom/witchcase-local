@@ -13,8 +13,7 @@ if( !in_array($action, $possibleActionsList) ){
 }
 
 $alerts         = $this->wc->user->getAlerts();
-$targetWitch    = $this->witch("target");
-if( !$targetWitch )
+if( !$this->witch("target") )
 {
     $alerts[] = [
         'level'     =>  'error',
@@ -26,7 +25,7 @@ if( !$targetWitch )
     exit();
 }
 
-$craft      = $targetWitch->craft() ?? false;
+$craft      = $this->witch("target")->craft() ?? false;
 if( !$craft )
 {
     $alerts[] = [
@@ -35,7 +34,7 @@ if( !$craft )
     ];
     
     $this->wc->user->addAlerts($alerts);
-    header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $targetWitch->id ]) );
+    header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
     exit();
 }
 
@@ -115,7 +114,7 @@ switch( $action )
         {
             $this->wc->user->addAlerts($alerts);
 
-            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $targetWitch->id ]) );
+            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
             exit();
         }
     break;
@@ -136,13 +135,13 @@ switch( $action )
             
             $this->wc->user->addAlerts($alerts);
             
-            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $targetWitch->id ]) );
+            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
             exit();
         }
     break;    
 }
 
-$cancelHref = $this->wc->website->getUrl("view?id=".$targetWitch->id);
+$cancelHref = $this->wc->website->getUrl("view?id=".$this->witch("target")->id);
 
 foreach( $this->wc->user->getAlerts() as $treatmentAlert ){
     $alerts[] = $treatmentAlert;

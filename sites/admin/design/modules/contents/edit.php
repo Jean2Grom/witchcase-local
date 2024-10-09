@@ -38,7 +38,7 @@ $this->addJsFile('triggers.js');
         <?php endforeach; ?>
     </div>
     
-    <?php if( $targetWitch ): ?>
+    <?php if( $this->witch("target") ): ?>
         <button class="trigger-action" 
                 data-action="publish"
                 data-target="edit-action">
