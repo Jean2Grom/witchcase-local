@@ -41,8 +41,8 @@ $this->addContextArrayItems( 'tabs', [
 
 <div class="tabs-target__item"  id="tab-craft-part">
     <div class="box-container">
-        <div><?php $this->include('view/craft.php', [ 'structuresList' => $structuresList, 'craftWitches' => $craftWitches ]); ?></div>
-        <div><?php $this->include('view/craft-witches.php', [ 'craftWitches' => $craftWitches, 'craftWitchesTargetFirst' => $craftWitchesTargetFirst ]); ?></div>
+        <div><?php $this->include('view/craft.php', [ 'structuresList' => $structuresList, 'deletion' => count($craftWitches) == 1 ]); ?></div>
+        <div><?php $this->include('view/craft-witches.php', [ 'craftWitches' => $craftWitches ]); ?></div>
     </div>
 </div>
 

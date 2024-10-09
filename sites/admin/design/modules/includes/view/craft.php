@@ -77,7 +77,7 @@
                     data-confirm="Warning ! You are about to remove this content"
                     data-action="remove-craft"
                     data-target="view-craft-action">
-                <?php if( count($craftWitches) == 1 ): ?>
+                <?php if( $deletion ): ?>
                     <i class="fa fa-trash"></i>
                     Delete
                 <?php else: ?>

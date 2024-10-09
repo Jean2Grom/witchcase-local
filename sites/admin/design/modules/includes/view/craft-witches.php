@@ -25,7 +25,7 @@ if( $this->witch("target")->craft() ): ?>
                     <form method="post" 
                           action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>"
                           id="view-craft-witches-action">
-                        <?php foreach( $craftWitchesTargetFirst as $craftPositionWitch ): ?>
+                        <?php foreach( $craftWitches as $craftPositionWitch ): ?>
                             <tr>
                                 <td>
                                     <div class="text-center">
