@@ -8,7 +8,7 @@ if( $this->witch("target")->craft() ): ?>
         </h3>
 
         <?php if( !$craftWitches ): ?>
-            <p><em>No daughters for this witch</em></p>
+            <p><em>No other positions for this craft</em></p>
 
         <?php else: ?>
             <p><em>Witches list associated with this craft</em></p>

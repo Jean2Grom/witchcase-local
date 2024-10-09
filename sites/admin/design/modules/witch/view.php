@@ -27,23 +27,22 @@ $this->addContextArrayItems( 'tabs', [
 
 <?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
-<?php include $this->getIncludeDesignFile('view/witch-menu-info.php'); ?>
-<?php include $this->getIncludeDesignFile('edit/witch-menu-info.php'); ?>
-
+<div><?php $this->include('view/witch-menu-info.php'); ?></div>
+<div><?php $this->include('edit/witch-menu-info.php'); ?></div>
 
 <div class="tabs-target__item selected"  id="tab-current">
     <div class="box-container">
-        <div><?php include $this->getIncludeDesignFile('view/witch-info.php'); ?></div>
-        <div><?php include $this->getIncludeDesignFile('edit/witch-info.php'); ?></div>
-        <div><?php include $this->getIncludeDesignFile('view/daughters.php'); ?></div>
-        <div><?php include $this->getIncludeDesignFile('create/witch.php'); ?></div>
+        <div><?php $this->include('view/witch-info.php'); ?></div>
+        <div><?php $this->include('edit/witch-info.php', [ 'websitesList' => $websitesList ]); ?></div>
+        <div><?php $this->include('view/daughters.php'); ?></div>
+        <div><?php $this->include('create/witch.php'); ?></div>
     </div>
 </div>
 
 <div class="tabs-target__item"  id="tab-craft-part">
     <div class="box-container">
-        <div><?php include $this->getIncludeDesignFile('view/craft.php'); ?></div>
-        <div><?php include $this->getIncludeDesignFile('view/craft-witches.php'); ?></div>
+        <div><?php $this->include('view/craft.php', [ 'structuresList' => $structuresList, 'craftWitches' => $craftWitches ]); ?></div>
+        <div><?php $this->include('view/craft-witches.php', [ 'craftWitches' => $craftWitches, 'craftWitchesTargetFirst' => $craftWitchesTargetFirst ]); ?></div>
     </div>
 </div>
 

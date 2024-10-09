@@ -505,9 +505,9 @@ class Witch
     /**
      * Update Witch
      * @param array $params
-     * @return mixed
+     * @return int|false
      */
-    function edit( array $params ): mixed
+    function edit( array $params ): int|false
     {
         foreach( $params as $field => $value ){
             if( !in_array($field, self::FIELDS) ){
