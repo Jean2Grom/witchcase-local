@@ -3,15 +3,10 @@
  * @var WC\Module $this 
  */
 
+use WC\Handler\CauldronHandler;
+use WC\Handler\WitchHandler;
 use WC\Tools;
 use WC\Website;
-
-$action = Tools::filterAction(
-    $this->wc->request->param('action'),
-    [
-        'create-new-witch',
-    ], 
-);
 
 if( !$this->witch("target") ){
     $this->wc->user->addAlert([
@@ -52,22 +47,19 @@ foreach( $websitesList as $site => $website ){
     $modules[ $site ] = $website->listModules();
 }
 
-switch( $action )
+$this->wc->dump( $_POST );
+
+switch(Tools::filterAction(
+    $this->wc->request->param('action'),
+    [
+        'create-new-witch',
+    ], 
+))
 {
     case 'create-new-witch':
-        $newWitchData   = [
-            'name'      =>  null,
-            'data'      =>  null,
-            'priority'  =>  $this->wc->request->param('new-witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
-            'site'      =>  null,
-            'status'    =>  $this->wc->request->param('new-witch-status', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
-            'invoke'    =>  null,
-            'url'       =>  null,
-            'context'   =>  null,
-        ];
-        
-        $name = trim($this->wc->request->param('new-witch-name') ?? "");
-        if( $name === "" )
+        $params         = [];
+        $params['name'] = trim($this->wc->request->param('new-witch-name') ?? "");
+        if( !$params['name'] )
         {
             $this->wc->user->addAlert([
                 'level'     =>  'error',
@@ -75,58 +67,101 @@ switch( $action )
             ]);
             break;
         }
-        $newWitchData['name'] = $name;
 
-        $data = trim($this->wc->request->param('new-witch-data') ?? "");
-        if( $data !== "" ){
-            $newWitchData['data'] = $data;
+        $data           = trim($this->wc->request->param('new-witch-data') ?? "");
+        if( $data ){
+            $params['data'] = $data;
+        }
+
+        $priority = $this->wc->request->param('new-witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+        if( !is_null($priority) ){
+            $params['priority'] = $priority;
+        }
+
+        $status = $this->wc->request->param('new-witch-status', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+        if( !is_null($status) ){
+            $params['status'] = $status;
         }
 
         $site = trim($this->wc->request->param('new-witch-site') ?? "");
-        if( in_array($site, $sites) )
-        {
-            $newWitchData['site'] = $site;
-
-            $invoke = trim($this->wc->request->param('new-witch-invoke') ?? "");
-            if( in_array($invoke, $modules[ $site ]) )
-            {
-                $newWitchData['invoke'] = $invoke;
-
-                $context = trim($this->wc->request->param('new-witch-context') ?? "");
-                if( $context !== "" ){
-                    $newWitchData['context'] = $context;
-                }
-
-                $autoUrl        = $this->wc->request->param('new-witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-                $customFullUrl  = $this->wc->request->param('new-witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-                $customUrl      = $this->wc->request->param('new-witch-url');
-                
-                if( !$autoUrl )
-                {
-                    $url    =   "";
-                    if( !$customFullUrl )
-                    {
-                        if( $this->witch("target")->mother() ){
-                            $url .= $this->witch("target")->mother()->getClosestUrl( $site );
-                        }
-
-                        if( substr($url, -1) != '/' 
-                                && substr($customUrl, 0, 1) != '/'  
-                        ){
-                            $url .= '/';
-                        }
-                    }
-
-                    $url    .=  $customUrl;
-
-                    $newWitchData['url'] = $url;
-                }
-            }
+        if( in_array($site, $sites) ){
+            $params['site'] = $site;
         }
+
+        $invoke = trim($this->wc->request->param('new-witch-invoke') ?? "");
+        if( $params['site'] && in_array($invoke, $modules[ $site ]) ){
+            $params['invoke'] = $invoke;
+        }
+
+        $autoUrl        = $this->wc->request->param('new-witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+        $customFullUrl  = $this->wc->request->param('new-witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+        $customUrl      = $this->wc->request->param('new-witch-url');
         
-        $newWitchId = $this->witch("target")->createDaughter( $newWitchData );
-        
-        if( !$newWitchId ){
+        if( $params['invoke'] && !$autoUrl )
+        {
+            $url    =   "";
+            if( !$customFullUrl )
+            {
+                $url    .=  trim( $this->witch("target")->getClosestUrl($site), '/' );
+                $url    .=  '/';
+            }
+            $url    .=  trim( $customUrl, '/' );
+
+            $params['url'] = trim( $url, '/' );
+        }
+
+
+        $importCauldronWitchId  = $this->wc->request->param('imported-cauldron-witch');
+        $structure              = $this->wc->request->param('new-witch-cauldron-structure');
+
+        // Cauldron importation
+        if( $importCauldronWitchId )
+        {
+            $importCauldronWitch = WitchHandler::createFromId( $this->wc, $importCauldronWitchId );
+
+            if( !$importCauldronWitch 
+                || !$importCauldronWitch->hasCauldron()
+                || !$importCauldronWitch->cauldronId
+            ){
+                $this->wc->user->addAlert([
+                    'level'     =>  'Error',
+                    'message'   =>  "Cauldron couldn't be imported",
+                ]);
+                break;
+            }
+
+            $params['cauldron'] = $importCauldronWitch->cauldronId;    
+        }
+        // Cauldron creation
+        elseif( $structure && in_array($structure, array_keys( $this->wc->configuration->structures() )) )
+        {
+            $folderCauldron = CauldronHandler::getStorageStructure($this->wc, 
+                $this->wc->website->site, 
+                $structure
+            );
+            $newCauldron = CauldronHandler::createFromData($this->wc, [
+                'name'      =>  $params['name'],
+                'data'      =>  json_encode([ 'structure' => $structure ]),
+            ]);
+
+            if( !$folderCauldron 
+                || !$newCauldron 
+                || !$folderCauldron->addCauldron( $newCauldron ) 
+                || !$newCauldron->save() 
+            ){
+                $this->wc->user->addAlert([
+                    'level'     =>  'warning',
+                    'message'   =>  "Warning, Cauldron creation has failed",
+                ]);
+                break;
+            }
+
+            $params['cauldron'] = $newCauldron->id;
+        }
+
+        $newWitch = $this->witch("target")->createDaughter( $params );
+
+        if( !$newWitch ){
             $this->wc->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, new witch wasn't created"
@@ -138,8 +173,16 @@ switch( $action )
             'level'     =>  'success',
             'message'   =>  "New witch created"
         ]);
-        
-        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitchId ]) );
+
+        if( isset($newCauldron) ){
+            $url = "cauldron";
+        }
+        else {
+            $url = "view";
+        }
+
+        $this->wc->db->commit();
+        header( 'Location: '.$this->wc->website->getFullUrl($url, [ 'id' => $newWitch->id ]) );
         exit();
     break;    
 }

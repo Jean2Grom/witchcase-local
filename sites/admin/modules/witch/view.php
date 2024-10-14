@@ -3,22 +3,11 @@
  * @var WC\Module $this 
  */
 
-//use WC\Handler\CauldronHandler;
-
 use WC\Handler\CauldronHandler;
+use WC\Handler\WitchHandler;
 use WC\Structure;
 use WC\Tools;
 use WC\Website;
-
-$action = Tools::filterAction(
-    $this->wc->request->param('action'),
-    [
-        'remove-cauldron',
-        'create-cauldron',
-        'import-cauldron',
-    ], 
-);
-$this->wc->debug($action);
 
 
 if( !$this->witch("target") ){
@@ -31,8 +20,7 @@ if( !$this->witch("target") ){
     exit();
 }
 
-
-
+/*
 if( $this->witch("target")->hasCauldron() )
 {
     //$result = CauldronHandler::fetch($this->wc, [ $this->witch("target")->cauldron ]);
@@ -42,18 +30,18 @@ if( $this->witch("target")->hasCauldron() )
     //$this->wc->debug( $this->witch("target")->cauldron() );
     $this->wc->debug( $this->wc->configuration->structures() );
 }
-/*
-$this->wc->debug( 
-    $this->wc->configuration->structure(
-        $this->wc->request->param('witch-cauldron-structure')
-    )
-);
 */
 
 $this->wc->debug( $this->wc->request->inputs() );
 
-switch( $action )
-{
+switch( Tools::filterAction( 
+    $this->wc->request->param('action'),
+    [
+        'remove-cauldron',
+        'create-cauldron',
+        'import-cauldron',
+    ]
+) ){
     case 'remove-cauldron':
         if( !$this->witch("target")->cauldron() ){
             $this->wc->user->addAlert([
@@ -77,37 +65,104 @@ switch( $action )
 
     case 'create-cauldron':
         $structure      = $this->wc->request->param('witch-cauldron-structure') ?? "folder";
+        if( !in_array($structure, $this->wc->configuration->structures()) )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, a valid cauldron structure is missing",
+            ]);
+            break;
+        }         
+
         $folderCauldron = CauldronHandler::getStorageStructure($this->wc, $this->wc->website->site, $structure);
+        if( !$folderCauldron )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, cauldron storage structure can't be found",
+            ]);
+            break;
+        }
 
         $cauldron = CauldronHandler::createFromData($this->wc, [
             'name'      =>  $this->witch("target")->name,
             'data'      =>  json_encode([ 'structure' => $structure ]),
         ]);
 
-        $folderCauldron->addCauldron( $cauldron );
-        $cauldron->save();
+        if( !$cauldron 
+            || !$folderCauldron->addCauldron( $cauldron ) 
+            || !$cauldron->save() 
+            || !$this->witch("target")->edit([ 'cauldron' => $cauldron->id ]) 
+        ){
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error occurred during cauldron creation",
+            ]);
+            break;
+        }
 
-        $this->witch("target")->edit([ 'cauldron' => $cauldron->id ]);
+        $this->wc->user->addAlert([
+            'level'     =>  'success',
+            'message'   =>  "Cauldron was created",
+        ]);
 
         header('Location: '.$this->wc->website->getUrl("cauldron?id=".$this->witch("target")->id) );
         exit();    
     break;
 
     case 'import-cauldron':
+        $importedCauldronWitchId = $this->wc->request->param('imported-cauldron-witch', null, FILTER_VALIDATE_INT);
+        if( !$importedCauldronWitchId )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, import cauldron witch isn't identified",
+            ]);
+            break;
+        }
 
+        $importedCauldronWitch = WitchHandler::createFromId( $this->wc, $importedCauldronWitchId );
+        if( !$importedCauldronWitch )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, import cauldron witch couldn't be loaded",
+            ]);
+            break;
+        }
+        elseif( !$importedCauldronWitch->hasCauldron() || !$importedCauldronWitch->cauldronId )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, can't find import cauldron",
+            ]);
+            break;
+        }
+        elseif( !$this->witch("target")->edit([ 'cauldron' => $importedCauldronWitch->cauldronId ]) )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error occurred, cauldron import failed",
+            ]);
+            break;
+        }
+
+        $this->wc->user->addAlert([
+            'level'     =>  'success',
+            'message'   =>  "Cauldron was imported",
+        ]);
     break;
 }
 
 $structuresList = [];
-$craftWitches   = null;
+$craftWitches   = [];
 if( !$this->witch("target")->hasCraft() ){
     $structuresList = Structure::listStructures( $this->wc );
 }
 else 
 {
-    $craftWitches = $this->witch("target")->craft()->getWitches();
-    
-    foreach( $craftWitches as $key => $craftWitch )
+    $craftWitchBuffer = [];
+    foreach( $this->witch("target")->craft()->getWitches() as $key => $craftWitch )
     {
         $breadcrumb         = [];
         $breadcrumbWitch    = $craftWitch->mother();
@@ -122,14 +177,15 @@ else
             $breadcrumbWitch = $breadcrumbWitch->mother();
         }
         
-        $craftWitches[ $key ]->breadcrumb = array_reverse($breadcrumb);
+        $craftWitchBuffer[ $key ]               = $craftWitch;
+        $craftWitchBuffer[ $key ]->breadcrumb   = array_reverse($breadcrumb);
     }
     
-    $craftWitchesTargetFirst    = [];
-    $craftWitchesTargetFirst[]  = $craftWitches[ $this->witch("target")->id ];
-    foreach( $craftWitches as $key => $craftWitch ){
+    $craftWitches    = [];
+    $craftWitches[]  = $craftWitchBuffer[ $this->witch("target")->id ];
+    foreach( $craftWitchBuffer as $key => $craftWitch ){
         if( $key !=  $this->witch("target")->id ){
-            $craftWitchesTargetFirst[] = $craftWitch;
+            $craftWitches[] = $craftWitch;
         }
     }
 }
@@ -178,7 +234,5 @@ while( !empty($breadcrumbWitch) )
 }
 
 $this->addContextVar( 'breadcrumb', array_reverse($breadcrumb) );
-
-$targetWitch    = $this->witch("target");
 
 $this->view();

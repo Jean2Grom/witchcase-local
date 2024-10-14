@@ -183,9 +183,9 @@ class Witch
     /**
      * Read mother witch (get it if needed), 
      * return mother witch or false if witch is root
-     * @return mixed
+     * @return self|false
      */
-    function mother(): mixed
+    function mother(): self|false
     {
         if( is_null($this->id) ){
             return false;
@@ -607,9 +607,9 @@ class Witch
     /**
      * Add a new witch daughter 
      * @param array $params 
-     * @return mixed    
+     * @return self|false 
      */
-    function createDaughter( array $params ): mixed
+    function createDaughter( array $params ): self|false
     {
         // Name cannot be set to empty string 
         $params['name'] = trim( $params['name'] ?? "" );
@@ -625,35 +625,34 @@ class Witch
         $newDaughterPosition                        = $this->position;
         $newDaughterPosition[ ($this->depth + 1) ]  = DataAccess::getNewDaughterIndex($this->wc, $this->position);
         
-        if( !isset($params['site']) ){
+        if( !isset($params['site']) )
+        {
             $params['site'] = $this->site;
+
+            if( !isset($params['status']) ){
+                $params['status'] = $this->statusLevel;
+            }    
         }
-        
-        /*
-        if( !isset($params['status']) ){
-            $params['status'] = $this->statusLevel;
-        }
-        */
-        
-        if( empty($params['invoke']) || empty($params['site']) || !in_array('url', array_keys($params)) )
+
+        if( empty($params['site']) )
         {
             $params['url']      = null;
             $params['invoke']   = null;
         }
+        elseif( empty($params['invoke']) ){
+            $params['url']      = null;
+        }        
         else
         {
             $urlArray   = [];
             
             // If url is set to a value (ie not null)
-            if( !is_null($params['url']) ){
+            if( $params['url'] ?? false ){
                 $urlArray[] = Tools::urlCleanupString( $params['url'] );
             }
             else 
             {
-                $rootUrl    = ""; 
-                if( $this->mother() ){
-                    $rootUrl    = $this->mother()->getClosestUrl( $params['site'] );
-                }
+                $rootUrl    = $this->getClosestUrl( $params['site'] );
                 
                 if( !empty($rootUrl) ){
                     $rootUrl .= '/';
@@ -665,7 +664,7 @@ class Witch
                 $rootUrl    .=  Tools::cleanupString($params['name']);
                 $urlArray[] =   $rootUrl;                
             }
-            
+
             if( !empty($urlArray) ){
                 $params['url'] = Handler::checkUrls( $this->wc, $params['site'], $urlArray, $this->id );
             }
@@ -675,7 +674,14 @@ class Witch
             $params[ "level_".$level ] = $levelPosition;
         }
         
-        return DataAccess::create($this->wc, $params);
+        $newWitchId = DataAccess::create($this->wc, $params);
+        if( !$newWitchId ){
+            return false;
+        }
+
+        $params['id'] = $newWitchId;
+
+        return Handler::createFromData( $this->wc, $params );
     }
         
     
@@ -688,7 +694,7 @@ class Witch
     {
         $url    = "";
         $site   = $forSite ?? $this->site;
-        
+
         $ancestorWitch = $this;
         while( $ancestorWitch !== false && $ancestorWitch->depth > 0 )
         {

@@ -5,7 +5,6 @@ use WC\WitchCase;
 use WC\Witch;
 use WC\DataAccess\Witch as DataAccess;
 use WC\Datatype\ExtendedDateTime;
-use WC\Tools;
 
 class WitchHandler
 {
@@ -87,9 +86,9 @@ class WitchHandler
      * Witch factory class, reads witch data associated whith id
      * @param WitchCase $wc
      * @param int $id   witch id to create
-     * @return mixed implemented Witch object, boolean false if data not found
+     * @return Witch|false implemented Witch object, boolean false if data not found
      */
-    static function createFromId( WitchCase $wc, int $id ): mixed
+    static function createFromId( WitchCase $wc, int $id ): Witch|false
     {
         $data = DataAccess::readFromId($wc, $id);
         
@@ -107,52 +106,61 @@ class WitchHandler
      * @param string $site
      * @param array $urlArray
      * @param ?int $excludedId
-     * @return string
+     * @return ?string
      */
-    static function checkUrls(  WitchCase $wc, string $site, array $urlArray, ?int $excludedId=null ): string
+    static function checkUrls( WitchCase $wc, string $site, array $urlArray, ?int $excludedId=null ): ?string
     {
+        if( !$urlArray ){
+            return null;
+        }
+
         $result = DataAccess::getUrlsData($wc, $site, $urlArray, $excludedId);
         
-        $usages         = [];
-        $returnedUrl    = [];
-        foreach( $urlArray as $key => $url  )
+        if( !$result ){
+            return array_values($urlArray)[0] ?? null;
+        }
+
+        $indices        = [];
+        foreach( $urlArray as $key => $url )
         {
-            $usages[ $key ] = 0;            
-            $regex          = '/^'. str_replace('/', '\/', $url).'(?:-\d+)?$/';
-            
-            $returnedUrl[ $key ]    = $url;
-            $lastIndice             = 0;
+            $usages = [ 0 ];
+            $regex  = '/^'. str_replace('/', '\/', $url).'(?:-\d+)?$/';
+
             foreach( $result as $row )
             {
                 $match = [];
                 preg_match($regex, $row['url'], $match);
 
-                if( $row['url'] === $url || !empty($match) ){
-                    $usages[ $key ]++;
-                }
-                
-                if( !empty($match) )
-                {
-                    $indice = (int) substr($row['url'], (1 + strrpos($row['url'], '-') ) );
-
-                    if( $indice > $lastIndice )
-                    {
-                        $lastIndice             = $indice;
-                        $returnedUrl[ $url ]    = substr($row['url'], 0, strrpos($row['url'], '-') ).'-'.($indice + 1);
+                if( $match ){
+                    if( $row['url'] === $url ){
+                        $usages[] = 1;
+                    }
+                    else {
+                        $usages[] = (int) substr( $row['url'], (1 + strrpos($row['url'], '-')) );
                     }
                 }
             }
             
-            if( $usages[ $key ] == 1 && $lastIndice == 0 ){
-                $returnedUrl[ $key ] .= '-2';
-            }
-            
-            if( $usages[ $key ] == 0 ){
-                return $returnedUrl[ $key ];
+            $indices[ $key ] = max($usages);
+        }
+
+        $minIndice      = null;
+        $returnedUrl    = null;
+        foreach( $urlArray as $key => $url )
+        {
+            if( is_null($minIndice) || $indices[ $key ] < $minIndice )
+            {
+                $minIndice = $indices[ $key ];
+                if( $minIndice === 0 ){
+                    $returnedUrl = $url;
+                }
+                else {
+                    $returnedUrl = $url.'-'.($minIndice + 1);
+                }
             }
         }
-        
-        return array_values($returnedUrl)[0];
+
+        return $returnedUrl;
     }
     
 
@@ -251,7 +259,7 @@ class WitchHandler
             'name'              => $witch->name,
             'site'              => $witch->site ?? "",
             'description'       => $witch->data,
-            'craft'             => $witch->hasCraft(),
+'craft'             => $witch->hasCraft(),
             'cauldron'          => $witch->hasCauldron(),
             'invoke'            => $witch->hasInvoke(),
             'daughters'         => $daughters,
