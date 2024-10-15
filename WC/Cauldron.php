@@ -50,14 +50,23 @@ class Cauldron
     public array $position  = [];
 
     public ?self $parent;
+    /**
+     * @var self[]
+     */
     public array $children    = [];
+    /**
+     * @var Ingredient[]
+     */
     public array $ingredients = [];
-
+    /** 
+     * @var (self|Ingredient)[]
+     */
     public array $pendingRemoveContents = [];
 
     protected $content;
 
     public ?self $target        = null;
+    public ?self $draft         = null;
 
     public string $editPrefix   = "s";
 
@@ -160,6 +169,10 @@ class Cauldron
         return true;
     }
 
+    /**
+     * Display priority ordered array of content Ingredients and children Cauldron
+     * @return Ingredient|Cauldron[]
+     */
     function content(): array
     {
         if( !is_null($this->content) ){
@@ -303,6 +316,10 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
 
     function delete( bool $transactionMode=true ): bool
     {
+        if( $this->target->draft ){
+            $this->target->draft = null;
+        }
+
         if( !$transactionMode ){
             return $this->deleteAction();
         }
@@ -348,7 +365,11 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
             return false;
         }
         
-        return DataAccess::delete($this) !== false;
+        if( $this->exist() ){
+            return DataAccess::delete( $this ) !== false;
+        }
+        
+        return true;
     }
   
     function add( Cauldron|Ingredient $content ): bool
@@ -393,179 +414,86 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
         return true;
     }
 
-    function readInputs( ?array $inputs=null ): self
+    function readInputs( ?array $inputs=null, bool $contentAutoPriority=true ): self
     {
         $params = $inputs ?? $this->wc->request->inputs();
-
-        $priorityInterval   = 100;
-        $childrenKeysArray  = array_filter( 
-            array_keys($params), 
-            function( $key ){
-                return !strpos($key, '|') && !strpos($key, '__') && in_array(substr($key, 0, 2), ['i#', 's#']); 
-            }
-        );
-
-        $priority           = count($childrenKeysArray) * $priorityInterval;
-
-$this->wc->dump($params);
-        if( isset($params['__name']) ){
-            $this->name = htmlspecialchars($params['__name']);
+        
+$this->wc->dump($params, "PARAMS");          
+        if( isset($params['name']) ){
+            $this->name = htmlspecialchars($params['name']);
         }
 
-        $matchedIngredients = [];
-        $newIngredients     = [];
-        $doneChildPrefix    = [];
-        $matchedChildren    = [];
-        $newChildren        = [];
-        foreach( $params as $rawParam => $value )
+        if( isset($params['priority']) && is_int($params['priority']) ){
+            $this->priority = $params['priority'];
+        }
+
+        if( $contentAutoPriority )
         {
-            if( strpos($rawParam, '__') )
+            $priorityInterval   = 100;
+            $priority           = count($params['content'] ?? []) * $priorityInterval;
+        }
+
+        $contents   = $this->content() ?? [];
+        //$matched    = [];
+        foreach( $params['content'] ?? [] as $indice => $contentParams )
+        {
+            if( $contentAutoPriority )
             {
-                $buffer     = explode('__', $rawParam );
-                $param      = $buffer[0];
-                $valueType  = $buffer[1];
+                $contentParams[ 'priority' ]    =   $priority;
+                $priority                       -=  $priorityInterval;
+            }
+
+            if( isset($contents[ $indice ]) 
+                && $contents[ $indice ]->type === $contentParams['type'] 
+                //&& $contents[ $indice ]->id ?? null === $contentParams['ID'] ?? null
+                && (!$contents[ $indice ]->exist() || $contents[ $indice ]->id === $contentParams['ID'] ?? 0)
+            ){
+                //$matched[] = $contents[ $indice ];
+
+                if( in_array($contents[ $indice ]->type ?? "", Ingredient::list()) ){
+                    $contents[ $indice ]->readInputs( $contentParams );
+                }
+                else {
+                    $contents[ $indice ]->readInputs( $contentParams, $contentAutoPriority );
+                }
+$this->wc->debug($contents[ $indice ], "UPDATE"); 
+                unset($contents[ $indice ]);
+            }
+            elseif( in_array($contentParams['type'] ?? "", Ingredient::list()) ){
+$this->wc->debug(
+                IngredientHandler::createFromData( 
+                    $this, 
+                    $contentParams['type'], 
+                    [ 
+                        'name'      => $contentParams['name'], 
+                        'value'     => $contentParams['value'] ?? null, 
+                        'priority'  => $contentParams['priority'], 
+                    ] 
+), "CREATE"); 
+                //); 
             }
             else 
             {
-                $param      = $rawParam;
-                $valueType  = 'value';
+                $newChild = Handler::createFromData($this->wc, [
+                    'name'      =>  $contentParams['name'],
+                    'data'      => json_encode([ 'structure' => $contentParams['type'] ?? "folder" ]),
+                    'priority'  => $contentParams['priority'],
+                ]);
+                $newChildren[] = $newChild->readInputs( $contentParams, $contentAutoPriority );
+                $this->addCauldron($newChild);
             }
 
-            if( substr($param, 0, 2) === 'i#' )
-            {
-                $buffer = explode('#', substr($param, 2) );
-
-                $type   = $buffer[0];
-                $name   = $buffer[1];
-                $index  = $buffer[2];
-
-                $match  = false;
-                foreach( $this->ingredients as $ingredient ){
-                    if( $ingredient->type === $type 
-                        && $ingredient->getInputIdentifier() === $name.'#'.$index
-                    ){
-                        switch( $valueType )
-                        {
-                            case 'name': 
-                                $ingredient->name       = trim( $value );
-                            break 2;
-
-                            case 'value': 
-                                $ingredient->priority   = $priority;
-                                $matchedIngredients[]   = $ingredient->readInput( $value );
-                                $match      =   true;
-                                $priority   -=  $priorityInterval;
-                            break 2;
-                        }
-                    }
-                }
-
-                if( $valueType === 'value' && !$match )
-                {
-                    $newIngredients[] = IngredientHandler::createFromData( 
-                        $this, 
-                        $type, 
-                        [ 
-                            'name'      => $name,  
-                            'value'     => $value,  
-                            'priority'  => $priority,
-                        ]
-                    );
-                    $priority   -=  $priorityInterval;
-                }
-            }
-            elseif( substr($param, 0, 2) === 's#' )
-            {
-                $prefix = strstr( $param, '|', true );
-
-                if( in_array($prefix, $doneChildPrefix) ){
-                    continue;
-                }
-
-                $doneChildPrefix[] = $prefix;
-                
-                $buffer = explode('#', substr($prefix, 2) );
-
-                $type   = $buffer[0];
-                $name   = $buffer[1];
-                $index  = $buffer[2];
-
-                $innerInputs = [];
-                foreach( $params as $key => $val ){
-                    if( str_starts_with($key, $prefix.'|') ){
-                        $innerInputs[ substr( $key, strlen($prefix)+1 ) ] = $val;
-                    } 
-                }
-                
-                $match  = false;
-                foreach( $this->children as $child ){
-                    if( $child->type === $type 
-                        && $child->getInputIdentifier() === $name.'#'.$index
-                        && !in_array($child, $matchedChildren)
-                    ){
-                        $child->priority    = $priority;
-                        $matchedChildren[]  = $child->readInputs( $innerInputs );
-                        $match              = true;
-                        break;
-                    }
-                }
-
-                if( !$match )
-                {
-                    $newChild = Handler::createFromData($this->wc, [
-                        'name'      => $name,
-                        'data'      => json_encode([ 'structure' => $type ]),
-                        'priority'  => $priority,
-                    ]);
-                    $newChildren[] = $newChild->readInputs( $innerInputs );
-                    $this->addCauldron($newChild);
-                }
-            }
-
-//$priority -= $priorityInterval;
-        }
-
-        if( !empty($params['__add-type']) && !empty($params['__add-name']) )
-        {
-            $ingredients    = Ingredient::list();
-            if( in_array($params['__add-type'], $ingredients) ){
-                $newIngredients[] = IngredientHandler::createFromData( 
-                    $this, 
-                    $params['__add-type'], 
-                    [ 
-                        'name'      => htmlspecialchars($params['__add-name']),  
-                        'priority'  => $priority,
-                    ]);
-            }
 
         }
 
-
-        foreach( $this->ingredients as $key => $ingredient ) 
-        {
-            if( !in_array($ingredient, $matchedIngredients) 
-                && !in_array($ingredient, $newIngredients) 
-            ){
-$this->wc->debug($ingredient, "remove");                   
-                $this->pendingRemoveContents[] = $ingredient;
-                unset($this->ingredients[ $key ]);
-            }
+        foreach( $contents as $unmatchedContent ){
+            $this->pendingRemoveContents[] = $unmatchedContent;
         }
 
-        foreach( $this->children as $key => $child ) 
-        {
-            if( !$child->isContent() ){
-                continue;
-            }
+$this->wc->debug($this->pendingRemoveContents, "REMOVE");  
 
-            if( !in_array($child, $matchedChildren) 
-                && !in_array($child, $newChildren) 
-            ){
-                $this->pendingRemoveContents[] = $child;
-                unset($this->children[ $key ]);
-            }
-        }
-
+        $this->content = null;
+        
         return $this;
     }
 
@@ -573,6 +501,9 @@ $this->wc->debug($ingredient, "remove");
     {
         if( $this->isDraft() ){
             return $this;
+        }
+        elseif( $this->draft ){
+            return $this->draft;
         }
 
         $folder = Handler::getDraftFolder( $this );
@@ -585,10 +516,10 @@ $this->wc->debug($ingredient, "remove");
             }
         }
 
-        $draft  = Handler::createDraft( $this );
-        $folder->addCauldron( $draft );
+        $this->draft  = Handler::createDraft( $this );
+        $folder->addCauldron( $this->draft );
         
-        return $draft;
+        return $this->draft;
     }
 
     function getInputIdentifier(): string 
@@ -597,7 +528,7 @@ $this->wc->debug($ingredient, "remove");
             return $this->inputID;
         }
 
-        $this->inputID = str_replace( ' ', '-', $this->name ).'#';
+        $this->inputID = str_replace( ' ', '-', $this->name ?? "" ).'#';
 
         if( $this->parent ){
             $this->inputID .= array_keys(array_intersect(
