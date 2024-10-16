@@ -107,7 +107,7 @@ class Debug
         {
             ob_start();
             
-            if( !empty($userPrefix) ){
+            if( $userPrefix !== '' ){
                 echo $userPrefix."\n";
             }
             
