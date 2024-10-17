@@ -1,43 +1,42 @@
-<?php   
-/** 
- * @var WC\Module $this 
- * @var WC\Cauldron $draft 
- */
-
+<?php /** @var WC\Module $this */
 $this->addCssFile('content-edit.css');
 $this->addJsFile('triggers.js');
+
+/** @var ?WC\Cauldron $cauldron */
+$cauldron = $cauldron ?? $this->witch("target")->cauldron();
 ?>
+
 <h1>
     <i class="fa fa-feather-alt"></i>
     <?=$this->witch("target")->name ?>
 </h1>
 <p><em><?=$this->witch("target")->data?></em></p>
     
-<?php include $this->getIncludeDesignFile('alerts.php'); ?>
+<?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
-    <?php if( $draft->exist() ): ?>
+    <?php if( $cauldron->draft()->exist() ): ?>
         <input  type="hidden" 
-                name="ID" value="<?=$draft->id ?>" />
+                name="ID" value="<?=$cauldron->draft()->id ?>" />
     <?php endif; ?>
     <h3>
-        [<?=$draft->data->structure ?>] 
+        [<?=$cauldron->draft()->data->structure ?>] 
         <span   class="span-input-toggle" 
                 data-input="name" 
-                data-value="<?=$draft->name ?>"><?=$draft->name ?></span>
+                data-value="<?=$cauldron->draft()->name ?>"><?=$cauldron->draft()->name ?></span>
     </h3>
     <p>
-        <?php if( $draft->created ): ?>
-            <em>Draft created by <?=$draft->created->actor?>: <?=$draft->created->format( \DateTimeInterface::RFC2822 )?></em>
+        <?php if( $cauldron->draft()->created ): ?>
+            <em>Draft created by <?=$cauldron->draft()->created->actor?>: <?=$cauldron->draft()->created->format( \DateTimeInterface::RFC2822 )?></em>
         <?php endif; ?>
-        <?php if( $draft->modified && $draft->created != $draft->modified ): ?>
+        <?php if( $cauldron->draft()->modified && $cauldron->draft()->created != $cauldron->draft()->modified ): ?>
             <br/> 
-            <em>Draft modified by <?=$draft->modified->actor?>: <?=$draft->modified->format( \DateTimeInterface::RFC2822 )?></em>
+            <em>Draft modified by <?=$cauldron->draft()->modified->actor?>: <?=$cauldron->draft()->modified->format( \DateTimeInterface::RFC2822 )?></em>
         <?php endif; ?>
     </p>
     
     <div class="fieldsets-container">
-        <?php foreach( $draft->content() as $content ): 
+        <?php foreach( $cauldron->draft()->content() as $content ): 
             $contentInput = "content[".$content->getInputIndex()."]";
             ?>
             <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">
@@ -103,13 +102,11 @@ $this->addJsFile('triggers.js');
     </button>
 <?php endif; ?>
 
-<?php if( $cancelHref ): ?>
-    <button class="trigger-href" 
-            data-href="<?=$cancelHref ?>">
-        <i class="fa fa-times"></i>
-        Cancel
-    </button>
-<?php endif; ?>
+<button class="trigger-href" 
+        data-href="<?= $this->wc->website->getUrl('view', [ 'id' => $this->witch("target")->id ]) ?>">
+    <i class="fa fa-times"></i>
+    Cancel
+</button>
 
 <style>
     span.span-input-toggle {

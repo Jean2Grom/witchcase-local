@@ -36,18 +36,17 @@ elseif( !$this->witch("target")->cauldron()->draft() )
     exit();
 }
 
-
 // TODO multi draft management
 //$draft = $this->witch("target")->cauldron()?->draft();
 //$this->wc->debug($this->witch("target")->cauldron());
 //$this->wc->debug($draft->parent);
 //$this->wc->debug($draft);
 
-
+$cauldron       = $this->witch("target")->cauldron();
 $structures     = $this->wc->configuration->structures();
 $ingredients    = Ingredient::list();
+$return         = false;
 
-$return = false;
 switch( Tools::filterAction( 
     $this->wc->request->param('action'),
     [
@@ -58,7 +57,7 @@ switch( Tools::filterAction(
     ]
 ) ){
     case 'publish':
-        if( $$this->witch("target")->cauldron()->draft()->readInputs()->publish() === false ){
+        if( $cauldron->draft()->readInputs()->publish() === false ){
             $this->wc->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, publication canceled"
@@ -77,13 +76,11 @@ switch( Tools::filterAction(
     case 'save-and-return':
         $return = true;
     case 'save':
-        $saved = $this->witch("target")->cauldron()->draft()->readInputs()->save();
-        // $this->witch("target")->cauldron()->draft()->readInputs();
-        // $saved = false;
-$this->wc->debug($this->witch("target")->cauldron()->draft()->content());
+        $saved = $cauldron->draft()->readInputs()->save();
+
         if( $saved === false )
         {
-            $return     = false;
+            $return = false;
             $this->wc->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, update canceled"
@@ -104,7 +101,7 @@ $this->wc->debug($this->witch("target")->cauldron()->draft()->content());
     break;
     
     case 'delete':
-        if( !$this->witch("target")->cauldron()->draft()->delete() ){
+        if( !$cauldron->draft()->delete() ){
             $this->wc->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, remove canceled",
@@ -123,7 +120,7 @@ $this->wc->debug($this->witch("target")->cauldron()->draft()->content());
 
 if( $return )
 {
-    header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$this->witch("target")->id) );
+    header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
     exit();
 }
 

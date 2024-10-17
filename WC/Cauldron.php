@@ -50,17 +50,14 @@ class Cauldron
     public array $position  = [];
 
     public ?self $parent;
-    /**
-     * @var self[]
-     */
+
+    /** @var self[] */
     public array $children    = [];
-    /**
-     * @var Ingredient[]
-     */
+    
+    /** @var Ingredient[] */
     public array $ingredients = [];
-    /** 
-     * @var (self|Ingredient)[]
-     */
+
+    /** @var (self|Ingredient)[] */
     public array $pendingRemoveContents = [];
 
     protected $content;
@@ -418,7 +415,6 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
     {
         $params = $inputs ?? $this->wc->request->inputs();
         
-$this->wc->dump($params, "PARAMS");          
         if( isset($params['name']) ){
             $this->name = htmlspecialchars($params['name']);
         }
@@ -427,15 +423,21 @@ $this->wc->dump($params, "PARAMS");
             $this->priority = $params['priority'];
         }
 
+        if( !$params['content'] ){
+            $params['content'] = [];
+        }
+
         if( $contentAutoPriority )
         {
             $priorityInterval   = 100;
-            $priority           = count($params['content'] ?? []) * $priorityInterval;
+            $priority           = count($params['content']) * $priorityInterval;
         }
 
-        $contents   = $this->content() ?? [];
-        //$matched    = [];
-        foreach( $params['content'] ?? [] as $indice => $contentParams )
+        $contents           = $this->content() ?? [];
+        $this->content      = null;
+        $this->ingredients  = [];
+        $this->children     = [];
+        foreach( $params['content'] as $indice => $contentParams )
         {
             if( $contentAutoPriority )
             {
@@ -445,22 +447,20 @@ $this->wc->dump($params, "PARAMS");
 
             if( isset($contents[ $indice ]) 
                 && $contents[ $indice ]->type === $contentParams['type'] 
-                //&& $contents[ $indice ]->id ?? null === $contentParams['ID'] ?? null
-                && (!$contents[ $indice ]->exist() || $contents[ $indice ]->id === $contentParams['ID'] ?? 0)
+                && (    !$contents[ $indice ]->exist() 
+                        || $contents[ $indice ]->id === (int) ($contentParams['ID'] ?? 0)   
+                )
             ){
-                //$matched[] = $contents[ $indice ];
-
-                if( in_array($contents[ $indice ]->type ?? "", Ingredient::list()) ){
-                    $contents[ $indice ]->readInputs( $contentParams );
+                if( in_array($contents[ $indice ]->type ?? "", Ingredient::list()) ){                    
+                    $this->ingredients[] = $contents[ $indice ]->readInputs( $contentParams );
                 }
                 else {
-                    $contents[ $indice ]->readInputs( $contentParams, $contentAutoPriority );
+                    $this->children[] = $contents[ $indice ]->readInputs( $contentParams, $contentAutoPriority );
                 }
-$this->wc->debug($contents[ $indice ], "UPDATE"); 
+
                 unset($contents[ $indice ]);
             }
             elseif( in_array($contentParams['type'] ?? "", Ingredient::list()) ){
-$this->wc->debug(
                 IngredientHandler::createFromData( 
                     $this, 
                     $contentParams['type'], 
@@ -469,8 +469,7 @@ $this->wc->debug(
                         'value'     => $contentParams['value'] ?? null, 
                         'priority'  => $contentParams['priority'], 
                     ] 
-), "CREATE"); 
-                //); 
+                );
             }
             else 
             {
@@ -479,21 +478,15 @@ $this->wc->debug(
                     'data'      => json_encode([ 'structure' => $contentParams['type'] ?? "folder" ]),
                     'priority'  => $contentParams['priority'],
                 ]);
-                $newChildren[] = $newChild->readInputs( $contentParams, $contentAutoPriority );
-                $this->addCauldron($newChild);
+
+                $this->addCauldron( $newChild->readInputs($contentParams, $contentAutoPriority) );
             }
-
-
         }
 
         foreach( $contents as $unmatchedContent ){
             $this->pendingRemoveContents[] = $unmatchedContent;
         }
 
-$this->wc->debug($this->pendingRemoveContents, "REMOVE");  
-
-        $this->content = null;
-        
         return $this;
     }
 
