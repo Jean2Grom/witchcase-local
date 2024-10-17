@@ -1,7 +1,7 @@
 <?php /** @var WC\Cauldron $this */ ?>
 
 <ul>
-    <?php foreach( $this->content() ?? [] as $content ): ?>
+    <?php foreach( $this->contents() as $content ): ?>
         <li>
             <h4>
                 <?php if( $content->name ): ?>
@@ -9,7 +9,7 @@
                 <?php endif; ?>
                 <?="[".$content->type."] " ?>
             </h4>
-            <?php $content->edit( null, $this->getInputName() ); ?>
+            <?php $content->edit( null, null, $this->getInputName() ); ?>
         </li>
     <?php endforeach; ?>
 </ul>

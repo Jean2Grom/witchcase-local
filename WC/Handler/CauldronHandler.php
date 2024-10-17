@@ -367,7 +367,7 @@ class CauldronHandler
      */
     static private function createDraftContent( Cauldron $cauldron, Cauldron $draft ): void
     {
-        foreach( $cauldron->content() as $content )
+        foreach( $cauldron->contents() as $content )
         {
             // Ingredient case
             //if( get_class($content) !== get_class($cauldron) )

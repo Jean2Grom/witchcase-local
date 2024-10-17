@@ -167,15 +167,42 @@ class Cauldron
     }
 
     /**
+     * @return array|Ingredient|Cauldron|null
+     */
+    function content( ?string $name=null ): array|Ingredient|Cauldron|null
+    {
+        if( is_null($name) ){
+            return $this->contents();
+        }
+
+        if( is_null($this->content) ){
+            $this->generatContent();
+        }
+
+        foreach( $this->content as $content ){
+            if( $content->name === $name ){
+                return $content;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Display priority ordered array of content Ingredients and children Cauldron
      * @return Ingredient|Cauldron[]
      */
-    function content(): array
+    function contents(): array
     {
-        if( !is_null($this->content) ){
-            return $this->content;
+        if( is_null($this->content) ){
+            $this->generatContent();
         }
 
+        return $this->content;
+    }
+
+    private function generatContent(): void
+    {
         $buffer     = [];
         $defaultId  = 0;
 
@@ -214,7 +241,7 @@ class Cauldron
             }
         }
 
-        return $this->content;
+        return;
     }
 
     function save( bool $transactionMode=true ): bool
@@ -433,7 +460,7 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
             $priority           = count($params['content']) * $priorityInterval;
         }
 
-        $contents           = $this->content() ?? [];
+        $contents           = $this->contents();
         $this->content      = null;
         $this->ingredients  = [];
         $this->children     = [];

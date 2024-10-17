@@ -36,7 +36,7 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
     </p>
     
     <div class="fieldsets-container">
-        <?php foreach( $cauldron->draft()->content() as $content ): 
+        <?php foreach( $cauldron->draft()->contents() as $content ): 
             $contentInput = "content[".$content->getInputIndex()."]";
             ?>
             <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">

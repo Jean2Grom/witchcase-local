@@ -210,7 +210,7 @@ abstract class Ingredient
     function getInputIndex()
     {
         return array_keys(array_intersect(
-            $this->cauldron?->content() ?? [], 
+            $this->cauldron?->contents() ?? [], 
             [$this]
         ))[0] ?? 0;
     }

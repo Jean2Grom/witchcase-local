@@ -13,11 +13,11 @@
 <?php endif; ?>
 
 <div class="fieldsets-container">
-    <?php if( empty($this->content()) ): ?>
+    <?php if( empty($this->contents()) ): ?>
         <input  type="hidden" 
                 name="<?=$input?>[content]" value="" />
 
-    <?php else: foreach( $this->content() as $content ): 
+    <?php else: foreach( $this->contents() as $content ): 
         $integrationCountClass  = substr_count($this->editPrefix, '[') % 4;
         $contentInput           = $input."[content][".$content->getInputIndex()."]";
         ?>

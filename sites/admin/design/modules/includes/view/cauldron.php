@@ -1,8 +1,4 @@
-<?php 
-/** 
- * @var WC\Module $this 
- */
-?>
+<?php /** @var WC\Module $this */ ?>
 
 <div class="box view__cauldron">
     <?php if( !$this->witch("target")->hasCauldron() ): ?>
@@ -59,7 +55,7 @@
 
         <p><em>Cauldron is a content associated with the Witch</em></p>
                 
-        <?php foreach( $this->witch("target")->cauldron()->content() as $ingredient ): ?>
+        <?php foreach( $this->witch("target")->cauldron()->contents() as $ingredient ): ?>
             <fieldset>
                 <legend><?=$ingredient->name?> [<?=$ingredient->type?>]</legend>                    
                 <?php $ingredient->display() ?>

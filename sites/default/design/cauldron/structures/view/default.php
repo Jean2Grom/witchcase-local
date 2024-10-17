@@ -1,7 +1,7 @@
 <?php /** @var WC\Cauldron $this */ ?>
 
 <ul>
-    <?php foreach( $this->content() ?? [] as $ingredient ): ?>
+    <?php foreach( $this->contents() as $ingredient ): ?>
         <li style="display: flex;justify-content: space-between;">
             <div>
                 <?php if( $ingredient->name ): ?>

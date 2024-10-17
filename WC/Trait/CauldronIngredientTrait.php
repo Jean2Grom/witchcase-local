@@ -83,7 +83,7 @@ trait CauldronIngredientTrait
     function getInputIndex()
     {
         return array_keys(array_intersect(
-            $this->parent?->content() ?? [], 
+            $this->parent?->contents() ?? [], 
             [$this]
         ))[0] ?? 0;
     }
