@@ -620,7 +620,7 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
             foreach( $target->children as $key => $child ){
                 if( $child->isContent() )
                 {
-                    $archive->add( $content );
+                    $archive->add( $child );
                     unset( $target->children[$key] );
                 }
             }
@@ -638,7 +638,7 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
             foreach( $this->children as $key => $child ){
                 if( $child->isContent() )
                 {
-                    $target->add( $content );
+                    $target->add( $child );
                     unset( $this->children[$key] );
                 }
             }
