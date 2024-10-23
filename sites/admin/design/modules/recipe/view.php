@@ -9,28 +9,28 @@ $this->addJsFile('triggers.js');
 </h1>
 <p><em><?=$this->witch->data?></em></p>
     
-<?php include $this->getIncludeDesignFile('alerts.php'); ?>
+<?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
-<h3><?=$structure->name?></h3>
-<em><?=$structure->file ?? ''?></em>
+<h3><?=$recipe->name?></h3>
+<em><?=$recipe->file ?? ''?></em>
 
-<?php  if( $structure->require ): 
-    $require = $structure->require;
+<?php  if( $recipe->require ): 
+    $require = $recipe->require;
     ?>
     <ul class="global-data"> 
-        <?php include $this->getIncludeDesignFile('view/structure-require-li.php'); ?>
+        <?php include $this->getIncludeDesignFile('view/recipe-require-li.php'); ?>
     </ul>
 <?php endif; ?>
 
 <div class="fieldsets-container">
-    <?php foreach( $structure->composition ?? [] as $item ): ?>
+    <?php foreach( $recipe->composition ?? [] as $item ): ?>
         <fieldset>
             <legend><?=$item['name']?></legend>
             <ul>
                 <li>
                     <div>Type</div>
                     <?php if( $item['structure'] ?? false ): ?>
-                        <a href="<?=$this->witch->url( ['structure' => $item['structure']->name] )?>">
+                        <a href="<?=$this->witch->url( ['recipe' => $item['structure']->name] )?>">
                             <?=$item['type']?>
                         </a>
                     <?php else: ?>
@@ -43,7 +43,7 @@ $this->addJsFile('triggers.js');
                 </li>
                 <?php if( $item['require'] ?? false ): ?>
                     <?php  $require = $item['require']; 
-                    include $this->getIncludeDesignFile('view/structure-require-li.php'); ?>
+                    include $this->getIncludeDesignFile('view/recipe-require-li.php'); ?>
                 <?php endif; ?>
             </ul>
         </fieldset>
@@ -52,13 +52,13 @@ $this->addJsFile('triggers.js');
     
 <div class="box__actions">
     <button class="trigger-href" 
-            data-href="<?=$this->wc->website->getUrl( 'structure/edit', ['structure' => $structure->name] )?>" 
+            data-href="<?=$this->wc->website->getUrl( 'recipe/edit', ['recipe' => $recipe->name] )?>" 
             id="cauldron__edit">
         <i class="fa fa-pencil" aria-hidden="true"></i>
         Edit
     </button>
     <button class="trigger-href" 
-            data-href="<?=$this->wc->website->getUrl('structure')?>">
+            data-href="<?=$this->wc->website->getUrl('recipe')?>">
         <i class="fa fa-list" aria-hidden="true"></i>
         Back
     </button>

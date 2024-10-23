@@ -20,7 +20,7 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
                 name="ID" value="<?=$cauldron->draft()->id ?>" />
     <?php endif; ?>
     <h3>
-        [<?=$cauldron->draft()->data->structure ?>] 
+        [<?=$cauldron->recipe ?>] 
         <span   class="span-input-toggle" 
                 data-input="name" 
                 data-value="<?=$cauldron->draft()->name ?>"><?=$cauldron->draft()->name ?></span>
@@ -57,7 +57,7 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
                     null, 
                     [
                         'ingredients'   => $ingredients, 
-                        'structures'    => $structures,
+                        'structures'    => $this->wc->configuration->recipes(),
                         'input'         => $contentInput,
                     ]
                 ); ?>
@@ -69,7 +69,7 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
         'cauldron/add.php', 
         [ 
             'ingredients'   => $ingredients, 
-            'structures'    => $structures, 
+            'structures'    => $this->wc->configuration->recipes(), 
             'input'         => "content[new]",
         ]
     ); ?>

@@ -15,6 +15,7 @@ class Cauldron
         "target",
         "status",
         "name",
+        "recipe",
         "data",
         "priority",
     ];
@@ -42,6 +43,7 @@ class Cauldron
     public ?int $status;
     public ?int $targetID;
     public ?string $name;
+    public ?string $recipe;
     public ?\stdClass $data;
     public ?int $priority;
     public ?\DateTime $datetime;
@@ -93,7 +95,8 @@ class Cauldron
     public function __get( string $name ): mixed 
     {
         if( $name === 'type' ){
-            return str_replace(' ', '-', $this->data->structure) ?? "cauldron";
+            return str_replace(' ', '-', $this->recipe) ?? "cauldron";
+            //return str_replace(' ', '-', $this->data->structure) ?? "cauldron";
         }
         return $this->properties[ $name ] ?? null;
     }
@@ -159,7 +162,8 @@ class Cauldron
 
     function isContent(): bool
     {
-        if( in_array($this->data?->structure, [ self::DRAFT_FOLDER_STRUCT, self::ARCHIVE_FOLDER_STRUCT ]) ){
+        //if( in_array($this->data?->structure, [ self::DRAFT_FOLDER_STRUCT, self::ARCHIVE_FOLDER_STRUCT ]) ){
+        if( in_array($this->recipe, [ self::DRAFT_FOLDER_STRUCT, self::ARCHIVE_FOLDER_STRUCT ]) ){
             return false;
         }
 
@@ -340,7 +344,7 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
 
     function delete( bool $transactionMode=true ): bool
     {
-        if( $this->target->draft ){
+        if( $this->target ){
             $this->target->draft = null;
         }
 
@@ -450,9 +454,7 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
             $this->priority = $params['priority'];
         }
 
-        if( !$params['content'] ){
-            $params['content'] = [];
-        }
+        $params['content'] = $params['content'] ?? [];
 
         if( $contentAutoPriority )
         {
@@ -502,7 +504,8 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
             {
                 $newChild = Handler::createFromData($this->wc, [
                     'name'      =>  $contentParams['name'],
-                    'data'      => json_encode([ 'structure' => $contentParams['type'] ?? "folder" ]),
+                    'recipe'    => $contentParams['type'] ?? "folder",
+                    //'data'      => json_encode([ 'structure' => $contentParams['type'] ?? "folder" ]),
                     'priority'  => $contentParams['priority'],
                 ]);
 

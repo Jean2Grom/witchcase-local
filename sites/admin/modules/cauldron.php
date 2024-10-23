@@ -43,7 +43,7 @@ elseif( !$this->witch("target")->cauldron()->draft() )
 //$this->wc->debug($draft);
 
 $cauldron       = $this->witch("target")->cauldron();
-$structures     = $this->wc->configuration->structures();
+$structures     = $this->wc->configuration->recipes();
 $ingredients    = Ingredient::list();
 $return         = false;
 

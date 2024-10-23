@@ -1,9 +1,10 @@
 <?php /** @var WC\Module $this */
 
+use WC\Handler\StructureHandler;
 use WC\Ingredient;
 
 $possibleActionsList = [
-    'save',
+    'publish',
 ];
 
 $action = $this->wc->request->param('action');
@@ -11,42 +12,29 @@ if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$structureName = $this->wc->request->param('structure');
-if( $structureName ){
-    $structure = $this->wc->configuration->structure( $structureName );
-}
+$recipe      = StructureHandler::createFromData($this->wc, []);
 
-if( !$structure )
-{
-    $this->wc->user->addAlert([
-        'level'     =>  'error',
-        'message'   =>  "Structure not found"
-    ]);
-    header( 'Location: '.$this->wc->website->getFullUrl('structure') );
-    exit();
-}
-
-$structures     = $this->wc->configuration->structures();
+$recipes     = $this->wc->configuration->recipes();
 $ingredients    = Ingredient::list();
 
 $possibleTypes = [];
 foreach( $ingredients as $ingredient ){
     $possibleTypes[ $ingredient ] = $ingredient;
 }
-foreach( $structures as $structureItem ){
-    $possibleTypes[ $structureItem->name ] = $structureItem->name;
+foreach( $recipes as $recipeItem ){
+    $possibleTypes[ $recipeItem->name ] = $recipeItem->name;
 }
 
-$globalRequireInputPrefix = "GLOBAL_STRUCTURE_REQUIREMENTS";
+$globalRequireInputPrefix = "GLOBAL_RECIPE_REQUIREMENTS";
 
 switch( $action )
 {
-    case 'save':
+    case 'publish':
 
-        if( $this->wc->request->param("structure") !== $structure->name ){
+        if( empty($this->wc->request->param("name")) ){
             $this->wc->user->addAlert([
                 'level'     =>  'error',
-                'message'   =>  "Structure mismatch"
+                'message'   =>  "Recipe must have a name"
            ]);        
         }
         else 
@@ -71,23 +59,23 @@ switch( $action )
                 }
             }
 
-            $structure->name        = $this->wc->request->param("name");
-            $structure->require     = getRequire( $inputs, $globalRequireInputPrefix );
-            $structure->composition = $composition;
+            $recipe->name        = $this->wc->request->param("name");
+            $recipe->require     = getRequire( $inputs, $globalRequireInputPrefix );
+            $recipe->composition = $composition;
 
-            if( !$structure->save($this->wc->request->param("file")) ){
+            if( !$recipe->save($this->wc->request->param("file")) ){
                 $this->wc->user->addAlert([
                     'level'     =>  'error',
-                    'message'   =>  "Structure update failed"
+                    'message'   =>  "Recipe creation failed"
                ]);    
             }
             else 
             {
                 $this->wc->user->addAlert([
                     'level'     =>  'success',
-                    'message'   =>  "Structure \"".$possibleTypes[ $structure->name ]."\" updated"
+                    'message'   =>  "Recipe \"".$recipe->name."\" created"
                ]);
-               header( 'Location: '.$this->wc->website->getFullUrl('structure/view', ['structure' => $structure->name]) );
+               header( 'Location: '.$this->wc->website->getFullUrl('recipe/edit', ['recipe' => $recipe->name]) );
                exit();
             }
         }
@@ -113,6 +101,4 @@ function getRequire( $inputs, $name )
     return $require;
 }
 
-$alerts = $this->wc->user->getAlerts();
-
-$this->view();
+$this->view('recipe/edit');

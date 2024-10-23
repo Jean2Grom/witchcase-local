@@ -14,13 +14,13 @@ class Configuration
     const DEFAULT_DIRECTORY = "configuration";
     const CONFIG_FILE       = 'configuration.json';
     const SITES_FILE        = 'sites.json';
-    const STRUCTURES_DIR    = "configuration/cauldron";
+    const RECIPES_DIR       = "configuration/cauldron";
 
     public string $dir;
     public $configuration  = [];
     public $sites          = [];
 
-    public $structures;
+    public $recipes;
     
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -178,47 +178,46 @@ class Configuration
         return array_unique($return);
     }
 
-
-    function structures(): array
+    function recipes(): array
     {
-        if( $this->structures ){
-            return $this->structures;
+        if( $this->recipes ){
+            return $this->recipes;
         }
 
-        $rules      = $this->readSiteMergedVar( 'structures' );
+        $rules      = $this->readSiteMergedVar( 'recipes' );
         $whiteList  = $rules['allowed'] ?? '*';
         $blackList  = $rules['forbidden'] ?? null;
 
-        $structures = [];
-        foreach( $this->getFilesRecursive(self::STRUCTURES_DIR) as $file )
+        $recipes = [];
+        foreach( $this->getFilesRecursive(self::RECIPES_DIR) as $file )
         {
-            $structure = StructureHandler::createFromFile( $this->wc, $file );
+            $recipe = StructureHandler::createFromFile( $this->wc, $file );
 
-            if( !$structure ){
+            if( !$recipe ){
                 continue;
             }
 
-            $structures[ $structure->name ] = $structure;
+            $recipes[ $recipe->name ] = $recipe;
         }
         
-        StructureHandler::resolve($structures);
+        StructureHandler::resolve($recipes);
 
-        $this->structures = [];
-        foreach( $structures  as $structure ){
+        $this->recipes = [];
+        foreach( $recipes  as $recipe ){
             // White list filtering
-            if( is_array($whiteList) && !in_array($structure->name, $whiteList) ){
+            if( is_array($whiteList) && !in_array($recipe->name, $whiteList) ){
                 continue;
             }
             // Black list filtering
-            if( is_array($blackList) && in_array($structure->name, $blackList) ){
+            if( is_array($blackList) && in_array($recipe->name, $blackList) ){
                 continue;
             }
 
-            $this->structures[ $structure->name ] = $structure;
+            $this->recipes[ $recipe->name ] = $recipe;
         }
 
-        ksort($this->structures);
-        return $this->structures;
+        ksort($this->recipes);
+        return $this->recipes;
     }
 
     private function getFilesRecursive( $dir ): array
@@ -240,8 +239,8 @@ class Configuration
         return $files;
     }
 
-    function structure( string $structureName ): ?Structure {
-        return $this->structures()[ $structureName ] ?? null;
+    function recipe( string $recipeName ): ?Structure {
+        return $this->recipes()[ $recipeName ] ?? null;
     }
 
 }

@@ -40,7 +40,7 @@ class Structure
         $file = $fileParam ?? $this->file;
 
         if( !$file ){
-            $file = Configuration::STRUCTURES_DIR."/".$this->name.".json";
+            $file = Configuration::RECIPES_DIR."/".$this->name.".json";
         }
         elseif( substr($file, -5) !== ".json" ){
             $file .= ".json";

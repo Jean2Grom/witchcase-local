@@ -1,7 +1,7 @@
 <?php /** @var WC\Module $this */ ?>
 
 <div class="box view__cauldron">
-    <?php if( !$this->witch("target")->hasCauldron() ): ?>
+    <?php if( !$this->witch("target")->cauldron() ): ?>
         <h3>
             <i class="fa fa-feather-alt"></i>
             No cauldron
@@ -12,9 +12,9 @@
                 <option value="">
                     Select new cauldron structure
                 </option>
-                <?php foreach( $this->wc->configuration->structures() as $structure ): ?>
-                    <option value="<?=$structure->name?>">
-                        <?=$structure->name?>
+                <?php foreach( $this->wc->configuration->recipes() as $recipe ): ?>
+                    <option value="<?=$recipe->name?>">
+                        <?=$recipe->name?>
                     </option>
                 <?php endforeach; ?>
             </select>
@@ -86,7 +86,7 @@
                     Remove
                 <?php endif;?>
             </button>
-            <?php if( !$this->witch("target")->cauldron()->isArchive() ): ?>
+            <?php /* if( !$this->witch("target")->cauldron()->isArchive() ): ?>
                 <button class="trigger-action"
                         data-confirm="Confirm archive"
                         data-action="archive-cauldron"
@@ -94,7 +94,7 @@
                     <i class="fa fa-archive"></i>
                     Archive
                 </button>
-            <?php endif; ?>
+            <?php endif; */?>
             <button class="trigger-href" 
                     data-href="<?=$this->wc->website->getUrl("cauldron?id=".$this->witch("target")->id) ?>">
                 <i class="fa fa-pencil"></i>

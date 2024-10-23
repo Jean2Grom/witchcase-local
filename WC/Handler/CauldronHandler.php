@@ -146,6 +146,11 @@ class CauldronHandler
             $cauldron->name = $cauldron->properties['name'];
         }
         
+        $cauldron->recipe = null;
+        if( isset($cauldron->properties['recipe']) ){
+            $cauldron->recipe = $cauldron->properties['recipe'];
+        }
+        
         $cauldron->data = null;
         if( isset($cauldron->properties['data']) )
         {
@@ -214,6 +219,10 @@ class CauldronHandler
         
         if( isset($cauldron->name) ){
             $cauldron->properties['name'] = $cauldron->name;
+        }
+        
+        if( isset($cauldron->recipe) ){
+            $cauldron->properties['recipe'] = $cauldron->recipe;
         }
         
         if( isset($cauldron->data) )
@@ -317,14 +326,25 @@ class CauldronHandler
     private static function getWorkFolder( Cauldron $cauldron, string $folderStruct ): Cauldron
     {
         foreach( $cauldron->children as $child ){
-            if( $child->data->structure === $folderStruct ){
+            //if( $child->data->structure === $folderStruct ){
+            if( $child->recipe === $folderStruct ){
                 return $child;
             }
         }
         
+        $workFolderName = mb_strtoupper( $folderStruct );
+        $cauldron->wc->debug($workFolderName);
+        if( substr($workFolderName, 0, 3) === "WC-" ){
+            $workFolderName = substr($workFolderName, 3);
+        }
+        if( substr($workFolderName, -7) === "-FOLDER" ){
+            $workFolderName = substr($workFolderName, 0, -7);
+        }
+        
         $params = [
-            'name'  =>  $folderStruct,
-            'data'  =>  json_encode([ "structure" => $folderStruct ]),
+            'name'      =>  $workFolderName,
+            'recipe'    =>  $folderStruct,
+            //'data'  =>  json_encode([ "structure" => $folderStruct ]),
         ];
  
         $folder = self::createFromData( $cauldron->wc, $params );
@@ -432,8 +452,9 @@ class CauldronHandler
         if( !$siteCauldron )
         {
             $params = [
-                'name'  =>  $site,
-                'data'  =>  json_encode([ "structure" => "folder" ]),
+                'name'      =>  $site,
+                'recipe'    =>  "folder",
+                //'data'  =>  json_encode([ "structure" => "folder" ]),
             ];
 
             $siteCauldron = self::createFromData( $wc, $params );
@@ -460,8 +481,9 @@ class CauldronHandler
         if( !$structureCauldron )
         {
             $params = [
-                'name'  =>  $structure,
-                'data'  =>  json_encode([ "structure" => "folder" ]),
+                'name'      =>  $structure,
+                'recipe'    =>  "folder",
+                //'data'  =>  json_encode([ "structure" => "folder" ]),
             ];
 
             $structureCauldron = self::createFromData( $wc, $params );

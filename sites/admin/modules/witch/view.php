@@ -1,13 +1,13 @@
 <?php 
-/** 
- * @var WC\Module $this 
- */
+/**  @var WC\Module $this */
+namespace WC;
 
 use WC\Handler\CauldronHandler;
 use WC\Handler\WitchHandler;
-use WC\Structure;
-use WC\Tools;
-use WC\Website;
+//use WC\Cauldron;
+//use WC\Structure;
+//use WC\Tools;
+//use WC\Website;
 
 
 if( !$this->witch("target") ){
@@ -24,11 +24,11 @@ if( !$this->witch("target") ){
 if( $this->witch("target")->hasCauldron() )
 {
     //$result = CauldronHandler::fetch($this->wc, [ $this->witch("target")->cauldron ]);
-    //$structures     = $this->wc->configuration->structures();
+    //$structures     = $this->wc->configuration->recipes();
     //$ingredients    = WC\Ingredient::list();
     
     //$this->wc->debug( $this->witch("target")->cauldron() );
-    $this->wc->debug( $this->wc->configuration->structures() );
+    $this->wc->debug( $this->wc->configuration->recipes() );
 }
 */
 
@@ -65,7 +65,7 @@ switch( Tools::filterAction(
 
     case 'create-cauldron':
         $structure      = $this->wc->request->param('witch-cauldron-structure') ?? "folder";
-        if( !in_array($structure, $this->wc->configuration->structures()) )
+        if( !in_array($structure, array_keys( $this->wc->configuration->recipes() )) )
         {
             $this->wc->user->addAlert([
                 'level'     =>  'error',
@@ -86,7 +86,8 @@ switch( Tools::filterAction(
 
         $cauldron = CauldronHandler::createFromData($this->wc, [
             'name'      =>  $this->witch("target")->name,
-            'data'      =>  json_encode([ 'structure' => $structure ]),
+            'recipe'    =>  $structure,
+            'status'    =>  Cauldron::STATUS_DRAFT,
         ]);
 
         if( !$cauldron 
@@ -154,6 +155,7 @@ switch( Tools::filterAction(
     break;
 }
 
+// OLD SCHOOL CRAFT PART
 $structuresList = [];
 $craftWitches   = [];
 if( !$this->witch("target")->hasCraft() ){
@@ -189,6 +191,7 @@ else
         }
     }
 }
+// END OLD SCHOOL CRAFT PART
 
 $sites  = $this->wc->website->sitesRestrictions;
 if( !$sites ){
@@ -234,5 +237,4 @@ while( !empty($breadcrumbWitch) )
 }
 
 $this->addContextVar( 'breadcrumb', array_reverse($breadcrumb) );
-
 $this->view();

@@ -1,11 +1,10 @@
 <?php /**  */
 /**
  * @var WC\Module $this
- * @var WC\Cauldron\Structure $structure
+ * @var WC\Cauldron\Structure $recipe
  * @var array $possibleTypes
  */
 
-//$this->addCssFile('content-edit.css');
 $this->addJsFile('triggers.js');
 ?>
 <h1>
@@ -14,26 +13,26 @@ $this->addJsFile('triggers.js');
 </h1>
 <p><em><?=$this->witch->data?></em></p>
     
-<?php include $this->getIncludeDesignFile('alerts.php'); ?>
+<?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
-    <?php if( !empty($structureName) ): ?>
-        <input type="hidden" name="structure" value="<?=$structureName?>" />
+    <?php if( !empty($recipeName) ): ?>
+        <input type="hidden" name="recipe" value="<?=$recipeName?>" />
         <h3>
-            <span  id="name-display"><?=$structure->name?></span>
-            <input id="name-input" type="text" name="name" value="<?=$structure->name ?>" />
+            <span  id="name-display"><?=$recipe->name?></span>
+            <input id="name-input" type="text" name="name" value="<?=$recipe->name ?>" />
         </h3>
 
-        <em id="file-display"><?=$structure->file ?? ''?></em>
-        <input id="file-input" type="text" name="file" value="<?=$structure->file ?>" />
+        <em id="file-display"><?=$recipe->file ?? ''?></em>
+        <input id="file-input" type="text" name="file" value="<?=$recipe->file ?>" />
 
     <?php else: ?>
         <h3>
-            <span  id="name-display">Click to enter new structure name</span>
+            <span  id="name-display">Click to enter new recipe name</span>
             <input id="name-input" type="text" name="name" value="" />
         </h3>
 
-        <em id="file-display">Click to customize new structure file</em>
+        <em id="file-display">Click to customize new recipe file</em>
         <input id="file-input" type="text" name="file" value="" />
     <?php endif; ?>
 
@@ -41,14 +40,14 @@ $this->addJsFile('triggers.js');
         <fieldset>
             <legend>global restrictions</legend>
             <?php 
-                $require    = $structure->require;
+                $require    = $recipe->require;
                 $name       = $globalRequireInputPrefix;
-                include $this->getIncludeDesignFile('edit/structure-require.php'); ?>
+                include $this->getIncludeDesignFile('edit/recipe-require.php'); ?>
         </fieldset>
     </div>
 
     <div class="fieldsets-container" id="contents">
-        <?php foreach( $structure->structure?->composition ?? $structure->composition ?? [] as $item ): ?>
+        <?php foreach( $recipe->structure?->composition ?? $recipe->composition ?? [] as $item ): ?>
             <fieldset>
                 <legend>
                     <?=$item['name']?> 
@@ -81,11 +80,11 @@ $this->addJsFile('triggers.js');
                                 <?=$item['mandatory'] ?? null? "checked": ""?> />
                     </li>
                     <li <?=in_array($item['type'], $ingredients)? 'style="display: none"': ''?>
-                        class="structure-type-toggle">
+                        class="recipe-type-toggle">
                         <?php 
                             $require    = $item['require'] ?? [];
                             $name       = $item['name'];
-                            include $this->getIncludeDesignFile('edit/structure-require.php'); ?>
+                            include $this->getIncludeDesignFile('edit/recipe-require.php'); ?>
                     </li>
                 </ul>
             </fieldset>
@@ -126,11 +125,11 @@ $this->addJsFile('triggers.js');
                         name="NEW_CONTENT_NAME-mandatory" />
             </li>
             <li style="display: none"
-                class="structure-type-toggle">
+                class="recipe-type-toggle">
                 <?php 
                     $require    = [];
                     $name       = "NEW_CONTENT_NAME";
-                    include $this->getIncludeDesignFile('edit/structure-require.php'); ?>
+                    include $this->getIncludeDesignFile('edit/recipe-require.php'); ?>
             </li>
         </ul>
         <div class="new-content-actions hidden">
@@ -142,7 +141,7 @@ $this->addJsFile('triggers.js');
     </fieldset>
 </div>
 <div class="box__actions">
-    <?php if( !empty($structureName) ): ?>
+    <?php if( !empty($recipeName) ): ?>
         <button class="trigger-action" 
                 data-action="save"
                 data-target="edit-action">
@@ -150,7 +149,7 @@ $this->addJsFile('triggers.js');
             Save
         </button>
         <button class="trigger-href" 
-                data-href="<?=$this->wc->website->getUrl('structure/view', ['structure' => $structure->name])?>">
+                data-href="<?=$this->wc->website->getUrl('recipe/view', ['recipe' => $recipe->name])?>">
             <i class="fa fa-times" aria-hidden="true"></i>
             Cancel
         </button>
@@ -163,7 +162,7 @@ $this->addJsFile('triggers.js');
             Publish
         </button>
         <button class="trigger-href" 
-                data-href="<?=$this->wc->website->getUrl('structure')?>">
+                data-href="<?=$this->wc->website->getUrl('recipe')?>">
             <i class="fa fa-times" aria-hidden="true"></i>
             Cancel
         </button>
@@ -242,7 +241,7 @@ $this->addJsFile('triggers.js');
         {
             let enabled =  event.target.selectedOptions[0].attributes["data-restrictions"].value === "on";
             let display = enabled? 'block': 'none';
-            event.target.parentNode.parentNode.querySelector(".structure-type-toggle").style.display = display;
+            event.target.parentNode.parentNode.querySelector(".recipe-type-toggle").style.display = display;
 
             return enabled;
         }
@@ -395,7 +394,7 @@ $this->addJsFile('triggers.js');
             fieldset.querySelector('[name="NEW_CONTENT_NAME-name"]').value          = '';
             fieldset.querySelector('[name="NEW_CONTENT_NAME-type"]').value          = 0;
             fieldset.querySelector('[name="NEW_CONTENT_NAME-mandatory"]').checked   = false;
-            fieldset.querySelector(".structure-type-toggle").style.display          = 'none';
+            fieldset.querySelector(".recipe-type-toggle").style.display          = 'none';
             fieldset.querySelector('[name="NEW_CONTENT_NAME-min"]').value           = 0;
             fieldset.querySelector('[name="NEW_CONTENT_NAME-max"]').value           = -1;
             fieldset.querySelector('.accepted-contents-container').innerHTML        = '';

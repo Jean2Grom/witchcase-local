@@ -1,12 +1,12 @@
 <?php 
-/** 
- * @var WC\Module $this 
- */
+/** @var WC\Module $this */
+namespace WC;
 
 use WC\Handler\CauldronHandler;
 use WC\Handler\WitchHandler;
-use WC\Tools;
-use WC\Website;
+//use WC\Cauldron;
+//use WC\Tools;
+//use WC\Website;
 
 if( !$this->witch("target") ){
     $this->wc->user->addAlert([
@@ -133,7 +133,7 @@ switch(Tools::filterAction(
             $params['cauldron'] = $importCauldronWitch->cauldronId;    
         }
         // Cauldron creation
-        elseif( $structure && in_array($structure, array_keys( $this->wc->configuration->structures() )) )
+        elseif( $structure && in_array($structure, array_keys( $this->wc->configuration->recipes() )) )
         {
             $folderCauldron = CauldronHandler::getStorageStructure($this->wc, 
                 $this->wc->website->site, 
@@ -141,7 +141,8 @@ switch(Tools::filterAction(
             );
             $newCauldron = CauldronHandler::createFromData($this->wc, [
                 'name'      =>  $params['name'],
-                'data'      =>  json_encode([ 'structure' => $structure ]),
+                'recipe'    =>  $structure,
+                'status'    =>  Cauldron::STATUS_DRAFT,
             ]);
 
             if( !$folderCauldron 

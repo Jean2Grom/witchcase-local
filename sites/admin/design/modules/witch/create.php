@@ -131,9 +131,9 @@ $this->addContextArrayItems( 'tabs', [
                     <option value="">
                         No cauldron creation
                     </option>
-                    <?php foreach( $this->wc->configuration->structures() as $structure ): ?>
-                        <option value="<?=$structure->name?>">
-                            <?=$structure->name?>
+                    <?php foreach( $this->wc->configuration->recipes() as $recipe ): ?>
+                        <option value="<?=$recipe->name?>">
+                            <?=$recipe->name?>
                         </option>
                     <?php endforeach; ?>
                 </select>

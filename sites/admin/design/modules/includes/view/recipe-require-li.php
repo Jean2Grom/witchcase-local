@@ -5,8 +5,8 @@ if( $require['refuse'] ?? false )
 {
     $refuse = [];
     foreach( $require['refuse'] as $refusedItem ){
-        if( $this->wc->configuration->structure( $refusedItem ) ){
-            $refuse[] = '<a href="'.$this->witch->url([ 'structure' => $refusedItem ]).'">'.$refusedItem.'</a>';
+        if( $this->wc->configuration->recipe( $refusedItem ) ){
+            $refuse[] = '<a href="'.$this->witch->url([ 'recipe' => $refusedItem ]).'">'.$refusedItem.'</a>';
         }
         else {
             $refuse[] = $refusedItem;
@@ -19,8 +19,8 @@ if( $require['accept'] ?? false )
 {
     $accept = [];
     foreach( $require['accept'] as $acceptedItem ){
-        if( $this->wc->configuration->structure( $acceptedItem ) ){
-            $accept[] = '<a href="'.$this->witch->url([ 'structure' => $acceptedItem ]).'">'.$acceptedItem.'</a>';
+        if( $this->wc->configuration->recipe( $acceptedItem ) ){
+            $accept[] = '<a href="'.$this->witch->url([ 'recipe' => $acceptedItem ]).'">'.$acceptedItem.'</a>';
         }
         else {
             $accept[] = $acceptedItem;
