@@ -28,6 +28,7 @@ class Witch
         "status",
         "invoke",
         "cauldron",
+        "cauldron_priority",
         "craft_table",
         "craft_fk",
         "is_main",
@@ -973,20 +974,18 @@ class Witch
 
     private function innerTransactionCopyTo( self $witch, array $urlSiteRewrite=[] )
     {
+        $excludeFields = [ "id", "datetime" ];
         $params = [
-            "name"          => $this->name,
-            "data"          => $this->data,
-            "status"        => $this->statusLevel,
-            "priority"      => $this->priority,
-            "craft_table"   => $this->craft_table,
-            "craft_fk"      => $this->craft_fk,
-            "cauldron"      => $this->cauldronId,
-            "is_main"       => 0,
-            "site"          => $this->site,
-            "url"           => $this->url,
-            "invoke"        => $this->invoke,
-            "context"       => $this->context,
+            "status"    => $this->statusLevel,
+            "cauldron"  => $this->cauldronId,
+            "is_main"   => 0,
         ];
+
+        foreach( self::FIELDS as $field ){
+            if( !in_array($field, $excludeFields) && !in_array($field, array_keys($params)) ){
+                $params[ $field ] = $this->$field;
+            }
+        }
         
         if( $this->mother() && !empty($params['url']) && !empty($params['site']) )
         {
