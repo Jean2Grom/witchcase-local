@@ -1000,7 +1000,7 @@ class Witch
             }
         }
         
-        $newWitch   = Handler::createFromId($this->wc, $witch->createDaughter( $params ));        
+        $newWitch   = $witch->createDaughter( $params );
         $daughters  = $this->daughters();
         
         if( !empty($daughters) ){

@@ -184,9 +184,9 @@ switch( $action )
             break;
         }
         
-        $newWitchId = $this->witch("target")->createDaughter( $newWitchData );
+        $newWitch = $this->witch("target")->createDaughter( $newWitchData );
         
-        if( !$newWitchId )
+        if( !$newWitch )
         {
             $alerts[] = [
                 'level'     =>  'error',
@@ -201,7 +201,7 @@ switch( $action )
         ];
         
         $this->wc->user->addAlerts($alerts);
-        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitchId ]) );
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitch->id ]) );
         exit();
     break;    
     
@@ -500,9 +500,9 @@ switch( $action )
             'is_main'       =>  0,
         ];
         
-        $newWitchId = $motherWitch->createDaughter( $newWitchData );
+        $newWitch = $motherWitch->createDaughter( $newWitchData );
         
-        if( !$newWitchId )
+        if( !$newWitch )
         {
             $alerts[] = [
                 'level'     =>  'error',
@@ -517,7 +517,7 @@ switch( $action )
         ];
         
         $this->wc->user->addAlerts($alerts);
-        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitchId ]).$urlHash );
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitch->id ]).$urlHash );
         exit();
     break;
     
