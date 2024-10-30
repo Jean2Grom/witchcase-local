@@ -59,6 +59,9 @@ class Cauldron
     /** @var Ingredient[] */
     public array $ingredients = [];
 
+    /** @var Witch[] */
+    public array $witches = [];
+
     /** @var (self|Ingredient)[] */
     public array $pendingRemoveContents = [];
 
@@ -661,4 +664,38 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
 
         return true;
     }
+
+    function orderWitches(): void
+    {
+        if( !$this->witches ){
+            return;
+        }
+
+        $buffer     = [];
+        $defaultId  = 0;
+
+        foreach( $this->witches as $witch )
+        {
+            $priority   = $witch->cauldron_priority ?? 0;
+            $key        = ($witch->name ?? "")."_".($witch->id ?? $defaultId++);
+            $buffer[ $priority ] = array_replace( 
+                $buffer[ $priority ] ?? [], 
+                [ $key => $witch ]
+            );
+        }
+
+        $this->witches = [];
+
+        krsort($buffer);
+        foreach( $buffer as $priorityArray )
+        {
+            ksort($priorityArray);
+            foreach( $priorityArray as $contentItem ){
+                $this->witches[] = $contentItem;
+            }
+        }
+
+        return;
+    }
+
 }

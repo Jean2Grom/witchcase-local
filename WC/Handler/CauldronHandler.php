@@ -6,6 +6,7 @@ use WC\Cauldron;
 use WC\Ingredient;
 use WC\DataAccess\CauldronDataAccess AS DataAccess;
 use WC\Datatype\ExtendedDateTime;
+use WC\Witch;
 
 class CauldronHandler
 {
@@ -44,6 +45,7 @@ class CauldronHandler
     {
         $return         = [];
         $cauldronsList  = [];
+        $witchesList    = [];
         $depthArray     = [];
         foreach( range(0, $wc->cauldronDepth) as $d ){
             $depthArray[ $d ] = [];
@@ -73,6 +75,40 @@ class CauldronHandler
                 $return['user'] = $cauldronsList[ $id ];
             }
 
+            // Witch part
+            $witchId = $row['w_id'] ?? null;
+            if( !$witchId || !empty($witchesList[ $witchId ]) ){
+                continue;
+            }
+
+            $witch = $wc->cairn->searchById( $witchId );
+            if( !$witch )
+            {
+                $witchData = [];
+                foreach( Witch::FIELDS as $field ){
+                    $witchData[ $field ] = $row[ "w_".$field ];
+                }
+                
+                foreach( range(1, $wc->depth) as $i ){
+                    $witchData[  "level_".$i ] = $row[ "w_level_".$i ];
+                }
+                
+                $witch = WitchHandler::createFromData($wc, $witchData);
+            }
+            
+            $witchesList[ $witchId ] = $witch;
+        }
+
+        // Link witches and cauldron objects
+        foreach( $witchesList as $witch ){
+            if( isset($cauldronsList[ $witch->cauldronId ]) )
+            {
+                $witch->cauldron = $cauldronsList[ $witch->cauldronId ];
+                $cauldronsList[ $witch->cauldronId ]->witches[ $witch->id ] = $witch;
+            }
+        }
+        foreach( $cauldronsList as $cauldron ){ 
+            $cauldron->orderWitches();
         }
         
         for( $i=0; $i < $wc->cauldronDepth; $i++ ){

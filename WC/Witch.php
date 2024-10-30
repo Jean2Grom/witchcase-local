@@ -1022,14 +1022,11 @@ class Witch
             return null;
         }
 
-        if( empty($this->cauldron) )
-        {
-            $result             =   CauldronHandler::fetch(
-                                        $this->wc, 
-                                        [ $this->properties["cauldron"] ]
-                                    );
-            $this->cauldron     =   $result[ $this->properties[ "cauldron" ] ] ?? null;
-            $this->cauldronId   =   $this->cauldron?->id;
+        if( empty($this->cauldron) ){
+            CauldronHandler::fetch( 
+                $this->wc, 
+                [ $this->properties["cauldron"] ]
+            );
         }
         
         return $this->cauldron;

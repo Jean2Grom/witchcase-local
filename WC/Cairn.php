@@ -454,4 +454,47 @@ class Cairn
         
         return null;
     }
+
+    function searchById( int $id ): ?Witch
+    {
+        foreach( $this->witches as $witch )
+        {
+            if( $witch->id == $id ){
+                return $witch;
+            }
+
+            $witchRoot  = $witch;
+            while( $witchRoot->mother ){
+                $witchRoot    = $witchRoot->mother;
+            }
+
+            if( $witchRoot->id == $id ){
+                return $witchRoot;
+            }
+        
+            $result = $this->recursiveSearchById( $witchRoot, $id );
+            if( $result ){
+                return $result;
+            }
+        }
+        
+        return null;
+    }
+
+    private function recursiveSearchById( Witch $witch, int $id ): ?Witch
+    {
+        if( in_array($id, array_keys($witch->daughters())) ){
+            return $witch->daughters[ $id ];
+        }
+
+        foreach( $witch->daughters() as $daugther )
+        {
+            $result =  $this->recursiveSearchById( $daugther, $id );
+            if( $result ){
+                return $result;
+            }
+        }
+
+        return null;
+    }
 }

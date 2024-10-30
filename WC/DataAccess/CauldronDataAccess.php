@@ -4,6 +4,7 @@ namespace WC\DataAccess;
 use WC\WitchCase;
 use WC\Cauldron;
 use WC\Ingredient;
+use WC\Witch;
 
 class CauldronDataAccess
 {    
@@ -33,20 +34,14 @@ class CauldronDataAccess
         return (int) $depth;
     }
 
-    static function cauldronRequest( WitchCase $wc, array $configuration )
+    static function cauldronRequest( WitchCase $wc, array $configuration, bool $getWitches=true )
     {
         // Determine the list of fields in select part of query
-        $query = "";
-        $separator = "SELECT DISTINCT ";
-        foreach( Cauldron::FIELDS as $field )
-        {
-            $query      .=  $separator."`c`.`".$field."` ";
-            $separator  =   ", ";
-        }
-        for( $i=1; $i<=$wc->cauldronDepth; $i++ ){
-            $query      .=  $separator."`c`.`level_".$i."` ";
-        }
-        
+        $query  =   "SELECT DISTINCT `c`.`".implode( "`, `c`.`", Cauldron::FIELDS)."` ";
+
+        $prefix = "`c`.`level_"; 
+        $query  .=  ", ".$prefix.implode("`, ".$prefix, range(1, $wc->cauldronDepth))."` ";
+
         $excludFields = [
             'cauldron_fk',
         ];
@@ -57,6 +52,18 @@ class CauldronDataAccess
                 }
             }
         }
+
+        if( $getWitches )
+        {
+            foreach( Witch::FIELDS as $field ){
+                $query  .=  ", `w`.`".$field."` AS `w_".$field."` ";
+            }
+            
+            foreach( range(1, $wc->depth) as $i ){
+                $query  .=  ", `w`.`level_".$i."` AS `w_level_".$i."` ";
+            }
+        }
+
         
         $query  .= "FROM ";
 
@@ -72,6 +79,12 @@ class CauldronDataAccess
         {
             $query  .=  "LEFT JOIN `ingredient__".$type."` AS `".$prefix."` ";
             $query  .=      "ON `".$prefix."`.`cauldron_fk` = `c`.`id` ";
+        }
+        
+        if( $getWitches )
+        {
+            $query  .= "LEFT JOIN `witch` AS `w` ";
+            $query  .=  "ON `w`.`cauldron` = `c`.`id` ";
         }
 
         foreach( $configuration as $conf )
