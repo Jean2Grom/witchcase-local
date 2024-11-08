@@ -51,11 +51,15 @@ class Witch
     public $position        = [];
     public $modules         = [];
     
+    /** @var ?self */
     public $mother;
+    /** @var ?self[] */
     public $sisters;
+    /** @var ?self[] */
     public $daughters;
 
     public $cauldronId;
+    public $cauldronPriority;
     
     /**
      * @var ?Cauldron
@@ -976,8 +980,9 @@ class Witch
     {
         $excludeFields = [ "id", "datetime" ];
         $params = [
-            "status"    => $this->statusLevel,
-            "cauldron"  => $this->cauldronId,
+            "status"            => $this->statusLevel,
+            "cauldron"          => $this->cauldronId,
+            "cauldron_priority" => 0,
             "is_main"   => 0,
         ];
 

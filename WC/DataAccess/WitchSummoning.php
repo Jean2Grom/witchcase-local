@@ -1,9 +1,11 @@
 <?php
 namespace WC\DataAccess;
 
+use WC\Handler\CauldronHandler;
 use WC\WitchCase;
 use WC\Witch;
 use WC\Handler\WitchHandler as Handler;
+use WC\Module;
 
 /**
  * Class to aggregate Witch's summoning related data access functions
@@ -598,5 +600,145 @@ class WitchSummoning
         return self::witchesInstanciate($wc, $configuration, $result);
     }
     
-    
+
+    static function cauldrons( WitchCase $wc, $configuration )
+    {
+        $cauldronsConf = [];
+        foreach( $configuration as $type => $typeConfiguration )
+        {
+            if( $type === 'user' ){
+                $witchRefConfJoins = [ 'user' => $typeConfiguration ];
+            }
+            else {
+                $witchRefConfJoins = $typeConfiguration;
+            }
+
+            foreach( $witchRefConfJoins as $witchConf )
+            {
+                $refWitch = array_keys($witchConf['entries'])[0];
+                
+                if( !$wc->witch($refWitch) ){
+                    continue;
+                }
+                
+                $permission = false;
+                foreach( $witchConf['entries'] as $invoke )
+                {
+                    if( $invoke === false ){
+                        $permission = true;
+                    }
+                    elseif( $invoke == true && $wc->witch($refWitch)->hasInvoke() )
+                    {
+                        $module     = new Module( $wc->witch($refWitch), $wc->witch($refWitch)->invoke );
+                        $permission = $wc->witch( $refWitch )->isAllowed( $module );
+                    }
+                    else 
+                    {
+                        $module     = new Module( $wc->witch( $refWitch ), $invoke );
+                        $permission = $wc->witch( $refWitch )->isAllowed( $module );
+                    }
+                    
+                    if( $permission ){
+                        break;
+                    }
+                }
+                
+                if( !$permission ){
+                    continue;
+                }
+                
+                if( (!isset( $witchConf['craft'] ) || !empty( $witchConf['craft'] )) 
+                    && $wc->witch( $refWitch )->hasCauldron()
+                ){
+                    $cauldronsConf[] = $wc->witch( $refWitch )->cauldronId;
+                }
+                
+                if( !empty($witchConf['parents']['craft']) ){
+                    $cauldronsConf = array_merge_recursive( 
+                        $cauldronsConf, 
+                        self::getParentsCraftData( $wc->witch($refWitch), $witchConf['parents']['craft'] )
+                    );
+                }
+
+                if( !empty($witchConf['sisters']['craft']) && !empty($witches[ $refWitch ]->sisters) ){
+                    foreach( $wc->witch($refWitch)->sisters as $sisterWitch ){
+                        $cauldronsConf = array_merge_recursive( 
+                            $cauldronsConf, 
+                            self::getChildrenCraftData( $sisterWitch, $witchConf['sisters']['craft'] )
+                        );
+                    }
+                }
+
+                if( !empty($witchConf['children']['craft']) ){
+                    $cauldronsConf = array_merge_recursive( 
+                        $cauldronsConf, 
+                        self::getChildrenCraftData( $wc->witch($refWitch), $witchConf['children']['craft'] )
+                    );
+                }
+            }
+        }
+
+        return CauldronHandler::fetch($wc, array_unique($cauldronsConf), false);
+    }
+
+    // RECURSIVE READ CRAFT DATA FUNCTIONS
+    private static function getChildrenCraftData( Witch $witch, mixed $craftLevel )
+    {
+        $cauldronsConf = [];
+        if( !empty($witch->daughters) ){
+            foreach( $witch->daughters as $daughterWitch )
+            {
+                if( $daughterWitch->hasCauldron() ){
+                    $cauldronsConf[] = $daughterWitch->cauldronId;
+                }
+
+                if( $craftLevel == "*" ){
+                    $craftSubLevel = $craftLevel;
+                }
+                else 
+                {
+                    $craftSubLevel = $craftLevel - 1;
+                    if( $craftSubLevel == 0 ){
+                        continue;
+                    }
+                }
+                
+                $cauldronsConf = array_merge_recursive(
+                    $cauldronsConf, 
+                    self::getChildrenCraftData($daughterWitch, $craftSubLevel) 
+                );
+            }
+        }
+        
+        return $cauldronsConf;
+    }
+
+    private static function getParentsCraftData( Witch $witch, mixed $craftLevel )
+    {
+        $cauldronsConf = [];
+        if( !empty($witch->mother) )
+        {
+            $motherWitch    = $witch->mother;
+            
+            if( $motherWitch->hasCauldron() ){
+                $cauldronsConf[] = $motherWitch->cauldronId;
+            }
+
+            if( $craftLevel == "*" ){
+                $craftSubLevel = $craftLevel;
+            }
+            else {
+                $craftSubLevel = $craftLevel - 1;
+            }
+
+            if( $craftSubLevel == "*" || $craftSubLevel > 0 ){
+                $cauldronsConf = array_merge_recursive(
+                    $cauldronsConf, 
+                    self::getParentsCraftData($motherWitch, $craftSubLevel) 
+                );
+            }
+        }
+        
+        return $cauldronsConf;
+    }
 }

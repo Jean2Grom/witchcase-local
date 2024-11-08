@@ -22,9 +22,9 @@ class CauldronHandler
      * @var Witchcase $wc
      * @var array $configuration
      */
-    static function fetch( WitchCase $wc, array $configuration )
+    static function fetch( WitchCase $wc, array $configuration, bool $getWitches=true )
     {
-        $result = DataAccess::cauldronRequest($wc, $configuration);
+        $result = DataAccess::cauldronRequest($wc, $configuration, $getWitches);
         
         if( $result === false ){
             return false;

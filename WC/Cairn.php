@@ -13,9 +13,14 @@ class Cairn
 {
     const DEFAULT_WITCH = "current";
     
+    /** @var Witch[] */
     private $witches;
-    private $cauldron;
+
+    /** @var Cauldrons[] */
+    private $cauldrons;
+
     private $crafts;
+    private $craftsTablesData;
     private $override;
     
     public $invokations;
@@ -39,8 +44,10 @@ class Cairn
         $this->wc       = $wc;
         $this->website  = $forcedWebsite ?? $this->wc->website;
         
-        $this->witches  = [];
-        $this->cauldron = [];
+        $this->witches      = [];
+        $this->cauldrons    = [];
+        
+        $this->craftsTablesData = [];
         $this->crafts   = [];
         $this->override = [];
         
@@ -256,11 +263,23 @@ class Cairn
     
     function summon()
     {
-        return $this
-                ->addWitches( WitchSummoning::summon($this->wc, $this->configuration) )
-                ->addData( WitchCrafting::readCraftData($this->wc, $this->configuration, $this->getWitches() ));
+        // return $this
+        //         ->addWitches( WitchSummoning::summon($this->wc, $this->configuration) )
+        //         ->addData( WitchCrafting::readCraftData($this->wc, $this->configuration, $this->getWitches() ));
+        
+        $this->addWitches( WitchSummoning::summon($this->wc, $this->configuration) );
+
+        //  Craft part
+        $this->addData( 
+            WitchCrafting::readCraftData($this->wc, $this->configuration, $this->getWitches() )
+        );
+
+        $this->addCauldrons( WitchSummoning::cauldrons($this->wc, $this->configuration) );
+
+        return $this;
     }
     
+
     function sabbath()
     {
         foreach( $this->configuration as $type => $typeConfiguration )
@@ -299,14 +318,34 @@ class Cairn
         return  $this->invokations[ $ref ] ?? "";
     }
     
+    /**
+     * @param Cauldron[] $cauldrons
+     * @return self
+     */
+    function addCauldrons( array $cauldrons ): self
+    {
+        $this->cauldrons = $cauldrons;
+
+        foreach( $this->cauldrons as $cauldron )
+        {
+            foreach( $this->searchByCauldronId($cauldron->id) as $witch )
+            {
+                $witch->cauldron = $cauldron;
+                $cauldron->witches[ $witch->id ] = $witch;
+            }
+        
+            $cauldron->orderWitches();
+        }
+                
+        return $this; 
+    }
+
     function addWitches( array $witches ): self
     {
-        foreach( $witches as $witchName => $witch )
-        {
+        foreach( $witches as $witchName => $witch ){
             if( $witch instanceof Witch ){
                 $this->witches[ $witchName ] = $witch;
             }
-            
         }
         
         return $this; 
@@ -328,10 +367,10 @@ class Cairn
     {
         foreach( $craftData as $table => $craftDataItem )
         {
-            $this->cauldron[ $table ] = $this->cauldron[ $table ] ?? [];
+            $this->craftsTablesData[ $table ] = $this->craftsTablesData[ $table ] ?? [];
             
             foreach( $craftDataItem as $id => $data ){
-                $this->cauldron[ $table ][ $id ] = array_replace($this->cauldron[ $table ][ $id ] ?? [], $data);
+                $this->craftsTablesData[ $table ][ $id ] = array_replace($this->craftsTablesData[ $table ][ $id ] ?? [], $data);
             }
         }
         
@@ -340,18 +379,18 @@ class Cairn
     
     function readData( string $table, int $id )
     {
-        $this->cauldron[ $table ] = $this->cauldron[ $table ] ?? [];
+        $this->craftsTablesData[ $table ] = $this->craftsTablesData[ $table ] ?? [];
         
-        return $this->cauldron[ $table ][ $id ] ?? null;
+        return $this->craftsTablesData[ $table ][ $id ] ?? null;
     }
     
     function unsetData( string $table, int $id ): bool
     {
-        $this->cauldron[ $table ] = $this->cauldron[ $table ] ?? [];
+        $this->craftsTablesData[ $table ] = $this->craftsTablesData[ $table ] ?? [];
         
-        if( isset($this->cauldron[ $table ][ $id ]) )
+        if( isset($this->craftsTablesData[ $table ][ $id ]) )
         {
-            unset($this->cauldron[ $table ][ $id ]);
+            unset($this->craftsTablesData[ $table ][ $id ]);
             return true;
         }
         
@@ -380,13 +419,13 @@ class Cairn
         
         if( !isset($this->crafts[ $table ][ $id ]) )
         {
-            $this->cauldron[ $table ] = $this->cauldron[ $table ] ?? [];
+            $this->craftsTablesData[ $table ] = $this->craftsTablesData[ $table ] ?? [];
             
-            if( !isset($this->cauldron[ $table ][ $id ]) ){
-                $this->cauldron[ $table ]   = array_replace($this->cauldron[ $table ], WitchCrafting::craftQueryFromIds( $this->wc, $table, [$id] ));
+            if( !isset($this->craftsTablesData[ $table ][ $id ]) ){
+                $this->craftsTablesData[ $table ]   = array_replace($this->craftsTablesData[ $table ], WitchCrafting::craftQueryFromIds( $this->wc, $table, [$id] ));
             }
             
-            $this->crafts[ $table ][ $id ] = Craft::factory( $this->wc, (new Structure( $this->wc, $table )), $this->cauldron[$table][$id] );
+            $this->crafts[ $table ][ $id ] = Craft::factory( $this->wc, (new Structure( $this->wc, $table )), $this->craftsTablesData[$table][$id] );
         }
         
         return $this->crafts[ $table ][ $id ];
@@ -496,5 +535,59 @@ class Cairn
         }
 
         return null;
+    }
+
+    /**
+     * @param int $cauldronId
+     * @return Witch[]
+     */
+    function searchByCauldronId( int $cauldronId ): array
+    {
+        $return = [];
+        foreach( $this->witches as $witch )
+        {
+            if( $witch->cauldronId == $cauldronId ){
+                $return[] = $witch;
+            }
+
+            $witchRoot  = $witch;
+            while( $witchRoot->mother ){
+                $witchRoot    = $witchRoot->mother;
+            }
+
+            if( $witchRoot->cauldronId == $cauldronId ){
+                $return[] = $witchRoot;
+            }
+            
+            $return = array_merge( 
+                $return, 
+                $this->recursiveSearchByCauldronId( $witchRoot, $cauldronId )
+            );
+        }
+        
+        return $return;
+    }
+
+    /**
+     * @param Witch $witch
+     * @param int $cauldronId
+     * @return Witch[]
+     */
+    private function recursiveSearchByCauldronId( Witch $witch, int $cauldronId ): array
+    {
+        $return = [];
+        foreach( $witch->daughters() as $daugther )
+        {
+            if( $daugther->cauldronId == $cauldronId ){
+                $return[] = $daugther;
+            }
+            
+            $return = array_merge( 
+                $return, 
+                $this->recursiveSearchByCauldronId( $daugther, $cauldronId )
+            );
+        }
+
+        return $return;
     }
 }

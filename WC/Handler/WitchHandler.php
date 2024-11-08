@@ -69,6 +69,7 @@ class WitchHandler
             $witch->site = $witch->properties['site'];
         }
         
+        $witch->status = null;
         if( isset($witch->properties['status']) ){
             $witch->statusLevel = (int) $witch->properties['status'];
         }
@@ -76,8 +77,10 @@ class WitchHandler
         if( isset($witch->properties['cauldron']) ){
             $witch->cauldronId = (int) $witch->properties['cauldron'];
         }
-        
-        $witch->status = null;
+
+        if( isset($witch->properties['cauldron_priority']) ){
+            $witch->cauldronPriority = (int) $witch->properties['cauldron_priority'];
+        }
         
         return;
     }
@@ -266,7 +269,7 @@ class WitchHandler
             'daughters_orders'  => array_keys( $daughters ),
             'path'              => $path,
         ];
-        
+
         if( $hrefCallBack ){
             $tree['href'] = call_user_func( $hrefCallBack, $witch );
         }
