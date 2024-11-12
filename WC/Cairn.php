@@ -55,6 +55,10 @@ class Cairn
         $this->configuration    = self::prepareConfiguration($this->website, $summoningConfiguration);
     }
     
+    function __get( string $witchRef ): ?Witch {
+        return $this->witches[ $witchRef ] ?? null; 
+    }
+
     static function prepareConfiguration(  Website $website, array $rawConfiguration ): array
     {
         $arboConf = function ($init, $new) {
@@ -340,29 +344,86 @@ class Cairn
         return $this; 
     }
 
+    
+    
+    /**
+     * @param ?string $witchRef : name of reference witch to read or add
+     * @param ?Witch $witch : if set, instance of Witch to add to cairn
+     */
+    function witch( ?string $witchRef=null, ?Witch $witch=null )
+    {
+        if( $witch && !$witchRef ){
+            return false;
+        }
+        elseif( $witch ){
+            return $this->addWitch( $witchRef, $witch );
+        }
+
+        return $this->getWitch( $witchRef );
+    }
+
+    /**
+     * @param string $name
+     * @param Witch $witch
+     * @return bool
+     */
+    function addWitch( string $name, Witch $witch ): bool
+    {
+        if( $witch instanceof Witch 
+            && !in_array($witch, $this->witches()) )
+        {
+            $this->witches[ $name ] = $witch;
+            return true;
+        }
+        
+        return false; 
+    }
+
+    /**
+     * @param ?string $witchRef ref of required witch, if null get default one
+     * @return ?Witch 
+     */
+    function getWitch( ?string $witchRef=null ): ?Witch {
+        return  $this->witches[ $witchRef ?? self::DEFAULT_WITCH ] ?? null;
+    }
+
+
+    /**
+     * @param ?Witch[] $witches : associative array [ $witchRef => $witch ] to add, 
+     * if null, function will read cairn witches
+     */
+    function witches( ?array $witches=null ) 
+    {
+        if( !is_null($witches) ){
+            return $this->addWitches( $witches );
+        }
+
+        return $this->getWitches(); 
+    }
+    
+    /** 
+     * @param Witch[] $witches : associative array [ $witchRef => $witch ]
+     * @return self
+     */    
     function addWitches( array $witches ): self
     {
-        foreach( $witches as $witchName => $witch ){
-            if( $witch instanceof Witch ){
-                $this->witches[ $witchName ] = $witch;
-            }
+        foreach( $witches as $witchRef => $witch ){
+            $this->addWitch( $witchRef, $witch );
         }
         
         return $this; 
     }
-    
+
+    /**
+     * @return Witch[]
+     */
     function getWitches(): array {
         return $this->witches; 
     }
     
-    function witch( ?string $witchName=null ): ?Witch {
-        return  $this->witches[ $witchName ?? self::DEFAULT_WITCH ] ?? null;
-    }
     
-    function __get( string $witchName ){
-        return $this->witches[ $witchName ] ?? null; 
-    }
-    
+
+    // CRAFT / CRAFT DATA methodes
     function addData( array $craftData ): self
     {
         foreach( $craftData as $table => $craftDataItem )
@@ -441,6 +502,7 @@ class Cairn
     }
     
     
+    // SEARCH methodes
     function searchFromPosition( array $position ): ?Witch
     {
         foreach( $this->witches as $witch )
