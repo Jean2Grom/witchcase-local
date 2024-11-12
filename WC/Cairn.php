@@ -369,8 +369,7 @@ class Cairn
      */
     function addWitch( string $name, Witch $witch ): bool
     {
-        if( $witch instanceof Witch 
-            && !in_array($witch, $this->witches()) )
+        if( $witch instanceof Witch )
         {
             $this->witches[ $name ] = $witch;
             return true;

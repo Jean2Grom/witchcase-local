@@ -133,27 +133,76 @@ document.addEventListener("DOMContentLoaded", () =>
     
     
     // Cauldron part
-    document.getElementById('witch-cauldron-structure').addEventListener('change', e => {
-        if( e.target.value === '' ){
-            document.getElementById('witch-create-cauldron').classList.add("disabled");
-        }
-        else {
-            document.getElementById('witch-create-cauldron').classList.remove('disabled')
-        }
-    });
-
-    document.getElementById('witch-get-existing-cauldron').addEventListener('click', () => {
-        chooseWitch({ cauldron: true }, "Choose importing cauldron witch").then( witchId => 
-        { 
-            if( witchId === false ){
-                return;
+    let cauldronStructureSelector = document.getElementById('witch-cauldron-structure');
+    if( cauldronStructureSelector ){
+        cauldronStructureSelector.addEventListener('change', e => {
+            if( e.target.value === '' ){
+                document.getElementById('witch-create-cauldron').classList.add("disabled");
             }
-
-            document.getElementById('imported-cauldron-witch').value = witchId;
-            document.getElementById('import-cauldron-action').click();
+            else {
+                document.getElementById('witch-create-cauldron').classList.remove('disabled')
+            }
         });
-    });    
+    }
+
+    let cauldronFetchButton = document.getElementById('witch-get-existing-cauldron');
+    if( cauldronFetchButton ){
+        cauldronFetchButton.addEventListener('click', () => {
+            chooseWitch({ cauldron: true }, "Choose importing cauldron's witch").then( witchId => 
+            { 
+                if( witchId === false ){
+                    return;
+                }
+
+                document.getElementById('imported-cauldron-witch').value = witchId;
+                document.getElementById('import-cauldron-action').click();
+            });
+        });    
+    }
+    /*
+    let cauldronPositionButton = document.getElementById('choose-cauldron-position');
+    if( cauldronPositionButton ){
+        cauldronPositionButton.addEventListener('click', () => {
+            chooseWitch({ cauldron: true }, "Choose new cauldron position").then( witchId => 
+            { 
+                if( witchId === false ){
+                    return;
+                }
+
+                document.getElementById('imported-cauldron-witch').value = witchId;
+                document.getElementById('import-cauldron-action').click();
+            });
+        });    
+    }
+    */
+    let addCauldronWitchButton = document.getElementById('add-cauldron-witch');
+    if( addCauldronWitchButton ){
+        addCauldronWitchButton.addEventListener('click', () => {
+            chooseWitch({ cauldron: false }).then( (witchId) => { 
+                if( witchId === false ){
+                    return;
+                }
+                
+                document.getElementById('cauldron-new-witch-id').value = witchId;
+                document.getElementById('cauldron-add-witch-action').click();
+            });
+        });
+    }
     
+    let addCauldronNewWitchButton = document.getElementById('add-cauldron-new-witch');
+    if( addCauldronNewWitchButton ){
+        addCauldronNewWitchButton.addEventListener('click', () => {
+            chooseWitch().then( (witchId) => { 
+                if( witchId === false ){
+                    return;
+                }
+                
+                document.getElementById('cauldron-new-witch-id').value = witchId;
+                document.getElementById('cauldron-add-new-witch-action').click();
+            });
+        });
+
+    }
 
     // Daughters cut/copy
     $('.cut-descendants').on('click', function()

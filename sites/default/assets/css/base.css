@@ -19,6 +19,9 @@ a {
     a:hover {
         color: #ff9900;
     }
+.highlighted {
+    color: #ff9900;
+}
 h1,h2, p {
     margin-bottom: 2vh
 }

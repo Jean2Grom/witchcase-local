@@ -40,6 +40,8 @@ switch( Tools::filterAction(
         'remove-cauldron',
         'create-cauldron',
         'import-cauldron',
+        'cauldron-add-witch',
+        'cauldron-add-new-witch',
     ]
 ) ){
     case 'remove-cauldron':
@@ -153,6 +155,116 @@ switch( Tools::filterAction(
             'message'   =>  "Cauldron was imported",
         ]);
     break;
+    
+    case 'cauldron-add-witch':
+        $urlHash = "#tab-cauldron-part";
+        
+        if( !$this->witch("target")->cauldron() )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, no cauldron identified"
+            ]);
+            break;
+        }
+        
+        $id = $this->wc->request->param('cauldron-new-witch-id', 'post', FILTER_VALIDATE_INT);
+        if( !$id )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, no witch identified"
+            ]);
+            break;
+        }
+        
+        $witch = $this->wc->cairn->searchById($id) ?? WitchHandler::createFromId($this->wc, $id);
+        if( !$witch )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, chosen witch unidentified"
+            ]);
+            break;
+        }
+
+        if( !$witch->edit([ 'cauldron' => $this->witch("target")->cauldronId ]) )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, something went wrong"
+            ]);
+            break;
+        }
+
+        $this->wc->user->addAlert([
+            'level'     =>  'success',
+            'message'   =>  "Cauldron added to witch"
+        ]);
+
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $witch->id ]).$urlHash );
+        exit();
+    break;
+    
+    case 'cauldron-add-new-witch':
+        $urlHash = "#tab-cauldron-part";
+        
+        if( !$this->witch("target")->cauldron() )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, no cauldron identified"
+            ]);
+            break;
+        }
+        
+        $id = $this->wc->request->param('cauldron-new-witch-id', 'post', FILTER_VALIDATE_INT);
+        if( !$id )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, no witch identified"
+            ]);
+            break;
+        }
+        
+        $witch = $this->wc->cairn->searchById($id) ?? WitchHandler::createFromId($this->wc, $id);
+        if( !$witch )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, chosen witch unidentified"
+            ]);
+            break;
+        }
+        
+        $newWitchData   = [
+            'name'          =>  $this->witch("target")->name,
+            'data'          =>  $this->witch("target")->data,
+            'cauldron'      =>  $this->witch("target")->cauldronId 
+        ];
+        
+        $newWitch = $witch->createDaughter( $newWitchData );
+        
+        if( !$newWitch )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, new witch wasn't created"
+            ]);
+            break;
+        }
+        
+        $this->wc->user->addAlert([
+            'level'     =>  'success',
+            'message'   =>  "New cauldron's witch created"
+        ]);
+        
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitch->id ]).$urlHash );
+        exit();
+    break;
+    
+
 }
 
 // OLD SCHOOL CRAFT PART
