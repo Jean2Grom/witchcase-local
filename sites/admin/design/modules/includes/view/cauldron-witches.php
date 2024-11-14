@@ -1,11 +1,5 @@
 <?php /** @var WC\Module $this */
 
-$this->wc->debug(
-    $this->witch("target")->cauldron()->witches, 
-    "Cauldron's witches",
-    2
-);
-
 if( $this->witch("target")->cauldron() ): ?>
     <div class="box">
         <h3>
@@ -13,24 +7,26 @@ if( $this->witch("target")->cauldron() ): ?>
             Cauldron Witches
         </h3>
 
-        <?php if( count($this->witch("target")->cauldron()->witches) === 1 ): ?>
-            <p><em>No other witch</em></p>
+        <form   method="post" 
+                action="<?=$this->wc->website->getUrl('view', [ 'id' => $this->witch("target")->id ]) ?>#tab-cauldron-part"
+                id="view-cauldron-witches-action">
+            <input type="hidden" id="cauldron-new-witch-id" name="cauldron-new-witch-id" value="" />
 
-        <?php else: ?>
-            <p><em>Cauldron's associated witches list</em></p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Main</th>
-                        <th>ID</th>
-                        <th>Path</th>
-                        <th>Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <form method="post" 
-                          action="<?=$this->wc->website->getUrl('view', [ 'id' => $this->witch("target")->id ]) ?>"
-                          id="view-cauldron-witches-action">
+            <?php if( count($this->witch("target")->cauldron()->witches) === 1 ): ?>
+                <p><em>No other witch</em></p>
+
+            <?php else: ?>
+                <p><em>Cauldron's associated witches list</em></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Main</th>
+                            <th>ID</th>
+                            <th>Path</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <?php foreach( $this->witch("target")->cauldron()->witches as $key => $witch ): ?>
                             <tr>
                                 <td>
@@ -42,8 +38,8 @@ if( $this->witch("target")->cauldron() ): ?>
                                                     checked
                                                <?php else: ?>
                                                     class="trigger-action" 
-                                                    data-action="switch-craft-main-witch" 
-                                                    data-target="view-craft-witches-action" 
+                                                    data-action="switch-cauldron-main-witch" 
+                                                    data-target="view-cauldron-witches-action" 
                                                <?php endif; ?> />
                                     </div>
                                 </td>
@@ -67,12 +63,10 @@ if( $this->witch("target")->cauldron() ): ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
-                        <input type="hidden" id="cauldron-new-witch-id" name="cauldron-new-witch-id" value="" />
-                            
-                    </form>
-                </tbody>
-            </table>
-        <?php endif; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </form>
         
         <div class="box__actions">
             <button class="trigger-action"

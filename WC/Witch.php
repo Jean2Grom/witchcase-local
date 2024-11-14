@@ -64,7 +64,7 @@ class Witch
     /**
      * @var ?Cauldron
      */
-    public ?Cauldron $cauldron;
+    public ?Cauldron $cauldron = null;
     
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -760,26 +760,14 @@ class Witch
             return false;
         }
         
-        // TODO count Witches !!! 
-        //$countCauldronWitches = $this->cauldron()->countWitches();
-        
-        //if( $countCraftWitch == 1 ){
-        if( true ){
+        if( $this->cauldron()->witches && count($this->cauldron()->witches) === 1 ){
             $this->cauldron()->delete();
         }
-        elseif( $this->properties['is_main'] == 1 && $countCraftWitch > 1  ){
-            foreach( $this->craft()->getWitches() as $id => $craftWitch ){
-                if( $id != $this->id )
-                {
-                    $craftWitch->edit([ 'is_main' => 1 ]);
-                    break;
-                }
-            }
-        }
         
-        $this->cauldron = null;
+        $this->cauldron     = null;
+        $this->cauldronId   = null;
         
-        return $this->edit(['cauldron' => null]);
+        return $this->edit(['cauldron' => null, 'cauldron_priority' => null]);
     }
     
     /**

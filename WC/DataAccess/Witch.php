@@ -53,6 +53,36 @@ class Witch
         return $wc->db->updateQuery( $query, array_replace($params, $conditions) );
     }
     
+    static function updates( WitchCase $wc, array $params, array $conditions )
+    {
+        if( empty($params) 
+            || empty($conditions) 
+            || array_keys($params) !== array_keys($conditions)
+            || empty(array_values( $params )[0] ?? null) 
+            || empty(array_values( $conditions )[0] ?? null)  ){
+            return false;
+        }
+        
+        $query = "";
+        $query  .=  "UPDATE `witch` ";
+        
+        $separator = "SET ";
+        foreach( array_keys( array_values($params)[0] ) as $field )
+        {
+            $query      .=  $separator.'`'.$wc->db->escape_string($field)."` = :".$field." ";
+            $separator  =  ", ";
+        }
+        
+        $separator = "WHERE ";
+        foreach( array_keys( array_values($conditions)[0] ) as $field )
+        {
+            $query      .=  $separator.'`'.$wc->db->escape_string($field)."` = :".$field." ";
+            $separator  =  "AND ";
+        }
+        
+        return $wc->db->updateQuery( $query, array_replace_recursive($params, $conditions), true );
+    }
+    
     static function create( WitchCase $wc, array $params )
     {
         if( isset($params['id']) ){

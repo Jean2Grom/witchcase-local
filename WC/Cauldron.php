@@ -676,7 +676,7 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
 
         foreach( $this->witches as $witch )
         {
-            $priority   = $witch->cauldron_priority ?? 0;
+            $priority   = $witch->cauldronPriority ?? 0;
             $key        = ($witch->name ?? "")."_".($witch->id ?? $defaultId++);
             $buffer[ $priority ] = array_replace( 
                 $buffer[ $priority ] ?? [], 

@@ -1,6 +1,7 @@
 <?php /**  @var WC\Module $this */
 namespace WC;
 
+use WC\DataAccess\Witch;
 use WC\Handler\CauldronHandler;
 use WC\Handler\WitchHandler;
 
@@ -15,7 +16,7 @@ if( !$this->witch("target") ){
     exit();
 }
 
-//$this->wc->debug( $this->wc->request->inputs() );
+$this->wc->debug( $this->wc->request->inputs() );
 
 switch( Tools::filterAction( 
     $this->wc->request->param('action'),
@@ -25,6 +26,7 @@ switch( Tools::filterAction(
         'import-cauldron',
         'cauldron-add-witch',
         'cauldron-add-new-witch',
+        'switch-cauldron-main-witch',
     ]
 ) ){
     case 'remove-cauldron':
@@ -140,8 +142,6 @@ switch( Tools::filterAction(
     break;
     
     case 'cauldron-add-witch':
-        $urlHash = "#tab-cauldron-part";
-        
         if( !$this->witch("target")->cauldron() )
         {
             $this->wc->user->addAlert([
@@ -185,13 +185,11 @@ switch( Tools::filterAction(
             'message'   =>  "Cauldron added to witch"
         ]);
 
-        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $witch->id ]).$urlHash );
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $witch->id ])."#tab-cauldron-part" );
         exit();
     break;
     
     case 'cauldron-add-new-witch':
-        $urlHash = "#tab-cauldron-part";
-        
         if( !$this->witch("target")->cauldron() )
         {
             $this->wc->user->addAlert([
@@ -243,11 +241,86 @@ switch( Tools::filterAction(
             'message'   =>  "New cauldron's witch created"
         ]);
         
-        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitch->id ]).$urlHash );
+        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitch->id ])."#tab-cauldron-part" );
         exit();
     break;
     
+    case 'switch-cauldron-main-witch':        
+        if( !$this->witch("target")->cauldron() )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, no cauldron identified"
+            ]);
+            break;
+        }
 
+        $id = $this->wc->request->param('main', 'post', FILTER_VALIDATE_INT);
+        
+        $params     = []; 
+        $conditions = []; 
+        $match      = false;
+        foreach( $this->witch("target")->cauldron()->witches as $witch )
+        {
+            $conditions[] = [ 'id' => $witch->id ]; 
+
+            if( $id === $witch->id )
+            {
+                $params[]   = [ 'cauldron_priority' => 200 ]; 
+                $match      = true;
+                continue;
+            }
+
+            $params[] = [ 'cauldron_priority' => 100 ]; 
+        }
+
+        if( !$match )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Cauldron's main witch wasn't identified"
+            ]);
+            break;
+        }
+
+        $updatesResult = Witch::updates($this->wc, $params, $conditions);
+
+        if( $updatesResult === false )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Cauldron's main witch update failed"
+            ]);
+            break;
+        }
+        elseif(  $updatesResult === 0  )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'warning',
+                'message'   =>  "Cauldron's main witch update had no effect"
+            ]);
+            break;
+        }
+
+        foreach( $this->witch("target")->cauldron()->witches as $witch )
+        {
+            if( $id === $witch->id )
+            {
+                $witch->cauldronPriority = 200;
+                $witch->cauldron_priority = 200;
+                continue;
+            }
+
+            $witch->cauldronPriority = 100;
+        }
+
+        $this->witch("target")->cauldron()->orderWitches();
+        
+        $this->wc->user->addAlert([
+            'level'     =>  'success',
+            'message'   =>  "Cauldron's main witch updated"
+        ]);        
+    break;
 }
 
 // OLD SCHOOL CRAFT PART
