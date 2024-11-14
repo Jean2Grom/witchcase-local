@@ -767,7 +767,7 @@ class Witch
         $this->cauldron     = null;
         $this->cauldronId   = null;
         
-        return $this->edit(['cauldron' => null, 'cauldron_priority' => null]);
+        return $this->edit(['cauldron' => null, 'cauldron_priority' => 0]);
     }
     
     /**
