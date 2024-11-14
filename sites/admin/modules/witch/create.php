@@ -112,7 +112,7 @@ switch(Tools::filterAction(
 
 
         $importCauldronWitchId  = $this->wc->request->param('imported-cauldron-witch');
-        $structure              = $this->wc->request->param('new-witch-cauldron-structure');
+        $recipe                 = $this->wc->request->param('new-witch-cauldron-recipe');
 
         // Cauldron importation
         if( $importCauldronWitchId )
@@ -133,15 +133,15 @@ switch(Tools::filterAction(
             $params['cauldron'] = $importCauldronWitch->cauldronId;    
         }
         // Cauldron creation
-        elseif( $structure && in_array($structure, array_keys( $this->wc->configuration->recipes() )) )
+        elseif( $recipe && in_array($recipe, array_keys( $this->wc->configuration->recipes() )) )
         {
             $folderCauldron = CauldronHandler::getStorageStructure($this->wc, 
                 $this->wc->website->site, 
-                $structure
+                $recipe
             );
             $newCauldron = CauldronHandler::createFromData($this->wc, [
                 'name'      =>  $params['name'],
-                'recipe'    =>  $structure,
+                'recipe'    =>  $recipe,
                 'status'    =>  Cauldron::STATUS_DRAFT,
             ]);
 

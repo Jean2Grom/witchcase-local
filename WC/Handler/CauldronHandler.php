@@ -362,7 +362,6 @@ class CauldronHandler
     private static function getWorkFolder( Cauldron $cauldron, string $folderStruct ): Cauldron
     {
         foreach( $cauldron->children as $child ){
-            //if( $child->data->structure === $folderStruct ){
             if( $child->recipe === $folderStruct ){
                 return $child;
             }
@@ -380,7 +379,6 @@ class CauldronHandler
         $params = [
             'name'      =>  $workFolderName,
             'recipe'    =>  $folderStruct,
-            //'data'  =>  json_encode([ "structure" => $folderStruct ]),
         ];
  
         $folder = self::createFromData( $cauldron->wc, $params );
@@ -458,7 +456,7 @@ class CauldronHandler
      * @var WitchCase $wc
      * @return Cauldron|false
      */
-    static function getStorageStructure(  WitchCase $wc, ?string $site=null, ?string $structure=null ): Cauldron|false 
+    static function getStorageStructure(  WitchCase $wc, ?string $site=null, ?string $recipe=null ): Cauldron|false 
     {
         $result = DataAccess::getStorageStructure( $wc );
 
@@ -490,7 +488,6 @@ class CauldronHandler
             $params = [
                 'name'      =>  $site,
                 'recipe'    =>  "folder",
-                //'data'  =>  json_encode([ "structure" => "folder" ]),
             ];
 
             $siteCauldron = self::createFromData( $wc, $params );
@@ -501,36 +498,35 @@ class CauldronHandler
         if( !$siteCauldron ){
             return false;
         }
-        elseif( !$structure ){
+        elseif( !$recipe ){
             return $siteCauldron;
         }
 
-        $structureCauldron = false;
+        $recipeCauldron = false;
         foreach( $siteCauldron->children as $child ){
-            if( $child->name === $structure )
+            if( $child->name === $recipe )
             {
-                $structureCauldron = $child;
+                $recipeCauldron = $child;
                 break;
             }
         }
     
-        if( !$structureCauldron )
+        if( !$recipeCauldron )
         {
             $params = [
-                'name'      =>  $structure,
+                'name'      =>  $recipe,
                 'recipe'    =>  "folder",
-                //'data'  =>  json_encode([ "structure" => "folder" ]),
             ];
 
-            $structureCauldron = self::createFromData( $wc, $params );
-            $siteCauldron->addCauldron( $structureCauldron );
-            $structureCauldron->save();
+            $recipeCauldron = self::createFromData( $wc, $params );
+            $siteCauldron->addCauldron( $recipeCauldron );
+            $recipeCauldron->save();
         }
  
-        if( !$structureCauldron ){
+        if( !$recipeCauldron ){
             return false;
         }
  
-        return $structureCauldron;
+        return $recipeCauldron;
     }   
 }

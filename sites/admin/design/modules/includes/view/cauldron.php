@@ -8,9 +8,9 @@
         </h3>
         <form method="post" id="witch-add-new-cauldron">
 
-            <select name="witch-cauldron-structure" id="witch-cauldron-structure">
+            <select name="witch-cauldron-recipe" id="witch-cauldron-recipe">
                 <option value="">
-                    Select new cauldron structure
+                    Select new cauldron recipe
                 </option>
                 <?php foreach( $this->wc->configuration->recipes() as $recipe ): ?>
                     <option value="<?=$recipe->name?>">

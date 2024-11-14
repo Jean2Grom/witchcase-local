@@ -124,10 +124,10 @@ $this->addContextArrayItems( 'tabs', [
                     Cauldron
                 </h3>
                 
-                <label for="new-witch-cauldron-structure">
-                    New cauldron structure
+                <label for="new-witch-cauldron-recipe">
+                    New cauldron recipe
                 </label>
-                <select name="new-witch-cauldron-structure" id="new-witch-cauldron-structure">
+                <select name="new-witch-cauldron-recipe" id="new-witch-cauldron-recipe">
                     <option value="">
                         No cauldron creation
                     </option>
@@ -276,9 +276,9 @@ document.addEventListener("DOMContentLoaded", () =>
     function resetCauldronInputs()
     {
         document.querySelectorAll('.importVisualizeDom').forEach( dom => dom.remove() );
-        document.getElementById('new-witch-cauldron-structure').value   = '';
+        document.getElementById('new-witch-cauldron-recipe').value   = '';
         document.getElementById('imported-cauldron-witch').value    = '';
-        document.getElementById('new-witch-cauldron-structure').removeAttribute('disabled');
+        document.getElementById('new-witch-cauldron-recipe').removeAttribute('disabled');
     }
 
     let cauldronFetchButton = document.getElementById('new-witch-get-existing-cauldron');
@@ -296,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () =>
 
                 resetCauldronInputs();
 
-                document.getElementById('new-witch-cauldron-structure').setAttribute('disabled', true); 
+                document.getElementById('new-witch-cauldron-recipe').setAttribute('disabled', true); 
 
                 let importVisualizeDom = document.createElement('div');
                 importVisualizeDom.classList.add('importVisualizeDom');

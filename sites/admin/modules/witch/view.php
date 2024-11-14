@@ -1,13 +1,8 @@
-<?php 
-/**  @var WC\Module $this */
+<?php /**  @var WC\Module $this */
 namespace WC;
 
 use WC\Handler\CauldronHandler;
 use WC\Handler\WitchHandler;
-//use WC\Cauldron;
-//use WC\Structure;
-//use WC\Tools;
-//use WC\Website;
 
 
 if( !$this->witch("target") ){
@@ -20,19 +15,7 @@ if( !$this->witch("target") ){
     exit();
 }
 
-/*
-if( $this->witch("target")->hasCauldron() )
-{
-    //$result = CauldronHandler::fetch($this->wc, [ $this->witch("target")->cauldron ]);
-    //$structures     = $this->wc->configuration->recipes();
-    //$ingredients    = WC\Ingredient::list();
-    
-    //$this->wc->debug( $this->witch("target")->cauldron() );
-    $this->wc->debug( $this->wc->configuration->recipes() );
-}
-*/
-
-$this->wc->debug( $this->wc->request->inputs() );
+//$this->wc->debug( $this->wc->request->inputs() );
 
 switch( Tools::filterAction( 
     $this->wc->request->param('action'),
@@ -66,29 +49,29 @@ switch( Tools::filterAction(
     break;
 
     case 'create-cauldron':
-        $structure      = $this->wc->request->param('witch-cauldron-structure') ?? "folder";
-        if( !in_array($structure, array_keys( $this->wc->configuration->recipes() )) )
+        $recipe      = $this->wc->request->param('witch-cauldron-recipe') ?? "folder";
+        if( !in_array($recipe, array_keys( $this->wc->configuration->recipes() )) )
         {
             $this->wc->user->addAlert([
                 'level'     =>  'error',
-                'message'   =>  "Error, a valid cauldron structure is missing",
+                'message'   =>  "Error, a valid cauldron recipe is missing",
             ]);
             break;
         }         
 
-        $folderCauldron = CauldronHandler::getStorageStructure($this->wc, $this->wc->website->site, $structure);
+        $folderCauldron = CauldronHandler::getStorageStructure($this->wc, $this->wc->website->site, $recipe);
         if( !$folderCauldron )
         {
             $this->wc->user->addAlert([
                 'level'     =>  'error',
-                'message'   =>  "Error, cauldron storage structure can't be found",
+                'message'   =>  "Error, cauldron storage recipe can't be found",
             ]);
             break;
         }
 
         $cauldron = CauldronHandler::createFromData($this->wc, [
             'name'      =>  $this->witch("target")->name,
-            'recipe'    =>  $structure,
+            'recipe'    =>  $recipe,
             'status'    =>  Cauldron::STATUS_DRAFT,
         ]);
 

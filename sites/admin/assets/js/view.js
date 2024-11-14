@@ -133,9 +133,10 @@ document.addEventListener("DOMContentLoaded", () =>
     
     
     // Cauldron part
-    let cauldronStructureSelector = document.getElementById('witch-cauldron-structure');
-    if( cauldronStructureSelector ){
-        cauldronStructureSelector.addEventListener('change', e => {
+    // enable/disable create new cauldron's button, based on recipe selection
+    let cauldronRecipeSelector = document.getElementById('witch-cauldron-recipe');
+    if( cauldronRecipeSelector ){
+        cauldronRecipeSelector.addEventListener('change', e => {
             if( e.target.value === '' ){
                 document.getElementById('witch-create-cauldron').classList.add("disabled");
             }
@@ -175,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () =>
         });    
     }
     */
+    // add existing cauldron to existing witch
     let addCauldronWitchButton = document.getElementById('add-cauldron-witch');
     if( addCauldronWitchButton ){
         addCauldronWitchButton.addEventListener('click', () => {
@@ -188,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () =>
             });
         });
     }
-    
+    // create new witch to add existing cauldron
     let addCauldronNewWitchButton = document.getElementById('add-cauldron-new-witch');
     if( addCauldronNewWitchButton ){
         addCauldronNewWitchButton.addEventListener('click', () => {
