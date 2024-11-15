@@ -11,6 +11,13 @@ if( $this->witch("target")->cauldron() ): ?>
                 action="<?=$this->wc->website->getUrl('view', [ 'id' => $this->witch("target")->id ]) ?>#tab-cauldron-part"
                 id="view-cauldron-witches-action">
             <input type="hidden" id="cauldron-new-witch-id" name="cauldron-new-witch-id" value="" />
+            <input type="hidden" id="cauldron-witch-id" name="cauldron-witch-id" value="" />
+
+            <button class="trigger-action"
+                    style="display: none;"
+                    id="remove-cauldron-witch-action"
+                    data-action="remove-cauldron-witch" 
+                    data-target="view-cauldron-witches-action" >remove-cauldron-witch</button>
 
             <?php if( count($this->witch("target")->cauldron()->witches) === 1 ): ?>
                 <p><em>No other witch</em></p>
@@ -22,7 +29,7 @@ if( $this->witch("target")->cauldron() ): ?>
                         <tr>
                             <th>Main</th>
                             <th>ID</th>
-                            <th>Path</th>
+                            <th></th>
                             <th>Name</th>
                         </tr>
                     </thead>
@@ -47,7 +54,12 @@ if( $this->witch("target")->cauldron() ): ?>
                                     <div class="text-center"><?=$witch->id ?></div>
                                 </td>
                                 <td>
-                                    <?=$witch->cauldronPriority ?>
+                                    <?php if( $witch->id !== $this->witch("target")->id ): ?>
+                                        <a  class="remove-cauldron-witch"
+                                            data-witch="<?=$witch->id?>">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php if( $witch->id === $this->witch("target")->id ): ?>

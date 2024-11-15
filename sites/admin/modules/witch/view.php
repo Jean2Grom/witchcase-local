@@ -27,6 +27,7 @@ switch( Tools::filterAction(
         'cauldron-add-witch',
         'cauldron-add-new-witch',
         'switch-cauldron-main-witch',
+        'remove-cauldron-witch',
     ]
 ) ){
     case 'remove-cauldron':
@@ -320,6 +321,73 @@ switch( Tools::filterAction(
             'level'     =>  'success',
             'message'   =>  "Cauldron's main witch updated"
         ]);        
+    break;
+
+    case 'remove-cauldron-witch':
+        if( !$this->witch("target")->cauldron() )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, no cauldron identified"
+            ]);
+            break;
+        }
+        
+        $id = $this->wc->request->param('cauldron-witch-id', 'post', FILTER_VALIDATE_INT);
+        if( !$id )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, no witch identified"
+            ]);
+            break;
+        }
+        
+        $witchToRemove      = false;
+        $witchToRemoveKey   = null;
+        foreach( $this->witch("target")->cauldron()->witches as $key => $witch ){
+            if( $id === $witch->id )
+            {
+                $witchToRemove      = $witch;
+                $witchToRemoveKey   = $key;
+                break;
+            }
+        }
+
+        if( !$witchToRemove )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, chosen witch unidentified"
+            ]);
+            break;
+        }
+
+        $updatesResult = Witch::update($this->wc, [ 'cauldron' => 0, 'cauldron_priority' => 0 ], [ 'id' => $id ]);
+
+        if( $updatesResult === false )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Cauldron's witch removal failed"
+            ]);
+            break;
+        }
+        elseif(  $updatesResult === 0  )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'warning',
+                'message'   =>  "Cauldron's witch update had no effect"
+            ]);
+            break;
+        }
+
+        unset($this->witch("target")->cauldron()->witches[ $witchToRemoveKey ]);
+        
+        $this->wc->user->addAlert([
+            'level'     =>  'success',
+            'message'   =>  "Cauldron's witch removed"
+        ]);
     break;
 }
 
