@@ -1,10 +1,10 @@
 <?php /** @var WC\Module $this */
 
-use WC\DataAccess\StructureDataAccess;
+use WC\DataAccess\RecipeDataAccess;
 
 $recipes = $this->wc->configuration->recipes();
 
-$recipeArray = StructureDataAccess::readStructuresUsage(
+$recipeArray = RecipeDataAccess::readUsage(
     $this->wc, 
     array_keys($recipes)
 );
