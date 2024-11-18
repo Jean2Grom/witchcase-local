@@ -29,7 +29,7 @@ if( $this->witch("target")->cauldron() ): ?>
                         <tr>
                             <th>Main</th>
                             <th>ID</th>
-                            <th></th>
+                            <th><i class="fa fa-trash"></i></th>
                             <th>Name</th>
                         </tr>
                     </thead>
@@ -55,9 +55,9 @@ if( $this->witch("target")->cauldron() ): ?>
                                 </td>
                                 <td>
                                     <?php if( $witch->id !== $this->witch("target")->id ): ?>
-                                        <a  class="remove-cauldron-witch"
+                                        <a  class="remove-cauldron-witch text-center"
                                             data-witch="<?=$witch->id?>">
-                                            <i class="fa fa-trash"></i>
+                                            <i class="fa fa-times"></i>
                                         </a>
                                     <?php endif; ?>
                                 </td>
