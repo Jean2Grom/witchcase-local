@@ -39,7 +39,7 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
         <?php foreach( $cauldron->draft()->contents() as $content ): 
             $contentInput = "content[".$content->getInputIndex()."]";
             ?>
-            <fieldset class="<?=$content->isStructure()? 'structure': 'ingredient'?>">
+            <fieldset class="<?=$content->isCauldron()? 'cauldron': 'ingredient'?>">
                 <legend>
                     <span   class="span-input-toggle" 
                             data-input="<?=$contentInput?>[name]" 
@@ -121,7 +121,7 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
      fieldset:last-of-type > *:first-child > a.down-fieldset {
         display: none;
     }
-    fieldset.structure {
+    fieldset.cauldron {
         background-color: #eee;
     }
     fieldset.ingredient {
@@ -130,26 +130,26 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
     fieldset > .fieldsets-container {
         margin-left: 24px;
     }
-        fieldset > .fieldsets-container > fieldset.structure {
+        fieldset > .fieldsets-container > fieldset.cauldron {
             box-shadow: none;
             border: 1px solid #444;
             border-radius: 0;
         }
-            fieldset > .fieldsets-container > fieldset.structure .cauldron-add-actions .add-form {
+            fieldset > .fieldsets-container > fieldset.cauldron .cauldron-add-actions .add-form {
                 box-shadow: none;
                 border: 1px solid #444;
                 border-radius: 0;
             }
-    fieldset.structure.integration-0 {
+    fieldset.cauldron.integration-0 {
         background-color: #ddd;
     }
-    fieldset.structure.integration-1 {
+    fieldset.cauldron.integration-1 {
         background-color: #ccc;
     }
-    fieldset.structure.integration-2 {
+    fieldset.cauldron.integration-2 {
         background-color: #bbb;
     }
-    fieldset.structure.integration-3 {
+    fieldset.cauldron.integration-3 {
         background-color: #aaa;
     }
 

@@ -95,8 +95,4 @@ trait CauldronIngredientTrait
     function isCauldron(): bool {
         return !$this->isIngredient();
     }
-
-    function isStructure(): bool {
-        return $this->isCauldron();
-    }
 }

@@ -1,7 +1,7 @@
-<?php /**  */
+<?php 
 /**
  * @var WC\Module $this
- * @var WC\Cauldron\Structure $recipe
+ * @var WC\Cauldron\Recipe $recipe
  * @var array $possibleTypes
  */
 
@@ -45,9 +45,9 @@ $this->addJsFile('triggers.js');
                 include $this->getIncludeDesignFile('edit/recipe-require.php'); ?>
         </fieldset>
     </div>
-
+    
     <div class="fieldsets-container" id="contents">
-        <?php foreach( $recipe->structure?->composition ?? $recipe->composition ?? [] as $item ): ?>
+        <?php foreach( $recipe->composition ?? [] as $item ): ?>
             <fieldset>
                 <legend>
                     <?=$item['name']?> 

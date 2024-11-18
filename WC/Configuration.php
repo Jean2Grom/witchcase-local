@@ -1,8 +1,8 @@
 <?php 
 namespace WC;
 
-use WC\Cauldron\Structure;
-use WC\Handler\StructureHandler;
+use WC\Cauldron\Recipe;
+use WC\Handler\RecipeHandler;
 /**
  * Class handeling configuration files 
  * 
@@ -191,7 +191,7 @@ class Configuration
         $recipes = [];
         foreach( $this->getFilesRecursive(self::RECIPES_DIR) as $file )
         {
-            $recipe = StructureHandler::createFromFile( $this->wc, $file );
+            $recipe = RecipeHandler::createFromFile( $this->wc, $file );
 
             if( !$recipe ){
                 continue;
@@ -200,7 +200,7 @@ class Configuration
             $recipes[ $recipe->name ] = $recipe;
         }
         
-        StructureHandler::resolve($recipes);
+        RecipeHandler::resolve($recipes);
 
         $this->recipes = [];
         foreach( $recipes  as $recipe ){
@@ -239,7 +239,7 @@ class Configuration
         return $files;
     }
 
-    function recipe( string $recipeName ): ?Structure {
+    function recipe( string $recipeName ): ?Recipe {
         return $this->recipes()[ $recipeName ] ?? null;
     }
 

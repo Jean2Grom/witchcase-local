@@ -2,46 +2,46 @@
 namespace WC\Handler;
 
 use WC\WitchCase;
-use WC\Cauldron\Structure;
+use WC\Cauldron\Recipe;
 use WC\Ingredient;
 
-class StructureHandler
+class RecipeHandler
 {
 
     /**
      * Cauldron factory class, implements Cauldron with data provided
      * @param WitchCase $wc
      * @param array $data
-     * @return Structure
+     * @return Recipe
      */
-    static function createFromData(  WitchCase $wc, array $data ): Structure
+    static function createFromData(  WitchCase $wc, array $data ): Recipe
     {
-        $structure      = new Structure();
-        $structure->wc  = $wc;
+        $recipe      = new Recipe();
+        $recipe->wc  = $wc;
         
-        $structure->properties = $data;
+        $recipe->properties = $data;
 
-        self::readProperties( $structure );
+        self::readProperties( $recipe );
 
-        return $structure;
+        return $recipe;
     }  
 
     /**
      * @param WitchCase $wc
      * @param string $file
-     * @return ?Structure
+     * @return ?Recipe
      */
-    static function createFromFile(  WitchCase $wc, string $file ): ?Structure
+    static function createFromFile(  WitchCase $wc, string $file ): ?Recipe
     {
         $jsonData = self::extractJsonDataFromFile( $file );
         if( !$jsonData ){
             return null;
         }
         
-        $structure          = self::createFromData( $wc, $jsonData );
-        $structure->file    = $file;
+        $recipe          = self::createFromData( $wc, $jsonData );
+        $recipe->file    = $file;
         
-        return $structure;
+        return $recipe;
     }  
 
     /**
@@ -71,11 +71,11 @@ class StructureHandler
      * Update  Object current state based on var "properties" (directly rad from JSON file) 
      * @return void
      */
-    static function readProperties( Structure $structure ): void
+    static function readProperties( Recipe $recipe ): void
     {
-        $structure->name        = $structure->properties['name'] ?? null;
-        $structure->composition = $structure->properties['composition'] ?? null;
-        $structure->require     = $structure->properties['require'] ?? null;
+        $recipe->name        = $recipe->properties['name'] ?? null;
+        $recipe->composition = $recipe->properties['composition'] ?? null;
+        $recipe->require     = $recipe->properties['require'] ?? null;
 
         return;
     }
@@ -84,19 +84,19 @@ class StructureHandler
      * Update var "properties" (directly rad from JSON file) based on Object current state 
      * @return void
      */
-    static function writeProperties( Structure $structure ): void
+    static function writeProperties( Recipe $recipe ): void
     {
-        $structure->properties = [];
-        if( $structure->name ){
-            $structure->properties['name'] = $structure->name;
+        $recipe->properties = [];
+        if( $recipe->name ){
+            $recipe->properties['name'] = $recipe->name;
         }
-        if( $structure->require ){
-            $structure->properties['require'] = $structure->require;
+        if( $recipe->require ){
+            $recipe->properties['require'] = $recipe->require;
         }
-        if( $structure->composition )
+        if( $recipe->composition )
         {
-            $structure->properties['composition'] = [];
-            foreach( $structure->composition as $item )
+            $recipe->properties['composition'] = [];
+            foreach( $recipe->composition as $item )
             {
                 $content = [];
                 if( !empty($item[ "mandatory" ]) ){
@@ -112,7 +112,7 @@ class StructureHandler
                     $content["require"] = $item["require"];
                 }
 
-                $structure->properties['composition'][] = $content;
+                $recipe->properties['composition'][] = $content;
             }
         }
 
@@ -120,34 +120,34 @@ class StructureHandler
     }
 
     /**
-     * Insert Structure object references in compositions
-     * @param array $structures
+     * Insert Recipe object references in compositions
+     * @param array $recipes
      * @return bool
      */
-    static function resolve( array $structures ): bool
+    static function resolve( array $recipes ): bool
     {
         $return = true;
-        foreach( $structures as $structure )
+        foreach( $recipes as $recipe )
         {
-            // if( $structure->type !== Structure::DEFAULT_TYPE ){
-            //     if( !isset($structures[ $structure->type ]) ){
+            // if( $recipe->type !== Recipe::DEFAULT_TYPE ){
+            //     if( !isset($recipes[ $recipe->type ]) ){
             //         $return = false;
             //     }
             //     else {
-            //         $structure->structure =  $structures[ $structure->type ];
+            //         $recipe->recipe =  $recipes[ $recipe->type ];
             //     }
             // }
 
-            foreach(  $structure->composition ?? [] as $key => $content )
+            foreach(  $recipe->composition ?? [] as $key => $content )
             {
                 if( !isset($content['type']) || in_array($content['type'] ?? "", Ingredient::list()) ){
                     continue;
                 }
-                // elseif( $content['type'] === Structure::DEFAULT_TYPE ){
-                //     $structure->composition[ $key ]['structure'] = self::createFromData( $structure->wc, $content );
+                // elseif( $content['type'] === Recipe::DEFAULT_TYPE ){
+                //     $recipe->composition[ $key ]['recipe'] = self::createFromData( $recipe->wc, $content );
                 // }
-                elseif( isset($structures[ $content['type'] ]) ){
-                    $structure->composition[ $key ]['structure'] = $structures[ $content['type'] ] ;
+                elseif( isset($recipes[ $content['type'] ]) ){
+                    $recipe->composition[ $key ]['recipe'] = $recipes[ $content['type'] ] ;
                 }
                 else {
                     $return = false;

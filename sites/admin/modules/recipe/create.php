@@ -1,6 +1,6 @@
 <?php /** @var WC\Module $this */
 
-use WC\Handler\StructureHandler;
+use WC\Handler\RecipeHandler;
 use WC\Ingredient;
 
 $possibleActionsList = [
@@ -12,7 +12,7 @@ if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$recipe      = StructureHandler::createFromData($this->wc, []);
+$recipe      = RecipeHandler::createFromData($this->wc, []);
 
 $recipes     = $this->wc->configuration->recipes();
 $ingredients    = Ingredient::list();

@@ -3,9 +3,9 @@ namespace WC\Cauldron;
 
 use WC\Configuration;
 use WC\WitchCase;
-use WC\Handler\StructureHandler as Handler;
+use WC\Handler\RecipeHandler as Handler;
 
-class Structure 
+class Recipe 
 {
     const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
 
@@ -25,7 +25,7 @@ class Structure
 
 
     /**
-     * Save structure data into file
+     * Save Recipe data into file
      * @param ?string $fileParam : provided filename, default null
      * @return bool
      */
@@ -52,7 +52,7 @@ class Structure
         if( !is_dir($dir) 
             && !mkdir($dir,  octdec( $createFolderRights ), true)
         ){
-            $this->wc->log->error("Can't create structure folder : ".$dir);
+            $this->wc->log->error("Can't create Recipe folder : ".$dir);
             return false;
         }
 
