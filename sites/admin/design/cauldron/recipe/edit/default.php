@@ -1,8 +1,6 @@
 <?php 
 /**
  * @var WC\Cauldron $this 
- * @var ?array $ingredients 
- * @var ?array $structures 
  * @var string $input
  */ 
 ?>
@@ -21,7 +19,7 @@
         $integrationCountClass  = substr_count($this->editPrefix, '[') % 4;
         $contentInput           = $input."[content][".$content->getInputIndex()."]";
         ?>
-        <fieldset class="<?=$content->isIngredient()? 'ingredient': 'structure integration-'.$integrationCountClass?>">
+        <fieldset class="<?=$content->isIngredient()? 'ingredient': 'cauldron integration-'.$integrationCountClass?>">
             <legend>
                 <span   class="span-input-toggle" 
                         data-input="<?=$contentInput?>[name]" 
@@ -35,11 +33,7 @@
                     name="<?=$contentInput ?>[type]" value="<?=$content->type ?>" />
             <?php $content->edit( 
                 null, 
-                [
-                    'ingredients'   => $ingredients, 
-                    'structures'    => $structures,
-                    'input'         => $contentInput,
-                ]
+                [ 'input' => $contentInput ]
             ); ?>
         </fieldset>
     <?php endforeach; endif; ?>
@@ -47,9 +41,5 @@
 
 <?php $this->wc->witch()?->modules['cauldron']?->include(
     'cauldron/add.php', 
-    [ 
-        'ingredients'   => $ingredients, 
-        'structures'    => $structures, 
-        'input'         => $input."[content][new]",
-    ]
+    [ 'input' => $input."[content][new]" ]
 );?>

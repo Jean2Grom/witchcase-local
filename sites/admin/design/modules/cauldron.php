@@ -55,11 +55,7 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
                         name="<?=$contentInput ?>[type]" value="<?=$content->type ?>" />
                 <?php $content->edit( 
                     null, 
-                    [
-                        'ingredients'   => $ingredients, 
-                        'structures'    => $this->wc->configuration->recipes(),
-                        'input'         => $contentInput,
-                    ]
+                    [ 'input' => $contentInput ]
                 ); ?>
             </fieldset>
         <?php endforeach; ?>        
@@ -67,11 +63,7 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
     
     <?php $this->include(
         'cauldron/add.php', 
-        [ 
-            'ingredients'   => $ingredients, 
-            'structures'    => $this->wc->configuration->recipes(), 
-            'input'         => "content[new]",
-        ]
+        [ 'input' => "content[new]" ]
     ); ?>
 </form>
 

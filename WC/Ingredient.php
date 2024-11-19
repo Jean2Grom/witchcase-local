@@ -28,8 +28,8 @@ abstract class Ingredient
     ];
     
     const TYPE                  = null;
-    const DIR                   = "cauldron/ingredients";
-    const DESIGN_SUBFOLDER      = "design/cauldron/ingredients";
+    const DIR                   = "cauldron/ingredient";
+    const DESIGN_SUBFOLDER      = "design/cauldron/ingredient";
 
     public string $type;
     public $value;

@@ -29,8 +29,8 @@ $this->addJsFile('triggers.js');
             <ul>
                 <li>
                     <div>Type</div>
-                    <?php if( $item['structure'] ?? false ): ?>
-                        <a href="<?=$this->witch->url( ['recipe' => $item['structure']->name] )?>">
+                    <?php if( $item['recipe'] ?? false ): ?>
+                        <a href="<?=$this->witch->url( ['recipe' => $item['recipe']->name] )?>">
                             <?=$item['type']?>
                         </a>
                     <?php else: ?>

@@ -34,8 +34,8 @@ class Cauldron
     const DRAFT_FOLDER_STRUCT   = "wc-drafts-folder";
     const ARCHIVE_FOLDER_STRUCT = "wc-archives-folder";
 
-    const DIR                   = "cauldron/structures";
-    const DESIGN_SUBFOLDER      = "design/cauldron/structures";
+    const DIR                   = "cauldron/recipe";
+    const DESIGN_SUBFOLDER      = "design/cauldron/recipe";
 
     public array $properties  = [];
 
@@ -99,7 +99,6 @@ class Cauldron
     {
         if( $name === 'type' ){
             return str_replace(' ', '-', $this->recipe) ?? "cauldron";
-            //return str_replace(' ', '-', $this->data->structure) ?? "cauldron";
         }
         return $this->properties[ $name ] ?? null;
     }
@@ -165,7 +164,6 @@ class Cauldron
 
     function isContent(): bool
     {
-        //if( in_array($this->data?->structure, [ self::DRAFT_FOLDER_STRUCT, self::ARCHIVE_FOLDER_STRUCT ]) ){
         if( in_array($this->recipe, [ self::DRAFT_FOLDER_STRUCT, self::ARCHIVE_FOLDER_STRUCT ]) ){
             return false;
         }
@@ -508,7 +506,6 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
                 $newChild = Handler::createFromData($this->wc, [
                     'name'      =>  $contentParams['name'],
                     'recipe'    => $contentParams['type'] ?? "folder",
-                    //'data'      => json_encode([ 'structure' => $contentParams['type'] ?? "folder" ]),
                     'priority'  => $contentParams['priority'],
                 ]);
 
