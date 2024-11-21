@@ -324,8 +324,11 @@ class CauldronHandler
         if( !in_array($ingredient, $cauldron->ingredients) )
         {
             $ingredient->cauldron       = $cauldron;
-            $ingredient->cauldronID     = $cauldron->id;
+            if( $cauldron->exist() ){
+                $ingredient->cauldronID     = $cauldron->id;
+            }
             $cauldron->ingredients[]    = $ingredient;
+            
             return true;
         }
         

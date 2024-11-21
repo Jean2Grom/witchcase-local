@@ -1,6 +1,7 @@
 <?php 
 namespace WC;
 
+use WC\Cauldron\Recipe;
 use WC\DataAccess\CauldronDataAccess as DataAccess;
 use WC\Handler\CauldronHandler as Handler;
 use WC\Handler\IngredientHandler;
@@ -475,7 +476,17 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
                 $priority                       -=  $priorityInterval;
             }
 
-            if( isset($contents[ $indice ]) 
+            if( $indice === "new" || !isset($contents[ $indice ]) ){
+                $this->create( 
+                    $contentParams['name'] ?? "", 
+                    $contentParams['type'], 
+                    [ 
+                        'value'     => $contentParams['value'] ?? null,
+                        'priority'  => $contentParams['priority'], 
+                    ] 
+                );
+            }
+            elseif( isset($contents[ $indice ]) 
                 && $contents[ $indice ]->type === $contentParams['type'] 
                 && (    !$contents[ $indice ]->exist() 
                         || $contents[ $indice ]->id === (int) ($contentParams['ID'] ?? 0)   
@@ -490,27 +501,6 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
 
                 unset($contents[ $indice ]);
             }
-            elseif( in_array($contentParams['type'] ?? "", Ingredient::list()) ){
-                IngredientHandler::createFromData( 
-                    $this, 
-                    $contentParams['type'], 
-                    [ 
-                        'name'      => $contentParams['name'], 
-                        'value'     => $contentParams['value'] ?? null, 
-                        'priority'  => $contentParams['priority'], 
-                    ] 
-                );
-            }
-            else 
-            {
-                $newChild = Handler::createFromData($this->wc, [
-                    'name'      =>  $contentParams['name'],
-                    'recipe'    => $contentParams['type'] ?? "folder",
-                    'priority'  => $contentParams['priority'],
-                ]);
-
-                $this->addCauldron( $newChild->readInputs($contentParams, $contentAutoPriority) );
-            }
         }
 
         foreach( $contents as $unmatchedContent ){
@@ -518,6 +508,33 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
         }
 
         return $this;
+    }
+
+    function create( string $name, ?string $type=null, array $initProperties=[] )
+    {
+        if( $type && in_array($type, Ingredient::list()) )
+        {
+            $content            = IngredientHandler::factory($type);
+            $content->wc        = $this->wc;
+            $content->name      = !empty($name)? $name: $type;
+            $content->priority  =  $initProperties['priority'] ?? 0; 
+
+            $content->init( $initProperties['value'] ?? null );
+            Handler::setIngredient($this, $content);
+        }
+        else 
+        {
+            $recipe     = $this->wc->configuration->recipe( $type ) 
+                            ?? $this->wc->configuration->recipe('folder');
+            $content    = $recipe->factory( !empty($name)? $name: $recipe->name, $initProperties );
+
+            Handler::setParenthood( $this, $content );
+        }
+
+
+$this->wc->debug( $content, "end create 1: ".$name, 2 );
+//$this->wc->debug->die('jean');
+        return $content;
     }
 
     function draft(): self

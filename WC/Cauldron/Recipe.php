@@ -1,6 +1,7 @@
 <?php
 namespace WC\Cauldron;
 
+use WC\Cauldron;
 use WC\Configuration;
 use WC\WitchCase;
 use WC\Handler\RecipeHandler as Handler;
@@ -84,4 +85,21 @@ class Recipe
         return true;
     }
 
+
+    function factory( ?string $name=null, array $initProperties=[] ): ?Cauldron
+    {
+        $cauldron           = new Cauldron();
+        $cauldron->wc       = $this->wc;
+        $cauldron->name     = $name ?? $this->name;
+        $cauldron->recipe   = $this->name;
+
+        foreach( $this->composition ?? [] as $i => $contentData ){
+            $cauldron->create( 
+                $contentData['name'] ?? $i,  
+                $contentData['type'] ?? "folder"
+            );
+        }
+
+        return $cauldron;
+    }
 }

@@ -1,9 +1,6 @@
 <?php /** @var WC\Module $this */
 
-use WC\Ingredient;
 use WC\Tools;
-
-$alerts = $this->wc->user->getAlerts();
 
 if( !$this->witch("target") )
 {
@@ -43,8 +40,6 @@ elseif( !$this->witch("target")->cauldron()->draft() )
 //$this->wc->debug($draft);
 
 $cauldron       = $this->witch("target")->cauldron();
-$structures     = $this->wc->configuration->recipes();
-$ingredients    = Ingredient::list();
 $return         = false;
 
 switch( Tools::filterAction( 
@@ -76,7 +71,9 @@ switch( Tools::filterAction(
     case 'save-and-return':
         $return = true;
     case 'save':
-        $saved = $cauldron->draft()->readInputs()->save();
+        //$saved = $cauldron->draft()->readInputs()->save();
+        $cauldron->draft()->readInputs();
+        $saved = false;
 
         if( $saved === false )
         {

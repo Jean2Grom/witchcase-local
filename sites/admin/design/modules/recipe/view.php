@@ -9,7 +9,7 @@ $this->addJsFile('triggers.js');
 </h1>
 <p><em><?=$this->witch->data?></em></p>
     
-<?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
+<?php $this->include('alerts.php', [ 'alerts' => $this->wc->user->getAlerts() ]); ?>
 
 <h3><?=$recipe->name?></h3>
 <em><?=$recipe->file ?? ''?></em>
@@ -18,7 +18,7 @@ $this->addJsFile('triggers.js');
     $require = $recipe->require;
     ?>
     <ul class="global-data"> 
-        <?php include $this->getIncludeDesignFile('view/recipe-require-li.php'); ?>
+        <?php $this->include('view/recipe-require-li.php', [ 'require' => $require ]); ?>
     </ul>
 <?php endif; ?>
 
