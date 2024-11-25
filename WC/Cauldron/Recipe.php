@@ -96,7 +96,8 @@ class Recipe
         foreach( $this->composition ?? [] as $i => $contentData ){
             $cauldron->create( 
                 $contentData['name'] ?? $i,  
-                $contentData['type'] ?? "folder"
+                $contentData['type'] ?? "folder",
+                $initProperties['name'] ?? $contentData['init'] ?? []
             );
         }
 

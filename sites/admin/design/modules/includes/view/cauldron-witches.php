@@ -17,6 +17,7 @@ if( $this->witch("target")->cauldron() ): ?>
                     style="display: none;"
                     id="remove-cauldron-witch-action"
                     data-action="remove-cauldron-witch" 
+                    data-confirm="Remove cauldron from witch ?" 
                     data-target="view-cauldron-witches-action" >remove-cauldron-witch</button>
 
             <?php if( count($this->witch("target")->cauldron()->witches) === 1 ): ?>

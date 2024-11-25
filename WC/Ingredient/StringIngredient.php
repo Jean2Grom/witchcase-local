@@ -11,7 +11,7 @@ class StringIngredient extends \WC\Ingredient
      * @return self
      */
     function init( mixed $value=null ): self {
-        return $this->set( $value ?? (string) $this->properties[ 'value' ] ?? null );
+        return $this->set( $value ?? (string) ($this->properties[ 'value' ] ?? "") );
     }
 
     /**
