@@ -34,10 +34,6 @@ elseif( !$this->witch("target")->cauldron()->draft() )
 }
 
 // TODO multi draft management
-//$draft = $this->witch("target")->cauldron()?->draft();
-//$this->wc->debug($this->witch("target")->cauldron());
-//$this->wc->debug($draft->parent);
-//$this->wc->debug($draft);
 
 $cauldron       = $this->witch("target")->cauldron();
 $return         = false;
@@ -71,9 +67,7 @@ switch( Tools::filterAction(
     case 'save-and-return':
         $return = true;
     case 'save':
-        //$saved = $cauldron->draft()->readInputs()->save();
-        $cauldron->draft()->readInputs();
-        $saved = false;
+        $saved = $cauldron->draft()->readInputs()->save();
 
         if( $saved === false )
         {

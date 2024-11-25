@@ -41,8 +41,8 @@ class Cauldron
     public array $properties  = [];
 
     public ?int $id;
-    public ?int $status;
-    public ?int $targetID;
+    public ?int $status     = null;
+    public ?int $targetID   = null;
     public ?string $name;
     public ?string $recipe;
     public ?\stdClass $data;
@@ -293,11 +293,8 @@ class Cauldron
         else 
         {
             $properties = $this->properties;
-$this->wc->debug( $properties );
 
             Handler::writeProperties($this);
-$this->wc->debug( $this->properties );            
-$this->wc->debug( array_diff_assoc($this->properties, $properties) );            
             $result = DataAccess::update( $this, array_diff_assoc($this->properties, $properties) );
         }
         
@@ -520,20 +517,16 @@ $this->wc->debug( array_diff_assoc($this->properties, $properties) );
             $content->priority  =  $initProperties['priority'] ?? 0; 
 
             $content->init( $initProperties['value'] ?? null );
-            Handler::setIngredient($this, $content);
         }
         else 
         {
             $recipe     = $this->wc->configuration->recipe( $type ) 
                             ?? $this->wc->configuration->recipe('folder');
             $content    = $recipe->factory( !empty($name)? $name: $recipe->name, $initProperties );
-
-            Handler::setParenthood( $this, $content );
         }
 
+        $this->add( $content );
 
-$this->wc->debug( $content, "end create 1: ".$name, 2 );
-//$this->wc->debug->die('jean');
         return $content;
     }
 
