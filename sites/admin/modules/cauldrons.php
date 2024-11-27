@@ -1,29 +1,112 @@
 <?php /** @var WC\Module $this */
 
-use WC\DataAccess\CauldronDataAccess;
+use WC\Cauldron;
 use WC\Handler\CauldronHandler;
 
-$conf = [
-    'user',
-    7,    
-];
+// $conf = [
+//     'user',
+//     1,
+// ];
+//$this->wc->dump( $conf );
+//$result = CauldronHandler::fetch($this->wc, [1]);
+//$this->wc->dump( $result, 'bbb');
 
-$this->wc->dump( $conf );
 
-$result = CauldronHandler::fetch($this->wc, $conf);
+$obj = new class {
+    public $baseUrl;
 
-$this->wc->dump( $result );
+    public function href( Cauldron $cauldron ){
+        return $this->baseUrl.'?id='.$cauldron->witches[0]->id."#tab-cauldron-part";
+    }
+};
 
-/*
-$result = CauldronDataAccess::cauldronRequest($this->wc, $conf);
+$obj->baseUrl       = $this->wc->website->getUrl("view");
 
-foreach( $result as $row )
+$tree       = [1 => recursiveTree( 
+    CauldronHandler::fetch($this->wc, [1])[1], 
+    $this->wc->website->sitesRestrictions, 
+    1, 
+    [$obj, "href"]  
+)];
+$breadcrumb = [ 1 ];
+
+function recursiveTree( Cauldron $cauldron, array|bool $sitesRestrictions=false, ?int $currentId=null, ?array $hrefCallBack=null )
 {
-    $cauldron = CauldronHandler::createFromData($this->wc, $row);
+    $path       = false;
+    if( $currentId && $currentId === $cauldron->id ){
+        $path = true;
+    }
     
-$this->wc->dump( $cauldron );
+    $daughters  = [];
+    foreach( $cauldron->contents() as $content )
+    {
+        if( $sitesRestrictions 
+            && $content->type === "wc-site-folder" 
+            && !in_array($content->name, $sitesRestrictions) 
+        ){
+            continue;
+        }
+
+        $daughters[ $content->id ] = $content->isCauldron()? 
+                                        recursiveTree( $content, $sitesRestrictions, $currentId, $hrefCallBack ):
+                                        [
+                                            'id'                => $content->type." ".$content->id,
+                                            'name'              => $content->name,
+                                            'description'       => $content->type,
+                                            'cauldron'          => false,
+                                            'invoke'            => true,
+                                            'daughters'         => [],
+                                            'daughters_orders'  => [],
+                                            'path'              => false,            
+                                        ];
+
+        $path = $path || $daughters[ $content->id ]['path'];                                            
+    }
+    
+    $cauldronIcon   = true;
+    $invokeIcon     = false;
+    if( in_array($cauldron->type, [ "root", "wc-site-folder", "wc-recipe-folder" ]) )
+    {
+        $cauldronIcon   = false;
+        $invokeIcon     = false;    
+    }
+    elseif( $cauldron->parent?->type === "wc-recipe-folder" )
+    {
+        $cauldronIcon   = true;
+        $invokeIcon     = true;    
+    }
+    
+    $tree   = [ 
+        'id'                => $cauldron->id,
+        'name'              => $cauldron->name,
+        'description'       => $cauldron->type." [".$cauldron->id."]",
+        'cauldron'          => $cauldronIcon,
+        'invoke'            => $invokeIcon,
+        'daughters'         => $daughters,
+        'daughters_orders'  => array_keys( $daughters ),
+        'path'              => $path,
+    ];
+
+    if( $cauldronIcon && $invokeIcon && $hrefCallBack ){
+        $tree['href'] = call_user_func( $hrefCallBack, $cauldron );
+    }
+    
+    return $tree;
 }
-*/
 
 
-echo $this->wc->cauldronDepth;
+
+ /** @var WC\Module $this */
+
+//$this->addJsLibFile('jquery-3.6.0.min.js');
+$this->addCssFile('choose-witch.css');
+//$this->addJsFile('choose-cauldron.js');
+?>
+<div id="cauldrons">
+    <h3>
+        <span>Cauldrons Navigation</span>
+    </h3>
+    
+    <?php include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER.'/arborescence.php' ); ?>
+</div>
+
