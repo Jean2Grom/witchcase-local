@@ -677,8 +677,8 @@ class WitchSummoning
                 }
             }
         }
-
-        return CauldronHandler::fetch($wc, array_unique($cauldronsConf), false);
+        
+        return $cauldronsConf? CauldronHandler::fetch($wc, array_unique($cauldronsConf), false): [];
     }
 
     // RECURSIVE READ CRAFT DATA FUNCTIONS

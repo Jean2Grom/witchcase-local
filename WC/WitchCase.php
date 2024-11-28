@@ -88,8 +88,15 @@ class WitchCase
             $this->db               =   new Database( $this );
             $this->cache            =   new Cache( $this );
         }
-        catch (\Exception $e){
-            $this->log->error($e->getMessage(), true, [ 'file' => $e->getFile(), 'line' => $e->getLine() ]);
+        catch( \Exception $e ){
+            $this->log->error(
+                "WC construct: ".$e->getMessage(), 
+                true, 
+                [ 
+                    'file' => $e->getFile(), 
+                    'line' => $e->getLine() 
+                ]
+            );
         }
     }
     
@@ -107,8 +114,15 @@ class WitchCase
             
             $this->cairn->summon();
         }
-        catch (\Exception $e){
-            $this->log->error($e->getMessage(), true, [ 'file' => $e->getFile(), 'line' => $e->getLine() ]);
+        catch( \Exception $e ){
+            $this->log->error(
+                "WC injest: ".$e->getMessage(), 
+                true, 
+                [
+                    'file' => $e->getFile(), 
+                    'line' => $e->getLine() 
+                ]
+            );
         }
         
         return $this;
@@ -120,8 +134,15 @@ class WitchCase
             $this->cairn->sabbath();
             $this->website->display();
         }
-        catch (\Exception $e){
-            $this->log->error($e->getMessage(), true, [ 'file' => $e->getFile(), 'line' => $e->getLine() ]);
+        catch( \Exception $e ){
+            $this->log->error(
+                "WC run: ".$e->getMessage(), 
+                true, 
+                [ 
+                    'file' => $e->getFile(), 
+                    'line' => $e->getLine() 
+                ]
+            );
         }
         
         $this->debug->display();

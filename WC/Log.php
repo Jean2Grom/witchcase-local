@@ -118,34 +118,48 @@ class Log
         
         if( !$caller )
         {
-            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-            
-            foreach( $backtrace as $backtraceData )
+            foreach( debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $backtraceData )
             {
-                if( !isset($backtraceData['class']) ){
-                    break;
-                }
-                
-                if( $backtraceData['class'] != __CLASS__ 
-                    && $backtraceData['class'] != "WC\Debug" 
-                    && $backtraceData['function'] != "dump"
-                    && $backtraceData['function'] != "debug"
-                ){
-                    break;
+                $class      = $backtraceData['class'] ?? false;
+                $function   = $backtraceData['function'] ?? false;
+
+                if( !in_array($function, ["call_user_func", "call_user_func_array", "__call"]) ){
+                    if( !$class ){
+                        break;
+                    }
+                    elseif(
+                        !($class === __CLASS__ && $function === "prefix")
+                        && !($class === "WC\\Debug" && $function === "prefix")
+                        && !($class === "WC\\Debug" && $function === "dump")
+                        && !($class === "WC\\WitchCase" && $function === "debug")
+                        && !($class === "WC\\WitchCase" && $function === "dump")
+                    ){
+                        break;
+                    }
                 }
                 
                 $caller = $backtraceData;
             }
         }
-        
-        $file = $caller['file'];
-        
-        if( str_starts_with($file, getcwd().'/') ){
-            $file = substr( $file, strlen(getcwd())+1 );
+
+        $file = $caller['file'] ?? false;
+        $line = $caller['line'] ?? false;
+
+        if( $file )
+        {
+            $prefix .= "[ ";
+            if( str_starts_with($file, getcwd().'/') ){
+                $prefix .= substr( $file, strlen(getcwd())+1 );
+            }
+            else {
+                $prefix .= $file;
+            }
+
+            if( $line ){
+                $prefix .= " on line ".$line;
+            }            
+            $prefix .= " ] ";
         }
-        
-        $prefix .= "[ ".$file;
-        $prefix .= " on line ".$caller["line"]." ] ";
         
         return $prefix;
     }
