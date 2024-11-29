@@ -41,5 +41,9 @@
 
 <?php $this->wc->witch()?->modules['cauldron']?->include(
     'cauldron/add.php', 
-    [ 'input' => $input."[content][new]" ]
+    [
+        'input'     => $input."content[new]",
+        'cauldron'  => $this
+    ]
+
 );?>

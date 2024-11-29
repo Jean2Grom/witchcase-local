@@ -16,8 +16,6 @@ if( !$this->witch("target") ){
     exit();
 }
 
-$this->wc->debug( $this->wc->request->inputs() );
-
 switch( Tools::filterAction( 
     $this->wc->request->param('action'),
     [

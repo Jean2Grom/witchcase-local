@@ -63,7 +63,10 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
     
     <?php $this->include(
         'cauldron/add.php', 
-        [ 'input' => "content[new]" ]
+        [
+            'input'     => "content[new]",
+            'cauldron'  => $cauldron->draft()
+        ]
     ); ?>
 </form>
 

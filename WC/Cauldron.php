@@ -462,11 +462,23 @@ class Cauldron
         }
 
         $contents           = $this->contents();
+        $recipe             = $this->wc->configuration->recipe( $this->recipe ); 
         $this->content      = null;
         $this->ingredients  = [];
-        $this->children     = [];
+        $this->children     = [];        
         foreach( $params['content'] as $indice => $contentParams )
-        {
+        {          
+            if( !$contentParams['type'] )
+            {
+                $this->wc->log->error( "type undefined, ".$indice." entry skipped" );
+                continue;
+            }
+            elseif( !$recipe->isAllowed($contentParams['type']) )
+            {
+                $this->wc->log->error( "type error: ".$contentParams['type']." is not allowed for ".$recipe->name );
+                continue;
+            }
+
             if( $contentAutoPriority )
             {
                 $contentParams[ 'priority' ]    =   $priority;

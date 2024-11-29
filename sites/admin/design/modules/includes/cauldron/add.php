@@ -1,9 +1,13 @@
-<?php 
-use WC\Ingredient;
+<?php
+use WC\Cauldron;
 /**
  * @var string $input
+ * @var Cauldron $cauldron
  */
 
+$recipe             = $this->wc->configuration->recipe( $cauldron->recipe );
+$allowedIngredients = $recipe->allowedIngredients();
+$allowedRecipes     = $recipe->allowedRecipes();
 ?>
 <div class="cauldron-add-actions">
     <div class="add-form" data-input="<?=$input ?>">
@@ -13,18 +17,18 @@ use WC\Ingredient;
         </h4>
         <select>
             <option value="">Select type</option>
-            <?php if( Ingredient::list() ): ?>
+            <?php if( $allowedIngredients ): ?>
                 <optgroup label="ingredients">
-                    <?php foreach( Ingredient::list() ?? [] as $ingredient ): ?>
+                    <?php foreach( $allowedIngredients as $ingredient ): ?>
                         <option value="<?=$ingredient?>">
                             <?=$ingredient?>
                         </option>
                     <?php endforeach; ?>
                 </optgroup>
             <?php endif; ?>
-            <?php if( $this->wc->configuration->recipes() ): ?>
+            <?php if( $allowedRecipes ): ?>
                 <optgroup label="recipes">
-                    <?php foreach( $this->wc->configuration->recipes() ?? [] as $recipe ): ?>
+                    <?php foreach( $allowedRecipes as $recipe ): ?>
                         <option value="<?=$recipe->name?>">
                             <?=$recipe->name?>
                         </option>

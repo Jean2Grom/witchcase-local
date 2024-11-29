@@ -5,6 +5,7 @@ use WC\Cauldron;
 use WC\Configuration;
 use WC\WitchCase;
 use WC\Handler\RecipeHandler as Handler;
+use WC\Ingredient;
 
 class Recipe 
 {
@@ -103,4 +104,49 @@ class Recipe
 
         return $cauldron;
     }
+
+
+    function isAllowed( string $testedType ): bool
+    {
+        if( isset($this->require['accept'])
+            && !in_array($testedType, $this->require['accept']) 
+        ){
+            return false;
+        }
+
+        if( isset($this->require['refuse'])
+            && in_array($testedType, $this->require['refuse']) 
+        ){
+            return false;
+        }
+
+        return true;
+    }
+
+
+    function allowedIngredients(): array
+    {
+        $ingredients = [];
+        foreach( Ingredient::list() ?? [] as $ingredient ){
+            if( $this->isAllowed($ingredient) ){
+                $ingredients[] = $ingredient;
+            }
+        }
+
+        return $ingredients;
+    }
+
+    
+    function allowedRecipes(): array
+    {
+        $recipes = [];
+        foreach( $this->wc->configuration->recipes() as $recipe ){
+            if( $this->isAllowed($recipe->name) ){
+                $recipes[] = $recipe;
+            }
+        }
+        
+        return $recipes;
+    }
+
 }
