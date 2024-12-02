@@ -44,7 +44,8 @@ class Cauldron
     public ?int $status     = null;
     public ?int $targetID   = null;
     public ?string $name;
-    public ?string $recipe;
+    /** @var null|string|Recipe */
+    public mixed $recipe;
     public ?\stdClass $data;
     public ?int $priority;
     public ?\DateTime $datetime;
@@ -196,7 +197,7 @@ class Cauldron
 
     /**
      * Display priority ordered array of content Ingredients and children Cauldron
-     * @return Ingredient|Cauldron[]
+     * @return (Ingredient|Cauldron)[]
      */
     function contents(): array
     {
@@ -255,8 +256,8 @@ class Cauldron
         if( !$transactionMode ){
             return $this->saveAction();
         }
-        $this->wc->db->begin();
 
+        $this->wc->db->begin();
         try {
             if( !$this->saveAction() )
             {
@@ -270,13 +271,19 @@ class Cauldron
             $this->wc->db->rollback();
             return false;
         }
-
         $this->wc->db->commit();
+
         return true;
     }
 
     private function saveAction(): bool
     {
+        if( !$this->validate() )
+        {
+            $this->wc->log->error("Not a valid content, can't save ".$this->name);
+            return false;
+        }
+
         if( $this->depth > $this->wc->cauldronDepth ){
             DataAccess::increaseDepth( $this->wc );
         }
@@ -323,6 +330,36 @@ class Cauldron
         $this->inputID = null;
 
         return $result;
+    }
+
+    function validate()
+    {        
+        $recipe             = $this->wc->configuration->recipe( $this->recipe );         
+$this->wc->dump( $recipe, $recipe );
+        foreach( $this->contents() as $content ){
+            if( !$recipe->isAllowed($content->type) )
+            {
+                $this->wc->log->error( "type error: ".$content->type." is not allowed for  ".$recipe );
+                return false;
+            }
+        }
+
+        $min        = $recipe->require['min'] ?? 0;
+        $max        = $this->require['max'] ?? -1;
+        $contentQtt = count($this->contents());
+$this->wc->debug( "aaaaaaa" );        
+        if( $min && $contentQtt < $min )
+        {
+            $this->wc->log->error( "cauldron error: not enough contents for ".$recipe );
+            return false;
+        }
+        elseif( $max > -1 && $contentQtt > $max )
+        {
+            $this->wc->log->error( "cauldron error: too many contents for ".$recipe );
+            return false;
+        }
+
+        return false;
     }
 
     function purge(): bool 

@@ -27,6 +27,14 @@ class Recipe
 
 
     /**
+     * Name reading
+     * @return string
+     */
+    public function __toString(): string {
+        return $this->name;
+    }
+
+    /**
      * Save Recipe data into file
      * @param ?string $fileParam : provided filename, default null
      * @return bool
