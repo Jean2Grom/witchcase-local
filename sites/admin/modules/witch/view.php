@@ -1,7 +1,7 @@
 <?php /**  @var WC\Module $this */
 namespace WC;
 
-use WC\DataAccess\Witch;
+use WC\DataAccess\WitchDataAccess;
 use WC\Handler\CauldronHandler;
 use WC\Handler\WitchHandler;
 
@@ -282,7 +282,7 @@ switch( Tools::filterAction(
             break;
         }
 
-        $updatesResult = Witch::updates($this->wc, $params, $conditions);
+        $updatesResult = WitchDataAccess::updates($this->wc, $params, $conditions);
 
         if( $updatesResult === false )
         {
@@ -361,7 +361,7 @@ switch( Tools::filterAction(
             break;
         }
 
-        $updatesResult = Witch::update($this->wc, [ 'cauldron' => 0, 'cauldron_priority' => 0 ], [ 'id' => $id ]);
+        $updatesResult = WitchDataAccess::update($this->wc, [ 'cauldron' => 0, 'cauldron_priority' => 0 ], [ 'id' => $id ]);
 
         if( $updatesResult === false )
         {

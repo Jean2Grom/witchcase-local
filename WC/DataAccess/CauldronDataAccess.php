@@ -323,6 +323,12 @@ class CauldronDataAccess
             return false;
         }
         
+        $witchUpdateResult = WitchDataAccess::update($cauldron->wc, ['cauldron' => null], ['cauldron' => $cauldron->id]);
+
+        if( $witchUpdateResult === false ){
+            return false;
+        }
+
         $query = "";
         $query  .=  "DELETE FROM `cauldron` ";
         $query  .=  "WHERE `id` = :id ";

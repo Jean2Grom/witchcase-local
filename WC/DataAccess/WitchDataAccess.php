@@ -10,7 +10,7 @@ use WC\Cairn;
  * 
  * @author Jean2Grom
  */
-class Witch
+class WitchDataAccess
 {
     static function readFromId( WitchCase $wc, int $id )
     {
@@ -44,13 +44,17 @@ class Witch
         }
         
         $separator = "WHERE ";
-        foreach( array_keys($conditions) as $field )
+        foreach( $conditions as $field => $condition )
         {
-            $query      .=  $separator.'`'.$wc->db->escape_string($field)."` = :".$field." ";
+            $key = "condition_".$field;
+
+            $query      .=  $separator.'`'.$wc->db->escape_string($field)."` = :".$key." ";
             $separator  =  "AND ";
+
+            $params[ $key ] = $condition;
         }
-        
-        return $wc->db->updateQuery( $query, array_replace($params, $conditions) );
+
+        return $wc->db->updateQuery( $query, $params );
     }
     
     static function updates( WitchCase $wc, array $params, array $conditions )
@@ -76,11 +80,17 @@ class Witch
         $separator = "WHERE ";
         foreach( array_keys( array_values($conditions)[0] ) as $field )
         {
-            $query      .=  $separator.'`'.$wc->db->escape_string($field)."` = :".$field." ";
+            $key = "condition_".$field;
+
+            $query      .=  $separator.'`'.$wc->db->escape_string($field)."` = :".$key." ";
             $separator  =  "AND ";
+
+            foreach( array_keys($params) as $i ){
+                $params[ $i ][ $key ] = $conditions[ $i ][ $field ];
+            }
         }
         
-        return $wc->db->updateQuery( $query, array_replace_recursive($params, $conditions), true );
+        return $wc->db->updateQuery( $query, $params, true );
     }
     
     static function create( WitchCase $wc, array $params )

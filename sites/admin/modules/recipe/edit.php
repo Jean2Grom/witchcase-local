@@ -106,7 +106,7 @@ function getRequire( $inputs, $name )
     if( $inputs[ $name."-min" ] > 0 ){
         $require['min'] = $inputs[ $name."-min" ];
     }
-    if( $inputs[ $name."-max" ] > 0 ){
+    if( $inputs[ $name."-max" ] > -1 ){
         $require['max'] = $inputs[ $name."-max" ];
     }
 

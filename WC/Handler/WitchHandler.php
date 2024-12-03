@@ -3,7 +3,7 @@ namespace WC\Handler;
 
 use WC\WitchCase;
 use WC\Witch;
-use WC\DataAccess\Witch as DataAccess;
+use WC\DataAccess\WitchDataAccess as DataAccess;
 use WC\Datatype\ExtendedDateTime;
 
 class WitchHandler

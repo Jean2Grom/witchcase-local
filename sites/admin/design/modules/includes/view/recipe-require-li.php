@@ -46,7 +46,7 @@ if( $require['min'] ?? false ): ?>
         <div><?=$require['min'] ?? 0?></div>
     </li>
 <?php endif; 
-if( $require['max'] ?? false ): ?>
+if( ($require['max'] ?? -1) >= 0 ): ?>
     <li>
         <div>Maximum allowed</div>
         <div><?=$require['max'] ?? 0?></div>

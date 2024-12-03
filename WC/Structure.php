@@ -2,7 +2,7 @@
 namespace WC;
 
 use WC\DataAccess\Structure as StructureDA;
-use WC\DataAccess\Witch as WitchDA;
+use WC\DataAccess\WitchDataAccess as WitchDA;
 use WC\DataAccess\WitchCrafting;
 use WC\Handler\WitchHandler;
 

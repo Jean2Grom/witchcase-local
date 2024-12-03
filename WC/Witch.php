@@ -2,7 +2,7 @@
 namespace WC;
 
 use WC\Handler\WitchHandler as Handler;
-use WC\DataAccess\Witch as DataAccess;
+use WC\DataAccess\WitchDataAccess as DataAccess;
 use WC\Structure;
 
 use WC\Handler\CauldronHandler;
