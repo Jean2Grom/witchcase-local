@@ -131,6 +131,13 @@ class Recipe
         return true;
     }
 
+    function min(): ?int {
+        return $this->require['min'] ?? null;
+    }
+
+    function max(): ?int {
+        return $this->require['max'] ?? null;
+    }
 
     function allowedIngredients(): array
     {
@@ -157,4 +164,15 @@ class Recipe
         return $recipes;
     }
 
+
+    function isCompositionElement( string $type, string $name ): bool
+    {
+        foreach( $this->composition ?? [] as $element ){
+            if( $type === $element['type'] && $name === $element['name'] ){
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

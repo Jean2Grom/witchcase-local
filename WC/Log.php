@@ -128,11 +128,8 @@ class Log
                         break;
                     }
                     elseif(
-                        !($class === __CLASS__ && $function === "prefix")
-                        && !($class === "WC\\Debug" && $function === "prefix")
-                        && !($class === "WC\\Debug" && $function === "dump")
-                        && !($class === "WC\\WitchCase" && $function === "debug")
-                        && !($class === "WC\\WitchCase" && $function === "dump")
+                        !in_array( $class, ["WC\\Log", "WC\\Debug", "WC\\WitchCase"] )
+                        && !in_array( $function, ["prefix", "error", "debug", "dump"] )
                     ){
                         break;
                     }
