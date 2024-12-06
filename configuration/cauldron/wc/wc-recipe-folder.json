@@ -1,3 +1,11 @@
 {
-    "name": "wc-recipe-folder"
+    "name": "wc-recipe-folder",
+    "require": {
+        "refuse": [
+            "wc-archives-folder",
+            "wc-drafts-folder",
+            "wc-site-folder",
+            "wc-recipe-folder"
+        ]
+    }
 }
