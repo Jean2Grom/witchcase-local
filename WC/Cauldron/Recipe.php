@@ -5,7 +5,7 @@ use WC\Cauldron;
 use WC\Configuration;
 use WC\WitchCase;
 use WC\Handler\RecipeHandler as Handler;
-use WC\Ingredient;
+use WC\Cauldron\Ingredient;
 
 class Recipe 
 {

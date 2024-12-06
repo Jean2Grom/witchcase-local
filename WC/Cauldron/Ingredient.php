@@ -1,6 +1,8 @@
 <?php 
-namespace WC;
+namespace WC\Cauldron;
 
+use WC\WitchCase;
+use WC\Cauldron;
 use WC\Trait\CauldronIngredientTrait;
 use WC\Handler\IngredientHandler as Handler;
 use WC\DataAccess\IngredientDataAccess as DataAccess;

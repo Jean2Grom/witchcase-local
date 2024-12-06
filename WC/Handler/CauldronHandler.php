@@ -3,7 +3,7 @@ namespace WC\Handler;
 
 use WC\WitchCase;
 use WC\Cauldron;
-use WC\Ingredient;
+use WC\Cauldron\Ingredient;
 use WC\DataAccess\CauldronDataAccess AS DataAccess;
 use WC\Datatype\ExtendedDateTime;
 use WC\Witch;
@@ -39,7 +39,7 @@ class CauldronHandler
      * @var Witchcase $wc
      * @var array $configuration
      * @var array $result
-     * @return array 
+     * @return (Cauldron|Ingredient)[] 
      */
     private static function instanciate( WitchCase $wc, array $configuration, array $result ): array
     {

@@ -1,7 +1,9 @@
 <?php 
-namespace WC\Ingredient;
+namespace WC\Cauldron\Ingredient;
 
-class FloatIngredient extends \WC\Ingredient 
+use WC\Cauldron\Ingredient;
+
+class FloatIngredient extends Ingredient
 {
     const TYPE  = 'float';
 

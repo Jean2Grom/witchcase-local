@@ -2,7 +2,7 @@
 namespace WC\Handler;
 
 use WC\Cauldron;
-use WC\Ingredient;
+use WC\Cauldron\Ingredient;
 
 class IngredientHandler
 {
@@ -127,7 +127,7 @@ class IngredientHandler
     
     static function factory( string $type ): ?Ingredient
     {
-        $className  =   "\\WC\\Ingredient\\";
+        $className  =   Ingredient::class."\\";
         $className  .=  str_replace('_', '', ucwords($type, '_'));
         $className  .=  'Ingredient';
 

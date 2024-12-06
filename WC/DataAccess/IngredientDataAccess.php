@@ -1,10 +1,8 @@
 <?php
 namespace WC\DataAccess;
 
-use WC\WitchCase;
-use WC\Cauldron;
-use WC\Ingredient;
-use WC\Handler\IngredientHandler;
+use WC\Cauldron\Ingredient;
+use WC\Handler\IngredientHandler as Handler;
 
 class IngredientDataAccess
 {
@@ -15,7 +13,7 @@ class IngredientDataAccess
         }
         
         $query = "";
-        $query  .=  "INSERT INTO `".IngredientHandler::table($ingredient)."` ";
+        $query  .=  "INSERT INTO `".Handler::table($ingredient)."` ";
         
         $separator = "( ";
         foreach( array_keys($ingredient->properties) as $field )
@@ -44,7 +42,7 @@ class IngredientDataAccess
         }
         
         $query = "";
-        $query  .=  "UPDATE `".IngredientHandler::table($ingredient)."` ";
+        $query  .=  "UPDATE `".Handler::table($ingredient)."` ";
         
         $separator = "SET ";
         foreach( array_keys($params) as $field )
@@ -65,7 +63,7 @@ class IngredientDataAccess
         }
         
         $query = "";
-        $query  .=  "DELETE FROM `".IngredientHandler::table($ingredient)."` ";
+        $query  .=  "DELETE FROM `".Handler::table($ingredient)."` ";
         $query  .=  "WHERE `id` = :id ";
 
         return $ingredient->wc->db->deleteQuery( $query,  ['id' => $ingredient->id] );

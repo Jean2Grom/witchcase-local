@@ -3,7 +3,7 @@ namespace WC\Handler;
 
 use WC\WitchCase;
 use WC\Cauldron\Recipe;
-use WC\Ingredient;
+use WC\Cauldron\Ingredient;
 
 class RecipeHandler
 {

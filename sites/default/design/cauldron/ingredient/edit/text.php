@@ -1,6 +1,6 @@
 <?php 
 /** 
- * @var WC\Ingredient\TextIngredient $this 
+ * @var WC\Cauldron\Ingredient\TextIngredient $this 
  * @var string $cauldronInput 
  * @var ?string $input 
  */

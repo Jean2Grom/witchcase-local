@@ -1,9 +1,11 @@
 <?php 
-namespace WC\Ingredient;
+namespace WC\Cauldron\Ingredient;
 
-class IntegerIngredient extends \WC\Ingredient 
+use WC\Cauldron\Ingredient;
+
+class StringIngredient extends Ingredient
 {
-    const TYPE  = 'integer';
+    const TYPE  = 'string';
 
     /**
      * Init function used to setup ingredient
@@ -11,18 +13,18 @@ class IntegerIngredient extends \WC\Ingredient
      * @return self
      */
     function init( mixed $value=null ): self {
-        return $this->set( $value ?? (int) $this->properties[ 'value' ] ?? null );
+        return $this->set( $value ?? (string) ($this->properties[ 'value' ] ?? "") );
     }
 
     /**
      * Default function to set value
-     * @param mixed $value : has to be a integer
+     * @param mixed $value : has to be a string
      * @return self
      */
     public function set( mixed $value ): self
     {
-        if( !is_null($value) && !ctype_digit(strval($value)) ){
-            $this->wc->log->error( "Try to set a non integer value to ".$this->type." ingredient");
+        if( !is_null($value) && !is_string($value) ){
+            $this->wc->log->error( "Try to set a non string value to ".$this->type." ingredient");
         }
         else {
             $this->value = $value;

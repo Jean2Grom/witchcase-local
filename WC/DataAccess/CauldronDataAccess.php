@@ -3,7 +3,7 @@ namespace WC\DataAccess;
 
 use WC\WitchCase;
 use WC\Cauldron;
-use WC\Ingredient;
+use WC\Cauldron\Ingredient;
 use WC\Witch;
 
 class CauldronDataAccess

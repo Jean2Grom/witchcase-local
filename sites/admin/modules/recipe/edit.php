@@ -1,6 +1,6 @@
 <?php /** @var WC\Module $this */
 
-use WC\Ingredient;
+use WC\Cauldron\Ingredient;
 
 $possibleActionsList = [
     'save',

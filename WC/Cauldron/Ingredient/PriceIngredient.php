@@ -1,5 +1,5 @@
 <?php 
-namespace WC\Ingredient;
+namespace WC\Cauldron\Ingredient;
 
 class PriceIngredient extends FloatIngredient 
 {

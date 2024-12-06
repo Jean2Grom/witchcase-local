@@ -1,6 +1,7 @@
 <?php 
 namespace WC;
 
+use WC\Cauldron\Ingredient;
 use WC\Cauldron\Recipe;
 use WC\DataAccess\CauldronDataAccess as DataAccess;
 use WC\Handler\CauldronHandler as Handler;

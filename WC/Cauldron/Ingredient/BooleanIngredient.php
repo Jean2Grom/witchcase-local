@@ -1,7 +1,9 @@
 <?php 
-namespace WC\Ingredient;
+namespace WC\Cauldron\Ingredient;
 
-class BooleanIngredient extends \WC\Ingredient 
+use WC\Cauldron\Ingredient;
+
+class BooleanIngredient extends Ingredient
 {
     const TYPE  = 'boolean';
 

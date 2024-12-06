@@ -1,7 +1,9 @@
 <?php 
-namespace WC\Ingredient;
+namespace WC\Cauldron\Ingredient;
 
-class DatetimeIngredient extends \WC\Ingredient 
+use WC\Cauldron\Ingredient;
+
+class DatetimeIngredient extends Ingredient
 {
     const TYPE  = 'datetime';
 

@@ -1,4 +1,4 @@
-<?php /** @var WC\Ingredient $this */ 
+<?php /** @var WC\Cauldron\Ingredient $this */ 
 
 $designFile = $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/edit/".$this->type.".php");
 
