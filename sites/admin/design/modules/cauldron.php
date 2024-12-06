@@ -262,6 +262,27 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
 
         function checkAddFormValidity( select, input, button )
         {
+            let name = select.options[select.selectedIndex].dataset.name;            
+            if( name !== undefined )
+            {
+                if( input.dataset.previous === undefined ){
+                    input.dataset['previous'] = input.value;  
+                }
+
+                input.value = name;
+                input.setAttribute('type', 'hidden');
+            }
+            else 
+            {
+                input.setAttribute('type', 'text');                
+
+                if( input.dataset.previous !== undefined )
+                {
+                    input.value = input.dataset.previous;
+                    input.removeAttribute('data-previous');
+                }
+            }
+
             if( !button.classList.contains("disabled") ){
                 button.classList.add("disabled");
             }
@@ -272,8 +293,11 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
 
         function cancelAddForm(form, showButton)
         {
-            form.querySelector('select').value  = "";
-            form.querySelector('input').value   = "";
+            if( form.querySelector('select > option').length > 1 )
+            {
+                form.querySelector('select').value  = "";
+                form.querySelector('input').value   = "";
+            }
             showButton.style.display    = 'block';
             form.style.display          = 'none';
         }

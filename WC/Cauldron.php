@@ -44,8 +44,11 @@ class Cauldron
     public ?int $status     = null;
     public ?int $targetID   = null;
     public ?string $name;
+
     /** @var null|string|Recipe */
     public mixed $recipe;
+    public array $allowed = [];
+
     public ?\stdClass $data;
     public ?int $priority;
     public ?\DateTime $datetime;
@@ -145,7 +148,11 @@ class Cauldron
         return $this->status === self::STATUS_ARCHIVED;
     }
     
-
+    /**
+     * Check if this cauldron is direct parent of tested one
+     * @var Cauldron $potentialChild
+     * @return bool
+     */
     function isParentOf( self $potentialChild ): bool
     {
         if( $potentialChild->depth != $this->depth + 1 ){
@@ -164,6 +171,10 @@ class Cauldron
         return $isParent;
     }
 
+    /**
+     * Test the status of this cauldron: is it a content (ie not a draft nor an archive)
+     * @return bool
+     */
     function isContent(): bool
     {
         if( in_array($this->recipe, [ self::DRAFT_FOLDER_STRUCT, self::ARCHIVE_FOLDER_STRUCT ]) ){
@@ -174,16 +185,78 @@ class Cauldron
     }
 
     /**
-     * @return array|Ingredient|Cauldron|null
+     * Get Recipe of this cauldron: if not instanciate yet (ie is a simple string), create instance from Conf reading 
+     * @return Recipe
      */
-    function content( ?string $name=null ): array|Ingredient|Cauldron|null
+    function recipe(): Recipe
     {
-        if( is_null($name) ){
-            return $this->contents();
+        if( !($this->recipe instanceof Recipe) ){
+            $this->recipe = $this->wc->configuration->recipe( $this->recipe ) 
+                                ?? $this->wc->configuration->recipe('folder');
         }
 
+        return $this->recipe;
+    }
+
+    /** 
+     * get constituting elements of cauldron based on recipe's reading
+     * @return array[] : ["name" => <NAME>,  "type" => <TYPE>, ...]
+     */
+    function allowedNewElements(): array    
+    {
+        if( !isset($this->allowed['ingredients']) )
+        {
+            $this->allowed['elements'] = [];
+
+            foreach( $this->recipe()->composition ?? [] as $element ){
+                if( !$this->content($element[ 'name' ]) ){
+                    $this->allowed['elements'][] = $element;
+                }
+            }
+        }
+
+        return $this->allowed['elements'];
+    }
+
+    /**
+     * get allowed types of ingredients based on recipe's reading
+     * @return string[]
+     */
+    function allowedNewIngredients(): array
+    {
+        if( !isset($this->allowed['ingredients']) ){
+            $this->allowed['ingredients'] = $this->recipe()->allowedIngredients();
+        }
+
+        return $this->allowed['ingredients'];
+    }
+
+    /**
+     * get allowed types of recipes based on recipe's reading
+     * @return Recipe[]
+     */
+    function allowedNewRecipes(): array
+    {
+        if( !isset($this->allowed['recipes']) ){
+            $this->allowed['recipes'] = $this->recipe()->allowedRecipes();
+        }
+
+        return $this->allowed['recipes'];
+    }
+
+    /**
+     * read content from name, if cauldron has only one content, name is not mandatory
+     * @var string $name
+     * @return Ingredient|Cauldron|null
+     */
+    function content( string $name="" ): Ingredient|Cauldron|null
+    {
         if( is_null($this->content) ){
             $this->generatContent();
+        }
+
+        if( !$name && count($this->content) === 1 ){
+            return array_values($this->content)[0];
         }
 
         foreach( $this->content as $content ){
@@ -333,33 +406,54 @@ class Cauldron
     }
 
     function validate()
-    {        
-        $recipe             = $this->wc->configuration->recipe( $this->recipe );         
-$this->wc->dump( $recipe, $recipe );
-        foreach( $this->contents() as $content ){
-            if( !$recipe->isAllowed($content->type) )
+    {
+        $composition    = $this->recipe()->composition ?? [];
+        $contentQtt     = 0;
+        foreach( $this->contents() as $content )
+        {
+            $isCompositionElement = false;
+            foreach( $composition as $i => $element ){
+                if( $element['name'] === $content->name && $element['type'] === $content->type )
+                {
+                    $isCompositionElement = true;
+                    unset($composition[ $i ]);
+                    break;
+                }
+            }
+            
+            if( !$isCompositionElement )
             {
-                $this->wc->log->error( "type error: ".$content->type." is not allowed for  ".$recipe );
+                $contentQtt++;
+                if( !$this->recipe()->isAllowed($content->type) )
+                {
+                    $this->wc->log->error( "type error: ".$content->type." is not allowed for ".$this->recipe );
+                    return false;
+                }
+            }
+        }
+
+        foreach( $composition as $unmatchedElement ){
+            if( $unmatchedElement['mandatory'] ?? null )
+            {
+                $this->wc->log->error( "cauldron error: missing ".$unmatchedElement['name']." content for ".$this->recipe );
                 return false;
             }
         }
 
-        $min        = $recipe->require['min'] ?? 0;
-        $max        = $this->require['max'] ?? -1;
-        $contentQtt = count($this->contents());
-$this->wc->debug( "aaaaaaa" );        
+        $min        = $this->recipe()->require['min'] ?? 0;
+        $max        = $this->recipe()->require['max'] ?? -1;
         if( $min && $contentQtt < $min )
         {
-            $this->wc->log->error( "cauldron error: not enough contents for ".$recipe );
+            $this->wc->log->error( "cauldron error: not enough contents for ".$this->recipe );
             return false;
         }
         elseif( $max > -1 && $contentQtt > $max )
         {
-            $this->wc->log->error( "cauldron error: too many contents for ".$recipe );
+            $this->wc->log->error( "cauldron error: too many contents for ".$this->recipe );
             return false;
         }
 
-        return false;
+        return true;
     }
 
     function purge(): bool 
@@ -481,7 +575,10 @@ $this->wc->debug( "aaaaaaa" );
     function readInputs( ?array $inputs=null, bool $contentAutoPriority=true ): self
     {
         $params = $inputs ?? $this->wc->request->inputs();
-        
+
+//$this->wc->dump($params['content']);
+//$this->wc->debug->die("www");
+
         if( isset($params['name']) ){
             $this->name = htmlspecialchars($params['name']);
         }
@@ -490,7 +587,7 @@ $this->wc->debug( "aaaaaaa" );
             $this->priority = $params['priority'];
         }
 
-        $params['content'] = $params['content'] ?? [];
+        $params['content'] = $params['content']? $params['content']: [];
 
         if( $contentAutoPriority )
         {
@@ -499,20 +596,30 @@ $this->wc->debug( "aaaaaaa" );
         }
 
         $contents           = $this->contents();
-        $recipe             = $this->wc->configuration->recipe( $this->recipe ); 
         $this->content      = null;
         $this->ingredients  = [];
         $this->children     = [];        
         foreach( $params['content'] as $indice => $contentParams )
-        {          
-            if( !$contentParams['type'] )
+        {
+            if( !($contentParams['type'] ?? null) )
             {
                 $this->wc->log->error( "type undefined, ".$indice." entry skipped" );
                 continue;
             }
-            elseif( !$recipe->isAllowed($contentParams['type']) )
-            {
-                $this->wc->log->error( "type error: ".$contentParams['type']." is not allowed for ".$recipe->name );
+
+            $isNew = !isset($contents[ $indice ])
+                || $indice === "new" 
+                || $contents[ $indice ]->type !== $contentParams['type']
+                || (
+                    $contents[ $indice ]->exist() 
+                    && $contents[ $indice ]->id !== (int) ($contentParams['ID'] ?? 0)
+                );
+            
+            if( $isNew 
+                && !$this->recipe()->isCompositionElement($contentParams['type'], $contentParams['name'] ?? "")
+                && !$this->recipe()->isAllowed($contentParams['type']) 
+            ){
+                $this->wc->log->error( "type error: ".$contentParams['type']." is not allowed for ".$this->recipe );
                 continue;
             }
 
@@ -522,22 +629,7 @@ $this->wc->debug( "aaaaaaa" );
                 $priority                       -=  $priorityInterval;
             }
 
-            if( $indice === "new" || !isset($contents[ $indice ]) ){
-                $this->create( 
-                    $contentParams['name'] ?? "", 
-                    $contentParams['type'], 
-                    [ 
-                        'value'     => $contentParams['value'] ?? null,
-                        'priority'  => $contentParams['priority'], 
-                    ] 
-                );
-            }
-            elseif( isset($contents[ $indice ]) 
-                && $contents[ $indice ]->type === $contentParams['type'] 
-                && (    !$contents[ $indice ]->exist() 
-                        || $contents[ $indice ]->id === (int) ($contentParams['ID'] ?? 0)   
-                )
-            ){
+            if( !$isNew ){
                 if( in_array($contents[ $indice ]->type ?? "", Ingredient::list()) ){                    
                     $this->ingredients[] = $contents[ $indice ]->readInputs( $contentParams );
                 }
@@ -546,6 +638,16 @@ $this->wc->debug( "aaaaaaa" );
                 }
 
                 unset($contents[ $indice ]);
+            }
+            else {
+                $this->create( 
+                    $contentParams['name'] ?? "", 
+                    $contentParams['type'], 
+                    [ 
+                        'value'     => $contentParams['value'] ?? null,
+                        'priority'  => $contentParams['priority'], 
+                    ] 
+                );
             }
         }
 
