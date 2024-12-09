@@ -1,7 +1,7 @@
 <?php
 namespace WC;
 
-use WC\DataAccess\WitchSummoning;
+use WC\DataAccess\Summoning;
 use WC\DataAccess\WitchCrafting;
 
 /**
@@ -268,17 +268,17 @@ class Cairn
     function summon()
     {
         // return $this
-        //         ->addWitches( WitchSummoning::summon($this->wc, $this->configuration) )
+        //         ->addWitches( Summoning::witches($this->wc, $this->configuration) )
         //         ->addData( WitchCrafting::readCraftData($this->wc, $this->configuration, $this->getWitches() ));
         
-        $this->addWitches( WitchSummoning::summon($this->wc, $this->configuration) );
+        $this->addWitches( Summoning::witches($this->wc, $this->configuration) );
 
         //  Craft part
         $this->addData( 
             WitchCrafting::readCraftData($this->wc, $this->configuration, $this->getWitches() )
         );
 
-        $this->addCauldrons( WitchSummoning::cauldrons($this->wc, $this->configuration) );
+        $this->addCauldrons( Summoning::cauldrons($this->wc, $this->configuration) );
 
         return $this;
     }

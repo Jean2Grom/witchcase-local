@@ -12,6 +12,27 @@ use WC\Cairn;
  */
 class WitchDataAccess
 {
+
+    static function getDepth( WitchCase $wc, bool $useCache=true ): int
+    {
+        if( $useCache ){
+            $depth = $wc->cache->read( 'system', 'depth' );
+        }
+        
+        if( empty($depth) )
+        {
+            $query  =   "SHOW COLUMNS FROM `witch` WHERE `Field` LIKE 'level_%'";
+            $result =   $wc->db->selectQuery($query);
+            $depth  =   count($result);
+            
+            if( $useCache ){
+                $wc->cache->create('system', 'depth', $depth);
+            }
+        }
+        
+        return (int) $depth;
+    }
+        
     static function readFromId( WitchCase $wc, int $id )
     {
         if( empty($id) ){
@@ -127,7 +148,7 @@ class WitchDataAccess
     static function increasePlateformDepth( WitchCase $wc ): int
     {
         $wc->cache->delete( 'system', 'depth' );
-        $newLevelDepth = WitchSummoning::getDepth($wc, false) + 1;
+        $newLevelDepth = self::getDepth($wc, false) + 1;
         
         $query  =   "ALTER TABLE `witch` ";
         $query  .=  "ADD `level_".$newLevelDepth."` INT(11) UNSIGNED NULL DEFAULT NULL ";
@@ -224,7 +245,7 @@ class WitchDataAccess
             $website->sitesRestrictions  = $sitesRestriction;
         }
         
-        $witches        = WitchSummoning::summon($wc, Cairn::prepareConfiguration($website, $configuration) );
+        $witches        = Summoning::witches($wc, Cairn::prepareConfiguration($website, $configuration) );
         
         if( empty($witches['fetchAncestors']) ){
             return false;
@@ -256,7 +277,7 @@ class WitchDataAccess
             $website->sitesRestrictions  = $sitesRestriction;
         }
         
-        $witches = WitchSummoning::summon($wc, Cairn::prepareConfiguration($website, $configuration) );
+        $witches = Summoning::witches($wc, Cairn::prepareConfiguration($website, $configuration) );
         
         return $witches['fetchDescendants']->daughters ?? [];
     }

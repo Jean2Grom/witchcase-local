@@ -13,33 +13,13 @@ use WC\Module;
  * 
  * @author Jean2Grom
  */
-class WitchSummoning 
+class Summoning 
 {
     const RELATIONSHIPS = [
         'sisters',
         'parents',
         'children',
     ];
-    
-    static function getDepth( WitchCase $wc, bool $useCache=true ): int
-    {
-        if( $useCache ){
-            $depth = $wc->cache->read( 'system', 'depth' );
-        }
-        
-        if( empty($depth) )
-        {
-            $query  =   "SHOW COLUMNS FROM `witch` WHERE `Field` LIKE 'level_%'";
-            $result =   $wc->db->selectQuery($query);
-            $depth  =   count($result);
-            
-            if( $useCache ){
-                $wc->cache->create('system', 'depth', $depth);
-            }
-        }
-        
-        return (int) $depth;
-    }
     
     
     private static function witchesInstanciate( WitchCase $wc, $configuration, $result )
@@ -582,7 +562,7 @@ class WitchSummoning
     }
     
     
-    static function summon( WitchCase $wc, $configuration )
+    static function witches( WitchCase $wc, $configuration )
     {
         if( empty($configuration['id']) 
                 && empty($configuration['url'])
