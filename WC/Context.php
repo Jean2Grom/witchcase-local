@@ -1,7 +1,7 @@
 <?php
 namespace WC;
 
-use WC\Trait\WitchAccessTrait;
+use WC\Trait\ShortcutAccessTrait;
 
 /**
  * Layout class that handle display
@@ -10,7 +10,7 @@ use WC\Trait\WitchAccessTrait;
  */
 class Context 
 {
-    use WitchAccessTrait;
+    use ShortcutAccessTrait;
 
     const DEFAULT_FILE  = "default";    
     const DIR           = "contexts";

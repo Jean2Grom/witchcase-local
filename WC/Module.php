@@ -1,7 +1,7 @@
 <?php
 namespace WC;
 
-use WC\Trait\WitchAccessTrait;
+use WC\Trait\ShortcutAccessTrait;
 
 /**
  * Class dedicated to module invokation (execution)
@@ -11,7 +11,7 @@ use WC\Trait\WitchAccessTrait;
  */
 class Module 
 {
-    use WitchAccessTrait;
+    use ShortcutAccessTrait;
 
     const DEFAULT_FILE  = "default";   
     const DIR           = "modules";
@@ -74,7 +74,8 @@ class Module
             }
         }
     }
-    
+
+    /*
     function __call( $name, $arguments )
     {
         $callable = [$this->wc, $name];
@@ -93,6 +94,7 @@ class Module
 
         return call_user_func_array( [$this->wc, $name], $arguments );
     }
+    */
 
     function execute()
     {
