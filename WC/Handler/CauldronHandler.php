@@ -39,7 +39,7 @@ class CauldronHandler
      * @var Witchcase $wc
      * @var array $configuration
      * @var array $result
-     * @return (Cauldron|Ingredient)[] 
+     * @return CauldronContentInterface[] 
      */
     private static function instanciate( WitchCase $wc, array $configuration, array $result ): array
     {

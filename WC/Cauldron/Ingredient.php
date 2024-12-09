@@ -3,13 +3,12 @@ namespace WC\Cauldron;
 
 use WC\WitchCase;
 use WC\Cauldron;
-use WC\Trait\CauldronIngredientTrait;
 use WC\Handler\IngredientHandler as Handler;
 use WC\DataAccess\IngredientDataAccess as DataAccess;
 
-abstract class Ingredient 
+abstract class Ingredient implements CauldronContentInterface
 {
-    use CauldronIngredientTrait;
+    use CauldronContentTrait;
 
     const FIELDS = [
         "id",
@@ -47,10 +46,6 @@ abstract class Ingredient
     public ?\DateTime $created;
     public ?int $modificator;
     public ?\DateTime $modified;
-
-    public string $editPrefix   = "i";
-
-    private ?string $inputID    = null;
 
     /** 
      * Cauldron witch contains this ingredient
@@ -160,8 +155,6 @@ abstract class Ingredient
             $result = DataAccess::update( $this, array_diff_assoc($this->properties, $properties) );
         }
         
-        $this->inputID = null;
-
         return $result !== false;
     }
 
@@ -191,31 +184,6 @@ abstract class Ingredient
         return $this->set( $input );
     }
 
-    function getInputIdentifier(): string 
-    {
-        if( $this->inputID ){
-            return $this->inputID;
-        }
-
-        $this->inputID = str_replace( ' ', '-', $this->name).'#';
-
-        if( $this->cauldron ){
-            $this->inputID .= array_keys(array_intersect(
-                $this->cauldron->ingredients, 
-                [$this]
-            ))[0] ?? "";
-        }
-
-        return $this->inputID;
-    }
-
-    function getInputIndex()
-    {
-        return array_keys(array_intersect(
-            $this->cauldron?->contents() ?? [], 
-            [$this]
-        ))[0] ?? 0;
-    }
 
     function isIngredient(): bool {
         return true;

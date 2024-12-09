@@ -1,0 +1,13 @@
+<?php
+namespace WC\Cauldron;
+
+interface CauldronContentInterface 
+{
+    public function display( ?string $filename=null, ?int $maxChars=null );
+    public function edit( ?string $filename=null, ?array $params=null );
+    public function readInputs( mixed $input ): self;
+    public function delete();
+    public function exist(): bool;
+    public function isIngredient(): bool;
+    public function isCauldron(): bool;
+}

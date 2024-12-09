@@ -15,9 +15,9 @@
         <input  type="hidden" 
                 name="<?=$input?>[content]" value="" />
 
-    <?php else: foreach( $this->contents() as $content ): 
-        $integrationCountClass  = substr_count($this->editPrefix, '[') % 4;
-        $contentInput           = $input."[content][".$content->getInputIndex()."]";
+    <?php else: foreach( $this->contents() as $contentIndex => $content ): 
+        $integrationCountClass  = substr_count($input, '[content]') % 4;
+        $contentInput           = $input."[content][".$contentIndex."]";
         ?>
         <fieldset class="<?=$content->isIngredient()? 'ingredient': 'cauldron integration-'.$integrationCountClass?>">
             <legend>

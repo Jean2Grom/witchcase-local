@@ -36,8 +36,8 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
     </p>
     
     <div class="fieldsets-container">
-        <?php foreach( $cauldron->draft()->contents() as $content ): 
-            $contentInput = "content[".$content->getInputIndex()."]";
+        <?php foreach( $cauldron->draft()->contents() as $contentIndex => $content ): 
+            $contentInput = "content[".$contentIndex."]";
             ?>
             <fieldset class="<?=$content->isCauldron()? 'cauldron': 'ingredient'?>">
                 <legend>

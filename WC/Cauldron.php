@@ -1,16 +1,17 @@
 <?php 
 namespace WC;
 
+use WC\Cauldron\CauldronContentInterface;
+use WC\Cauldron\CauldronContentTrait;
 use WC\Cauldron\Ingredient;
 use WC\Cauldron\Recipe;
 use WC\DataAccess\CauldronDataAccess as DataAccess;
 use WC\Handler\CauldronHandler as Handler;
 use WC\Handler\IngredientHandler;
-use WC\Trait\CauldronIngredientTrait;
 
-class Cauldron
+class Cauldron implements CauldronContentInterface
 {
-    use CauldronIngredientTrait;
+    use CauldronContentTrait;
 
     const FIELDS = [
         "id",
@@ -68,17 +69,13 @@ class Cauldron
     /** @var Witch[] */
     public array $witches = [];
 
-    /** @var (self|Ingredient)[] */
+    /** @var CauldronContentInterface[] */
     public array $pendingRemoveContents = [];
 
     protected $content;
 
     public ?self $target        = null;
     public ?self $draft         = null;
-
-    public string $editPrefix   = "s";
-
-    private ?string $inputID    = null;
 
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -248,9 +245,9 @@ class Cauldron
     /**
      * read content from name, if cauldron has only one content, name is not mandatory
      * @var string $name
-     * @return Ingredient|Cauldron|null
+     * @return ?CauldronContentInterface
      */
-    function content( string $name="" ): Ingredient|Cauldron|null
+    function content( string $name="" ): ?CauldronContentInterface
     {
         if( is_null($this->content) ){
             $this->generatContent();
@@ -271,7 +268,7 @@ class Cauldron
 
     /**
      * Display priority ordered array of content Ingredients and children Cauldron
-     * @return (Ingredient|Cauldron)[]
+     * @return  CauldronContentInterface[]
      */
     function contents(): array
     {
@@ -401,8 +398,6 @@ class Cauldron
             $result = $result && $child->save( false );
         }
 
-        $this->inputID = null;
-
         return $result;
     }
 
@@ -531,7 +526,7 @@ class Cauldron
         return true;
     }
   
-    function add( Cauldron|Ingredient $content ): bool
+    function add( CauldronContentInterface $content ): bool
     {
         // Cauldron case
         if( is_a($content, __CLASS__) ){
@@ -573,19 +568,19 @@ class Cauldron
         return true;
     }
 
-    function readInputs( ?array $inputs=null, bool $contentAutoPriority=true ): self
+    function readInputs( mixed $inputs=null ): self
     {
         $params = $inputs ?? $this->wc->request->inputs();
-
-//$this->wc->dump($params['content']);
-//$this->wc->debug->die("www");
 
         if( isset($params['name']) ){
             $this->name = htmlspecialchars($params['name']);
         }
 
-        if( isset($params['priority']) && is_int($params['priority']) ){
-            $this->priority = $params['priority'];
+        $contentAutoPriority = true;
+        if( isset($params['priority']) && is_int($params['priority']) )
+        {
+            $this->priority         = $params['priority'];
+            $contentAutoPriority    = false;
         }
 
         $params['content'] = $params['content']? $params['content']: [];
@@ -630,12 +625,14 @@ class Cauldron
                 $priority                       -=  $priorityInterval;
             }
 
-            if( !$isNew ){
-                if( in_array($contents[ $indice ]->type ?? "", Ingredient::list()) ){                    
-                    $this->ingredients[] = $contents[ $indice ]->readInputs( $contentParams );
+            if( !$isNew )
+            {
+                $contents[ $indice ]->readInputs( $contentParams );
+                if( $contents[ $indice ]->isIngredient() ){
+                    $this->ingredients[] = $contents[ $indice ];
                 }
                 else {
-                    $this->children[] = $contents[ $indice ]->readInputs( $contentParams, $contentAutoPriority );
+                    $this->children[] = $contents[ $indice ];
                 }
 
                 unset($contents[ $indice ]);
@@ -646,7 +643,7 @@ class Cauldron
                     $contentParams['type'], 
                     [ 
                         'value'     => $contentParams['value'] ?? null,
-                        'priority'  => $contentParams['priority'], 
+                        'priority'  => $contentParams['priority'] ?? 0, 
                     ] 
                 );
             }
@@ -705,24 +702,6 @@ class Cauldron
         $folder->addCauldron( $this->draft );
         
         return $this->draft;
-    }
-
-    function getInputIdentifier(): string 
-    {
-        if( $this->inputID ){
-            return $this->inputID;
-        }
-
-        $this->inputID = str_replace( ' ', '-', $this->name ?? "" ).'#';
-
-        if( $this->parent ){
-            $this->inputID .= array_keys(array_intersect(
-                $this->parent->children, 
-                [$this]
-            ))[0] ?? "";
-        }
-
-        return $this->inputID;
     }
 
     function publish( bool $transactionMode=true ): bool

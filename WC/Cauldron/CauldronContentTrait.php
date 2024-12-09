@@ -1,7 +1,7 @@
 <?php
-namespace WC\Trait;
+namespace WC\Cauldron;
 
-trait CauldronIngredientTrait
+trait CauldronContentTrait
 {
     function display( ?string $filename=null, ?int $maxChars=null )
     {
@@ -41,12 +41,8 @@ trait CauldronIngredientTrait
     }
 
 
-    function edit( ?string $filename=null, ?array $params=null, ?string $callerPrefix=null )
+    function edit( ?string $filename=null, ?array $params=null )
     {
-        if( $callerPrefix ){
-            $this->editPrefix = str_replace(' ', '-', $callerPrefix)."|".$this->editPrefix;
-        }
-
         if( !$filename ){
             $filename = strtolower( $this->type );
         }
@@ -69,23 +65,6 @@ trait CauldronIngredientTrait
         include $file;
 
         return;
-    }
-
-    function getInputName(): string 
-    {
-        $inputName  =   $this->editPrefix;
-        $inputName  .=  "#".$this->type;
-        $inputName  .=  "#".$this->getInputIdentifier();
-
-        return $inputName;
-    }
-
-    function getInputIndex()
-    {
-        return array_keys(array_intersect(
-            $this->parent?->contents() ?? [], 
-            [$this]
-        ))[0] ?? 0;
     }
     
     function isIngredient(): bool {
