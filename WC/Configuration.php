@@ -16,11 +16,16 @@ class Configuration
     const SITES_FILE        = 'sites.json';
     const RECIPES_DIR       = "configuration/cauldron";
 
+    const DEFAULT_STORAGE       = "files";
+    const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
+
     public string $dir;
     public $configuration  = [];
     public $sites          = [];
 
-    public $recipes;
+    /** @var ?Recipe[] */
+    public $recipes = null;
+    public $createFolderRights;
     
     /** 
      * WitchCase container class to allow whole access to Kernel
@@ -203,7 +208,8 @@ class Configuration
         RecipeHandler::resolve($recipes);
 
         $this->recipes = [];
-        foreach( $recipes  as $recipe ){
+        foreach( $recipes  as $recipe )
+        {
             // White list filtering
             if( is_array($whiteList) && !in_array($recipe->name, $whiteList) ){
                 continue;
@@ -241,6 +247,41 @@ class Configuration
 
     function recipe( string $recipeName ): ?Recipe {
         return $this->recipes()[ $recipeName ] ?? null;
+    }
+
+    function storage( ?string $name=null, ?Website $website=null ): string 
+    {
+        $storage = $this->readSiteVar( "storage", $website );
+        return $storage[ $name ?? self::DEFAULT_STORAGE ] ?? 
+                $storage[ self::DEFAULT_STORAGE ]."/".Tools::cleanupString($name);
+    }
+
+    function createFolderRights()
+    {
+        if( !$this->createFolderRights ){
+            $this->createFolderRights = $this->read( 'system', 'createFolderRights' ) 
+                                            ?? self::DEFAULT_DIR_RIGHTS;
+        }
+        
+        return $this->createFolderRights;
+    }
+
+    /**
+     * Create Folder with correct Folder
+     * @var string $folder 
+     * @return bool 
+     */
+    function createFolder( string $folder ): bool
+    {
+        if( !is_dir($folder) ){
+            return mkdir( 
+                $folder, 
+                octdec($this->createFolderRights()), 
+                true 
+            );
+        }
+        
+        return true;
     }
 
 }

@@ -129,13 +129,12 @@ abstract class Ingredient implements CauldronContentInterface
         return $this;
     }
 
-    function content( ?string $element=null ) 
-    {
-        if( is_null($element) ){
-            return $this->value;
-        }
-        
-        return $this->value[ $element ] ?? null;
+    function value(): mixed {
+        return $this->value;
+    }
+
+    function content(){
+        return $this->value();
     }
 
     function save(): bool
@@ -184,9 +183,7 @@ abstract class Ingredient implements CauldronContentInterface
         return $this->set( $input );
     }
 
-
     function isIngredient(): bool {
         return true;
     }
-
 }

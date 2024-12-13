@@ -32,4 +32,9 @@ class StringIngredient extends Ingredient
 
         return $this;
     }
+
+    function value(): string {
+        return $this->value ?? "";
+    }
+
 }

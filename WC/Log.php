@@ -43,9 +43,7 @@ class Log
             $this->logFilename = self::LOGFILENAME; 
         }
         
-        if( !is_dir(dirname($this->logFilename)) ){
-            mkdir( dirname($this->logFilename),  octdec($this->wc->configuration->read( 'system', 'createFolderRights' )), true );
-        }
+        $this->wc->configuration->createFolder( dirname($this->logFilename) );
         
         // If log file is too big, renaming it
         if(     is_file($this->logFilename)

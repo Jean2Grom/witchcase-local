@@ -1,13 +1,8 @@
 <?php 
 /** 
  * @var WC\Cauldron\Ingredient\TextIngredient $this 
- * @var string $cauldronInput 
- * @var ?string $input 
+ * @var string $input 
  */
-
- use WC\Tools;
-
-$input = $input ?? $this->type.'['.Tools::cleanupString( $this->name ).']'; 
 ?>
 <fieldset>
         <?php if( $this->exist() ): ?>
@@ -31,5 +26,3 @@ $input = $input ?? $this->type.'['.Tools::cleanupString( $this->name ).']';
                 name="<?=$input?>[priority]" 
                 value="<?=$this?>" />
 </fieldset>
-
-

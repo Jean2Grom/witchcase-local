@@ -9,7 +9,6 @@ namespace WC;
 class Cache 
 {
     const DEFAULT_DIRECTORY     = "cache";
-    const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
     const DEFAULT_DURATION      = 86400;    // 24h
     const DEFAULT_UNIT          = "s";      // 24h
     
@@ -29,7 +28,8 @@ class Cache
     {
         $this->wc = $wc;
         
-        $this->createFolderRights   = $this->wc->configuration->read('system','createFolderRights') ?? self::DEFAULT_DIR_RIGHTS;
+        $this->createFolderRights   = $this->wc->configuration->read('cache','createFolderRights') 
+                                        ?? $this->wc->configuration->createFolderRights();
         $this->dir                  = $this->wc->configuration->read('cache','directory') ?? self::DEFAULT_DIRECTORY;
         $this->defaultUnit          = $this->wc->configuration->read('cache','durationUnit') ?? self::DEFAULT_UNIT;
         $this->defaultDuration      = self::getDuration($this->wc->configuration->read('cache','duration') ?? self::DEFAULT_DURATION, $this->defaultUnit);
@@ -113,7 +113,7 @@ class Cache
         }
         
         if( !is_dir($cacheFolder) 
-            && !mkdir($cacheFolder,  octdec( $this->createFolderRights ), true)
+            && !mkdir($cacheFolder, octdec($this->createFolderRights), true)
         ){
             $this->wc->log->error("Can't create cache folder : ".$folder);
             return false;
@@ -178,7 +178,7 @@ class Cache
         }
         
         if( !is_dir($cacheFolder) 
-            && !mkdir($cacheFolder,  octdec( $this->createFolderRights ), true)
+            && !mkdir($cacheFolder,  octdec($this->createFolderRights), true)
         ){
             $this->wc->log->error("Can't create cache folder : ".$folder);
             return false;
