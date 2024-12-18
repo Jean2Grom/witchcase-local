@@ -409,14 +409,29 @@ class Debug
     }
     
     /**
-     * Stop execution and display debug data
+     * Stop execution and throw anonymous custom exception to container 
+     * that display debug data
      * 
      * @param string $msg
      * @return void
      * @throws \Exception
      */
     function throwException( string $msg ): void {
-        throw new \Exception( $msg );
+        throw new class( $msg ) extends \Exception {
+            public function __construct( $message ) 
+            {
+                parent::__construct( $message );
+        
+                foreach( $this->getTrace() as $trace ){
+                    if( $trace["file"] !== __FILE__ )
+                    {
+                        $this->file = $trace["file"];
+                        $this->line = $trace["line"];
+                        break;
+                    }
+                }
+            }
+        };
     }
     
     /**

@@ -116,7 +116,7 @@ class WitchCase
         }
         catch( \Exception $e ){
             $this->log->error(
-                "WC injest: ".$e->getMessage(), 
+                "\nWC injest throwed ".get_class($e)."\n".$e->getMessage(), 
                 true, 
                 [
                     'file' => $e->getFile(), 
@@ -136,7 +136,7 @@ class WitchCase
         }
         catch( \Exception $e ){
             $this->log->error(
-                "WC run: ".$e->getMessage(), 
+                "\nWC run throwed ".get_class($e)."\n".$e->getMessage(), 
                 true, 
                 [ 
                     'file' => $e->getFile(), 
