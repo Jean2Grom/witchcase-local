@@ -216,7 +216,7 @@ class Structure
         $witchesByDepth = [];
         foreach( $datas as $witchData )
         {
-            $witch = WitchHandler::createFromData($this->wc, $witchData);
+            $witch = WitchHandler::instanciate($this->wc, $witchData);
             
             if( empty($witchesByDepth[ $witch->depth ]) ){
                 $witchesByDepth[ $witch->depth ] = [];

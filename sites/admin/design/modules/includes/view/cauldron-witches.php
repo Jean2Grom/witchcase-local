@@ -20,7 +20,7 @@ if( $this->witch("target")->cauldron() ): ?>
                     data-confirm="Remove cauldron from witch ?" 
                     data-target="view-cauldron-witches-action" >remove-cauldron-witch</button>
 
-            <?php if( count($this->witch("target")->cauldron()->witches) === 1 ): ?>
+            <?php if( count($this->witch("target")->cauldron()->witches()) === 1 ): ?>
                 <p><em>No other witch</em></p>
 
             <?php else: ?>
@@ -35,14 +35,14 @@ if( $this->witch("target")->cauldron() ): ?>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach( $this->witch("target")->cauldron()->witches as $key => $witch ): ?>
+                        <?php foreach( $this->witch("target")->cauldron()->witches() as $key => $witch ): ?>
                             <tr>
                                 <td>
                                     <div class="text-center">
                                         <input type="radio" 
                                                name="main"
                                                value="<?=$witch->id ?>"
-                                               <?php if( array_key_first($this->witch("target")->cauldron()->witches) === $key ): ?>
+                                               <?php if( array_key_first($this->witch("target")->cauldron()->witches()) === $key ): ?>
                                                     checked
                                                <?php else: ?>
                                                     class="trigger-action" 

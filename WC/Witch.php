@@ -254,7 +254,7 @@ class Witch
         }
         
         return  $this->sisters[ $id ] 
-                    ?? Handler::createFromData($this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]);
+                    ?? Handler::instanciate($this->wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]);
     }
     
     
@@ -308,7 +308,7 @@ class Witch
         }
         
         return  $this->daughters[ $id ] 
-                    ?? Handler::createFromData(
+                    ?? Handler::instanciate(
                         $this->wc, 
                         [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ]
                     );
@@ -686,7 +686,7 @@ class Witch
 
         $params['id'] = $newWitchId;
 
-        return Handler::createFromData( $this->wc, $params );
+        return Handler::instanciate( $this->wc, $params );
     }
         
     
@@ -760,14 +760,16 @@ class Witch
             return false;
         }
         
-        if( $this->cauldron()->witches && count($this->cauldron()->witches) === 1 ){
-            $this->cauldron()->delete();
-        }
-        
         $this->cauldron     = null;
         $this->cauldronId   = null;
         
-        return $this->edit(['cauldron' => null, 'cauldron_priority' => 0]);
+        $return = $this->edit(['cauldron' => null, 'cauldron_priority' => 0]);
+
+        if( !$this->cauldron()->removeWitch( $this ) ){
+            return false;
+        }
+        
+        return $return;
     }
     
     /**

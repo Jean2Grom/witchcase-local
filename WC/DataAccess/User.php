@@ -113,7 +113,7 @@ class User
                 $position = false;
                 if( !empty($row['id']) )
                 {
-                    $positionWitch  = WitchHandler::createFromData($wc, $row);
+                    $positionWitch  = WitchHandler::instanciate($wc, $row);
                     $position       = $positionWitch->position;
                 }
 
@@ -211,7 +211,7 @@ class User
                 $position = false;
                 if( !empty($row['id']) )
                 {
-                    $positionWitch  = WitchHandler::createFromData($wc, $row);
+                    $positionWitch  = WitchHandler::instanciate($wc, $row);
                     $position       = $positionWitch->position;
                 }
 
@@ -321,7 +321,7 @@ class User
                 $positionWitch  = false;
                 if( !empty($row['id']) )
                 {
-                    $positionWitch  = WitchHandler::createFromData($wc, $row);
+                    $positionWitch  = WitchHandler::instanciate($wc, $row);
                     $position       = $positionWitch->position;
                 }
 

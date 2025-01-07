@@ -62,7 +62,7 @@ class Summoning
         foreach( $result as $row )
         {
             $id                             = $row['id'];
-            $witch                          = Handler::createFromData( $wc, $row );
+            $witch                          = Handler::instanciate( $wc, $row );
             $depthArray[ $witch->depth ][]  = $id;
             $witchesList[ $id ]             = $witch;
             
@@ -183,7 +183,7 @@ class Summoning
         
         foreach( $urlRefWiches as $urlRefWichItem ){
             if( empty($witches[ $urlRefWichItem ]) ){
-                $witches[ $urlRefWichItem ] = Handler::createFromData( $wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ] );
+                $witches[ $urlRefWichItem ] = Handler::instanciate( $wc, [ 'name' => "ABSTRACT 404 WITCH", 'invoke' => '404' ] );
             }
         }
         

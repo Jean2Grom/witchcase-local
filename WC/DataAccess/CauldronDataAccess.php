@@ -170,8 +170,7 @@ class CauldronDataAccess
         return $jointure;
     }
     
-    private static function parentsJointure( $maxDepth, $daughter, $mother, $depth=1 )
-    {
+    private static function parentsJointure( $maxDepth, $daughter, $mother, $depth=1 ){
         return self::childrenJointure( $maxDepth, $mother, $daughter, $depth );
     }
 

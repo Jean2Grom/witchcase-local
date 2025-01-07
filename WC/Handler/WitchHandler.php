@@ -16,7 +16,7 @@ class WitchHandler
      * @param array $data
      * @return Witch
      */
-    static function createFromData(  WitchCase $wc, array $data ): Witch
+    static function instanciate(  WitchCase $wc, array $data ): Witch
     {
         $witch      = new Witch();
         $witch->wc  = $wc;
@@ -91,15 +91,15 @@ class WitchHandler
      * @param int $id   witch id to create
      * @return Witch|false implemented Witch object, boolean false if data not found
      */
-    static function createFromId( WitchCase $wc, int $id ): Witch|false
+    static function fetch( WitchCase $wc, int $id ): Witch|false
     {
-        $data = DataAccess::readFromId($wc, $id);
+        $data = DataAccess::fetch( $wc, $id );
         
         if( empty($data) ){
             return false;
         }
         
-        return self::createFromData( $wc, $data );
+        return self::instanciate( $wc, $data );
     }
     
     
@@ -401,5 +401,21 @@ class WitchHandler
         return $witch;
     }
 
+    static function search( WitchCase $wc, array $params )
+    {
+        $result = DataAccess::search( $wc, $params );
 
+        if( $result === false ){
+            return false;
+        }
+
+        $witches = [];
+        foreach( $result as $row )
+        {
+            $id             =   $row['id'];
+            $witches[ $id ] =   $wc->cairn->searchById( $id ) ?? self::instanciate( $wc, $row );
+        }
+        
+        return $witches;    
+    }
 }

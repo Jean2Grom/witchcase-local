@@ -253,7 +253,7 @@ class Craft
         
         $this->witches[ $table ] = [];
         foreach( $dataArray as $data ){
-            $this->witches[ $table ][ $data['id'] ] = WitchHandler::createFromData($this->wc, $data);
+            $this->witches[ $table ][ $data['id'] ] = WitchHandler::instanciate($this->wc, $data);
         }
         
         return $this->witches[ $table ];

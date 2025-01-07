@@ -108,7 +108,7 @@ switch( Tools::filterAction(
             break;
         }
 
-        $importedCauldronWitch = WitchHandler::createFromId( $this->wc, $importedCauldronWitchId );
+        $importedCauldronWitch = WitchHandler::fetch( $this->wc, $importedCauldronWitchId );
         if( !$importedCauldronWitch )
         {
             $this->wc->user->addAlert([
@@ -160,7 +160,7 @@ switch( Tools::filterAction(
             break;
         }
         
-        $witch = $this->wc->cairn->searchById($id) ?? WitchHandler::createFromId($this->wc, $id);
+        $witch = $this->wc->cairn->searchById($id) ?? WitchHandler::fetch($this->wc, $id);
         if( !$witch )
         {
             $this->wc->user->addAlert([
@@ -208,7 +208,7 @@ switch( Tools::filterAction(
             break;
         }
         
-        $witch = $this->wc->cairn->searchById($id) ?? WitchHandler::createFromId($this->wc, $id);
+        $witch = $this->wc->cairn->searchById($id) ?? WitchHandler::fetch($this->wc, $id);
         if( !$witch )
         {
             $this->wc->user->addAlert([
@@ -259,7 +259,7 @@ switch( Tools::filterAction(
         $params     = []; 
         $conditions = []; 
         $match      = false;
-        foreach( $this->witch("target")->cauldron()->witches as $witch )
+        foreach( $this->witch("target")->cauldron()->witches() as $witch )
         {
             $conditions[] = [ 'id' => $witch->id ]; 
 
@@ -301,7 +301,7 @@ switch( Tools::filterAction(
             break;
         }
 
-        foreach( $this->witch("target")->cauldron()->witches as $witch )
+        foreach( $this->witch("target")->cauldron()->witches() as $witch )
         {
             if( $id === $witch->id )
             {
@@ -343,7 +343,7 @@ switch( Tools::filterAction(
         
         $witchToRemove      = false;
         $witchToRemoveKey   = null;
-        foreach( $this->witch("target")->cauldron()->witches as $key => $witch ){
+        foreach( $this->witch("target")->cauldron()->witches() as $key => $witch ){
             if( $id === $witch->id )
             {
                 $witchToRemove      = $witch;

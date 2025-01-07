@@ -15,8 +15,10 @@ use WC\Handler\CauldronHandler;
 $obj = new class {
     public $baseUrl;
 
-    public function href( Cauldron $cauldron ){
-        return $this->baseUrl.'?id='.$cauldron->witches[0]->id."#tab-cauldron-part";
+    public function href( Cauldron $cauldron )
+    {
+        $witchId = $cauldron->witches()[0]?->id;        
+        return $this->baseUrl.$witchId? '?id='.$witchId."#tab-cauldron-part": "";
     }
 };
 

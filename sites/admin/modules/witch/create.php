@@ -117,7 +117,7 @@ switch(Tools::filterAction(
         // Cauldron importation
         if( $importCauldronWitchId )
         {
-            $importCauldronWitch = WitchHandler::createFromId( $this->wc, $importCauldronWitchId );
+            $importCauldronWitch = WitchHandler::fetch( $this->wc, $importCauldronWitchId );
 
             if( !$importCauldronWitch 
                 || !$importCauldronWitch->hasCauldron()

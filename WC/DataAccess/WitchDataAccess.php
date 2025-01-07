@@ -32,8 +32,8 @@ class WitchDataAccess
         
         return (int) $depth;
     }
-        
-    static function readFromId( WitchCase $wc, int $id )
+    
+    static function fetch( WitchCase $wc, int $id )
     {
         if( empty($id) ){
             return false;
@@ -46,6 +46,26 @@ class WitchDataAccess
         $data = $wc->db->fetchQuery($query, [ 'id' => $id ]);
         
         return $data;
+    }
+
+    static function search( WitchCase $wc, array $params, bool $or=false )
+    {
+        if( !$params ){
+            return false;
+        }
+
+        $query = "";
+        $query  .=  "SELECT * FROM witch ";
+        $query  .=  "WHERE ";
+
+        $queryParts = [];
+        foreach( array_keys($params) as $key ){
+            $queryParts[] = $key." = :".$key." ";
+        }
+
+        $query  .=  implode( ($or? "OR ": "AND "), $queryParts );
+        
+        return $wc->db->selectQuery( $query, $params );
     }
     
     static function update( WitchCase $wc, array $params, array $conditions )

@@ -77,7 +77,7 @@
                     data-confirm="Confirm removal"
                     data-action="remove-cauldron"
                     data-target="view-cauldron-action">
-                <?php if( count($this->witch("target")->cauldron()->witches) === 1 ): ?>
+                <?php if( count($this->witch("target")->cauldron()->witches()) === 1 ): ?>
                     <i class="fa fa-trash"></i>
                     Delete
                 <?php else: ?>
