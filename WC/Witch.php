@@ -741,7 +741,14 @@ class Witch
             }
         }
         
-        $this->removeCraft();
+        if( $this->hasCauldron() ){
+            $this->cauldron()->removeWitch( $this );
+        }
+        
+        if( $this->hasCraft() ){
+            $this->innerRemoveCraft();
+        }
+        
         if( $fetchDescendants ){
             $deleteIds[] = $this->id;
         }
@@ -760,16 +767,14 @@ class Witch
             return false;
         }
         
-        $this->cauldron     = null;
-        $this->cauldronId   = null;
-        
-        $return = $this->edit(['cauldron' => null, 'cauldron_priority' => 0]);
-
         if( !$this->cauldron()->removeWitch( $this ) ){
             return false;
         }
         
-        return $return;
+        $this->cauldron     = null;
+        $this->cauldronId   = null;
+        
+        return $this->edit(['cauldron' => null, 'cauldron_priority' => 0]);
     }
     
     /**
@@ -783,6 +788,16 @@ class Witch
             return false;
         }
         
+        $this->innerRemoveCraft();
+
+        return $this->edit(['craft_table' => null, 'craft_fk' => null]);
+    }
+    
+    /**
+     * Craft deletion part whithout self editing
+     */
+    private function innerRemoveCraft()
+    {
         $countCraftWitch = $this->craft()->countWitches();
         
         if( $countCraftWitch == 1 ){
@@ -797,10 +812,10 @@ class Witch
                 }
             }
         }
-        
-        return $this->edit(['craft_table' => null, 'craft_fk' => null]);
+
+        return;
     }
-    
+
     /**
      * Add new craft from past structure
      * @param Structure $structure
