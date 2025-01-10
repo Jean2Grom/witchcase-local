@@ -20,6 +20,13 @@ if( $this->witch("target")->cauldron() ): ?>
                     data-confirm="Remove cauldron from witch ?" 
                     data-target="view-cauldron-witches-action" >remove-cauldron-witch</button>
 
+            <button class="trigger-action"
+                    style="display: none;"
+                    id="delete-cauldron-witch-action"
+                    data-action="delete-cauldron-witch" 
+                    data-confirm="Delete cauldron's witch ?" 
+                    data-target="view-cauldron-witches-action" >delete-cauldron-witch</button>
+
             <?php if( count($this->witch("target")->cauldron()->witches()) === 1 ): ?>
                 <p><em>No other witch</em></p>
 
@@ -30,7 +37,8 @@ if( $this->witch("target")->cauldron() ): ?>
                         <tr>
                             <th>Main</th>
                             <th>ID</th>
-                            <th><i class="fa fa-trash"></i></th>
+                            <th>Detach</th>
+                            <th>Delete</th>
                             <th>Name</th>
                         </tr>
                     </thead>
@@ -59,6 +67,14 @@ if( $this->witch("target")->cauldron() ): ?>
                                         <a  class="remove-cauldron-witch text-center"
                                             data-witch="<?=$witch->id?>">
                                             <i class="fa fa-times"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if( $witch->id !== $this->witch("target")->id ): ?>
+                                        <a  class="delete-cauldron-witch text-center"
+                                            data-witch="<?=$witch->id?>">
+                                            <i class="fa fa-trash"></i>
                                         </a>
                                     <?php endif; ?>
                                 </td>

@@ -213,6 +213,13 @@ document.addEventListener("DOMContentLoaded", () =>
         } )
     );
 
+    document.querySelectorAll('.delete-cauldron-witch').forEach( 
+        a => a.addEventListener( 'click', () => {
+            document.getElementById('cauldron-witch-id').value = a.dataset.witch;
+            document.getElementById('delete-cauldron-witch-action').click();
+        } )
+    );
+
     
     // Daughters cut/copy
     $('.cut-descendants').on('click', function()

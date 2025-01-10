@@ -26,6 +26,7 @@ switch( Tools::filterAction(
         'cauldron-add-new-witch',
         'switch-cauldron-main-witch',
         'remove-cauldron-witch',
+        'delete-cauldron-witch',
     ]
 ) ){
     case 'remove-cauldron':
@@ -385,6 +386,63 @@ switch( Tools::filterAction(
         $this->wc->user->addAlert([
             'level'     =>  'success',
             'message'   =>  "Cauldron's witch removed"
+        ]);
+    break;
+
+    case 'delete-cauldron-witch':
+        if( !$this->witch("target")->cauldron() )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, no cauldron identified"
+            ]);
+            break;
+        }
+        
+        $id = $this->wc->request->param('cauldron-witch-id', 'post', FILTER_VALIDATE_INT);
+        if( !$id )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, no witch identified"
+            ]);
+            break;
+        }
+        
+        $witchToRemove      = false;
+        $witchToRemoveKey   = null;
+        foreach( $this->witch("target")->cauldron()->witches() as $key => $witch ){
+            if( $id === $witch->id )
+            {
+                $witchToRemove      = $witch;
+                $witchToRemoveKey   = $key;
+                break;
+            }
+        }
+
+        if( !$witchToRemove )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Error, chosen witch unidentified"
+            ]);
+            break;
+        }
+
+        if( !$witchToRemove->delete() )
+        {
+            $this->wc->user->addAlert([
+                'level'     =>  'error',
+                'message'   =>  "Cauldron's witch removal failed"
+            ]);
+            break;
+        }
+
+        unset($this->witch("target")->cauldron()->witches[ $witchToRemoveKey ]);
+        
+        $this->wc->user->addAlert([
+            'level'     =>  'success',
+            'message'   =>  "Cauldron's witch deleted"
         ]);
     break;
 }
