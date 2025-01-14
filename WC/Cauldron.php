@@ -56,7 +56,7 @@ class Cauldron implements CauldronContentInterface
     public ?\DateTime $datetime;
     
     public int $depth       = 0;
-    public array $position  = [];
+    public ?array $position = null;
 
     public ?self $parent;
 
@@ -66,8 +66,8 @@ class Cauldron implements CauldronContentInterface
     /** @var Ingredient[] */
     public array $ingredients = [];
 
-    /** @var Witch[] */
-    public array $witches = [];
+    /** @var ?Witch[] */
+    public ?array $witches = null;
 
     /** @var CauldronContentInterface[] */
     public array $pendingRemoveContents = [];
@@ -123,6 +123,40 @@ class Cauldron implements CauldronContentInterface
     }
     
     /**
+     * @return array [ $level => $int ]
+     */
+    function position()
+    {
+        if( !isset($this->position) ){
+            if( is_null($this->parent) )
+            {
+                $this->position = [];
+                $this->depth    = 0;
+            }
+            else
+            {
+                $this->position = $this->parent->position();
+                $newIndex       = 1;
+                $this->depth    = $this->parent->depth + 1;
+                foreach( $this->parent->children as $child ){
+                    if( $child->levelPosition( $this->depth ) >= $newIndex ){
+                        $newIndex  = $child->levelPosition( $this->depth ) + 1;
+                    }
+                }
+                
+                $this->position[ $this->depth ] = $newIndex;
+
+            }
+        }
+
+        return $this->position;
+    }
+
+    function levelPosition( int $level ){
+        return $this->position()[ $level ] ?? null;
+    }
+
+    /**
      * Is this cauldron a published content ?
      * @return bool
      */
@@ -146,29 +180,6 @@ class Cauldron implements CauldronContentInterface
         return $this->status === self::STATUS_ARCHIVED;
     }
     
-    /**
-     * Check if this cauldron is direct parent of tested one
-     * @var Cauldron $potentialChild
-     * @return bool
-     */
-    function isParentOf( self $potentialChild ): bool
-    {
-        if( $potentialChild->depth != $this->depth + 1 ){
-            return false;
-        }
-        
-        $isParent = true;
-        for( $i=1; $i<=$this->depth; $i++ ){
-            if( $this->position[ $i ] != $potentialChild->position[ $i ] )
-            {
-                $isParent = false;
-                break;
-            }
-        }
-
-        return $isParent;
-    }
-
     /**
      * Test the status of this cauldron: is it a content (ie not a draft nor an archive)
      * @return bool
@@ -250,7 +261,7 @@ class Cauldron implements CauldronContentInterface
     function content( string $name="" ): ?CauldronContentInterface
     {
         if( is_null($this->content) ){
-            $this->generatContent();
+            $this->generateContent();
         }
 
         if( !$name && count($this->content) === 1 ){
@@ -273,13 +284,18 @@ class Cauldron implements CauldronContentInterface
     function contents(): array
     {
         if( is_null($this->content) ){
-            $this->generatContent();
+            $this->generateContent();
         }
 
         return $this->content;
     }
 
-    private function generatContent(): void
+
+    function value(){
+        $this->contents();
+    }
+
+    private function generateContent(): void
     {
         $buffer     = [];
         $defaultId  = 0;
@@ -470,7 +486,7 @@ class Cauldron implements CauldronContentInterface
 
     function delete( bool $transactionMode=true ): bool
     {
-        if( $this->target ){
+        if( $this->target?->draft === $this ){
             $this->target->draft = null;
         }
 
@@ -543,12 +559,8 @@ class Cauldron implements CauldronContentInterface
             DataAccess::increaseDepth( $this->wc );
         }
 
-        $cauldron->position = [];
-        foreach( $this->position as $level => $value ){
-            $cauldron->position[ $level ] = $value;
-        }
-        $cauldron->position[ $this->depth + 1 ] = DataAccess::getNewPosition( $this );
-        $cauldron->depth                        = $this->depth + 1;
+        $cauldron->position = null;
+        $cauldron->depth    = 0;
 
         Handler::setParenthood($this, $cauldron);
         $this->content = null;
@@ -594,7 +606,7 @@ class Cauldron implements CauldronContentInterface
         $contents           = $this->contents();
         $this->content      = null;
         $this->ingredients  = [];
-        $this->children     = [];        
+        $this->children     = [];
         foreach( $params['content'] as $indice => $contentParams )
         {
             if( !($contentParams['type'] ?? null) )
@@ -625,6 +637,29 @@ class Cauldron implements CauldronContentInterface
                 $priority                       -=  $priorityInterval;
             }
 
+            if( !($contentParams['value'] ?? null) && ($contentParams['$_FILES'] ?? null) )
+            {
+                $fileInputs = $_FILES[ $contentParams['$_FILES'] ];
+
+                if( filesize($fileInputs[ "tmp_name" ]) !== false )
+                {
+                    $dir    =   $this->wc->configuration->storage();
+
+                    $path  =   Tools::cleanupString( $this->type );
+                    $path  .=  '/'.sha1_file($fileInputs[ "tmp_name" ]);
+
+                    $value  =  $path.'/'.$fileInputs[ "name" ];
+
+                    if( !$this->wc->configuration->createFolder($dir.'/'.$path) 
+                        || !copy($fileInputs["tmp_name"], $dir.'/'.$value) ){
+                            $this->wc->log->error( "file upload failed" );
+                        }
+                    else {
+                        $contentParams['value'] = $value;
+                    }
+                }
+            }
+            
             if( !$isNew )
             {
                 $contents[ $indice ]->readInputs( $contentParams );
@@ -801,6 +836,43 @@ class Cauldron implements CauldronContentInterface
         }
 
         return true;
+    }
+
+    function removeWitch( Witch $witch )
+    {
+        if( !$this->witches() ){
+            return false;
+        }
+
+        $witchToRemoveKey = array_search($witch, $this->witches);
+
+        if( !$witchToRemoveKey ){
+            return false;
+        }
+
+        unset($this->witches[ $witchToRemoveKey ]);
+        
+        $witch->removeCauldron();
+
+        if( !$this->witches ){
+            $this->delete();
+        }
+
+        return true;
+    }
+
+    function witches()
+    {
+        if( !isset($this->witches) )
+        {
+            $getWitches     = Handler::getWitches( $this );
+
+            if( $getWitches !== false ){
+                $this->witches  = $getWitches;
+            }
+        }
+        
+        return $this->witches;
     }
 
     function orderWitches(): void

@@ -237,15 +237,16 @@ class CauldronDataAccess
         return $newLevelDepth;
     }
 
+    // TODO useless ?
     static function getNewPosition( Cauldron $cauldron )
     {
-        $depth = count($cauldron->position) + 1;
+        $depth = count($cauldron->position()) + 1;
         
         $params = [];
         $query  = "SELECT MAX(`level_".$depth."`) AS `maxIndex` FROM `cauldron` ";
         
         $linkingCondition = "WHERE ";
-        foreach( $cauldron->position as $level => $levelPosition )
+        foreach( $cauldron->position() as $level => $levelPosition )
         {
             $field              =   "level_".$level;
             $query              .=  $linkingCondition."`".$field."` = :".$field." ";

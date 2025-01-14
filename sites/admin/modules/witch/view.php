@@ -71,12 +71,11 @@ switch( Tools::filterAction(
             break;
         }
 
-        $cauldron = CauldronHandler::createFromData($this->wc, [
-            'name'      =>  $this->witch("target")->name,
-            'recipe'    =>  $recipe,
-            'status'    =>  Cauldron::STATUS_DRAFT,
-        ]);
-
+        $cauldron = $this->wc->configuration
+                            ->recipe( $recipe )
+                            ->factory( $this->witch("target")->name );
+        $cauldron->status = Cauldron::STATUS_DRAFT;
+        
         if( !$cauldron 
             || !$folderCauldron->addCauldron( $cauldron ) 
             || !$cauldron->save() 

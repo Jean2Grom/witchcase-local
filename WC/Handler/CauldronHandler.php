@@ -39,7 +39,7 @@ class CauldronHandler
      * @var Witchcase $wc
      * @var array $configuration
      * @var array $result
-     * @return CauldronContentInterface[] 
+     * @return Cauldron[] 
      */
     private static function instanciate( WitchCase $wc, array $configuration, array $result ): array
     {
@@ -93,18 +93,21 @@ class CauldronHandler
                     $witchData[  "level_".$i ] = $row[ "w_level_".$i ];
                 }
                 
-                $witch = WitchHandler::createFromData($wc, $witchData);
+                $witch = WitchHandler::instanciate($wc, $witchData);
             }
             
             $witchesList[ $witchId ] = $witch;
         }
-
+        
         // Link witches and cauldron objects
         foreach( $witchesList as $witch ){
             if( isset($cauldronsList[ $witch->cauldronId ]) )
             {
                 $witch->cauldron = $cauldronsList[ $witch->cauldronId ];
-                $cauldronsList[ $witch->cauldronId ]->witches[ $witch->id ] = $witch;
+                $cauldronsList[ $witch->cauldronId ]->witches = array_replace(
+                    $cauldronsList[ $witch->cauldronId ]->witches ?? [],
+                    [ $witch->id => $witch ]
+                );
             }
         }
         foreach( $cauldronsList as $cauldron ){ 
@@ -114,7 +117,10 @@ class CauldronHandler
         for( $i=0; $i < $wc->cauldronDepth; $i++ ){
             foreach( $depthArray[ $i ] as $potentialParentId ){
                 foreach( $depthArray[ ($i+1) ] as $potentialDaughterId ){
-                    if( $cauldronsList[ $potentialParentId ]->isParentOf($cauldronsList[ $potentialDaughterId ]) ){
+                    if( self::isParentPosition( 
+                        $cauldronsList[ $potentialParentId ]->position, 
+                        $cauldronsList[ $potentialDaughterId ]->position 
+                    ) ){
                         self::setParenthood($cauldronsList[ $potentialParentId ], $cauldronsList[ $potentialDaughterId ]);
                     }
                 }
@@ -122,6 +128,26 @@ class CauldronHandler
         }
         
         return $return;
+    }
+
+
+    private static function isParentPosition( array $potentialParentPosition, array $potentialChildPosition ): bool
+    {
+        $potentialParentDepth = count($potentialParentPosition);
+        if( count($potentialChildPosition) != $potentialParentDepth + 1 ){
+            return false;
+        }
+        
+        $isParent = true;
+        for( $i=1; $i<=$potentialParentDepth; $i++ ){
+            if( $potentialParentPosition[ $i ] != $potentialChildPosition[ $i ] )
+            {
+                $isParent = false;
+                break;
+            }
+        }
+
+        return $isParent;
     }
 
 
@@ -278,10 +304,10 @@ class CauldronHandler
 
         $i = 1;
         while( 
-            isset($cauldron->position[ $i ]) 
-            && ctype_digit(strval( $cauldron->position[$i] )) 
+            $cauldron->levelPosition($i) 
+            && ctype_digit(strval( $cauldron->levelPosition($i) )) 
         ){
-            $cauldron->properties[ 'level_'.$i ] = $cauldron->position[ $i ];
+            $cauldron->properties[ 'level_'.$i ] = $cauldron->levelPosition($i);
             $i++;
         }
         $cauldron->depth = $i - 1; 
@@ -532,4 +558,8 @@ class CauldronHandler
  
         return $recipeCauldron;
     }   
+
+    static function getWitches( Cauldron $cauldron ){
+        return WitchHandler::search( $cauldron->wc, [ 'cauldron' => $cauldron->id ]);
+    }
 }
