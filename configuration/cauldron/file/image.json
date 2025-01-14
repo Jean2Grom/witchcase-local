@@ -4,7 +4,13 @@
         {
             "mandatory": true,
             "name": "file",
-            "type": "file"
+            "type": "file",
+            "init": {
+                "title": {
+                    "value": "NO IMAGE SELECTED"
+                }
+            }
+
         },
         {
             "name": "legend",

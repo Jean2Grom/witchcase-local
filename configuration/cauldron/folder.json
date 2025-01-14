@@ -1,3 +1,10 @@
 {
-    "name": "folder"
+    "name": "folder",
+    "require": {
+        "refuse": [
+            "wc-archives-folder",
+            "wc-drafts-folder",
+            "wc-site-folder"
+        ]
+    }
 }

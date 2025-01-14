@@ -13,7 +13,8 @@ class IntegerIngredient extends Ingredient
      * @return self
      */
     function init( mixed $value=null ): self {
-        return $this->set( $value ?? (int) $this->properties[ 'value' ] ?? null );
+        //return $this->set( $value ?? (int) $this->properties[ 'value' ] ?? null );
+        return $this->set( $value ?? $this->properties[ 'value' ] ?? null );
     }
 
     /**

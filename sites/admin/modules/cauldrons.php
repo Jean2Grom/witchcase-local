@@ -18,7 +18,7 @@ $obj = new class {
     public function href( Cauldron $cauldron )
     {
         $witchId = $cauldron->witches()[0]?->id;        
-        return $this->baseUrl.$witchId? '?id='.$witchId."#tab-cauldron-part": "";
+        return $this->baseUrl.($witchId? '?id='.$witchId."#tab-cauldron-part": "");
     }
 };
 
