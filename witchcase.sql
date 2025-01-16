@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : db
--- Généré le : mar. 11 juin 2024 à 16:43
+-- Généré le : jeu. 16 jan. 2025 à 10:30
 -- Version du serveur : 8.0.36
 -- Version de PHP : 8.2.8
 
@@ -72,6 +72,7 @@ CREATE TABLE `cauldron` (
   `target` int UNSIGNED DEFAULT NULL,
   `status` bit(1) DEFAULT NULL COMMENT 'Null for content, 0 for draft, 1 for archive',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `recipe` varchar(128) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'folder',
   `data` json DEFAULT NULL,
   `priority` int NOT NULL DEFAULT '0',
   `creator` int UNSIGNED DEFAULT NULL,
@@ -84,36 +85,45 @@ CREATE TABLE `cauldron` (
   `level_4` int UNSIGNED DEFAULT NULL,
   `level_5` int UNSIGNED DEFAULT NULL,
   `level_6` int UNSIGNED DEFAULT NULL,
-  `level_7` int UNSIGNED DEFAULT NULL
+  `level_7` int UNSIGNED DEFAULT NULL,
+  `level_8` int UNSIGNED DEFAULT NULL,
+  `level_9` int UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `cauldron`
 --
 
-INSERT INTO `cauldron` (`id`, `target`, `status`, `name`, `data`, `priority`, `creator`, `created`, `modificator`, `modified`, `level_1`, `level_2`, `level_3`, `level_4`, `level_5`, `level_6`, `level_7`) VALUES
-(1, NULL, NULL, 'Root', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(2, NULL, NULL, 'Admin', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(3, NULL, NULL, 'Users', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 1, 1, NULL, NULL, NULL, NULL, NULL),
-(4, NULL, NULL, 'Administrateur', '{\"structure\": \"wc-user\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 1, 1, 1, NULL, NULL, NULL, NULL),
-(5, NULL, NULL, 'profiles', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 1, 1, 1, 1, NULL, NULL, NULL),
-(7, NULL, NULL, 'Jean2', '{\"structure\": \"wc-user\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 1, 1, 2, NULL, NULL, NULL, NULL),
-(8, NULL, NULL, 'profiles', '{\"structure\": \"array\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 1, 1, 2, 3, NULL, NULL, NULL),
-(43, NULL, NULL, 'wc-drafts-folder', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 1, 1, 2, 2, NULL, NULL, NULL),
-(54, NULL, NULL, 'wc-archives-folder', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 1, 1, 2, 3, NULL, NULL, NULL),
-(55, 7, b'1', 'Jean', '{\"structure\": \"wc-user\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 1, 1, 2, 3, 1, NULL, NULL),
-(56, NULL, NULL, 'Rusty test 2', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, NULL, NULL, NULL, NULL, NULL, NULL),
-(57, NULL, NULL, 'wc-drafts-folder', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, 1, NULL, NULL, NULL, NULL, NULL),
-(59, NULL, NULL, 'wc-archives-folder', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, 2, NULL, NULL, NULL, NULL, NULL),
-(61, 56, b'1', 'Chaudron test', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, 2, 1, NULL, NULL, NULL, NULL),
-(62, 56, b'1', 'Chaudron test', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, 2, 2, NULL, NULL, NULL, NULL),
-(63, 56, b'1', 'Chaudron test', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, 2, 3, NULL, NULL, NULL, NULL),
-(64, 56, b'1', 'Chaudron test', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, 2, 4, NULL, NULL, NULL, NULL),
-(66, 56, b'1', 'Chaudron test 2', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, 2, 5, NULL, NULL, NULL, NULL),
-(67, 56, b'1', 'Chaudron test 3', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, 2, 6, NULL, NULL, NULL, NULL),
-(68, 7, b'1', 'Jean', '{\"structure\": \"wc-user\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 1, 1, 2, 3, 2, NULL, NULL),
-(73, 56, b'1', 'Rusty test', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, 2, 7, NULL, NULL, NULL, NULL),
-(74, 56, b'1', 'Rusty test', '{\"structure\": \"folder\"}', 0, NULL, '2024-06-11 15:42:06', NULL, '2024-06-11 15:42:06', 2, 2, 8, NULL, NULL, NULL, NULL);
+INSERT INTO `cauldron` (`id`, `target`, `status`, `name`, `recipe`, `data`, `priority`, `creator`, `created`, `modificator`, `modified`, `level_1`, `level_2`, `level_3`, `level_4`, `level_5`, `level_6`, `level_7`, `level_8`, `level_9`) VALUES
+(1, NULL, NULL, 'ROOT', 'root', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2024-11-27 15:08:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, NULL, NULL, 'admin', 'wc-site-folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2024-11-27 16:13:42', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, NULL, NULL, 'wc-user', 'wc-recipe-folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2024-11-27 16:15:12', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, NULL, NULL, 'Administrateur', 'wc-user', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-08 15:53:14', 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(5, NULL, NULL, 'profiles', 'folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-08 15:53:30', 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL),
+(7, NULL, NULL, 'Jean', 'wc-user', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-08 15:53:44', 1, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL),
+(8, NULL, NULL, 'profiles', 'folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-08 15:53:56', 1, 1, 2, 3, NULL, NULL, NULL, NULL, NULL),
+(43, NULL, NULL, 'DRAFTS', 'wc-drafts-folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-08 15:53:49', 1, 1, 2, 2, NULL, NULL, NULL, NULL, NULL),
+(149, NULL, NULL, 'folder', 'wc-recipe-folder', NULL, 0, NULL, '2024-10-08 15:37:41', NULL, '2024-11-27 16:15:09', 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(161, NULL, NULL, 'DRAFTS', 'wc-drafts-folder', NULL, 0, NULL, '2024-10-09 15:54:40', NULL, '2025-01-08 15:53:37', 1, 1, 1, 2, NULL, NULL, NULL, NULL, NULL),
+(408, NULL, NULL, 'identifier', 'wc-recipe-folder', NULL, 0, NULL, '2025-01-10 16:21:37', NULL, '2025-01-10 16:21:37', 1, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(409, NULL, NULL, 'ddd', 'identifier', NULL, 0, NULL, '2025-01-10 17:48:39', NULL, '2025-01-14 10:34:11', 1, 3, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(410, NULL, NULL, 'container', 'folder', NULL, 200, NULL, '2025-01-14 10:23:14', NULL, '2025-01-14 15:23:37', 1, 3, 1, 4, 1, 2, NULL, NULL, NULL),
+(411, NULL, NULL, 'container 2', 'folder', NULL, 100, NULL, '2025-01-14 10:25:20', NULL, '2025-01-14 15:23:37', 1, 3, 1, 4, 1, 1, NULL, NULL, NULL),
+(412, NULL, NULL, 'identifier', 'identifier', NULL, 0, NULL, '2025-01-14 10:32:06', NULL, '2025-01-14 15:23:37', 1, 3, 1, 4, 1, 2, 1, NULL, NULL),
+(413, NULL, NULL, 'identifier', 'identifier', NULL, 0, NULL, '2025-01-14 10:32:58', NULL, '2025-01-14 15:23:37', 1, 3, 1, 4, 1, 1, 1, NULL, NULL),
+(414, NULL, NULL, 'DRAFTS', 'wc-drafts-folder', NULL, 0, NULL, '2025-01-14 10:40:17', NULL, '2025-01-14 10:40:17', 1, 3, 1, 3, NULL, NULL, NULL, NULL, NULL),
+(416, NULL, NULL, 'container', 'folder', NULL, 300, NULL, '2025-01-14 15:21:41', NULL, '2025-01-14 15:34:04', 1, 3, 1, 4, 2, 2, NULL, NULL, NULL),
+(417, NULL, NULL, 'identifier', 'identifier', NULL, 0, NULL, '2025-01-14 15:21:41', NULL, '2025-01-14 15:34:04', 1, 3, 1, 4, 2, 2, 1, NULL, NULL),
+(418, NULL, NULL, 'container 2', 'folder', NULL, 100, NULL, '2025-01-14 15:21:41', NULL, '2025-01-14 15:34:04', 1, 3, 1, 4, 2, 1, NULL, NULL, NULL),
+(419, NULL, NULL, 'identifier', 'identifier', NULL, 0, NULL, '2025-01-14 15:21:41', NULL, '2025-01-14 15:34:04', 1, 3, 1, 4, 2, 1, 1, NULL, NULL),
+(420, NULL, NULL, 'ARCHIVES', 'wc-archives-folder', NULL, 0, NULL, '2025-01-14 15:23:37', NULL, '2025-01-14 15:23:37', 1, 3, 1, 4, NULL, NULL, NULL, NULL, NULL),
+(421, 409, b'1', 'ddd', 'identifier', NULL, 0, NULL, '2025-01-14 15:23:37', NULL, '2025-01-14 15:23:37', 1, 3, 1, 4, 1, NULL, NULL, NULL, NULL),
+(423, NULL, NULL, 'container', 'folder', NULL, 400, NULL, '2025-01-14 15:32:42', NULL, '2025-01-14 15:34:04', 1, 3, 1, 7, NULL, NULL, NULL, NULL, NULL),
+(424, NULL, NULL, 'identifier', 'identifier', NULL, 0, NULL, '2025-01-14 15:32:42', NULL, '2025-01-14 15:34:04', 1, 3, 1, 7, 1, NULL, NULL, NULL, NULL),
+(425, NULL, NULL, 'container 2', 'folder', NULL, 200, NULL, '2025-01-14 15:32:42', NULL, '2025-01-14 15:34:04', 1, 3, 1, 6, NULL, NULL, NULL, NULL, NULL),
+(426, NULL, NULL, 'identifier', 'identifier', NULL, 0, NULL, '2025-01-14 15:32:42', NULL, '2025-01-14 15:34:04', 1, 3, 1, 6, 1, NULL, NULL, NULL, NULL),
+(427, NULL, NULL, 'fichier', 'file', NULL, 100, NULL, '2025-01-14 15:32:42', NULL, '2025-01-14 15:34:04', 1, 3, 1, 5, NULL, NULL, NULL, NULL, NULL),
+(428, 409, b'1', 'ddd', 'identifier', NULL, 0, NULL, '2025-01-14 15:34:04', NULL, '2025-01-14 15:34:04', 1, 3, 1, 4, 2, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -138,6 +148,13 @@ CREATE TABLE `content__test` (
   `nouvel-attribut-connexion@connexion#id` int DEFAULT NULL,
   `nouvel-attribut-datetime@datetime#value` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `content__test`
+--
+
+INSERT INTO `content__test` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `nouvel-attribut-link@link#href`, `nouvel-attribut-link@link#text`, `nouvel-attribut-link@link#external`, `nouvel-attribut-file@file#file`, `nouvel-attribut-file@file#title`, `nouvel-attribut-image@image#file`, `nouvel-attribut-image@image#title`, `nouvel-attribut-connexion@connexion#id`, `nouvel-attribut-datetime@datetime#value`) VALUES
+(1, 'test', 1, '2024-10-09 16:22:38', 1, '2024-10-09 16:22:38', 'murf', '', 1, '', 'fff', '', '', 4, '2024-10-09 19:23:00');
 
 -- --------------------------------------------------------
 
@@ -242,18 +259,13 @@ CREATE TABLE `ingredient__boolean` (
 
 INSERT INTO `ingredient__boolean` (`id`, `cauldron_fk`, `name`, `value`, `priority`) VALUES
 (1, 8, 'test_boolean', b'1', 0),
-(6, 61, 'Boolean', NULL, 0),
-(8, 62, 'Boolean', b'1', 200),
-(9, 63, 'Boolean', b'0', 200),
-(10, 63, 'Boolean', b'1', 200),
-(11, 64, 'Boolean', b'1', 300),
-(12, 64, 'Boolean', b'0', 200),
-(13, 66, 'Boolean', b'0', 300),
-(14, 66, 'Boolean', b'1', 200),
-(15, 67, 'Boolean', b'1', 200),
-(16, 73, 'Boolean', b'0', 200),
-(17, 74, 'Boolean', b'0', 200),
-(18, 56, 'Boolean', b'1', 200);
+(58, 168, 'test bool', b'1', 100),
+(59, 410, 'enable', b'1', 0),
+(60, 411, 'enable', b'0', 0),
+(61, 416, 'enable', b'1', 0),
+(62, 418, 'enable', b'0', 0),
+(63, 423, 'enable', b'1', 0),
+(64, 425, 'enable', b'0', 0);
 
 -- --------------------------------------------------------
 
@@ -274,8 +286,7 @@ CREATE TABLE `ingredient__datetime` (
 --
 
 INSERT INTO `ingredient__datetime` (`id`, `cauldron_fk`, `name`, `value`, `priority`) VALUES
-(1, 68, 'testxx', NULL, 0),
-(32, 7, 'testxx', '2024-06-06 07:09:00', 600);
+(51, 7, 'testxx', '2024-06-06 07:09:00', 1900);
 
 -- --------------------------------------------------------
 
@@ -298,8 +309,12 @@ CREATE TABLE `ingredient__float` (
 INSERT INTO `ingredient__float` (`id`, `cauldron_fk`, `name`, `value`, `priority`) VALUES
 (1, 68, 'test float', 12.4344, 0),
 (2, 68, 'test float', 13.333, 0),
-(63, 7, 'test float', 12.2222, 800),
-(64, 7, 'test float', 13.333, 700);
+(63, 75, 'test float', 12.2222, 800),
+(64, 75, 'test float', 13.333, 700),
+(69, 97, 'test float', 12.2222, 900),
+(70, 97, 'test float', 13.333, 800),
+(101, 7, 'test float', 12.2222, 2100),
+(102, 7, 'test float', 13.333, 2000);
 
 -- --------------------------------------------------------
 
@@ -325,7 +340,32 @@ INSERT INTO `ingredient__integer` (`id`, `cauldron_fk`, `name`, `value`, `priori
 (4, 5, 'user__profile', 1, 0),
 (5, 8, 'user__profile', 1, 0),
 (6, 8, 'user__profile', 2, 0),
-(53, 7, 'user__connexion', 2, 500);
+(53, 75, 'user__connexion', 2, 500),
+(56, 97, 'user__connexion', 2, 500),
+(72, 7, 'user__connexion', 2, 1800),
+(89, 168, 'id test 2', 7, 200),
+(108, 228, 'id to remove', 7, 300),
+(116, 223, 'id to remove', 7, 400),
+(117, 371, 'id to remove', 7, 400),
+(178, 374, 'integer', 7, 300),
+(180, 378, 'integer', 7, 300),
+(181, 385, 'integer', 7, 300),
+(182, 390, 'integer', 7, 300),
+(183, 214, 'integer', 7, 300),
+(185, 395, 'integer', 7, 600),
+(186, 401, 'identifier', 0, 0),
+(187, 402, 'identifier', 0, 0),
+(188, 403, 'identifier', 0, 0),
+(189, 404, 'identifier', 0, 0),
+(190, 421, 'identifier', 27, 400),
+(191, 412, 'identifier', 7, 200),
+(192, 413, 'identifier', 6, 200),
+(193, 428, 'identifier', 27, 400),
+(194, 417, 'identifier', 27, 200),
+(195, 419, 'identifier', 6, 200),
+(196, 409, 'identifier', 27, 500),
+(197, 424, 'identifier', 27, 200),
+(198, 426, 'identifier', 6, 200);
 
 -- --------------------------------------------------------
 
@@ -364,8 +404,60 @@ INSERT INTO `ingredient__string` (`id`, `cauldron_fk`, `name`, `value`, `priorit
 (2, 4, 'fist-name', 'Administrateur', 0),
 (3, 68, 'last-name', 'Gromard', 0),
 (4, 68, 'fist-name', 'Jean', 0),
-(75, 7, 'fist-name', 'Jeanx', 1100),
-(76, 7, 'last-name', 'Gromardxx', 1000);
+(75, 75, 'fist-name', 'Jeanx', 1100),
+(76, 75, 'last-name', 'Gromardxx', 1000),
+(81, 97, 'fist-name', 'Jeanx', 1100),
+(82, 97, 'last-name', 'Gromardxx', 1000),
+(113, 7, 'fist-name', 'Jean', 2300),
+(114, 7, 'last-name', 'Gromard', 2200),
+(139, 228, 'title to remove', 'Raoul explosive BBB', 200),
+(147, 223, 'title to remove', 'Raoul explosive BBB', 300),
+(150, 371, 'title to remove', 'Raoul explosive BBB', 300),
+(151, 226, 'path', '', 200),
+(152, 226, 'title', 'NO FILE SELECTED', 100),
+(364, 374, 'string', 'Raoul explosive BBB', 200),
+(365, 369, 'path', '', 0),
+(366, 369, 'title', 'Doom faces', 0),
+(368, 378, 'string', 'Raoul explosive BBB', 200),
+(369, 373, 'path', '', 0),
+(370, 373, 'title', 'Doom faces', 0),
+(371, 385, 'string', 'Raoul explosive BBB', 200),
+(372, 376, 'path', 'file/6e49173ee5248765104a1bca4d49556babba39fa/180-1809447_doom-guy-png-download-doom-low-health-face.png', 0),
+(373, 376, 'title', 'Doom faces', 0),
+(374, 390, 'string', 'Raoul explosive BBB', 200),
+(375, 380, 'path', 'file/6e49173ee5248765104a1bca4d49556babba39fa/180-1809447_doom-guy-png-download-doom-low-health-face.png', 0),
+(382, 380, 'title', 'Doom faces', 0),
+(383, 384, 'path', '', 0),
+(384, 384, 'title', 'NO FILE SELECTED', 0),
+(385, 214, 'string', 'Raoul explosive BBB', 200),
+(390, 387, 'path', 'file/6e49173ee5248765104a1bca4d49556babba39fa/180-1809447_doom-guy-png-download-doom-low-health-face.png', 0),
+(391, 387, 'title', 'Doom faces', 0),
+(393, 395, 'string', 'Raoul explosive BBB', 500),
+(394, 396, 'path', 'file/6e49173ee5248765104a1bca4d49556babba39fa/180-1809447_doom-guy-png-download-doom-low-health-face.png', 0),
+(395, 396, 'title', 'Doom faces', 0),
+(396, 397, 'path', 'file/2d55dec4d68acc406da0817f8d32b97fcdf9e050/atari_bombs.png', 0),
+(397, 397, 'title', 'Doom faces', 0),
+(398, 399, 'path', 'file/2d55dec4d68acc406da0817f8d32b97fcdf9e050/atari_bombs.png', 200),
+(399, 399, 'title', 'atari_bombs', 100),
+(400, 401, 'table', '', 0),
+(401, 402, 'table', '', 0),
+(402, 403, 'table', '', 0),
+(403, 404, 'table', '', 0),
+(404, 405, 'path', '', 0),
+(405, 405, 'title', 'NO FILE SELECTED', 0),
+(406, 406, 'path', '', 0),
+(407, 406, 'title', 'NO FILE SELECTED', 0),
+(408, 421, 'table', 'table test', 300),
+(409, 412, 'table', 'ze table', 100),
+(410, 413, 'table', 'the ze table', 100),
+(411, 428, 'table', 'table test', 200),
+(412, 417, 'table', 'ze table', 100),
+(413, 419, 'table', 'the ze table', 100),
+(414, 409, 'table', 'table test', 300),
+(415, 424, 'table', 'ze table', 100),
+(416, 426, 'table', 'the ze table', 100),
+(417, 427, 'path', 'file/385c5e167f2b8a37d83a6245d4fe811ee910ea2f/Aller-che-paris-31-12.pdf', 0),
+(418, 427, 'title', 'Achpa', 0);
 
 -- --------------------------------------------------------
 
@@ -386,7 +478,22 @@ CREATE TABLE `ingredient__text` (
 --
 
 INSERT INTO `ingredient__text` (`id`, `cauldron_fk`, `name`, `value`, `priority`) VALUES
-(1, 8, 'text', 'htdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfx', 0);
+(1, 8, 'text', 'htdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfxhtdyj yjt tr hgfs fdsu tjysfx', 0),
+(44, 228, 'content to remove', '<p><strong>content</strong><br></p>', 100),
+(52, 223, 'content to remove', '<p><strong>content</strong><br></p>', 200),
+(53, 371, 'content to remove', '<p><strong>content</strong><br></p>', 200),
+(115, 374, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
+(116, 378, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
+(117, 385, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
+(118, 390, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
+(119, 214, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
+(121, 395, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
+(122, 410, 'ze text', '<p>qsdqsdqsdqs<br></p>', 0),
+(123, 411, 'ze text', '<p>vvvvvv<br></p>', 0),
+(124, 416, 'ze text', '<p>qsdqsdqsdqs<br></p>', 0),
+(125, 418, 'ze text', '<p>vvvvvv<br></p>', 0),
+(126, 423, 'ze text', '<p>qsdqsdqsdqs<br></p>', 0),
+(127, 425, 'ze text', '<p>vvvvvv<br></p>', 0);
 
 -- --------------------------------------------------------
 
@@ -417,7 +524,8 @@ CREATE TABLE `user__connexion` (
 INSERT INTO `user__connexion` (`id`, `name`, `email`, `login`, `pass_hash`, `craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name`, `modifier`, `modified`, `creator`, `created`) VALUES
 (1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
 (2, 'Jean', 'jean.de.gromard@gmail.com', 'jean', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
-(3, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'draft__wc-user', 'connexion', 'id', 'connection', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34');
+(3, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'draft__wc-user', 'connexion', 'id', 'connection', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34'),
+(4, 'admin', 'admin@nimp.fr', 'bbb', '$2y$10$s3sYPL.8Fukd5gPT49aQGOmddgohaqQC6wGKbRamnhUGN8pwtWU9K', 'content__test', 'connexion', 'id', 'nouvel-attribut-connexion', 1, '2024-10-09 16:22:38', 1, '2024-10-09 16:22:38');
 
 -- --------------------------------------------------------
 
@@ -487,7 +595,8 @@ CREATE TABLE `user__rel__connexion__profile` (
 INSERT INTO `user__rel__connexion__profile` (`fk_connexion`, `fk_profile`, `created`) VALUES
 (1, 1, '2024-03-01 15:46:01'),
 (2, 1, '2024-03-01 15:46:01'),
-(3, 1, '2024-04-04 14:58:34');
+(3, 1, '2024-04-04 14:58:34'),
+(4, 2, '2024-10-09 16:22:38');
 
 -- --------------------------------------------------------
 
@@ -504,6 +613,7 @@ CREATE TABLE `witch` (
   `status` int UNSIGNED NOT NULL DEFAULT '0',
   `invoke` varchar(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cauldron` int UNSIGNED DEFAULT NULL,
+  `cauldron_priority` int NOT NULL DEFAULT '0',
   `craft_table` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   `craft_fk` int UNSIGNED DEFAULT NULL,
   `alias` int DEFAULT NULL,
@@ -515,32 +625,79 @@ CREATE TABLE `witch` (
   `level_2` int UNSIGNED DEFAULT NULL,
   `level_3` int UNSIGNED DEFAULT NULL,
   `level_4` int UNSIGNED DEFAULT NULL,
-  `level_5` int UNSIGNED DEFAULT NULL
+  `level_5` int UNSIGNED DEFAULT NULL,
+  `level_6` int UNSIGNED DEFAULT NULL,
+  `level_7` int UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `witch`
 --
 
-INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `cauldron`, `craft_table`, `craft_fk`, `alias`, `is_main`, `context`, `datetime`, `priority`, `level_1`, `level_2`, `level_3`, `level_4`, `level_5`) VALUES
-(1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, NULL, NULL, NULL, NULL, NULL),
-(2, 'Admin WitchCase', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, NULL, NULL, NULL, NULL),
-(3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 100, 1, 1, NULL, NULL, NULL),
-(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 4, 'content__wc-user', 1, NULL, 1, '', '2024-03-01 15:46:01', 0, 1, 1, 1, NULL, NULL),
-(5, 'Home', '', 'admin', '', 0, 'root', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, NULL, NULL, NULL),
-(6, 'Login', 'Module de déconnexion/connexion', 'admin', 'login', 0, 'login', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 40, 1, 2, 1, NULL, NULL),
-(7, 'Witch visualization', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'view', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 30, 1, 2, 2, NULL, NULL),
-(8, 'Edit Witch', '', 'admin', 'edit', 0, 'edit', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 20, 1, 2, 3, NULL, NULL),
-(9, 'Edit Craft', 'This is the draft of craft, you can publish it, save it for later, or remove draft to cancel modification.', 'admin', 'edit-content', 0, 'contents/edit', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 10, 1, 2, 4, NULL, NULL),
-(10, 'Menu', '', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, NULL, NULL),
-(11, 'Profiles', 'Permissions handeling is based on user profiles.', 'admin', 'profiles', 0, 'profiles', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 1, NULL),
-(12, 'Structures old school', '', 'admin', 'structures-old', 0, 'structures', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, 1, 2, 5, 2, NULL),
-(13, 'Apply', '', 'admin', 'apply', 0, 'emptyCache', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:28', -1, 1, 2, 5, 3, NULL),
-(14, 'test', 'test pour le chaudron', NULL, NULL, 0, NULL, 7, 'draft__test', 2, NULL, 1, NULL, '2024-03-08 17:35:00', 0, 2, NULL, NULL, NULL, NULL),
-(15, 'Structures', 'Les données sont stockées sous la forme de structures qui sont éditables ici.', 'admin', 'structure', 0, 'structure/list', NULL, NULL, NULL, NULL, 1, NULL, '2024-03-09 15:48:02', 0, 1, 2, 5, 4, NULL),
-(16, 'Cauldron', '', 'admin', 'cauldron', 0, 'cauldron', NULL, NULL, NULL, NULL, 1, NULL, '2024-04-08 15:04:18', 50, 1, 2, 6, NULL, NULL),
-(24, 'test 2', '', NULL, NULL, 0, NULL, 56, NULL, NULL, NULL, 1, NULL, '2024-06-03 16:02:37', 0, 2, 1, NULL, NULL, NULL),
-(25, 'View Structure', 'test', 'admin', 'chaudrons/view', 0, 'structure/view', NULL, NULL, NULL, NULL, 1, NULL, '2024-06-11 13:57:05', 0, 1, 2, 5, 4, 1);
+INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `cauldron`, `cauldron_priority`, `craft_table`, `craft_fk`, `alias`, `is_main`, `context`, `datetime`, `priority`, `level_1`, `level_2`, `level_3`, `level_4`, `level_5`, `level_6`, `level_7`) VALUES
+(1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 'Admin WitchCase', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 400, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', -300, 1, 1, NULL, NULL, NULL, NULL, NULL),
+(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 4, 200, 'content__wc-user', 1, NULL, 1, '', '2024-03-01 15:46:01', 0, 1, 1, 1, NULL, NULL, NULL, NULL),
+(5, 'Home', '', 'admin', '', 0, 'root', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', -400, 1, 2, NULL, NULL, NULL, NULL, NULL),
+(6, 'Login', 'Module de déconnexion/connexion', 'admin', 'login', 0, 'login', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 800, 1, 2, 1, NULL, NULL, NULL, NULL),
+(7, 'Witch', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'witch/view', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 700, 1, 2, 2, NULL, NULL, NULL, NULL),
+(8, 'Edit Witch', '', 'admin', 'edit', 0, 'witch/edit', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 500, 1, 2, 3, NULL, NULL, NULL, NULL),
+(9, 'Edit Craft', 'This is the draft of craft, you can publish it, save it for later, or remove draft to cancel modification.', 'admin', 'edit-content', 0, 'contents/edit', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 400, 1, 2, 4, NULL, NULL, NULL, NULL),
+(10, 'Menu', '', NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 200, 1, 2, 5, NULL, NULL, NULL, NULL),
+(11, 'Profiles', 'Permissions handeling is based on user profiles.', 'admin', 'profiles', 0, 'profiles', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 400, 1, 2, 5, 1, NULL, NULL, NULL),
+(12, 'Craft Structures', '', 'admin', 'structures-old', 0, 'structures', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 100, 1, 2, 5, 2, NULL, NULL, NULL),
+(13, 'Apply', '', 'admin', 'apply', 0, 'emptyCache', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:28', 0, 1, 2, 5, 3, NULL, NULL, NULL),
+(14, 'aaaa', 'test pour le chaudron !', 'admin', 'aaaa', 1, 'cauldrons', 0, 0, 'content__test', 1, NULL, 1, NULL, '2024-03-08 17:35:00', 300, 2, NULL, NULL, NULL, NULL, NULL, NULL),
+(15, 'Recipes', 'Les données sont stockées sous la forme de structures qui sont éditables ici.', 'admin', 'recipe', 0, 'recipe/list', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-09 15:48:02', 300, 1, 2, 5, 4, NULL, NULL, NULL),
+(16, 'Cauldron', '', 'admin', 'cauldron', 0, 'cauldron', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-04-08 15:04:18', 600, 1, 2, 9, NULL, NULL, NULL, NULL),
+(25, 'View Structure', 'Cauldron\'s inside element\'s structure visualization', 'admin', 'recipe/view', 0, 'recipe/view', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-06-11 13:57:05', 0, 1, 2, 5, 4, 1, NULL, NULL),
+(26, 'Edit Structure', '', 'admin', 'recipe/edit', 0, 'recipe/edit', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-06-13 13:54:51', 0, 1, 2, 5, 4, 2, NULL, NULL),
+(27, 'Create Structure', '', 'admin', 'recipe/create', 0, 'recipe/create', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-08-07 15:05:40', 0, 1, 2, 5, 4, 3, NULL, NULL),
+(30, 'Create Witch', '', 'admin', 'create-witch', 0, 'witch/create', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-09-24 21:02:27', 300, 1, 2, 7, NULL, NULL, NULL, NULL),
+(37, 'Witch', 'Witch Folder', 'admin', NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-10-01 13:59:43', 100, 1, 2, 8, NULL, NULL, NULL, NULL),
+(38, 'clipboard', NULL, 'admin', 'clipboard', 0, 'witch/clipboard', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-10-01 15:24:28', 0, 1, 2, 8, 1, NULL, NULL, NULL),
+(45, 'bbb 3', 'murf desc', 'admin', 'testmurf', 1, 'view', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-03 20:03:45', 0, 2, 6, NULL, NULL, NULL, NULL, NULL),
+(48, 'ccc', '', 'admin', NULL, 0, NULL, NULL, 0, 'content__wc-user', 1, NULL, 0, '', '2024-10-03 20:03:45', -500, 2, 6, 2, NULL, NULL, NULL, NULL),
+(49, 'ddd', 'dytytc', 'admin', 'ddd', 2, 'default', 409, 0, NULL, NULL, NULL, 0, NULL, '2024-10-03 20:03:45', -600, 2, 6, 2, 1, NULL, NULL, NULL),
+(58, 'aaaa 2', 'test pour le chaudron', 'admin', 'aaaa-2', 1, 'default', 0, 0, 'draft__test', 2, NULL, 1, NULL, '2024-10-08 09:58:02', 200, 3, NULL, NULL, NULL, NULL, NULL, NULL),
+(59, 'test 280', '', 'admin', NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-08 09:58:02', 200, 3, 1, NULL, NULL, NULL, NULL, NULL),
+(60, 'test 3', '', 'admin', NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-08 09:58:02', 200, 3, 1, 1, NULL, NULL, NULL, NULL),
+(61, 'test 4', NULL, 'admin', NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-08 09:58:02', 0, 3, 1, 1, 1, NULL, NULL, NULL),
+(62, 'test 4', NULL, 'admin', 'testtest-4', 0, 'view', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-08 09:58:02', -500, 3, 1, 1, 2, NULL, NULL, NULL),
+(63, 'murf', 'murf desc', 'admin', 'testtestmurf-2', 1, 'view', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-08 09:58:02', 0, 3, 1, 2, NULL, NULL, NULL, NULL),
+(64, 'Administrateur', '', 'admin', NULL, 0, NULL, NULL, 0, 'content__wc-user', 1, NULL, 0, '', '2024-10-08 09:58:02', -500, 3, 1, 2, 1, NULL, NULL, NULL),
+(65, 'Create Witch', 'dytytc', 'admin', 'testtestmurf-2testmurftest/create-witch-2', 2, 'view', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-08 09:58:02', -600, 3, 1, 2, 1, 1, NULL, NULL),
+(66, 'Test Marie', NULL, 'admin', 'testtest/test-marie', 0, 'default', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-08 09:58:02', 0, 3, 1, 3, NULL, NULL, NULL, NULL),
+(67, 'murf', 'murf desc', 'admin', 'testmurf', 1, 'view', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-08 09:58:02', 0, 3, 2, NULL, NULL, NULL, NULL, NULL),
+(68, 'Administrateur', '', 'admin', NULL, 0, NULL, NULL, 0, 'content__wc-user', 1, NULL, 0, '', '2024-10-08 09:58:02', -500, 3, 2, 1, NULL, NULL, NULL, NULL),
+(69, 'Create Witch', 'dytytc', 'admin', 'testmurftest/create-witch-2', 2, 'view', 0, 0, NULL, NULL, NULL, 0, NULL, '2024-10-08 09:58:02', -600, 3, 2, 1, 1, NULL, NULL, NULL),
+(70, 'bbb 2', '', 'admin', NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-10-10 13:20:31', 0, 2, 8, NULL, NULL, NULL, NULL, NULL),
+(72, 'Jeannot', NULL, 'admin', '-2', 0, 'default', 7, 200, NULL, NULL, NULL, 1, NULL, '2024-10-10 13:38:23', 0, 3, 4, NULL, NULL, NULL, NULL, NULL),
+(73, 'Admin - test', NULL, 'admin', 'test/admin-test', 0, 'default', 4, 100, NULL, NULL, NULL, 1, NULL, '2024-10-10 13:39:52', 0, 3, 4, 1, NULL, NULL, NULL, NULL),
+(74, 'jeannot 2', NULL, 'admin', 'test/jeannot-2', 0, 'default', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-10-10 13:52:28', 0, 3, 4, 2, NULL, NULL, NULL, NULL),
+(102, 'Admin WitchCase', 'Site d\'administration', 'admin', NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 300, 2, 8, 1, NULL, NULL, NULL, NULL),
+(103, 'Utilisateurs', '', 'admin', NULL, 0, '', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', -300, 2, 8, 1, 1, NULL, NULL, NULL),
+(104, 'Administrateur', '', 'admin', NULL, 0, NULL, 4, 100, 'content__wc-user', 1, NULL, 0, '', '2024-10-24 13:39:33', 0, 2, 8, 1, 1, 1, NULL, NULL),
+(105, 'Home', '', 'admin', 'home', 0, 'root', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', -400, 2, 8, 1, 2, NULL, NULL, NULL),
+(106, 'Cauldron', '', 'admin', 'homecauldron', 0, 'cauldron', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 50, 2, 8, 1, 2, 1, NULL, NULL),
+(107, 'Login', 'Module de déconnexion/connexion', 'admin', 'homelogin', 0, 'login', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 40, 2, 8, 1, 2, 2, NULL, NULL),
+(108, 'Witch', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'homeview', 0, 'witch/view', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 30, 2, 8, 1, 2, 3, NULL, NULL),
+(109, 'Edit Witch', '', 'admin', 'homeedit', 0, 'witch/edit', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 20, 2, 8, 1, 2, 4, NULL, NULL),
+(110, 'Edit Craft', 'This is the draft of craft, you can publish it, save it for later, or remove draft to cancel modification.', 'admin', 'homeedit-content', 0, 'contents/edit', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 10, 2, 8, 1, 2, 5, NULL, NULL),
+(111, 'Create Witch', '', 'admin', 'homecreate-witch', 0, 'witch/create', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 0, 2, 8, 1, 2, 6, NULL, NULL),
+(112, 'Menu', '', 'admin', NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 0, 2, 8, 1, 2, 7, NULL, NULL),
+(113, 'Profiles', 'Permissions handeling is based on user profiles.', 'admin', 'profiles-2', 0, 'profiles', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 0, 2, 8, 1, 2, 7, 1, NULL),
+(114, 'Recipes', 'Les données sont stockées sous la forme de structures qui sont éditables ici.', 'admin', 'recipe-2', 0, 'recipe/list', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 0, 2, 8, 1, 2, 7, 2, NULL),
+(115, 'Create Structure', '', 'admin', 'recipe/create-2', 0, 'recipe/create', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 0, 2, 8, 1, 2, 7, 2, 1),
+(116, 'Edit Structure', '', 'admin', 'recipe/edit-2', 0, 'recipe/edit', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 0, 2, 8, 1, 2, 7, 2, 2),
+(117, 'View Structure', 'Cauldron\'s inside element\'s structure visualization', 'admin', 'recipe/view-2', 0, 'recipe/view', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 0, 2, 8, 1, 2, 7, 2, 3),
+(118, 'Structures old school', '', 'admin', 'structures-old-2', 0, 'structures', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 0, 2, 8, 1, 2, 7, 3, NULL),
+(119, 'Apply', '', 'admin', 'apply-2', 0, 'emptyCache', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', -1, 2, 8, 1, 2, 7, 4, NULL),
+(120, 'Witch', 'Witch Folder', 'admin', NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 0, 2, 8, 1, 2, 8, NULL, NULL),
+(121, 'clipboard', NULL, 'admin', 'clipboard-2', 0, 'witch/clipboard', NULL, 0, NULL, NULL, NULL, 0, NULL, '2024-10-24 13:39:33', 0, 2, 8, 1, 2, 8, 1, NULL),
+(127, 'Cauldrons', NULL, 'admin', 'cauldrons', 0, 'cauldrons', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-11-26 15:11:01', 0, 1, 2, 5, 5, NULL, NULL, NULL),
+(129, 'Jean', '', 'admin', NULL, 0, NULL, 7, 0, NULL, NULL, NULL, 1, NULL, '2025-01-10 16:01:18', 0, 1, 1, 2, NULL, NULL, NULL, NULL);
 
 --
 -- Index pour les tables déchargées
@@ -570,7 +727,9 @@ ALTER TABLE `cauldron`
   ADD KEY `IDX_level_4` (`level_4`),
   ADD KEY `IDX_level_5` (`level_5`),
   ADD KEY `IDX_level_6` (`level_6`),
-  ADD KEY `IDX_level_7` (`level_7`);
+  ADD KEY `IDX_level_7` (`level_7`),
+  ADD KEY `IDX_level_8` (`level_8`),
+  ADD KEY `IDX_level_9` (`level_9`);
 
 --
 -- Index pour la table `content__test`
@@ -678,7 +837,9 @@ ALTER TABLE `witch`
   ADD KEY `IDX_level_2` (`level_2`),
   ADD KEY `IDX_level_3` (`level_3`),
   ADD KEY `IDX_level_4` (`level_4`),
-  ADD KEY `IDX_level_5` (`level_5`);
+  ADD KEY `IDX_level_5` (`level_5`),
+  ADD KEY `IDX_level_6` (`level_6`),
+  ADD KEY `IDX_level_7` (`level_7`);
 
 --
 -- AUTO_INCREMENT pour les tables déchargées
@@ -700,13 +861,13 @@ ALTER TABLE `archive__wc-user`
 -- AUTO_INCREMENT pour la table `cauldron`
 --
 ALTER TABLE `cauldron`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=429;
 
 --
 -- AUTO_INCREMENT pour la table `content__test`
 --
 ALTER TABLE `content__test`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `content__wc-user`
@@ -718,7 +879,7 @@ ALTER TABLE `content__wc-user`
 -- AUTO_INCREMENT pour la table `draft__test`
 --
 ALTER TABLE `draft__test`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `draft__wc-user`
@@ -730,49 +891,49 @@ ALTER TABLE `draft__wc-user`
 -- AUTO_INCREMENT pour la table `ingredient__boolean`
 --
 ALTER TABLE `ingredient__boolean`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__datetime`
 --
 ALTER TABLE `ingredient__datetime`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__float`
 --
 ALTER TABLE `ingredient__float`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__integer`
 --
 ALTER TABLE `ingredient__integer`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=199;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__price`
 --
 ALTER TABLE `ingredient__price`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__string`
 --
 ALTER TABLE `ingredient__string`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=419;
 
 --
 -- AUTO_INCREMENT pour la table `ingredient__text`
 --
 ALTER TABLE `ingredient__text`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
 
 --
 -- AUTO_INCREMENT pour la table `user__connexion`
 --
 ALTER TABLE `user__connexion`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `user__policy`
@@ -790,5 +951,5 @@ ALTER TABLE `user__profile`
 -- AUTO_INCREMENT pour la table `witch`
 --
 ALTER TABLE `witch`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
 COMMIT;
