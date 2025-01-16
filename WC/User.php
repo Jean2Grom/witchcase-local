@@ -1,7 +1,7 @@
 <?php
 namespace WC;
 
-use WC\DataAccess\User as UserDA;
+use WC\DataAccess\User as DataAccess;
 
 /**
  * Class handeling User information and security access policies
@@ -46,7 +46,7 @@ class User
         {
             $loginFailure       = false;
             $userName           = $this->wc->request->param('username');
-            $userConnexionData  = UserDA::getUserLoginData( $this->wc, $userName );
+            $userConnexionData  = DataAccess::getUserLoginData( $this->wc, $userName );
             
             if( count($userConnexionData) == 0 )
             {
@@ -119,7 +119,7 @@ class User
             $this->name     = $this->wc->configuration->read('system', 'publicUser') ?? "Public";
             $publicProfile  = $this->wc->configuration->read('system', 'publicUserProfile') ?? 'public';
             
-            $getPublicProfileData = UserDA::getPublicProfileData( $wc, $publicProfile );
+            $getPublicProfileData = DataAccess::getPublicProfileData( $wc, $publicProfile );
 
             $this->profiles = $getPublicProfileData['profiles'];
             $this->policies = $getPublicProfileData['policies'];
@@ -147,7 +147,7 @@ class User
     
     function connectTo( string $login )
     {
-        $userConnexionData = UserDA::getUserLoginData( $this->wc, $login );
+        $userConnexionData = DataAccess::getUserLoginData( $this->wc, $login );
         
         if( count($userConnexionData) == 0 )
         {
@@ -202,7 +202,7 @@ class User
         $this->name     = $this->wc->configuration->read('system', 'publicUser') ?? "Public";
         $publicProfile  = $this->wc->configuration->read('system', 'publicUserProfile') ?? 'public';
         
-        $getPublicProfileData = UserDA::getPublicProfileData( $this->wc, $publicProfile );
+        $getPublicProfileData = DataAccess::getPublicProfileData( $this->wc, $publicProfile );
         
         $this->profiles = $getPublicProfileData['profiles'];
         $this->policies = $getPublicProfileData['policies'];
