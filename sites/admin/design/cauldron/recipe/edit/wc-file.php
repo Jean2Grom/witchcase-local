@@ -4,8 +4,6 @@
  * @var string $input 
  */
 
-$this->wc->debug( $input );
-
 $key = "_FILES__".md5(microtime().rand());
 ?>
 
@@ -16,15 +14,15 @@ $key = "_FILES__".md5(microtime().rand());
                 value="<?=$this->id ?>" />
     <?php endif; ?>
 
-    <div class="file-display" <?=$path? '': 'style="display: none;"' ?>>
-        <?php if( $path ): ?>
+    <div class="file-display" <?=$storagePath? '': 'style="display: none;"' ?>>
+        <?php if( $storagePath ): ?>
             <h2 class="current-file-focus">
                 Current file
             </h2>        
             <a  class="current-file-focus" 
-                href="/<?=$path?>" 
+                href="/<?=$storagePath?>" 
                 target="_blank">
-                <?=$title? $title: basename($path)?>
+                <?=$filename? $filename: basename($storagePath)?>
             </a>
         <?php endif; ?>
         
@@ -35,10 +33,10 @@ $key = "_FILES__".md5(microtime().rand());
         </a>
     </div>
 
-    <div class="file-input" <?=$path? 'style="display: none;"': '' ?>>
+    <div class="file-input" <?=$storagePath? 'style="display: none;"': '' ?>>
         <input  type="hidden" 
                 name="<?=$input.'[content][0][name]'?>" 
-                value="path" />
+                value="storage-path" />
         <input  type="hidden" 
                 name="<?=$input.'[content][0][type]'?>" 
                 value="string" />
@@ -48,24 +46,24 @@ $key = "_FILES__".md5(microtime().rand());
 
         <input  type="hidden" 
                 name="<?=$input.'[content][1][name]'?>" 
-                value="title" />
+                value="filename" />
         <input  type="hidden" 
                 name="<?=$input.'[content][1][type]'?>" 
                 value="string" />
 
-        <?php if( $this->content('path')?->exist() ): ?>
+        <?php if( $this->content('storage-path')?->exist() ): ?>
             <input  type="hidden" 
                     name="<?=$input.'[content][0][ID]'?>" 
-                    value="<?=$this->content('path')?->id ?>" />
+                    value="<?=$this->content('storage-path')?->id ?>" />
         <?php endif; ?>
-        <?php if( $this->content('title')?->exist() ): ?>
+        <?php if( $this->content('filename')?->exist() ): ?>
             <input  type="hidden" 
                     name="<?=$input.'[content][1][ID]'?>" 
-                    value="<?=$this->content('title')?->id ?>" />
+                    value="<?=$this->content('filename')?->id ?>" />
         <?php endif; ?>
 
         <div class="switch-file-input-type">
-            <a  <?=$this->content('path')?->value()? '': 'class="selected"' ?> 
+            <a  <?=$this->content('storage-path')?->value()? '': 'class="selected"' ?> 
                 data-target="upload-file-input">
                 Upload file
             </a>
@@ -76,25 +74,23 @@ $key = "_FILES__".md5(microtime().rand());
             </a>
         </div>
         <input  class="upload-file-input"
-                <?=$this->content('path')?->value()? 'style="display: none;"': '' ?>
+                <?=$this->content('storage-path')?->value()? 'style="display: none;"': '' ?>
                 type="file" 
                 name="<?=$key?>" />
         <input  class="move-file-input"
-                <?=$this->content('path')?->value()? '': 'style="display: none;"' ?>
+                <?=$this->content('storage-path')?->value()? '': 'style="display: none;"' ?>
                 type="text" 
                 name="<?=$input.'[content][0][value]'?>" 
-                value="<?=$this->content('path')?->value() ?>" 
+                value="<?=$this->content('storage-path')?->value() ?>" 
                 placeholder="enter here full path filename" />
+
+        <input  class="filename-file-input"
+                type="text" 
+                name="<?=$input.'[content][1][value]'?>"
+                value="<?=$filename?>" />
     </div>
 
-    <legend>Filename</legend>
-    <input  class="name-file-input"
-            type="text" 
-            name="<?=$input.'[content][1][value]'?>"
-            value="<?=$title?>" 
-            placeholder="enter filename"/>
 </div>
-
 
 <style>
     .file-display, 
@@ -107,5 +103,3 @@ $key = "_FILES__".md5(microtime().rand());
         color: #ff9900;
     }
 </style>
-
-

@@ -30,8 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         container.querySelectorAll( 
             '.file-input .upload-file-input, .file-input .move-file-input' 
         ).forEach(
-            input =>  input.addEventListener( 'change', () => {        
-                //let filename = input.files[0].name;
+            input =>  input.addEventListener( 'change', () => { 
                 let filename = input.value.split(/(\\|\/)/g).pop();
                 
                 container.querySelectorAll('.file-display .new-file-focus').forEach( 
@@ -46,14 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     elmnt => elmnt.style.display = 'none'
                 );
                 
-                container.querySelectorAll('input.name-file-input').forEach( input => {
-                    if( input.value === '' )
-                    {
-                        input.value = filename.substring(0, filename.lastIndexOf('.'));
-
-                        if( input.value === '' ){
-                            input.value = filename;
-                        }
+                container.querySelectorAll('input.filename-file-input').forEach( input => {
+                    if( input.value === '' ){
+                        input.value = filename;
                     }
                     input.select();
                     input.focus();
@@ -80,28 +74,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
                 
                 container.querySelectorAll( 
-                    '.file-input .upload-file-input, .file-input .move-file-input' 
+                    '.file-input .upload-file-input, .file-input .move-file-input, .file-input .filename-file-input' 
                 ).forEach( input => {
-
-                    let filename    = input.value.split(/(\\|\/)/g).pop();
-                    if( filename === '' ){
+                    
+                    if( input.value === '' ){
                         return;
                     }
 
                     input.value     = '';
-
-                    container.querySelectorAll('input.name-file-input').forEach( nameInput => {
-                        if( nameInput.value === filename
-                            || nameInput.value === filename.substring(0, filename.lastIndexOf('.'))  
-                        ){
-                            nameInput.value = '';
-                        }
-                        else if( !input.classList.contains('move-file-input') )
-                        {
-                            nameInput.select();
-                            nameInput.focus();                
-                        }
-                    });
 
                     if( input.classList.contains('move-file-input') ){
                         input.focus();                
