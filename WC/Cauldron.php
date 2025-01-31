@@ -420,6 +420,7 @@ class Cauldron implements CauldronContentInterface
     function validate()
     {
         $composition    = $this->recipe()->composition ?? [];
+
         $contentQtt     = 0;
         foreach( $this->contents() as $content )
         {
@@ -588,11 +589,17 @@ class Cauldron implements CauldronContentInterface
             $this->name = htmlspecialchars($params['name']);
         }
 
+        if( isset($params['priority']) && is_int($params['priority']) ){
+            $this->priority = $params['priority'];
+        }
+        
         $contentAutoPriority = true;
-        if( isset($params['priority']) && is_int($params['priority']) )
-        {
-            $this->priority         = $params['priority'];
-            $contentAutoPriority    = false;
+        foreach( $params['content'] as $contentParams ){
+            if( isset($contentParams['priority']) && is_int($contentParams['priority']) )
+            {
+                $contentAutoPriority = false;
+                break;
+            }
         }
 
         $params['content'] = $params['content']? $params['content']: [];
@@ -637,29 +644,46 @@ class Cauldron implements CauldronContentInterface
                 $priority                       -=  $priorityInterval;
             }
 
-            if( !($contentParams['value'] ?? null) && ($contentParams['$_FILES'] ?? null) )
+            if( $contentParams['$_FILES'] ?? null )
             {
                 $fileInputs = $_FILES[ $contentParams['$_FILES'] ];
 
                 if( filesize($fileInputs[ "tmp_name" ]) !== false )
                 {
                     $dir    =   $this->wc->configuration->storage();
-
-                    $path  =   Tools::cleanupString( $this->type );
-                    $path  .=  '/'.sha1_file($fileInputs[ "tmp_name" ]);
-
-                    $value  =  $path.'/'.$fileInputs[ "name" ];
+                    $path   =   $fileInputs['type'];
+                    $value  =   sha1_file($fileInputs[ "tmp_name" ]);
 
                     if( !$this->wc->configuration->createFolder($dir.'/'.$path) 
-                        || !copy($fileInputs["tmp_name"], $dir.'/'.$value) ){
-                            $this->wc->log->error( "file upload failed" );
-                        }
+                        || !move_uploaded_file($fileInputs["tmp_name"], $dir.'/'.$path.'/'.$value) 
+                    ){
+                        $this->wc->log->error( "file upload failed" );
+                        $contentParams['value'] = "";
+                    }
                     else {
-                        $contentParams['value'] = $value;
+                        $contentParams['value'] = $path.'/'.$value;
+                    }
+                }
+                elseif( is_file($contentParams['value']) )
+                {
+                    $dir    =   $this->wc->configuration->storage();                    
+                    $path   =   mime_content_type($contentParams['value']);
+                    $value  =   sha1_file($contentParams['value']);
+
+                    if( (!is_file( $dir.'/'.$path.'/'.$value ) 
+                            || sha1_file( $dir.'/'.$path.'/'.$value ) !== $value)
+                        && (!$this->wc->configuration->createFolder( $dir.'/'.$path ) 
+                            || !rename( $contentParams['value'], $dir.'/'.$path.'/'.$value ))
+                    ){
+                        $this->wc->log->error( "file move failed" );
+                        $contentParams['value'] = "";
+                    }
+                    else {
+                        $contentParams['value'] = $path.'/'.$value;
                     }
                 }
             }
-            
+
             if( !$isNew )
             {
                 $contents[ $indice ]->readInputs( $contentParams );
@@ -846,7 +870,7 @@ class Cauldron implements CauldronContentInterface
 
         $witchToRemoveKey = array_search($witch, $this->witches);
 
-        if( !$witchToRemoveKey ){
+        if( $witchToRemoveKey === false ){
             return false;
         }
 

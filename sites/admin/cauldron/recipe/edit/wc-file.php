@@ -6,10 +6,10 @@ $this->wc->website->context->addJsFile('cauldron/wc-file-edit.js');
 $storagePath    = $this->content('storage-path')?->value() ?? "";
 if( $storagePath )
 {
-    $dir        = $this->wc->configuration->storage();
-
-    if( !is_file($dir.'/'.$storagePath) ){
-        $storagePath= "";
+    $storagePath = $this->wc->configuration->storage().'/'.$storagePath; 
+    
+    if( !is_file($storagePath) ){
+        $storagePath = "";
     }
 }
 

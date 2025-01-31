@@ -16,9 +16,6 @@ $key = "_FILES__".md5(microtime().rand());
 
     <div class="file-display" <?=$storagePath? '': 'style="display: none;"' ?>>
         <?php if( $storagePath ): ?>
-            <h2 class="current-file-focus">
-                Current file
-            </h2>        
             <a  class="current-file-focus" 
                 href="/<?=$storagePath?>" 
                 target="_blank">
@@ -81,11 +78,11 @@ $key = "_FILES__".md5(microtime().rand());
                 <?=$this->content('storage-path')?->value()? '': 'style="display: none;"' ?>
                 type="text" 
                 name="<?=$input.'[content][0][value]'?>" 
-                value="<?=$this->content('storage-path')?->value() ?>" 
+                value="<?=$storagePath ?>" 
                 placeholder="enter here full path filename" />
 
         <input  class="filename-file-input"
-                type="text" 
+                type="hidden" 
                 name="<?=$input.'[content][1][value]'?>"
                 value="<?=$filename?>" />
     </div>

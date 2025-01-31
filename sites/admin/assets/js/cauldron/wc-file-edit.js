@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ).forEach(
             input =>  input.addEventListener( 'change', () => { 
                 let filename = input.value.split(/(\\|\/)/g).pop();
-                
+
                 container.querySelectorAll('.file-display .new-file-focus').forEach( 
                     span => span.innerHTML = filename
                 );
@@ -45,13 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     elmnt => elmnt.style.display = 'none'
                 );
                 
-                container.querySelectorAll('input.filename-file-input').forEach( input => {
-                    if( input.value === '' ){
-                        input.value = filename;
-                    }
-                    input.select();
-                    input.focus();
-                });
+                container.querySelectorAll('.filename-file-input').forEach( 
+                    input => input.value = filename
+                );
             })
         );
 
