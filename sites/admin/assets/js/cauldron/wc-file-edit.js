@@ -68,11 +68,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 container.querySelectorAll( '.file-input' ).forEach(
                     elmnt => elmnt.style.display = 'block'
                 );
-                
+
+                let filename = '';
                 container.querySelectorAll( 
                     '.file-input .upload-file-input, .file-input .move-file-input, .file-input .filename-file-input' 
                 ).forEach( input => {
                     
+                    if( input.classList.contains('filename-file-input') ){
+                        filename = input.value;
+                    }
+
                     if( input.value === '' ){
                         return;
                     }
@@ -83,6 +88,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         input.focus();                
                     }
                 });
+
+                container.dispatchEvent( new CustomEvent("fileRemovedByUser", {'detail': { 'filename': filename} }) );
+
             })
         );
     });

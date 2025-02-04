@@ -15,7 +15,7 @@ $this->addJsFile('triggers.js');
     
 <?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
-<form id="edit-action" method="post" enctype="multipart/form-data">
+<form id="edit-action" method="post">
     <?php if( !empty($recipeName) ): ?>
         <input type="hidden" name="recipe" value="<?=$recipeName?>" />
         <h3>
@@ -58,7 +58,10 @@ $this->addJsFile('triggers.js');
                 <ul>
                     <li>
                         <div>Name</div>
-                        <input type="text" class="ref-name" name="<?=$item['name']?>-name" value="<?=$item['name']?>" />
+                        <input  type="text" 
+                                class="ref-name" 
+                                name="<?=$item['name']?>-name" 
+                                value="<?=$item['name']?>" />
                     </li>
                     <li>
                         <div>Type</div>

@@ -1,18 +1,22 @@
 <?php /** @var WC\Cauldron $this */ 
 
 $this->wc->website->context->addJsFile('cauldron/file-edit.js');
-$this->wc->website->context->addCssFile('cauldron/file-edit.css');
+//$this->wc->website->context->addCssFile('cauldron/file-edit.css');
 
-$path = $this->content('path')?->value() ?? "";
-if( $path )
+
+$title = $this->content('filename')?->value() ?? "";
+
+$storagePath    = $this->content('file')?->content('storage-path')?->value() ?? "";
+if( $storagePath )
 {
-    $dir        = $this->wc->configuration->storage();
-
-    if( !is_file($dir.'/'.$path) ){
-        $path = "";
+    $storagePath = $this->wc->configuration->storage().'/'.$storagePath; 
+    
+    if( !is_file($storagePath) ){
+        $storagePath = "";
     }
 }
 
-$title = $this->content('title')?->value() ?? "";
+$filename       = $this->content('file')?->content('filename')?->value() ?? "";
+
 
 include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/edit/file.php");

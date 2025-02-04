@@ -4,6 +4,8 @@
  * @var string $input 
  */
 
+$this->wc->website->context->addJsFile('cauldron/wc-file-edit.js');
+
 $key = "_FILES__".md5(microtime().rand());
 ?>
 
@@ -13,6 +15,9 @@ $key = "_FILES__".md5(microtime().rand());
                 name="<?=$input?>[ID]" 
                 value="<?=$this->id ?>" />
     <?php endif; ?>
+    <input  type="hidden" 
+                name="<?=$input?>[type]" 
+                value="wc-file" />
 
     <div class="file-display" <?=$storagePath? '': 'style="display: none;"' ?>>
         <?php if( $storagePath ): ?>

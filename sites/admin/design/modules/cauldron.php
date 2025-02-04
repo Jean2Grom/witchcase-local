@@ -15,10 +15,16 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
 <?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+    
     <?php if( $cauldron->draft()->exist() ): ?>
         <input  type="hidden" 
-                name="ID" value="<?=$cauldron->draft()->id ?>" />
+                name="ID" 
+                value="<?=$cauldron->draft()->id ?>" />
     <?php endif; ?>
+    <input  type="hidden" 
+            name="type" 
+            value="<?=$cauldron->draft()->type ?>" />
     <h3>
         [<?=$cauldron->recipe ?>] 
         <span   class="span-input-toggle" 

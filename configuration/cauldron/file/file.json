@@ -3,12 +3,13 @@
     "composition": [
         {
             "mandatory": true,
-            "name": "path",
+            "name": "filename",
             "type": "string"
         },
         {
-            "name": "title",
-            "type": "string"
+            "mandatory": true,
+            "name": "file",
+            "type": "wc-file"
         }
     ]
 }

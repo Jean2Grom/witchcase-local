@@ -10,6 +10,9 @@
                 name="<?=$input?>[ID]" value="<?=$this->id ?>" />
 <?php endif; ?>
 
+<input  type="text" 
+        name="<?=$input?>[type]" value="<?=$this->type ?>" />
+
 <div class="fieldsets-container">
     <?php if( empty($this->contents()) ): ?>
         <input  type="hidden" 
