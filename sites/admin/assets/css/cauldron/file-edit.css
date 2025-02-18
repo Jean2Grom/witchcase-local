@@ -1,0 +1,23 @@
+.file-display, 
+.image-display, 
+.file-input, 
+.file-input > .switch-file-input-type {
+    margin-bottom: 8px;
+}
+.file-input > .switch-file-input-type > .selected {
+    cursor: initial;
+    color: #ff9900;
+}
+
+.remove-image,
+.remove-file {
+    margin-left: 8px;
+    font-size: 18px;
+}
+.remove-image {
+    display: flex;
+}
+.image-edit-container .file-input,
+.image-display {
+    margin-top: 8px;
+}

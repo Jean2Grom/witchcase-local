@@ -15,7 +15,7 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
 <?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+    <input type="hidden" name="MAX_FILE_SIZE" value="3000000" />
     
     <?php if( $cauldron->draft()->exist() ): ?>
         <input  type="hidden" 

@@ -3,17 +3,16 @@
     "composition": [
         {
             "mandatory": true,
-            "name": "file",
-            "type": "file",
-            "init": {
-                "title": {
-                    "value": "NO IMAGE SELECTED"
-                }
-            }
-
+            "name": "name",
+            "type": "string"
         },
         {
-            "name": "legend",
+            "mandatory": true,
+            "name": "file",
+            "type": "wc-file"
+        },
+        {
+            "name": "caption",
             "type": "string"
         }
     ]

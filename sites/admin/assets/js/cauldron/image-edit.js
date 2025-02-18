@@ -1,34 +1,98 @@
-$(document).ready( function(){
-    $('.change-image').change(function(){
-        let filename = $(this).val().split(/(\\|\/)/g).pop();
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.image-edit-container').forEach( container => {
         
-        let [file] = this.files;
-        
-        $(this).parents('.change-file-container').next('input.file-input').val( filename );
-        if( file ){
-            $(this).parents('.change-file-container').prev('.current-file-display').find('.new-image-target').attr('src', URL.createObjectURL(file));
-        }
-        
-        $(this).parents('.change-file-container').prev('.current-file-display').show();
-        $(this).parents('.change-file-container').hide();
-    });
+        container.querySelectorAll('.upload-image-input').forEach(
+            input =>  input.addEventListener( 'change', () => { 
+                let filename    = input.value.split(/(\\|\/)/g).pop();
+                let [file]      = input.files;
+
+                console.log( filename, file );
+                console.log( input.files );
+
+                if( !file ){
+                    return false;
+                }
     
-    $('.delete-image').click(function(){
-        if( confirm('Are you sure to remove image ?') )
-        {
-            $(this).parents('.current-file-display').hide();
-            $(this).parents('fieldset').find('input[type="hidden"]').val( '' );
-            
-            $(this).parents('.current-file-display').find('.current-file-target').hide();
-            $(this).parents('.current-file-display').hide();
-            $(this).parents('.current-file-display').next('.change-file-container').show();
-            $(this).parents('.current-file-display').next('.change-file-container').find('.change-image').val('');
-            
-            $(this).parents('.current-file-display').find('input.file-input').val( '' );
-            
-        }
-        
-        return false;
-    });
+                container.querySelectorAll('.image-display').forEach( 
+                    elmnt => elmnt.style.display = 'flex'
+                );
+                
+                container.querySelectorAll('.file-input').forEach( 
+                    elmnt => elmnt.style.display = 'none'
+                );
+                
+                container.querySelectorAll('.new-image-focus').forEach(
+                    img => img.src = URL.createObjectURL(file)
+                );
+
+                container.querySelectorAll('.filename-image-input').forEach( 
+                    input => input.value = filename
+                );
+
+                container.parentElement.querySelectorAll('.image-input.name').forEach( imageNameInput => {
+                    if( imageNameInput.value === '' )
+                    {
+                        imageNameInput.value = filename.substring(0, filename.lastIndexOf('.'));
+
+                        if( imageNameInput.value === '' ){
+                            imageNameInput.value = filename;
+                        }
+                    }
+                    imageNameInput.select();
+                    imageNameInput.focus();
+                });
+
+            })
+        );
+
+        container.querySelectorAll( '.remove-image' ).forEach(
+            a =>  a.addEventListener( 'click', () => {
+                if( !confirm('Remove image ?') ){
+                    return false;
+                }
+
+                container.querySelectorAll( '.image-display .current-image-focus' ).forEach(
+                    elmnt => elmnt.remove()
+                );
+
+                container.querySelectorAll( '.image-display' ).forEach(
+                    elmnt => elmnt.style.display = 'none'
+                );
+                
+                container.querySelectorAll( '.file-input' ).forEach(
+                    elmnt => elmnt.style.display = 'block'
+                );
+
+                let filename = '';
+                container.querySelectorAll( 
+                    '.file-input .upload-image-input, .file-input .filename-image-input' 
+                ).forEach( input => {
+                    
+                    if( input.classList.contains('filename-image-input') ){
+                        filename = input.value;
+                    }
+
+                    if( input.value === '' ){
+                        return;
+                    }
+
+                    input.value     = '';
+                });
+
+                let matchArray  = [
+                    filename, 
+                    filename.substring(0, filename.lastIndexOf('.'))
+                ];
+
+                container.querySelectorAll('.image-input.name').forEach( filenameInput => {
+                    if( matchArray.includes(filenameInput.value) ){
+                        filenameInput.value = '';
+                    }
+                    filenameInput.select();
+                    filenameInput.focus();
+                });            
     
+            })
+        );
+    });
 });

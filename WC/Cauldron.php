@@ -648,7 +648,7 @@ class Cauldron implements CauldronContentInterface
             {
                 $fileInputs = $_FILES[ $contentParams['$_FILES'] ];
 
-                if( filesize($fileInputs[ "tmp_name" ]) !== false )
+                if( $fileInputs[ "tmp_name" ] && filesize($fileInputs[ "tmp_name" ]) !== false )
                 {
                     $dir    =   $this->wc->configuration->storage();
                     $path   =   $fileInputs['type'];

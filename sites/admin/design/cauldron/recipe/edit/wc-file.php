@@ -5,6 +5,7 @@
  */
 
 $this->wc->website->context->addJsFile('cauldron/wc-file-edit.js');
+$this->wc->website->context->addCssFile('cauldron/file-edit.css');
 
 $key = "_FILES__".md5(microtime().rand());
 ?>
@@ -91,17 +92,4 @@ $key = "_FILES__".md5(microtime().rand());
                 name="<?=$input.'[content][1][value]'?>"
                 value="<?=$filename?>" />
     </div>
-
 </div>
-
-<style>
-    .file-display, 
-    .file-input, 
-    .file-input > .switch-file-input-type {
-        margin-bottom: 8px;
-    }
-    .file-input > .switch-file-input-type > .selected {
-        cursor: initial;
-        color: #ff9900;
-    }
-</style>
