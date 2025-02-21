@@ -68,4 +68,21 @@ class IngredientDataAccess
 
         return $ingredient->wc->db->deleteQuery( $query,  ['id' => $ingredient->id] );
     }
+
+    static function searchValueCount( Ingredient $ingredient, string $value )
+    {
+        $query = "";
+        $query  .=  "SELECT count(id) ";
+        $query  .=  "FROM `".Handler::table($ingredient)."` ";
+        $query  .=  "WHERE `value` = :value ";
+
+        $params = ['value' => $value];
+
+        if( $ingredient->exist() )
+        {
+            $query          .=  "AND `id` <> :id ";
+            $params['id']   =   $ingredient->id;
+        }
+        return $ingredient->wc->db->countQuery( $query,  $params );
+    }
 }

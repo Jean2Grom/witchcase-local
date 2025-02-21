@@ -72,6 +72,9 @@ class Cauldron implements CauldronContentInterface
     /** @var CauldronContentInterface[] */
     public array $pendingRemoveContents = [];
 
+    /** @var Ingredient[] */
+    public array $pendingRemoveFilesIngredient = [];
+
     protected $content;
 
     public ?self $target        = null;
@@ -482,6 +485,8 @@ class Cauldron implements CauldronContentInterface
             }
         }
 
+        $result = $result && Handler::purgePendingFiles( $this );
+
         return $result;
     }
 
@@ -614,6 +619,7 @@ class Cauldron implements CauldronContentInterface
         $this->content      = null;
         $this->ingredients  = [];
         $this->children     = [];
+        $storage            = $this->wc->configuration->storage();
         foreach( $params['content'] as $indice => $contentParams )
         {
             if( !($contentParams['type'] ?? null) )
@@ -644,36 +650,34 @@ class Cauldron implements CauldronContentInterface
                 $priority                       -=  $priorityInterval;
             }
 
-            if( $contentParams['$_FILES'] ?? null )
+            if( $contentParams['$_FILES'] ?? null ) 
             {
-                $fileInputs = $_FILES[ $contentParams['$_FILES'] ];
+                $fileInputs         = $_FILES[ $contentParams['$_FILES'] ];
 
                 if( $fileInputs[ "tmp_name" ] && filesize($fileInputs[ "tmp_name" ]) !== false )
                 {
-                    $dir    =   $this->wc->configuration->storage();
                     $path   =   $fileInputs['type'];
                     $value  =   sha1_file($fileInputs[ "tmp_name" ]);
 
-                    if( !$this->wc->configuration->createFolder($dir.'/'.$path) 
-                        || !move_uploaded_file($fileInputs["tmp_name"], $dir.'/'.$path.'/'.$value) 
+                    if( !$this->wc->configuration->createFolder($storage.'/'.$path) 
+                        || !move_uploaded_file($fileInputs["tmp_name"], $storage.'/'.$path.'/'.$value) 
                     ){
-                        $this->wc->log->error( "file upload failed" );
+                        $this->wc->log->error( "file upload failed: error ".$fileInputs['error'] );
                         $contentParams['value'] = "";
                     }
                     else {
                         $contentParams['value'] = $path.'/'.$value;
                     }
                 }
-                elseif( is_file($contentParams['value']) )
+                elseif( !empty($contentParams['value']) && is_file($contentParams['value']) )
                 {
-                    $dir    =   $this->wc->configuration->storage();                    
                     $path   =   mime_content_type($contentParams['value']);
                     $value  =   sha1_file($contentParams['value']);
 
-                    if( (!is_file( $dir.'/'.$path.'/'.$value ) 
-                            || sha1_file( $dir.'/'.$path.'/'.$value ) !== $value)
-                        && (!$this->wc->configuration->createFolder( $dir.'/'.$path ) 
-                            || !rename( $contentParams['value'], $dir.'/'.$path.'/'.$value ))
+                    if( (!is_file( $storage.'/'.$path.'/'.$value ) 
+                            || sha1_file( $storage.'/'.$path.'/'.$value ) !== $value)
+                        && (!$this->wc->configuration->createFolder( $storage.'/'.$path ) 
+                            || !rename( $contentParams['value'], $storage.'/'.$path.'/'.$value ))
                     ){
                         $this->wc->log->error( "file move failed" );
                         $contentParams['value'] = "";
@@ -681,6 +685,16 @@ class Cauldron implements CauldronContentInterface
                     else {
                         $contentParams['value'] = $path.'/'.$value;
                     }
+                }
+                else {
+                    $contentParams['value'] = "";
+                }
+
+                if( !$isNew 
+                    && $contents[ $indice ]?->value()
+                    && $contentParams['value'] !== $contents[ $indice ]->value() )
+                {
+                    $this->pendingRemoveFilesIngredient[ $contents[ $indice ]->value() ] = $contents[ $indice ];
                 }
             }
 

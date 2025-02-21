@@ -19,6 +19,11 @@ $key = "_FILES__".md5( microtime().rand() );
             name="<?=$input ?>[type]"
             value="image" />
 
+    <?php if ($this->content('name')->exist()): ?>
+        <input  type="hidden"
+                name="<?=$input ?>[content][0][ID]"
+                value="<?=$this->content('name')->id ?>" />
+    <?php endif; ?>
     <input  type="hidden"
             name="<?=$input.'[content][0][name]' ?>"
             value="name" />
@@ -48,7 +53,7 @@ $key = "_FILES__".md5( microtime().rand() );
             <legend class="current-image-focus">Current image</legend>
             <img class="current-image-focus" src="<?='/'.$storagePath ?>" /> 
 
-            <input  type="text" 
+            <input  type="hidden" 
                     class="current-image-focus"
                     name="<?=$input.'[content][1][content][0][value]'?>" 
                     value="<?=$storagePath ?>"  />            
@@ -101,6 +106,11 @@ $key = "_FILES__".md5( microtime().rand() );
                 value="<?=$filename ?>" />
     </div>
     
+    <?php if ($this->content('caption')->exist()): ?>
+        <input  type="hidden"
+                name="<?=$input ?>[content][2][ID]"
+                value="<?=$this->content('caption')->id ?>" />
+    <?php endif; ?>    
     <input  type="hidden"
             name="<?=$input.'[content][2][name]' ?>"
             value="caption" />

@@ -5,6 +5,7 @@ use WC\WitchCase;
 use WC\Cauldron;
 use WC\Cauldron\Ingredient;
 use WC\DataAccess\CauldronDataAccess AS DataAccess;
+use WC\DataAccess\IngredientDataAccess;
 use WC\Datatype\ExtendedDateTime;
 use WC\Witch;
 
@@ -562,4 +563,22 @@ class CauldronHandler
     static function getWitches( Cauldron $cauldron ){
         return WitchHandler::search( $cauldron->wc, [ 'cauldron' => $cauldron->id ]);
     }
+
+    static function purgePendingFiles( Cauldron $cauldron )
+    {
+        $storage = $cauldron->wc->configuration->storage();
+        foreach( $cauldron->pendingRemoveFilesIngredient as $removeFile => $ingredient )
+        {
+            if( !is_file($storage.'/'.$removeFile) ){
+                continue;
+            }
+
+            if( IngredientDataAccess::searchValueCount($ingredient, $removeFile) === 0 ){
+                unlink($storage.'/'.$removeFile);
+            }
+        }
+        
+        return true;
+    }
+
 }
