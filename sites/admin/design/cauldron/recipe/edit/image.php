@@ -60,8 +60,11 @@ $key = "_FILES__".md5( microtime().rand() );
         <?php endif; ?>
 
         <img class="new-image-focus" src="" />
+        <br/>
+        
         <a class="remove-image">
             <i class="fa fa-times"></i>
+            <span>remove image</span>
         </a>
     </div>
     
@@ -110,7 +113,7 @@ $key = "_FILES__".md5( microtime().rand() );
         <input  type="hidden"
                 name="<?=$input ?>[content][2][ID]"
                 value="<?=$this->content('caption')->id ?>" />
-    <?php endif; ?>    
+    <?php endif; ?>
     <input  type="hidden"
             name="<?=$input.'[content][2][name]' ?>"
             value="caption" />

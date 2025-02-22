@@ -72,9 +72,6 @@ class Cauldron implements CauldronContentInterface
     /** @var CauldronContentInterface[] */
     public array $pendingRemoveContents = [];
 
-    /** @var Ingredient[] */
-    public array $pendingRemoveFilesIngredient = [];
-
     protected $content;
 
     public ?self $target        = null;
@@ -306,7 +303,8 @@ class Cauldron implements CauldronContentInterface
         foreach( $this->ingredients as $ingredient )
         {
             $priority   = $ingredient->priority ?? 0;
-            $key        = ($ingredient->name ?? "")."_".($ingredient->id ?? $defaultId++);
+            //$key        = ($ingredient->name ?? "")."_".($ingredient->id ?? $defaultId++);
+            $key        = $ingredient->id ?? $defaultId++;
             $buffer[ $priority ] = array_replace( 
                 $buffer[ $priority ] ?? [], 
                 [ $key => $ingredient ]
@@ -485,8 +483,6 @@ class Cauldron implements CauldronContentInterface
             }
         }
 
-        $result = $result && Handler::purgePendingFiles( $this );
-
         return $result;
     }
 
@@ -521,8 +517,7 @@ class Cauldron implements CauldronContentInterface
 
     private function deleteAction(): bool
     {
-        // Deletion of pending deprecated contents
-        $result = $this->purge();
+        $result = true;
 
         foreach( $this->ingredients as $ingredient ){
             $result = $result && $ingredient->delete();
@@ -538,6 +533,11 @@ class Cauldron implements CauldronContentInterface
         }
 
         if( $result === false ){
+            return false;
+        }
+
+        // Deletion of pending deprecated contents
+        if( $this->purge() === false ){
             return false;
         }
         
@@ -597,6 +597,8 @@ class Cauldron implements CauldronContentInterface
         if( isset($params['priority']) && is_int($params['priority']) ){
             $this->priority = $params['priority'];
         }
+
+        $params['content'] = ($params['content'] ?? null)? $params['content']: [];
         
         $contentAutoPriority = true;
         foreach( $params['content'] as $contentParams ){
@@ -606,8 +608,6 @@ class Cauldron implements CauldronContentInterface
                 break;
             }
         }
-
-        $params['content'] = $params['content']? $params['content']: [];
 
         if( $contentAutoPriority )
         {
@@ -652,7 +652,7 @@ class Cauldron implements CauldronContentInterface
 
             if( $contentParams['$_FILES'] ?? null ) 
             {
-                $fileInputs         = $_FILES[ $contentParams['$_FILES'] ];
+                $fileInputs = $_FILES[ $contentParams['$_FILES'] ];
 
                 if( $fileInputs[ "tmp_name" ] && filesize($fileInputs[ "tmp_name" ]) !== false )
                 {
@@ -688,13 +688,6 @@ class Cauldron implements CauldronContentInterface
                 }
                 else {
                     $contentParams['value'] = "";
-                }
-
-                if( !$isNew 
-                    && $contents[ $indice ]?->value()
-                    && $contentParams['value'] !== $contents[ $indice ]->value() )
-                {
-                    $this->pendingRemoveFilesIngredient[ $contents[ $indice ]->value() ] = $contents[ $indice ];
                 }
             }
 

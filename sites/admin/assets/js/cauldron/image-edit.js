@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
     
                 container.querySelectorAll('.image-display').forEach( 
-                    elmnt => elmnt.style.display = 'flex'
+                    elmnt => elmnt.style.display = 'block'
                 );
                 
                 container.querySelectorAll('.file-input').forEach( 

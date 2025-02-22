@@ -14,8 +14,8 @@
     margin-left: 8px;
     font-size: 18px;
 }
-.remove-image {
-    display: flex;
+.remove-image span {
+    font-style: italic;
 }
 .image-edit-container .file-input,
 .image-display {

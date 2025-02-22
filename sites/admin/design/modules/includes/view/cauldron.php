@@ -42,7 +42,7 @@
         </div>
 
     <?php else: ?>
-        <h3>
+        <h3 title="ID <?=$this->witch("target")->cauldron()->id ?>">
             <i class="fa fa-feather-alt"></i>
             <?=$this->witch("target")->cauldron()->name ?>
         </h3>

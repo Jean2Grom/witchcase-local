@@ -6,11 +6,11 @@
 ?>
 
 <?php if( $this->exist() ): ?>
-        <input  type="hidden" 
-                name="<?=$input?>[ID]" value="<?=$this->id ?>" />
+    <input  type="hidden" 
+            name="<?=$input?>[ID]" value="<?=$this->id ?>" />
 <?php endif; ?>
 
-<input  type="text" 
+<input  type="hidden" 
         name="<?=$input?>[type]" value="<?=$this->type ?>" />
 
 <div class="fieldsets-container">
