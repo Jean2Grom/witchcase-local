@@ -53,7 +53,7 @@ $key = "_FILES__".md5(microtime().rand());
                 value="<?=$key?>" />
         
         <div class="switch-file-input-type">
-            <a  <?=$this->content('storage-path')?->value()? '': 'class="selected"' ?> 
+            <a  class="selected" 
                 data-target="upload-file-input">
                 Upload file
             </a>
@@ -64,11 +64,10 @@ $key = "_FILES__".md5(microtime().rand());
             </a>
         </div>
         <input  class="upload-file-input"
-                <?=$this->content('storage-path')?->value()? 'style="display: none;"': '' ?>
                 type="file" 
                 name="<?=$key?>" />
         <input  class="move-file-input"
-                <?=$this->content('storage-path')?->value()? '': 'style="display: none;"' ?>
+                style="display: none;"
                 type="text" 
                 name="<?=$input.'[content][0][value]'?>" 
                 value="<?=$storagePath ?>" 

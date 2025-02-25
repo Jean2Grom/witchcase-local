@@ -298,13 +298,12 @@ class Cauldron implements CauldronContentInterface
     private function generateContent(): void
     {
         $buffer     = [];
-        $defaultId  = 0;
+        $indice     = 0;
 
         foreach( $this->ingredients as $ingredient )
         {
             $priority   = $ingredient->priority ?? 0;
-            //$key        = ($ingredient->name ?? "")."_".($ingredient->id ?? $defaultId++);
-            $key        = $ingredient->id ?? $defaultId++;
+            $key        = $indice++;
             $buffer[ $priority ] = array_replace( 
                 $buffer[ $priority ] ?? [], 
                 [ $key => $ingredient ]
@@ -318,7 +317,7 @@ class Cauldron implements CauldronContentInterface
             }
 
             $priority   = $child->priority ?? 0;
-            $key        = ($child->name ?? "")."_".($child->id ?? $defaultId++);
+            $key        = $indice++;
             $buffer[ $priority ] = array_replace( 
                 $buffer[ $priority ] ?? [], 
                 [ $key => $child ]
@@ -590,79 +589,68 @@ class Cauldron implements CauldronContentInterface
     {
         $params = $inputs ?? $this->wc->request->inputs();
 
+        if( !$params ){
+            return $this;
+        }
+
         if( isset($params['name']) ){
             $this->name = htmlspecialchars($params['name']);
         }
 
-        if( isset($params['priority']) && is_int($params['priority']) ){
-            $this->priority = $params['priority'];
-        }
+        $priorityInterval   = 100;
+        $priority           = count($params['content'] ?? []) * $priorityInterval;
 
-        $params['content'] = ($params['content'] ?? null)? $params['content']: [];
-        
-        $contentAutoPriority = true;
-        foreach( $params['content'] as $contentParams ){
-            if( isset($contentParams['priority']) && is_int($contentParams['priority']) )
-            {
-                $contentAutoPriority = false;
-                break;
-            }
-        }
+        $contents               = $this->contents();
+        $this->content          = null;
 
-        if( $contentAutoPriority )
-        {
-            $priorityInterval   = 100;
-            $priority           = count($params['content']) * $priorityInterval;
-        }
-
-        $contents           = $this->contents();
-        $this->content      = null;
         $this->ingredients  = [];
         $this->children     = [];
         $storage            = $this->wc->configuration->storage();
-        foreach( $params['content'] as $indice => $contentParams )
+        foreach( $params['content'] ?? [] as $indice => $contentParams )
         {
             if( !($contentParams['type'] ?? null) )
             {
                 $this->wc->log->error( "type undefined, ".$indice." entry skipped" );
                 continue;
             }
-
-            $isNew = !isset($contents[ $indice ])
-                || $indice === "new" 
-                || $contents[ $indice ]->type !== $contentParams['type']
-                || (
-                    $contents[ $indice ]->exist() 
-                    && $contents[ $indice ]->id !== (int) ($contentParams['ID'] ?? 0)
-                );
             
-            if( $isNew 
-                && !$this->recipe()->isCompositionElement($contentParams['type'], $contentParams['name'] ?? "")
-                && !$this->recipe()->isAllowed($contentParams['type']) 
-            ){
-                $this->wc->log->error( "type error: ".$contentParams['type']." is not allowed for ".$this->recipe );
-                continue;
-            }
-
-            if( $contentAutoPriority )
-            {
-                $contentParams[ 'priority' ]    =   $priority;
-                $priority                       -=  $priorityInterval;
-            }
-
             if( $contentParams['$_FILES'] ?? null ) 
             {
                 $fileInputs = $_FILES[ $contentParams['$_FILES'] ];
+                
+                if( $fileInputs 
+                    && isset($fileInputs["error" ]) 
+                    && $fileInputs["error"] !== 4 
+                    && $fileInputs["error"] > 0 
+                ){
+                    $phpFileUploadErrors = [
+                        0 => 'There is no error, the file uploaded with success',
+                        1 => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+                        2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+                        3 => 'The uploaded file was only partially uploaded',
+                        4 => 'No file was uploaded',
+                        6 => 'Missing a temporary folder',
+                        7 => 'Failed to write file to disk.',
+                        8 => 'A PHP extension stopped the file upload.',     
+                    ];
+                    
+                    $this->wc->log->error( "file upload failed: ".$phpFileUploadErrors[ $fileInputs['error'] ] );
+                    $contentParams['value'] = "";
 
-                if( $fileInputs[ "tmp_name" ] && filesize($fileInputs[ "tmp_name" ]) !== false )
-                {
+                }
+                elseif( $fileInputs 
+                        && isset($fileInputs["error" ]) 
+                        && $fileInputs["error"] === 0 
+                        && $fileInputs[ "tmp_name" ] 
+                        && filesize($fileInputs[ "tmp_name" ]) !== false 
+                ){
                     $path   =   $fileInputs['type'];
                     $value  =   sha1_file($fileInputs[ "tmp_name" ]);
 
                     if( !$this->wc->configuration->createFolder($storage.'/'.$path) 
                         || !move_uploaded_file($fileInputs["tmp_name"], $storage.'/'.$path.'/'.$value) 
                     ){
-                        $this->wc->log->error( "file upload failed: error ".$fileInputs['error'] );
+                        $this->wc->log->error( "file upload failed: server local copy error" );
                         $contentParams['value'] = "";
                     }
                     else {
@@ -691,20 +679,42 @@ class Cauldron implements CauldronContentInterface
                 }
             }
 
-            if( !$isNew )
+            $contentParams[ 'priority' ]    =   $priority;
+            $priority                       -=  $priorityInterval;
+
+            $content = false;
+            if( $indice !== "new" )
             {
-                $contents[ $indice ]->readInputs( $contentParams );
-                if( $contents[ $indice ]->isIngredient() ){
-                    $this->ingredients[] = $contents[ $indice ];
-                }
-                else {
-                    $this->children[] = $contents[ $indice ];
+                if( isset($contentParams['ID']) ){
+                    foreach( $contents as $contentItemKey => $contentItem ){
+                        if( $contentParams['type'] === $contentItem->type 
+                            && (int) $contentParams['ID'] === $contentItem->id
+                        ){
+                            $content = $contentItem;
+                            unset($contents[ $contentItemKey ]);
+                            break;
+                        }
+                    }
                 }
 
-                unset($contents[ $indice ]);
+                if( !$content 
+                    && $contents[ $indice ]->type === $contentParams['type'])
+                {
+                    $content = $contents[ $indice ];
+                    unset($contents[ $indice ]);
+                }
             }
-            else {
-                $this->create( 
+
+            if( !$content )
+            {
+                if( !$this->recipe()->isCompositionElement($contentParams['type'], $contentParams['name'] ?? "")
+                    && !$this->recipe()->isAllowed($contentParams['type']) 
+                ){
+                    $this->wc->log->error( "type error: ".$contentParams['type']." is not allowed for ".$this->recipe );
+                    continue;
+                }
+
+                $content = $this->create( 
                     $contentParams['name'] ?? "", 
                     $contentParams['type'], 
                     [ 
@@ -712,6 +722,20 @@ class Cauldron implements CauldronContentInterface
                         'priority'  => $contentParams['priority'] ?? 0, 
                     ] 
                 );
+
+                if( $contentParams['content'] ?? null ){
+                    $content->readInputs( $contentParams );
+                }
+            }
+            else {
+                $content->readInputs( $contentParams );
+            }
+
+            if( $content->isIngredient() && !in_array($content, $this->ingredients) ){
+                $this->ingredients[] = $content;
+            }
+            elseif( !in_array($content, $this->children) ) {
+                $this->children[] = $content;
             }
         }
 
@@ -722,14 +746,13 @@ class Cauldron implements CauldronContentInterface
         return $this;
     }
 
-    function create( string $name, ?string $type=null, array $initProperties=[] )
+    function create( string $name, ?string $type=null, array $initProperties=[] ): CauldronContentInterface
     {
         if( $type && in_array($type, Ingredient::list()) )
         {
             $content            = IngredientHandler::factory($type);
             $content->wc        = $this->wc;
             $content->name      = !empty($name)? $name: $type;
-            $content->priority  =  $initProperties['priority'] ?? 0; 
 
             $content->init( $initProperties['value'] ?? null );
         }
@@ -739,6 +762,8 @@ class Cauldron implements CauldronContentInterface
                             ?? $this->wc->configuration->recipe('folder');
             $content    = $recipe->factory( !empty($name)? $name: $recipe->name, $initProperties );
         }
+
+        $content->priority  =  $initProperties['priority'] ?? 0; 
 
         $this->add( $content );
 

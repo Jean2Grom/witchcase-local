@@ -96,11 +96,19 @@ class Recipe
         $cauldron->name     = $name ?? $this->name;
         $cauldron->recipe   = $this->name;
 
-        foreach( $this->composition ?? [] as $i => $contentData ){
+        $priorityInterval   = 100;
+        $priority           = count($this->composition ?? []) * $priorityInterval;
+
+        foreach( $this->composition ?? [] as $i => $contentData )
+        {
+            $contentName                        =   $contentData['name'] ?? $i;
+            $contentInitProperties              =   $initProperties[ $contentName ] ?? $contentData['init'] ?? [];
+            $contentInitProperties['priority']  =   $priority;
+            $priority                           -=  $priorityInterval;
             $cauldron->create( 
-                $contentData['name'] ?? $i,  
+                $contentName,  
                 $contentData['type'] ?? "folder",
-                $initProperties['name'] ?? $contentData['init'] ?? []
+                $contentInitProperties
             );
         }
 
