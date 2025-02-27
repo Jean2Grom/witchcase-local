@@ -159,7 +159,14 @@ class CauldronHandler
      */
     static function createFromData(  WitchCase $wc, array $data ): Cauldron
     {
-        $cauldron       = new Cauldron();
+        $class = $wc->configuration->recipe( $data['recipe'] )?->class;
+        if( $class ){
+            $cauldron = new $class();
+        }
+        else {
+            $cauldron       = new Cauldron();
+        }
+        
         $cauldron->wc   = $wc;
         
         foreach( Cauldron::FIELDS as $field ){

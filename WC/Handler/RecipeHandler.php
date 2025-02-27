@@ -74,6 +74,7 @@ class RecipeHandler
     static function readProperties( Recipe $recipe ): void
     {
         $recipe->name        = $recipe->properties['name'] ?? null;
+        $recipe->class       = $recipe->properties['class'] ?? null;
         $recipe->composition = $recipe->properties['composition'] ?? null;
         $recipe->require     = $recipe->properties['require'] ?? null;
 
@@ -89,6 +90,9 @@ class RecipeHandler
         $recipe->properties = [];
         if( $recipe->name ){
             $recipe->properties['name'] = $recipe->name;
+        }
+        if( $recipe->class ){
+            $recipe->properties['class'] = $recipe->class;
         }
         if( $recipe->require ){
             $recipe->properties['require'] = $recipe->require;

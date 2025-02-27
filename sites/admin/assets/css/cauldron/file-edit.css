@@ -21,3 +21,7 @@
 .image-display {
     margin-top: 8px;
 }
+.image-display img {
+    box-shadow: 5px 5px 5px #ccc;
+    border: 1px solid;
+}

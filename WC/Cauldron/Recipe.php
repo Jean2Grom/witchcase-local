@@ -11,6 +11,7 @@ class Recipe
 {
     public ?string $file = null;
     public ?string $name;
+    public ?string $class;
 
     public array $properties    = [];
 
@@ -91,7 +92,15 @@ class Recipe
 
     function factory( ?string $name=null, array $initProperties=[] ): ?Cauldron
     {
-        $cauldron           = new Cauldron();
+        if( $this->class )
+        {
+            $class      = $this->class;
+            $cauldron   = new $class();
+        }
+        else {
+            $cauldron   = new Cauldron();
+        }
+        //$cauldron           = new Cauldron();
         $cauldron->wc       = $this->wc;
         $cauldron->name     = $name ?? $this->name;
         $cauldron->recipe   = $this->name;
