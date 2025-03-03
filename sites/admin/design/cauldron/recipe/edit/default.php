@@ -5,19 +5,14 @@
  */ 
 ?>
 
-<?php if( $this->exist() ): ?>
-    <input  type="hidden" 
-            name="<?=$input?>[ID]" value="<?=$this->id ?>" />
-<?php endif; ?>
-
-<input  type="hidden" 
-        name="<?=$input?>[type]" value="<?=$this->type ?>" />
-
 <div class="fieldsets-container">
     <?php if( empty($this->contents()) ): ?>
-        <input  type="hidden" 
-                name="<?=$input?>[content]" value="" />
-
+        <input  
+            name="<?=$input?>[content]" 
+            value="" 
+            type="hidden" 
+        />
+                
     <?php else: foreach( $this->contents() as $contentIndex => $content ): 
         $integrationCountClass  = substr_count($input, '[content]') % 4;
         $contentInput           = $input."[content][".$contentIndex."]";
@@ -32,8 +27,18 @@
                 <a class="down-fieldset">[&#8595;]</a>
                 <a class="remove-fieldset">[x]</a>
             </legend>
-            <input  type="hidden" 
-                    name="<?=$contentInput ?>[type]" value="<?=$content->type ?>" />
+            <?php if( $content->exist() ): ?>
+                <input  
+                    name="<?=$contentInput?>[ID]" 
+                    value="<?=$content->id ?>" 
+                    type="hidden" 
+                />
+            <?php endif; ?>
+            <input  
+                name="<?=$contentInput ?>[type]" 
+                value="<?=$content->type ?>" 
+                type="hidden" 
+            />
             <?php $content->edit( 
                 null, 
                 [ 'input' => $contentInput ]
@@ -48,5 +53,4 @@
         'input'     => $input."[content][new]",
         'cauldron'  => $this
     ]
-
 );?>

@@ -1,9 +1,12 @@
-<?php /** @var WC\Module $this */
+<?php 
+/**
+ * @var WC\Module $this
+ * @var ?WC\Cauldron $cauldron
+ */
+$cauldron = $cauldron ?? $this->witch("target")->cauldron();
+
 $this->addCssFile('content-edit.css');
 $this->addJsFile('triggers.js');
-
-/** @var ?WC\Cauldron $cauldron */
-$cauldron = $cauldron ?? $this->witch("target")->cauldron();
 ?>
 
 <h1>
@@ -18,13 +21,18 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
     <input type="hidden" name="MAX_FILE_SIZE" value="3000000" />
     
     <?php if( $cauldron->draft()->exist() ): ?>
-        <input  type="hidden" 
-                name="ID" 
-                value="<?=$cauldron->draft()->id ?>" />
+        <input  
+            name="ID" 
+            value="<?=$cauldron->draft()->id ?>" 
+            type="hidden" 
+        />
     <?php endif; ?>
-    <input  type="hidden" 
-            name="type" 
-            value="<?=$cauldron->draft()->type ?>" />
+
+    <input  
+        name="type" 
+        value="<?=$cauldron->draft()->type ?>" 
+        type="hidden" 
+    />
     <h3>
         [<?=$cauldron->recipe ?>] 
         <span   class="span-input-toggle" 
@@ -43,25 +51,33 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
     
     <div class="fieldsets-container">
         <?php foreach( $cauldron->draft()->contents() as $contentIndex => $content ): 
-            $contentInput = "content[".$contentIndex."]";
+            $input = "content[".$contentIndex."]";
             ?>
             <fieldset class="<?=$content->isCauldron()? 'cauldron': 'ingredient'?>">
                 <legend>
                     <span   class="span-input-toggle" 
-                            data-input="<?=$contentInput?>[name]" 
+                            data-input="<?=$input?>[name]" 
                             data-value="<?=$content->name ?>"><?=$content->name ?></span>
-
-                    [<?=$content->type?>]
-                    
+                    [<?=$content->type?>]                    
                     <a class="up-fieldset">[&#8593;]</a>
                     <a class="down-fieldset">[&#8595;]</a>
                     <a class="remove-fieldset">[x]</a>
                 </legend>
-                <input  type="hidden" 
-                        name="<?=$contentInput ?>[type]" value="<?=$content->type ?>" />
+                <?php if( $content->exist() ): ?>
+                    <input  
+                        name="<?=$input?>[ID]" 
+                        value="<?=$content->id ?>" 
+                        type="hidden" 
+                    />
+                <?php endif; ?>
+                <input  
+                    name="<?=$input ?>[type]" 
+                    value="<?=$content->type ?>" 
+                    type="hidden" 
+                />
                 <?php $content->edit( 
                     null, 
-                    [ 'input' => $contentInput ]
+                    [ 'input' => $input ]
                 ); ?>
             </fieldset>
         <?php endforeach; ?>        

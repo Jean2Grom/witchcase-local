@@ -11,15 +11,6 @@ $key = "_FILES__".md5(microtime().rand());
 ?>
 
 <div class="file-edit-container">
-    <?php if( $this->exist() ): ?>
-        <input  type="hidden" 
-                name="<?=$input?>[ID]" 
-                value="<?=$this->id ?>" />
-    <?php endif; ?>
-    <input  type="hidden" 
-                name="<?=$input?>[type]" 
-                value="wc-file" />
-
     <div class="file-display" <?=$storagePath? '': 'style="display: none;"' ?>>
         <?php if( $storagePath ): ?>
             <a  class="current-file-focus" 
@@ -38,20 +29,28 @@ $key = "_FILES__".md5(microtime().rand());
 
     <div class="file-input" <?=$storagePath? 'style="display: none;"': '' ?>>
         <?php if( $this->content('storage-path')?->exist() ): ?>
-            <input  type="hidden" 
-                    name="<?=$input.'[content][0][ID]'?>" 
-                    value="<?=$this->content('storage-path')?->id ?>" />
+            <input  
+                name="<?=$input.'[content][0][ID]'?>" 
+                value="<?=$this->content('storage-path')?->id ?>" 
+                type="hidden" 
+            />
         <?php endif; ?>
-        <input  type="hidden" 
-                name="<?=$input.'[content][0][name]'?>" 
-                value="storage-path" />
-        <input  type="hidden" 
-                name="<?=$input.'[content][0][type]'?>" 
-                value="string" />
-        <input  type="hidden" 
-                name="<?=$input.'[content][0][$_FILES]'?>" 
-                value="<?=$key?>" />
-        
+        <input  
+            name="<?=$input.'[content][0][name]'?>" 
+            value="storage-path" 
+            type="hidden" 
+        />
+        <input  
+            name="<?=$input.'[content][0][type]'?>" 
+            value="string" 
+            type="hidden" 
+        />
+        <input  
+            name="<?=$input.'[content][0][$_FILES]'?>" 
+            value="<?=$key?>" 
+            type="hidden" 
+        /> 
+
         <div class="switch-file-input-type">
             <a  class="selected" 
                 data-target="upload-file-input">
@@ -63,30 +62,42 @@ $key = "_FILES__".md5(microtime().rand());
                 Move server file
             </a>
         </div>
-        <input  class="upload-file-input"
-                type="file" 
-                name="<?=$key?>" />
-        <input  class="move-file-input"
-                style="display: none;"
-                type="text" 
-                name="<?=$input.'[content][0][value]'?>" 
-                value="<?=$storagePath ?>" 
-                placeholder="enter here full path filename" />
+        <input  
+            name="<?=$key?>" 
+            type="file" 
+            class="upload-file-input"
+        />
+        <input  
+            name="<?=$input.'[content][0][value]'?>" 
+            value="<?=$storagePath ?>" 
+            type="text" 
+            class="move-file-input"
+            style="display: none;"
+            placeholder="enter here full path filename" 
+        />
         
         <?php if( $this->content('filename')?->exist() ): ?>
-            <input  type="hidden" 
-                    name="<?=$input.'[content][1][ID]'?>" 
-                    value="<?=$this->content('filename')?->id ?>" />
+            <input  
+                name="<?=$input.'[content][1][ID]'?>" 
+                value="<?=$this->content('filename')?->id ?>" 
+                type="hidden"
+            />
         <?php endif; ?>
-        <input  type="hidden" 
-                name="<?=$input.'[content][1][name]'?>" 
-                value="filename" />
-        <input  type="hidden" 
-                name="<?=$input.'[content][1][type]'?>" 
-                value="string" />
-        <input  class="filename-file-input"
-                type="hidden" 
-                name="<?=$input.'[content][1][value]'?>"
-                value="<?=$filename?>" />
+        <input  
+            name="<?=$input.'[content][1][name]'?>" 
+            value="filename" 
+            type="hidden" 
+        />
+        <input  
+            name="<?=$input.'[content][1][type]'?>" 
+            value="string" 
+            type="hidden" 
+        />
+        <input  
+            name="<?=$input.'[content][1][value]'?>"
+            value="<?=$filename?>" 
+            type="hidden" 
+            class="filename-file-input"
+        />
     </div>
 </div>

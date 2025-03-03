@@ -11,10 +11,6 @@ $this->wc->website->context->addJsLibFile('../trumbowyg/dist/trumbowyg.min.js');
 $id = uniqid('text__'); 
 ?>
 
-<?php if( $this->exist() ): ?>
-        <input  type="hidden" 
-                name="<?=$input?>[ID]" value="<?=$this->id ?>" />
-<?php endif; ?>
 <textarea  id="<?=$id ?>" 
            name="<?=$input?>[value]"><?=$this->value ?? ''?></textarea>
 <script>

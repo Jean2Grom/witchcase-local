@@ -10,44 +10,49 @@ $key = "_FILES__".md5( microtime().rand() );
 ?>
 
 <div class="image-edit-container">
-    <?php if ($this->exist()): ?>
-        <input  type="hidden"
-                name="<?=$input ?>[ID]"
-                value="<?=$this->id ?>" />
-    <?php endif; ?>
-    <input  type="hidden"
-            name="<?=$input ?>[type]"
-            value="image" />
-
-    <?php if ($this->content('name')->exist()): ?>
-        <input  type="hidden"
-                name="<?=$input ?>[content][0][ID]"
-                value="<?=$this->content('name')->id ?>" />
-    <?php endif; ?>
-    <input  type="hidden"
-            name="<?=$input.'[content][0][name]' ?>"
-            value="name" />
-    <input  type="hidden"
-            name="<?=$input.'[content][0][type]' ?>"
-            value="string" />
     <legend>Image name</legend>
-    <input  class="image-input name"
-            type="text"
-            name="<?=$input.'[content][0][value]' ?>"
-            value="<?=$name ?>"
-            placeholder="enter image name" />
+    <?php if ($this->content('name')->exist()): ?>
+        <input  
+            name="<?=$input ?>[content][0][ID]"
+            value="<?=$this->content('name')->id ?>" 
+            type="hidden"
+        />
+    <?php endif; ?>
+    <input  
+        name="<?=$input.'[content][0][name]' ?>"
+        value="name" 
+        type="hidden"
+    />
+    <input  
+        name="<?=$input.'[content][0][type]' ?>"
+        value="string" 
+        type="hidden"
+    />
+    <input  
+        name="<?=$input.'[content][0][value]' ?>"
+        value="<?=$name ?>"
+        class="image-input name"
+        type="text"
+        placeholder="enter image name" 
+    />
     
     <?php if( $this->content('file')->exist() ): ?>
-        <input  type="hidden"
-                name="<?=$input ?>[content][1][ID]"
-                value="<?= $this->content('file')->id ?>" />
+        <input  
+            name="<?=$input ?>[content][1][ID]"
+            value="<?= $this->content('file')->id ?>" 
+            type="hidden"
+        />
     <?php endif; ?>
-    <input  type="hidden"
-            name="<?=$input.'[content][1][name]' ?>"
-            value="file" />
-    <input  type="hidden"
-            name="<?=$input.'[content][1][type]' ?>"
-            value="wc-file" />    
+    <input  
+        name="<?=$input.'[content][1][name]' ?>"
+        value="file" 
+        type="hidden"
+    />
+    <input  
+        name="<?=$input.'[content][1][type]' ?>"
+        value="wc-file" 
+        type="hidden"
+    />
     <div class="image-display" <?=$storagePath? '': 'style="display: none;"' ?>>
         <?php if( $storagePath ): ?>
             <legend class="current-image-focus">Current image</legend>
@@ -69,61 +74,85 @@ $key = "_FILES__".md5( microtime().rand() );
     </div>
     
     <div class="file-input" <?= $storagePath ? 'style="display: none;"' : '' ?>>
-        <input  type="hidden"
-                name="<?=$input.'[content][1][content][0][name]' ?>"
-                value="storage-path" />
-        <input  type="hidden"
-                name="<?=$input.'[content][1][content][0][type]' ?>"
-                value="string" />
-        <input  type="hidden"
-                name="<?=$input.'[content][1][content][0][$_FILES]' ?>"
-                value="<?=$key ?>" />
-
-        <input  type="hidden"
-                name="<?=$input.'[content][1][content][1][name]' ?>"
-                value="filename" />
-        <input  type="hidden"
-                name="<?=$input.'[content][1][content][1][type]' ?>"
-                value="string" />
-
         <?php if( $this->content('file')->content('storage-path')?->exist() ): ?>
-            <input  type="hidden"
-                    name="<?=$input.'[content][1][content][0][ID]' ?>"
-                    value="<?=$this->content('file')->content('storage-path')?->id ?>" />
-        <?php endif; ?>
-        <?php if( $this->content('file')->content('filename')?->exist() ): ?>
-            <input  type="hidden"
-                    name="<?=$input.'[content][1][content][1][ID]' ?>"
-                    value="<?=$this->content('file')->content('filename')?->id ?>" />
-        <?php endif; ?>
-        
-        <legend>Upload file</legend>
-        <input  class="upload-image-input"
-                type="file"
-                accept="image/*"
-                name="<?= $key ?>" />
-
-        <input  class="filename-image-input"
+            <input  
+                name="<?=$input.'[content][1][content][0][ID]' ?>"
+                value="<?=$this->content('file')->content('storage-path')?->id ?>" 
                 type="hidden"
-                name="<?=$input.'[content][1][content][1][value]' ?>"
-                value="<?=$filename ?>" />
+            />
+        <?php endif; ?>
+        <input  
+            name="<?=$input.'[content][1][content][0][name]' ?>"
+            value="storage-path" 
+            type="hidden"
+        />
+        <input  
+            name="<?=$input.'[content][1][content][0][type]' ?>"
+            value="string" 
+            type="hidden"
+        />
+        <input  
+            name="<?=$input.'[content][1][content][0][$_FILES]' ?>"
+            value="<?=$key ?>" 
+            type="hidden"
+        />
+
+        <?php if( $this->content('file')->content('filename')?->exist() ): ?>
+            <input  
+                name="<?=$input.'[content][1][content][1][ID]' ?>"
+                value="<?=$this->content('file')->content('filename')?->id ?>" 
+                type="hidden"
+            />
+        <?php endif; ?>
+        <input  
+            name="<?=$input.'[content][1][content][1][name]' ?>"
+            value="filename" 
+            type="hidden"
+        />
+        <input  
+            name="<?=$input.'[content][1][content][1][type]' ?>"
+            value="string" 
+            type="hidden"
+        />
+                
+        <legend>Upload file</legend>
+        <input  
+            name="<?= $key ?>" 
+            type="file"
+            accept="image/*"
+            class="upload-image-input"
+        />
+        <input  
+            name="<?=$input.'[content][1][content][1][value]' ?>"
+            value="<?=$filename ?>" 
+            type="hidden"
+            class="filename-image-input"
+        />
     </div>
     
-    <?php if ($this->content('caption')->exist()): ?>
-        <input  type="hidden"
-                name="<?=$input ?>[content][2][ID]"
-                value="<?=$this->content('caption')->id ?>" />
-    <?php endif; ?>
-    <input  type="hidden"
-            name="<?=$input.'[content][2][name]' ?>"
-            value="caption" />
-    <input  type="hidden"
-            name="<?=$input.'[content][2][type]' ?>"
-            value="string" />
     <legend>Image caption</legend>
-    <input  class="image-input caption"
-            type="text"
-            name="<?=$input.'[content][2][value]' ?>"
-            value="<?=$caption ?>"
-            placeholder="enter caption" />
+    <?php if ($this->content('caption')->exist()): ?>
+        <input  
+            name="<?=$input ?>[content][2][ID]"
+            value="<?=$this->content('caption')->id ?>" 
+            type="hidden"
+        />
+    <?php endif; ?>
+    <input  
+        name="<?=$input.'[content][2][name]' ?>"
+        value="caption" 
+        type="hidden"
+    />
+    <input  
+        name="<?=$input.'[content][2][type]' ?>"
+        value="string" 
+        type="hidden"
+    />
+    <input  
+        name="<?=$input.'[content][2][value]' ?>"
+        value="<?=$caption ?>"
+        type="text"
+        class="image-input caption"
+        placeholder="enter caption" 
+    />
 </div>

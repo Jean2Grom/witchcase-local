@@ -5,10 +5,8 @@
  */
 ?>
 
-<?php if( $this->exist() ): ?>
-        <input  type="hidden" 
-                name="<?=$input?>[ID]" value="<?=$this->id ?>" />
-<?php endif; ?>
-
-<input  type="datetime-local" 
-        name="<?=$input?>[value]" value="<?=$this->value?->format( 'Y-m-d\TH:i' ) ?>" />
+<input  
+    name="<?=$input?>[value]" 
+    value="<?=$this->value?->format( 'Y-m-d\TH:i' ) ?>" 
+    type="datetime-local" 
+/>
