@@ -599,10 +599,10 @@ class Cauldron implements CauldronContentInterface
 
         $priorityInterval   = 100;
         $priority           = count($params['content'] ?? []) * $priorityInterval;
-
+        
         $contents               = $this->contents();
         $this->content          = null;
-
+        
         $this->ingredients  = [];
         $this->children     = [];
         $storage            = $this->wc->configuration->storage();
@@ -734,7 +734,7 @@ class Cauldron implements CauldronContentInterface
             if( $content->isIngredient() && !in_array($content, $this->ingredients) ){
                 $this->ingredients[] = $content;
             }
-            elseif( !in_array($content, $this->children) ) {
+            elseif( $content->isCauldron() && !in_array($content, $this->children) ) {
                 $this->children[] = $content;
             }
         }

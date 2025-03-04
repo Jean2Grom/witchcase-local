@@ -17,7 +17,11 @@ class BooleanIngredient extends Ingredient
      * @return self
      */
     function init( mixed $value=null ): self {
-        return $this->set( $value ?? !is_null($this->properties[ 'value' ])? (bool) $this->properties[ 'value' ]: null );
+        return $this->set( 
+            $value 
+            ?? ( isset($this->properties['value']) && !is_null($this->properties['value']) )? 
+                (bool) $this->properties['value']: null 
+        );
     }
 
     /**
