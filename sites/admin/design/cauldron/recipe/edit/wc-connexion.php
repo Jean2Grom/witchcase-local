@@ -5,7 +5,7 @@
  */
 ?>
 
-<div class="fieldsets-container">
+<div>
     <legend>email</legend>
     <?php if( $this->content('email')?->exist() ): ?>
         <input  
