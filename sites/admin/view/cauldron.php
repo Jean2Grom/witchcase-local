@@ -7,6 +7,8 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
 
 $this->addCssFile('content-edit.css');
 $this->addJsFile('triggers.js');
+
+$this->test();
 ?>
 
 <h1>
@@ -14,7 +16,7 @@ $this->addJsFile('triggers.js');
     <?=$this->witch("target")->name ?>
 </h1>
 <p><em><?=$this->witch("target")->data?></em></p>
-    
+
 <?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
@@ -49,6 +51,8 @@ $this->addJsFile('triggers.js');
         <?php endif; ?>
     </p>
     
+
+
     <div class="fieldsets-container">
         <?php foreach( $cauldron->draft()->contents() as $contentIndex => $content ): 
             $input = "content[".$contentIndex."]";

@@ -212,10 +212,10 @@ class Website
         foreach( $this->siteHeritages as $siteItem )
         {
             if( $siteItem == "global" ){
-                $dir = self::DEFAULT_SITE_DIR.'/'.Module::DIR;
+                $dir = self::DEFAULT_SITE_DIR;
             }
             else {
-                $dir = self::SITES_DIR.'/'.$siteItem."/".Module::DIR;
+                $dir = self::SITES_DIR.'/'.$siteItem;
             }
             
             if( is_dir($dir) ){

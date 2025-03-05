@@ -13,10 +13,10 @@ class Context
     use ShortcutAccessTrait;
 
     const DEFAULT_FILE  = "default";    
-    const DIR           = "contexts";
+    const DIR           = "context";
     
-    const DESIGN_SUBFOLDER          = "design/contexts";
-    const DESIGN_INCLUDES_SUBFOLDER = "design/contexts/includes";
+    const DESIGN_SUBFOLDER          = "view/context";
+    const DESIGN_INCLUDES_SUBFOLDER = "view/include/context";
     
     const IMAGES_SUBFOLDER          = "assets/images";
     const JS_SUBFOLDER              = "assets/js";
@@ -94,7 +94,7 @@ class Context
         $this->designFile = $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/".$designFile.".php" );
         
         if( !$this->designFile ){
-            $this->wc->log->error("Can't get design file: ".$designFile, $mandatory);
+            $this->wc->log->error("Can't get view file: ".$designFile, $mandatory);
         }
         
         $this->wc->debug->toResume("Design file to be included : \"".$this->designFile."\"", 'CONTEXT');
@@ -304,7 +304,7 @@ class Context
             return false;
         }
         
-        $this->wc->debug->toResume("Ressource design file to be Included: \"".$fullPath."\"", 'CONTEXT');
+        $this->wc->debug->toResume("Ressource view file to be Included: \"".$fullPath."\"", 'CONTEXT');
         return $fullPath;
     }
     

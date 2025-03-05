@@ -12,15 +12,12 @@ if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$alerts         = $this->wc->user->getAlerts();
 if( !$this->witch("target") )
 {
-    $alerts[] = [
+    $this->wc->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Craft not found"
-    ];
-    
-    $this->wc->user->addAlerts($alerts);
+    ]);
     header( 'Location: '.$this->wc->website->getFullUrl() );
     exit();
 }
@@ -28,12 +25,10 @@ if( !$this->witch("target") )
 $craft      = $this->witch("target")->craft() ?? false;
 if( !$craft )
 {
-    $alerts[] = [
+    $this->wc->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Craft not found"
-    ];
-    
-    $this->wc->user->addAlerts($alerts);
+    ]);
     header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
     exit();
 }
@@ -42,10 +37,10 @@ if( !$craft )
 $draft = $craft->getDraft();
 
 if( empty($draft) ){
-    $alerts[] = [
+    $this->wc->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Draft can't be read"
-    ];
+    ]);
 }
 
 switch( $action )
@@ -72,48 +67,45 @@ switch( $action )
 
         if( $saved === false )
         {
-            $alerts[] = [
+            $this->wc->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, update canceled"
-            ];
-            
+            ]);
             $return = false;
         }
         elseif( $saved === 0 && !$publish ){
-            $alerts[] = [
+            $this->wc->user->addAlert([
                 'level'     =>  'warning',
                 'message'   =>  "No update"
-            ];
+            ]);
         }
         elseif( $publish )
         {
             if( $draft->publish() === false )
             {
-                $alerts[] = [
+                $this->wc->user->addAlert([
                     'level'     =>  'error',
                     'message'   =>  "Error, publication canceled"
-                ];
+                ]);
                 
                 $return = false;
             }
             else {
-                $alerts[] = [
+                $this->wc->user->addAlert([
                     'level'     =>  'success',
                     'message'   =>  "Published"
-                ];                
+                ]);                
             }
         }
         else {
-            $alerts[] = [
+            $this->wc->user->addAlert([
                 'level'     =>  'success',
                 'message'   =>  "Updated"
-            ];
+            ]);
         }
         
         if( $return )
         {
-            $this->wc->user->addAlerts($alerts);
-
             header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
             exit();
         }
@@ -121,20 +113,17 @@ switch( $action )
     
     case 'delete':
         if( !$draft->remove() ){
-            $alerts[] = [
+            $this->wc->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, remove canceled",
-            ];
+            ]);
         }
         else 
         {
-            $alerts[] = [
+            $this->wc->user->addAlert([
                 'level'     =>  'success',
                 'message'   =>  "Draft removed"
-            ];
-            
-            $this->wc->user->addAlerts($alerts);
-            
+            ]);            
             header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
             exit();
         }
@@ -142,9 +131,5 @@ switch( $action )
 }
 
 $cancelHref = $this->wc->website->getUrl("view?id=".$this->witch("target")->id);
-
-foreach( $this->wc->user->getAlerts() as $treatmentAlert ){
-    $alerts[] = $treatmentAlert;
-}
 
 $this->view();

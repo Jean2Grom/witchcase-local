@@ -14,10 +14,9 @@ class Module
     use ShortcutAccessTrait;
 
     const DEFAULT_FILE  = "default";   
-    const DIR           = "modules";
     
-    const DESIGN_SUBFOLDER              = "design/modules";
-    const DESIGN_INCLUDES_SUBFOLDER     = "design/modules/includes";
+    const DESIGN_SUBFOLDER              = "view";
+    const DESIGN_INCLUDES_SUBFOLDER     = "view/include";
     
     public $name;
     public $execFile;
@@ -51,10 +50,10 @@ class Module
         }        
         
         $this->name     = $moduleName;
-        $this->execFile = $this->wc->website->getFilePath( self::DIR.'/'.$this->name.".php" );
+        $this->execFile = $this->wc->website->getFilePath( $this->name.".php" );
         
         if( !$this->execFile ){
-            $this->execFile = $this->wc->website->getFilePath( self::DIR."/".self::DEFAULT_FILE.".php" );
+            $this->execFile = $this->wc->website->getFilePath( self::DEFAULT_FILE.".php" );
         }
         
         $this->config = array_replace_recursive( 
@@ -74,27 +73,6 @@ class Module
             }
         }
     }
-
-    /*
-    function __call( $name, $arguments )
-    {
-        $callable = [$this->wc, $name];
-        if( !is_callable($callable, false) )
-        {
-            $trace = debug_backtrace();
-            $this->wc->log->error(  
-                __CLASS__.": Unidentified Method call \"".$name.'"',
-                true, 
-                [
-                    'file' => $trace[0]['file'], 
-                    'line' => $trace[0]['line'] 
-                ]
-            );
-        }
-
-        return call_user_func_array( [$this->wc, $name], $arguments );
-    }
-    */
 
     function execute()
     {
@@ -159,7 +137,7 @@ class Module
         $this->designFile   = $this->wc->website->getFilePath( $filename );
         
         if( !$this->designFile ){
-            $this->wc->log->error("Can't get design file: ".$filename, $mandatory);
+            $this->wc->log->error("Can't get view file: ".$filename, $mandatory);
         }
         
         $this->wc->debug->toResume("Design file to be included : \"".$this->designFile."\"", 'MODULE '.$this->name);
@@ -217,7 +195,7 @@ class Module
             return false;
         }
         
-        $this->wc->debug->toResume("Ressource design file to be Included: \"".$fullPath."\"", 'MODULE '.$this->name);
+        $this->wc->debug->toResume("Ressource view file to be Included: \"".$fullPath."\"", 'MODULE '.$this->name);
         return $fullPath;
     }
     
@@ -231,7 +209,7 @@ class Module
         return;
     }
     
-    function getDaughters( Witch $witch=null )
+    function getDaughters( ?Witch $witch=null )
     {
         if( empty($witch) ){
             $witch = $this->witch;

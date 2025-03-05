@@ -3,6 +3,9 @@
  * @var WC\Cauldron $this 
  * @var string $input
  */ 
+
+//$this->test();
+
 ?>
 
 <div class="fieldsets-container">

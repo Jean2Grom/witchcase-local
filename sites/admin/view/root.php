@@ -7,7 +7,7 @@ $this->addJsFile('root.js');
 <div class="content">
     <h1>Tableau de bord</h1>
     
-    <?php include $this->getIncludeDesignFile('alerts.php'); ?>
+    <?php $this->include('alerts.php', ['alerts' => $alerts]); ?>
     
     <div class="content__data"><?=$this->witch->data?></div>
     

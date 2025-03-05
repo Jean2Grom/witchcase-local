@@ -34,7 +34,7 @@ $this->addContextArrayItems( 'tabs', [
 <h2>User Profiles</h2> 
 <p><em>Here you can manage permissions by handeling user profiles</em></p>
 
-<?php include $this->getIncludeDesignFile('alerts.php'); ?>
+<?php $this->include('alerts.php', ['alerts' => $alerts]); ?>
 
 
 <div class="tabs-target__item selected"  id="tab-current">

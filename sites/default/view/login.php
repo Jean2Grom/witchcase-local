@@ -2,7 +2,7 @@
 
 <h1>Login</h1>
 
-<?php include $this->getIncludeDesignFile('alerts.php'); ?>
+<?php $this->include('alerts.php', ['alerts' => $alerts]); ?>
 
 <?php if( $this->isRedirection ): ?>
     <p><em>Login requested</em></p>

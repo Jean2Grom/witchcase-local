@@ -30,7 +30,7 @@ abstract class Ingredient implements CauldronContentInterface
     
     const TYPE                  = null;
     const DIR                   = "cauldron/ingredient";
-    const DESIGN_SUBFOLDER      = "design/cauldron/ingredient";
+    const DESIGN_SUBFOLDER      = "view/cauldron/ingredient";
 
     public string $type;
     public $value;

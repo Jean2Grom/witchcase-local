@@ -9,7 +9,7 @@ $this->addJsFile('triggers.js');
 </h1>
 <p><em><?=$this->witch->data?></em></p>
     
-<?php include $this->getIncludeDesignFile('alerts.php'); ?>
+<?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
 
 <h3>[<?=$draft->structure->name ?>] <em><?=$draft->name ?></em></h3>
 <p>
