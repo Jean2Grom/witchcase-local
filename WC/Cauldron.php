@@ -37,8 +37,8 @@ class Cauldron implements CauldronContentInterface
     const DRAFT_FOLDER_STRUCT   = "wc-drafts-folder";
     const ARCHIVE_FOLDER_STRUCT = "wc-archives-folder";
 
-    const DIR                   = "cauldron/recipe";
-    const DESIGN_SUBFOLDER      = "view/cauldron/recipe";
+    const DIR                   = "cauldron";
+    const DESIGN_SUBFOLDER      = "view/cauldron";
 
     public array $properties  = [];
 

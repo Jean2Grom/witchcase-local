@@ -374,7 +374,7 @@ class Witch
      * @param User $user
      * @return bool
      */
-    function isAllowed( Module $module, User $user=null ): bool
+    function isAllowed( Module $module, ?User $user=null ): bool
     {
         if( empty($user) ){
             $user = $this->wc->user;
