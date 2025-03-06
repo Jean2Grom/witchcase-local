@@ -1,7 +1,10 @@
-<?php /** @var WC\Module $this */ ?>
-
+<?php 
+/**
+ * @var WC\Witch $witch
+ */
+?>
 <div class="box view__cauldron">
-    <?php if( !$this->witch("target")->cauldron() ): ?>
+    <?php if( !$witch->cauldron() ): ?>
         <h3>
             <i class="fa fa-feather-alt"></i>
             No cauldron
@@ -12,7 +15,7 @@
                 <option value="">
                     Select new cauldron recipe
                 </option>
-                <?php foreach( $this->wc->configuration->recipes() as $recipe ): ?>
+                <?php foreach( $witch->wc->configuration->recipes() as $recipe ): ?>
                     <option value="<?=$recipe->name?>">
                         <?=$recipe->name?>
                     </option>
@@ -42,20 +45,20 @@
         </div>
 
     <?php else: ?>
-        <h3 title="ID <?=$this->witch("target")->cauldron()->id ?>">
+        <h3 title="ID <?=$witch->cauldron()->id ?>">
             <i class="fa fa-feather-alt"></i>
-            <?=$this->witch("target")->cauldron()->name ?>
+            <?=$witch->cauldron()->name ?>
         </h3>
-        <h4 title="ID <?=$this->witch("target")->cauldron()->id ?>">
-            <?=$this->witch("target")->cauldron()->type ?>
-            <em>[<?=$this->witch("target")->cauldron()->isPublished()? 
+        <h4 title="ID <?=$witch->cauldron()->id ?>">
+            <?=$witch->cauldron()->type ?>
+            <em>[<?=$witch->cauldron()->isPublished()? 
                         "Published": 
-                        ($this->witch("target")->cauldron()->isDraft()? "Draft": "Archive")?>]</em>
+                        ($witch->cauldron()->isDraft()? "Draft": "Archive")?>]</em>
         </h4>
 
         <p><em>Cauldron is a content associated with the Witch</em></p>
                 
-        <?php foreach( $this->witch("target")->cauldron()->contents() as $ingredient ): ?>
+        <?php foreach( $witch->cauldron()->contents() as $ingredient ): ?>
             <fieldset>
                 <legend><?=$ingredient->name?> [<?=$ingredient->type?>]</legend>                    
                 <?php $ingredient->display() ?>
@@ -63,12 +66,12 @@
         <?php endforeach; ?>
         
         <p>
-            <?php if( $this->witch("target")->cauldron()->created ): ?>
-                <em>Created by <?=$this->witch("target")->cauldron()->created->actor?>: <?=$this->witch("target")->cauldron()->created->format( \DateTimeInterface::RFC2822 )?></em>
+            <?php if( $witch->cauldron()->created ): ?>
+                <em>Created by <?=$witch->cauldron()->created->actor?>: <?=$witch->cauldron()->created->format( \DateTimeInterface::RFC2822 )?></em>
             <?php endif; ?>
-            <?php if( $this->witch("target")->cauldron()->modified && $this->witch("target")->cauldron()->created != $this->witch("target")->cauldron()->modified ): ?>
+            <?php if( $witch->cauldron()->modified && $witch->cauldron()->created != $witch->cauldron()->modified ): ?>
                 <br/> 
-                <em>Modified by <?=$this->witch("target")->cauldron()->modified->actor?>: <?=$this->witch("target")->cauldron()->modified->format( \DateTimeInterface::RFC2822 )?></em>
+                <em>Modified by <?=$witch->cauldron()->modified->actor?>: <?=$witch->cauldron()->modified->format( \DateTimeInterface::RFC2822 )?></em>
             <?php endif; ?>
         </p>
         
@@ -77,7 +80,7 @@
                     data-confirm="Confirm removal"
                     data-action="remove-cauldron"
                     data-target="view-cauldron-action">
-                <?php if( count($this->witch("target")->cauldron()->witches()) === 1 ): ?>
+                <?php if( count($witch->cauldron()->witches()) === 1 ): ?>
                     <i class="fa fa-trash"></i>
                     Delete
                 <?php else: ?>
@@ -85,7 +88,7 @@
                     Remove
                 <?php endif;?>
             </button>
-            <?php /* if( !$this->witch("target")->cauldron()->isArchive() ): ?>
+            <?php /* if( !$witch->cauldron()->isArchive() ): ?>
                 <button class="trigger-action"
                         data-confirm="Confirm archive"
                         data-action="archive-cauldron"
@@ -95,7 +98,7 @@
                 </button>
             <?php endif; */?>
             <button class="trigger-href" 
-                    data-href="<?=$this->wc->website->getUrl("cauldron?id=".$this->witch("target")->id) ?>">
+                    data-href="<?=$witch->wc->website->getUrl("cauldron?id=".$witch->id) ?>">
                 <i class="fa fa-pencil"></i>
                 Edit
             </button>

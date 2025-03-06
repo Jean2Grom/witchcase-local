@@ -18,7 +18,10 @@ $this->addJsFile('triggers.js');
     $require = $recipe->require;
     ?>
     <ul class="global-data"> 
-        <?php $this->include('view/recipe-require-li.php', [ 'require' => $require ]); ?>
+        <?php $this->include('recipe/require-li.php', [ 
+            'module'    => $this,
+            'require'   => $require, 
+        ]); ?>
     </ul>
 <?php endif; ?>
 
@@ -42,8 +45,10 @@ $this->addJsFile('triggers.js');
                     <div><?=$item['mandatory'] ?? null? "true": "false"?></div>
                 </li>
                 <?php if( $item['require'] ?? false ): ?>
-                    <?php  $require = $item['require']; 
-                    include $this->getIncludeDesignFile('view/recipe-require-li.php'); ?>
+                    <?php $this->include('recipe/require-li.php', [ 
+                        'module'    => $this,
+                        'require'   => $item['require'],
+                    ]); ?>
                 <?php endif; ?>
             </ul>
         </fieldset>

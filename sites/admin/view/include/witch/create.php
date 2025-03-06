@@ -1,8 +1,11 @@
-<?php /** @var WC\Module $this */ ?>
-
+<?php 
+/**
+ * @var WC\Witch $witch
+ */
+?>
 <div class="box create__witch">
     <form   method="post"
-            action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>"
+            action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
             id="create-witch-info">
         <h3>
             <i class="fa fa-folder-open"></i>

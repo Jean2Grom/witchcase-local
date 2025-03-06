@@ -1,4 +1,10 @@
-
+<?php
+/**
+ * @var string $name
+ * @var array $require
+ * @var array $possibleTypes
+ */
+?>
 <ul class="restriction-settings">
     <li>
         <div>Accepted contents</div>

@@ -7,6 +7,7 @@
 
 $this->addJsFile('triggers.js');
 ?>
+
 <h1>
     <i class="fa fa-pencil"></i>
     <?=$this->witch->name ?>
@@ -39,10 +40,11 @@ $this->addJsFile('triggers.js');
     <div class="fieldsets-container">
         <fieldset>
             <legend>global restrictions</legend>
-            <?php 
-                $require    = $recipe->require;
-                $name       = $globalRequireInputPrefix;
-                include $this->getIncludeDesignFile('edit/recipe-require.php'); ?>
+            <?php $this->include('recipe/edit-require.php', [
+                'name'          => $globalRequireInputPrefix,
+                'require'       => $recipe->require,
+                'possibleTypes' => $possibleTypes,
+            ]); ?>
         </fieldset>
     </div>
     
@@ -84,10 +86,11 @@ $this->addJsFile('triggers.js');
                     </li>
                     <li <?=in_array($item['type'], $ingredients)? 'style="display: none"': ''?>
                         class="recipe-type-toggle">
-                        <?php 
-                            $require    = $item['require'] ?? [];
-                            $name       = $item['name'];
-                            include $this->getIncludeDesignFile('edit/recipe-require.php'); ?>
+                        <?php $this->include('recipe/edit-require.php', [
+                            'name'          => $item['name'],
+                            'require'       => $item['require'] ?? [],
+                            'possibleTypes' => $possibleTypes,
+                        ]); ?>
                     </li>
                 </ul>
             </fieldset>
@@ -129,10 +132,11 @@ $this->addJsFile('triggers.js');
             </li>
             <li style="display: none"
                 class="recipe-type-toggle">
-                <?php 
-                    $require    = [];
-                    $name       = "NEW_CONTENT_NAME";
-                    include $this->getIncludeDesignFile('edit/recipe-require.php'); ?>
+                <?php $this->include('recipe/edit-require.php', [
+                            'name'          => "NEW_CONTENT_NAME",
+                            'require'       => [],
+                            'possibleTypes' => $possibleTypes,
+                        ]); ?>
             </li>
         </ul>
         <div class="new-content-actions hidden">

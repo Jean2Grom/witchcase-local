@@ -1,21 +1,24 @@
-<?php /** @var WC\Module $this */ ?>
-
+<?php 
+/**
+ * @var WC\Witch $witch
+ */
+?>
 <div class="box edit__witch-menu-info">
     <form   method="post"
-            action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>"
+            action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
             id="edit-witch-menu-info">
         
         <p class="alert-message error" style="display: none;">Mandatory field</p>
         <input  type="text" 
-                value="<?=$this->witch("target")->name ?>" 
-                data-init="<?=$this->witch("target")->name ?>" 
+                value="<?=$witch->name ?>" 
+                data-init="<?=$witch->name ?>" 
                 name="witch-name" 
                 id="witch-name" />
         
         <label for="witch-data">Description</label>
         <textarea   name="witch-data" 
                     id="witch-data" 
-                    data-init="<?=$this->witch("target")->data ?>"><?=$this->witch("target")->data ?></textarea>
+                    data-init="<?=$witch->data ?>"><?=$witch->data ?></textarea>
     </form>
     
     <div class="box__actions">

@@ -1,6 +1,9 @@
-<?php /** @var WC\Module $this */
+<?php 
+/**
+ * @var WC\Witch $witch
+ */
 
-if( $this->witch("target")->cauldron() ): ?>
+if( $witch->cauldron() ): ?>
     <div class="box">
         <h3>
             <i class="fa fa-project-diagram"></i>
@@ -8,7 +11,7 @@ if( $this->witch("target")->cauldron() ): ?>
         </h3>
 
         <form   method="post" 
-                action="<?=$this->wc->website->getUrl('view', [ 'id' => $this->witch("target")->id ]) ?>#tab-cauldron-part"
+                action="<?=$witch->wc->website->getUrl('view', [ 'id' => $witch->id ]) ?>#tab-cauldron-part"
                 id="view-cauldron-witches-action">
             <input type="hidden" id="cauldron-new-witch-id" name="cauldron-new-witch-id" value="" />
             <input type="hidden" id="cauldron-witch-id" name="cauldron-witch-id" value="" />
@@ -27,7 +30,7 @@ if( $this->witch("target")->cauldron() ): ?>
                     data-confirm="Delete cauldron's witch ?" 
                     data-target="view-cauldron-witches-action" >delete-cauldron-witch</button>
 
-            <?php if( count($this->witch("target")->cauldron()->witches()) === 1 ): ?>
+            <?php if( count($witch->cauldron()->witches()) === 1 ): ?>
                 <p><em>No other witch</em></p>
 
             <?php else: ?>
@@ -43,14 +46,14 @@ if( $this->witch("target")->cauldron() ): ?>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach( $this->witch("target")->cauldron()->witches() as $key => $witch ): ?>
+                        <?php foreach( $witch->cauldron()->witches() as $key => $witchItem ): ?>
                             <tr>
                                 <td>
                                     <div class="text-center">
                                         <input type="radio" 
                                                name="main"
-                                               value="<?=$witch->id ?>"
-                                               <?php if( array_key_first($this->witch("target")->cauldron()->witches()) === $key ): ?>
+                                               value="<?=$witchItem->id ?>"
+                                               <?php if( array_key_first($witch->cauldron()->witches()) === $key ): ?>
                                                     checked
                                                <?php else: ?>
                                                     class="trigger-action" 
@@ -60,33 +63,33 @@ if( $this->witch("target")->cauldron() ): ?>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="text-center"><?=$witch->id ?></div>
+                                    <div class="text-center"><?=$witchItem->id ?></div>
                                 </td>
                                 <td>
-                                    <?php if( $witch->id !== $this->witch("target")->id ): ?>
+                                    <?php if( $witchItem->id !== $witch->id ): ?>
                                         <a  class="remove-cauldron-witch text-center"
-                                            data-witch="<?=$witch->id?>">
+                                            data-witch="<?=$witchItem->id?>">
                                             <i class="fa fa-times"></i>
                                         </a>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if( $witch->id !== $this->witch("target")->id ): ?>
+                                    <?php if( $witchItem->id !== $witch->id ): ?>
                                         <a  class="delete-cauldron-witch text-center"
-                                            data-witch="<?=$witch->id?>">
+                                            data-witch="<?=$witchItem->id?>">
                                             <i class="fa fa-trash"></i>
                                         </a>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if( $witch->id === $this->witch("target")->id ): ?>
+                                    <?php if( $witchItem->id === $witch->id ): ?>
                                         <span class="highlighted">
-                                            <?=$witch->name ?>
+                                            <?=$witchItem->name ?>
                                             <em>(this witch)</em>
                                         </span>
                                     <?php else: ?>
-                                        <a href="<?=$this->wc->website->getUrl( "view", ['id'=> $witch->id] ) ?>#tab-cauldron-part">
-                                            <?=$witch->name ?>
+                                        <a href="<?=$witch->wc->website->getUrl( "view", ['id'=> $witchItem->id] ) ?>#tab-cauldron-part">
+                                            <?=$witchItem->name ?>
                                         </a>
                                     <?php endif; ?>
                                 </td>

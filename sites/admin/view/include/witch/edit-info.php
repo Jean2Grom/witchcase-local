@@ -1,11 +1,17 @@
-<?php /** @var WC\Module $this */ ?>
-
+<?php 
+/**
+ * @var WC\Website[] $websitesList
+ * @var WC\Witch $witch
+ */
+?>
 <div class="box edit__witch-info">
     <form   method="post"
-            action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>"
+            action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
             id="edit-witch-info">
         <h3 class="box-info">
-            <img src="<?=$this->image('favicon.png') ?>" />
+            <?php if( $imgSrc ): ?>
+                <img src="<?=$imgSrc ?>" />
+            <?php endif; ?>
             Edit Witch Information Form
         </h3>
         
@@ -14,19 +20,19 @@
         </label>
         <select name="witch-site" 
                 id="witch-site"
-                data-init="<?=$this->witch("target")->site ?>">
+                data-init="<?=$witch->site ?>">
             <option value="">
                 no site selected
             </option>
             <?php foreach( $websitesList as $website ): ?>
-                <option <?=($this->witch("target")->site === $website->site)? 'selected' :'' ?>
+                <option <?=($witch->site === $website->site)? 'selected' :'' ?>
                         value="<?=$website->site ?>">
                     <?=$website->name ?>
                 </option>
             <?php endforeach; ?>
         </select>
 
-        <div <?=!is_null($this->witch("target")->site)? 'style="display: none;"' :'' ?>
+        <div <?=!is_null($witch->site)? 'style="display: none;"' :'' ?>
             class="witch-info__part witch-info__part-">
 
             <label for="witch-status-">
@@ -34,16 +40,16 @@
             </label>
             <select name="witch-status[no-site-selected]" 
                     id="witch-status-"  
-                    data-init="<?=$this->witch("target")->statusLevel ?>">
-                <?php foreach(  $this->wc->configuration->read( "global", "status" ) as $statusKey => $statusLabel ): ?>
-                    <option <?=($this->witch("target")->statusLevel === $statusKey)? 'selected': '' ?>
+                    data-init="<?=$witch->statusLevel ?>">
+                <?php foreach(  $witch->wc->configuration->read( "global", "status" ) as $statusKey => $statusLabel ): ?>
+                    <option <?=($witch->statusLevel === $statusKey)? 'selected': '' ?>
                             value="<?=$statusKey ?>"><?=$statusLabel ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
         
         <?php foreach( $websitesList as $site => $website ): ?>
-            <div <?=($this->witch("target")->site !== $website->site)? 'style="display: none;"' :'' ?>
+            <div <?=($witch->site !== $website->site)? 'style="display: none;"' :'' ?>
                 class="witch-info__part witch-info__part-<?=$site ?>">
                 
                 <label for="witch-status-<?=$site ?>">
@@ -51,9 +57,9 @@
                 </label>
                 <select name="witch-status[<?=$site ?>]" 
                         id="witch-status-<?=$site ?>"  
-                        data-init="<?=$this->witch("target")->statusLevel ?>">
+                        data-init="<?=$witch->statusLevel ?>">
                     <?php foreach(  $website->status as $statusKey => $statusLabel ): ?>
-                        <option <?=($this->witch("target")->statusLevel === $statusKey)? 'selected': '' ?>
+                        <option <?=($witch->statusLevel === $statusKey)? 'selected': '' ?>
                                 value="<?=$statusKey ?>"><?=$statusLabel ?></option>
                     <?php endforeach; ?>
                 </select>                
@@ -64,12 +70,12 @@
                 <select name="witch-invoke[<?=$site ?>]" 
                         id="witch-invoke-<?=$site ?>"                                  
                         class="witch-invoke"
-                        data-init="<?=$this->witch("target")->invoke ?>">
+                        data-init="<?=$witch->invoke ?>">
                     <option value="">
                         no module to invoke
                     </option>
                     <?php foreach( $website->listModules() as $moduleItem ): ?>
-                        <option <?=($this->witch("target")->invoke === $moduleItem)? 'selected': '' ?>
+                        <option <?=($witch->invoke === $moduleItem)? 'selected': '' ?>
                                 value="<?=$moduleItem ?>"><?=$moduleItem ?></option>
                     <?php endforeach; ?>
                 </select>
@@ -80,7 +86,7 @@
                 </label>
                 <select name="witch-context[<?=$site ?>]" 
                         id="witch-context-<?=$site ?>" 
-                        data-init="<?=$this->witch("target")->context?>">
+                        data-init="<?=$witch->context?>">
                     <option value="">Empty</option>
                     
                     <?php /*foreach( $website->listContexts() as $contextItem ): ?>
@@ -91,9 +97,9 @@
         <?php endforeach; ?>
         
         <div id="site-selected"
-             <?=!$this->witch("target")->site? 'style="display: none;"' :'' ?>>
+             <?=!$witch->site? 'style="display: none;"' :'' ?>>
             <div class="auto-url-disabled"
-                 <?=!$this->witch("target")->url? 'style="display: none;"' :'' ?>>
+                 <?=!$witch->url? 'style="display: none;"' :'' ?>>
                 <label for="witch-url">
                     URL
                 </label>
@@ -102,15 +108,15 @@
                     <input  type="text"
                             name="witch-url"
                             id="witch-url"
-                            data-init="<?=$this->witch("target")->url?>"
-                            value="<?=$this->witch("target")->url ?>" />
+                            data-init="<?=$witch->url?>"
+                            value="<?=$witch->url ?>" />
                 </div>
                 <label  title="uncheck if you want to input a closest URL parent relative URL"
                         for="witch-full-url">Full URL</label>
                 <input  title="uncheck if you want to input a closest URL parent relative URL"
                         type="checkbox" 
                         id="witch-full-url" 
-                        <?=$this->witch("target")->url ? 'checked': '' ?>
+                        <?=$witch->url ? 'checked': '' ?>
                         name="witch-full-url" />
             </div>
             
@@ -119,7 +125,7 @@
             </label>
             <input type="checkbox" 
                    id="witch-auto-url" 
-                   <?=$this->witch("target")->url ? '': 'checked' ?>
+                   <?=$witch->url ? '': 'checked' ?>
                    name="witch-automatic-url" />
         </div>
     </form>

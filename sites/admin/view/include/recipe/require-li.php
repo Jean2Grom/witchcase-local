@@ -1,12 +1,16 @@
-<?php /** @var WC\Module $this */
+<?php 
+/**
+ * @var WC\Module $module
+ * @var array $require
+ */
 
 $refuse = false;
 if( $require['refuse'] ?? false )
 {
     $refuse = [];
     foreach( $require['refuse'] as $refusedItem ){
-        if( $this->wc->configuration->recipe( $refusedItem ) ){
-            $refuse[] = '<a href="'.$this->witch->url([ 'recipe' => $refusedItem ]).'">'.$refusedItem.'</a>';
+        if( $module->wc->configuration->recipe( $refusedItem ) ){
+            $refuse[] = '<a href="'.$module->witch->url([ 'recipe' => $refusedItem ]).'">'.$refusedItem.'</a>';
         }
         else {
             $refuse[] = $refusedItem;
@@ -19,8 +23,8 @@ if( $require['accept'] ?? false )
 {
     $accept = [];
     foreach( $require['accept'] as $acceptedItem ){
-        if( $this->wc->configuration->recipe( $acceptedItem ) ){
-            $accept[] = '<a href="'.$this->witch->url([ 'recipe' => $acceptedItem ]).'">'.$acceptedItem.'</a>';
+        if( $module->wc->configuration->recipe( $acceptedItem ) ){
+            $accept[] = '<a href="'.$module->witch->url([ 'recipe' => $acceptedItem ]).'">'.$acceptedItem.'</a>';
         }
         else {
             $accept[] = $acceptedItem;

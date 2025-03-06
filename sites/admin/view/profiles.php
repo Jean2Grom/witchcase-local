@@ -36,7 +36,6 @@ $this->addContextArrayItems( 'tabs', [
 
 <?php $this->include('alerts.php', ['alerts' => $alerts]); ?>
 
-
 <div class="tabs-target__item selected"  id="tab-current">
     <div class="box-container">
         <div><div class="box ">
@@ -98,14 +97,14 @@ $this->addContextArrayItems( 'tabs', [
 <?php foreach( $profiles as $id => $profile ): ?>
     <div class="tabs-target__item"  id="tab-profile-<?=$id ?>">
         <div class="box-container">
-            <div><?php include $this->getIncludeDesignFile('view/profile.php'); ?></div>
-            <div><?php include $this->getIncludeDesignFile('edit/profile.php'); ?></div>
+            <div><?php include $this->getIncludeDesignFile('profile/display.php'); ?></div>
+            <div><?php include $this->getIncludeDesignFile('profile/edit.php'); ?></div>
         </div>
     </div>
 <?php endforeach; ?>
 
 <div class="tabs-target__item"  id="tab-profile-add">
     <div class="box-container">
-        <div><?php include $this->getIncludeDesignFile('create/profile.php'); ?></div>
+        <div><?php include $this->getIncludeDesignFile('profile/create.php'); ?></div>
     </div>
 </div>

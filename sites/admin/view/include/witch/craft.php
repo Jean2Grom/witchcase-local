@@ -1,13 +1,18 @@
-<?php /** @var WC\Module $this */ ?>
-
+<?php 
+/**
+ * @var WC\Witch $witch
+ * @var array $structuresList
+ * @var bool $deletion
+ */
+?>
 <div class="box view__craft">
-    <?php if( empty($this->witch("target")->craft()) ): ?>
+    <?php if( empty($witch->craft()) ): ?>
         <h3>
             <i class="fa fa-feather-alt"></i>
             No craft
         </h3>
         <form method="post" 
-              action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>"
+              action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
               id="witch-add-new-content">
             <select name="witch-content-structure" id="witch-content-structure">
                 <option value="">
@@ -45,16 +50,16 @@
     <?php else: ?>
         <h3>
             <i class="fa fa-feather-alt"></i>
-            <?=$this->witch("target")->craft()->name ?>
+            <?=$witch->craft()->name ?>
         </h3>        
         <h4>
-            <?=ucfirst($this->witch("target")->craft()->structure->name) ?>
-            <em>[<?=$this->witch("target")->craft()->structure->type ?> <?=$this->witch("target")->craft()->id ?>]</em>
+            <?=ucfirst($witch->craft()->structure->name) ?>
+            <em>[<?=$witch->craft()->structure->type ?> <?=$witch->craft()->id ?>]</em>
         </h4>
         
         <p><em>Craft (content) associated with this witch</em></p>
         
-        <?php foreach( $this->witch("target")->craft()->attributes as $attribute ): ?>
+        <?php foreach( $witch->craft()->attributes as $attribute ): ?>
             <fieldset>
                 <legend><?=$attribute->name?> [<?=$attribute->type?>]</legend>
                     <?php $attribute->display() ?>
@@ -63,12 +68,12 @@
         <?php endforeach; ?>
         
         <p>
-            <?php if( $this->witch("target")->craft()->created ): ?>
-                <em>Created by <?=$this->witch("target")->craft()->created->actor?>: <?=$this->witch("target")->craft()->created->format( \DateTimeInterface::RFC2822 )?></em>
+            <?php if( $witch->craft()->created ): ?>
+                <em>Created by <?=$witch->craft()->created->actor?>: <?=$witch->craft()->created->format( \DateTimeInterface::RFC2822 )?></em>
             <?php endif; ?>
-            <?php if( $this->witch("target")->craft()->modified && $this->witch("target")->craft()->created != $this->witch("target")->craft()->modified ): ?>
+            <?php if( $witch->craft()->modified && $witch->craft()->created != $witch->craft()->modified ): ?>
                 <br/> 
-                <em>Modified by <?=$this->witch("target")->craft()->modified->actor?>: <?=$this->witch("target")->craft()->modified->format( \DateTimeInterface::RFC2822 )?></em>
+                <em>Modified by <?=$witch->craft()->modified->actor?>: <?=$witch->craft()->modified->format( \DateTimeInterface::RFC2822 )?></em>
             <?php endif; ?>
         </p>
         
@@ -85,7 +90,7 @@
                     Remove
                 <?php endif;?>
             </button>
-            <?php if( $this->witch("target")->craft()->structure->type === WC\Craft\Content::TYPE ): ?>
+            <?php if( $witch->craft()->structure->type === WC\Craft\Content::TYPE ): ?>
                 <button class="trigger-action"
                         data-confirm="Are you sure to archive this content ?"
                         data-action="archive-craft"
@@ -95,7 +100,7 @@
                 </button>
             <?php endif; ?>
             <button class="trigger-href" 
-                    data-href="<?=$this->wc->website->getUrl("edit-content?id=".$this->witch("target")->id) ?>"
+                    data-href="<?=$witch->wc->website->getUrl("edit-content?id=".$witch->id) ?>"
                     id="content__edit">
                 <i class="fa fa-pencil"></i>
                 Edit
@@ -105,5 +110,5 @@
 </div>
 
 <form method="post" 
-      action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>"
+      action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
       id="view-craft-action"></form>

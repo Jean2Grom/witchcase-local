@@ -1,25 +1,29 @@
-<?php /** @var WC\Module $this */ ?>
-
+<?php 
+/**
+ * @var WC\Website[] $websitesList
+ * @var WC\Witch $witch
+ */
+?>
 <div class="box view__daughters">
     <h3>
         <i class="fa fa-folder-open"></i>
         Arborescence
     </h3>
     
-    <?php if( $this->witch("target")->mother() ): ?>
+    <?php if( $witch->mother() ): ?>
         <table class="vertical">
             <tr>
                 <td class="label"><em>Mother</em></td>
                 <td class="value">
-                    <a href="<?=$this->wc->website->getUrl("view?id=".$this->witch("target")->mother()->id) ?>">
-                        <?=$this->witch("target")->mother() ?>
+                    <a href="<?=$witch->wc->website->getUrl("view?id=".$witch->mother()->id) ?>">
+                        <?=$witch->mother() ?>
                     </a>
                 </td>
             </tr>
         </table>
     <?php endif; ?>
     
-    <?php if( empty($this->witch("target")->daughters()) ): ?>
+    <?php if( empty($witch->daughters()) ): ?>
         <p class="bottom-label"><em>No daughters for this witch</em></p>
         
     <?php else: ?>
@@ -27,7 +31,7 @@
         
         <form method="post" 
               id="view-daughters-action" 
-              action="<?=$this->wc->website->getUrl('edit?id='.$this->witch("target")->id) ?>">
+              action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>">
             <table >
                 <thead>
                     <tr>
@@ -48,15 +52,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach( $this->witch("target")->daughters() as $daughter ): ?>
+                    <?php foreach( $witch->daughters() as $daughter ): ?>
                         <tr>
                             <td>
-                                <a href="<?=$this->wc->website->getUrl("view?id=".$daughter->id) ?>">
+                                <a href="<?=$witch->wc->website->getUrl("view?id=".$daughter->id) ?>">
                                     <?=$daughter->name ?>
                                 </a>
                             </td>   
                             <td class="full">
-                                <a href="<?=$this->wc->website->getUrl("view?id=".$daughter->id."#tab-craft-part") ?>"
+                                <a href="<?=$witch->wc->website->getUrl("view?id=".$daughter->id."#tab-craft-part") ?>"
                                    class="text-center">
                                     <em><?=$daughter->getCraftStructure() ?></em>
                                     <?php if( !$daughter->hasCraft() ): ?>
@@ -120,7 +124,7 @@
             <i class="fa fa-plus"></i>
             Add Daughter
         </button>
-        <?php if( !empty($this->witch("target")->daughters()) ): ?>
+        <?php if( !empty($witch->daughters()) ): ?>
             <button class="trigger-action" 
                     data-action="edit-priorities"
                     data-target="view-daughters-action">

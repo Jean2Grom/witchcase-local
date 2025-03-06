@@ -1,9 +1,7 @@
 <?php
-use WC\Cauldron;
-
 /**
  * @var string $input
- * @var Cauldron $cauldron
+ * @var WC\Cauldron $cauldron
  */
 
 $allowedAll = array_merge(
