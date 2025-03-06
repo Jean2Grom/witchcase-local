@@ -7,14 +7,14 @@ $this->addCssFile('header-footer.css');
 ?>
 <html lang="fr">
     <head>
-        <?php include $this->getIncludeDesignFile('head.php'); ?>
+        <?php include $this->getIncludeViewFile('head.php'); ?>
     </head>
     
     <body>
         <div class="container">
-            <header><?php include $this->getIncludeDesignFile('header.php'); ?></header>
+            <header><?php include $this->getIncludeViewFile('header.php'); ?></header>
             <main><?=$this->witch()->result() ?></main>
-            <footer><?php include $this->getIncludeDesignFile('footer.php'); ?></footer>
+            <footer><?php include $this->getIncludeViewFile('footer.php'); ?></footer>
         </div>
         
         <?php foreach( $this->getJsFiles() as $jsFile ): ?>

@@ -97,14 +97,14 @@ $this->addContextArrayItems( 'tabs', [
 <?php foreach( $profiles as $id => $profile ): ?>
     <div class="tabs-target__item"  id="tab-profile-<?=$id ?>">
         <div class="box-container">
-            <div><?php include $this->getIncludeDesignFile('profile/display.php'); ?></div>
-            <div><?php include $this->getIncludeDesignFile('profile/edit.php'); ?></div>
+            <div><?php include $this->getIncludeViewFile('profile/display.php'); ?></div>
+            <div><?php include $this->getIncludeViewFile('profile/edit.php'); ?></div>
         </div>
     </div>
 <?php endforeach; ?>
 
 <div class="tabs-target__item"  id="tab-profile-add">
     <div class="box-container">
-        <div><?php include $this->getIncludeDesignFile('profile/create.php'); ?></div>
+        <div><?php include $this->getIncludeViewFile('profile/create.php'); ?></div>
     </div>
 </div>

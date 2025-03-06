@@ -15,8 +15,8 @@ class Context
     const DEFAULT_FILE  = "default";    
     const DIR           = "context";
     
-    const DESIGN_SUBFOLDER          = "view/context";
-    const DESIGN_INCLUDES_SUBFOLDER = "view/include/context";
+    const VIEW_DIR          = "view/context";
+    const INCLUDE_VIEW_DIR  = "view/include/context";
     
     const IMAGES_SUBFOLDER          = "assets/images";
     const JS_SUBFOLDER              = "assets/js";
@@ -30,7 +30,7 @@ class Context
     
     public $name;
     public $execFile;
-    public $designFile;
+    public $viewFile;
     public $website;
     public $view;
     
@@ -77,28 +77,28 @@ class Context
         return $this;
     }
     
-    function getViewFile( ?string $designFile=null, bool $mandatory=true )
+    function getViewFile( ?string $viewFile=null, bool $mandatory=true )
     {
-        if( $this->designFile ){
-            return $this->designFile;
+        if( $this->viewFile ){
+            return $this->viewFile;
         }
         
-        if( !$designFile ){
-            $designFile = $this->name;
+        if( !$viewFile ){
+            $viewFile = $this->name;
         }
         
-        if( strcasecmp(substr($designFile, -4), ".php") == 0 ){
-            $designFile = substr($designFile, 0, -4);
+        if( strcasecmp(substr($viewFile, -4), ".php") == 0 ){
+            $viewFile = substr($viewFile, 0, -4);
         }
         
-        $this->designFile = $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/".$designFile.".php" );
+        $this->viewFile = $this->wc->website->getFilePath( self::VIEW_DIR."/".$viewFile.".php" );
         
-        if( !$this->designFile ){
-            $this->wc->log->error("Can't get view file: ".$designFile, $mandatory);
+        if( !$this->viewFile ){
+            $this->wc->log->error("Can't get view file: ".$viewFile, $mandatory);
         }
         
-        $this->wc->debug->toResume("Design file to be included : \"".$this->designFile."\"", 'CONTEXT');
-        return $this->designFile;
+        $this->wc->debug->toResume("Design file to be included : \"".$this->viewFile."\"", 'CONTEXT');
+        return $this->viewFile;
     }
     
     function view( ?string $designName=null, bool $mandatory=true )
@@ -128,7 +128,7 @@ class Context
      */
     function css( string $cssFile, array $attributes=[] ): void
     {
-        $displayFilePath    = $this->wc->website->getFilePath( self::DESIGN_INCLUDES_SUBFOLDER."/".self::CSS_FILE_DISPLAY );
+        $displayFilePath    = $this->wc->website->getFilePath( self::INCLUDE_VIEW_DIR."/".self::CSS_FILE_DISPLAY );
         if( empty($displayFilePath) )
         {
             $this->wc->log->error("Can't get CSS file display file");
@@ -169,7 +169,7 @@ class Context
     
     function js( string $jsFile, array $attributes=[] ): void
     {
-        $displayFilePath    = $this->wc->website->getFilePath( self::DESIGN_INCLUDES_SUBFOLDER."/".self::JS_FILE_DISPLAY );
+        $displayFilePath    = $this->wc->website->getFilePath( self::INCLUDE_VIEW_DIR."/".self::JS_FILE_DISPLAY );
         if( empty($displayFilePath) )
         {
             $this->wc->log->error("Can't get JS file display file");
@@ -238,7 +238,7 @@ class Context
     
     function image( string $imageFile, array $attributes=[] ): void
     {
-        $displayFilePath    = $this->wc->website->getFilePath( self::DESIGN_INCLUDES_SUBFOLDER."/".self::IMAGE_FILE_DISPLAY );
+        $displayFilePath    = $this->wc->website->getFilePath( self::INCLUDE_VIEW_DIR."/".self::IMAGE_FILE_DISPLAY );
         if( empty($displayFilePath) )
         {
             $this->wc->log->error("Can't get IMAGE file display file");
@@ -263,7 +263,7 @@ class Context
     
     function favicon( string $iconFile="favicon.ico" ): void
     {
-        $displayFilePath    = $this->wc->website->getFilePath( self::DESIGN_INCLUDES_SUBFOLDER."/".self::FAVICON_FILE_DISPLAY );
+        $displayFilePath    = $this->wc->website->getFilePath( self::INCLUDE_VIEW_DIR."/".self::FAVICON_FILE_DISPLAY );
         if( empty($displayFilePath) )
         {
             $this->wc->log->error("Can't get FAVICON file display file");
@@ -296,9 +296,9 @@ class Context
         return "/".$fullPath;
     }
     
-    function getIncludeDesignFile( $filename )
+    function getIncludeViewFile( $filename )
     {
-        $fullPath = $this->wc->website->getFilePath(self::DESIGN_INCLUDES_SUBFOLDER."/".$filename );
+        $fullPath = $this->wc->website->getFilePath(self::INCLUDE_VIEW_DIR."/".$filename );
         
         if( !$fullPath ){
             return false;

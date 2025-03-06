@@ -10,12 +10,12 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
 ?>
 <html lang="fr-FR" dir="ltr">
     <head>
-        <?php include $this->getIncludeDesignFile('head.php'); ?>
+        <?php include $this->getIncludeViewFile('head.php'); ?>
     </head>
     
     <body>
         <div class="container">
-            <header><?php include $this->getIncludeDesignFile('header.php'); ?></header>
+            <header><?php include $this->getIncludeViewFile('header.php'); ?></header>
             
             <?php if( count($this->witch('menu')?->daughters() ?? []) > 0 ): ?>
                 <nav>
@@ -123,7 +123,7 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
                 <?=$this->wc->cairn->invokation("chooseWitch") ?>
             <?php endif; ?>
             
-            <footer><?php include $this->getIncludeDesignFile('footer.php'); ?></footer>
+            <footer><?php include $this->getIncludeViewFile('footer.php'); ?></footer>
         </div>
         
         <?php foreach( $this->getJsFiles() as $jsFile ): ?>

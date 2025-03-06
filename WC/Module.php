@@ -17,7 +17,7 @@ class Module
         
     public $name;
     public $execFile;
-    public $designFile;
+    public $viewFile;
     public $result;
     public $config;
     public $view;
@@ -119,8 +119,8 @@ class Module
     
     function getViewFile( ?string $designName=null, bool $mandatory=true )
     {
-        if( !empty($this->designFile) ){
-            return $this->designFile;
+        if( !empty($this->viewFile) ){
+            return $this->viewFile;
         }
         
         if( !$designName ){
@@ -130,14 +130,14 @@ class Module
             $designName .=  ".php";
         }
         
-        $this->designFile   = $this->wc->website->getViewFilePath( $designName );
+        $this->viewFile   = $this->wc->website->getViewFilePath( $designName );
         
-        if( !$this->designFile ){
+        if( !$this->viewFile ){
             $this->wc->log->error("Can't get view file: ".$designName, $mandatory);
         }
         
-        $this->wc->debug->toResume("Design file to be included : \"".$this->designFile."\"", 'MODULE '.$this->name);
-        return $this->designFile;
+        $this->wc->debug->toResume("Design file to be included : \"".$this->viewFile."\"", 'MODULE '.$this->name);
+        return $this->viewFile;
     }
     
     function view( ?string $designName=null, bool $mandatory=true )
@@ -183,7 +183,7 @@ class Module
         return false;
     }
     
-    function getIncludeDesignFile( $filename )
+    function getIncludeViewFile( $filename )
     {
         $fullPath = $this->wc->website->getIncludeViewFilePath($filename );
         
@@ -201,7 +201,7 @@ class Module
             $$name = $value;
         }
 
-        include $this->getIncludeDesignFile($filename);
+        include $this->getIncludeViewFile($filename);
         return;
     }
     

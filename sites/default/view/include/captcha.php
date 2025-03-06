@@ -3,7 +3,7 @@
 /**
  * - To add a captcha check into your form, you have to add this code :
  * 
- * include $this->getIncludeDesignFile('captcha.php');
+ * include $this->getIncludeViewFile('captcha.php');
  * 
  * - To check captcha validation in PHP file, use this test : 
  * 
