@@ -19,4 +19,4 @@ foreach( $this->values['crafts'] as $craft ){
     }
 }
 
-include $this->module->getDesignFile('attributes/view/get_contents.php');
+include $this->module->getViewFile('attributes/view/get_contents.php');

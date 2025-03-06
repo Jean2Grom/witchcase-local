@@ -44,4 +44,4 @@ foreach( $this->values["externals"] as $i => $external )
     $values[$i]['external'] = $externalDisplay;
 }
 
-include $module->getDesignFile('attributes/view/links.php');
+include $module->getViewFile('attributes/view/links.php');

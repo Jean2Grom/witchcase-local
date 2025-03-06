@@ -1,9 +1,9 @@
 <?php /** @var WC\Cauldron $this */ 
 
-$designFile = $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/edit/".$this->type.".php" );
+$designFile = $this->wc->website->getFilePath( self::VIEW_DIR."/edit/".$this->type.".php" );
 
 if( !$designFile ){
-    $designFile = $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/edit/default.php" );
+    $designFile = $this->wc->website->getFilePath( self::VIEW_DIR."/edit/default.php" );
 }
 
 if( $designFile ){

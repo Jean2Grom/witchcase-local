@@ -1,24 +1,28 @@
 <?php 
 /**
  * @var WC\Cauldron $this 
- * @var string $input
+ * @var ?string $input
  */ 
 
-//$this->test();
-
+if( !isset($input) ){
+    $input = "content";
+}
+else {
+    $input .= "[content]";
+}
 ?>
 
 <div class="fieldsets-container">
     <?php if( empty($this->contents()) ): ?>
         <input  
-            name="<?=$input?>[content]" 
+            name="<?=$input?>" 
             value="" 
             type="hidden" 
         />
                 
     <?php else: foreach( $this->contents() as $contentIndex => $content ): 
         $integrationCountClass  = substr_count($input, '[content]') % 4;
-        $contentInput           = $input."[content][".$contentIndex."]";
+        $contentInput           = $input."[".$contentIndex."]";
         ?>
         <fieldset class="<?=$content->isIngredient()? 'ingredient': 'cauldron integration-'.$integrationCountClass?>">
             <legend>
@@ -50,10 +54,10 @@
     <?php endforeach; endif; ?>
 </div>
 
-<?php $this->wc->witch()?->modules['cauldron']?->include(
+<?php $this->wc->website->include(
     'cauldron/add.php', 
     [
-        'input'     => $input."[content][new]",
+        'input'     => $input."[new]",
         'cauldron'  => $this
     ]
 );?>

@@ -8,9 +8,12 @@ namespace WC;
  */
 class Website 
 {
-    const SITES_DIR         = "sites";
-    const DEFAULT_SITE_DIR  = "sites/default";
+    const SITES_DIR             = "sites";
+    const DEFAULT_SITE_DIR      = "sites/default";
     
+    const VIEW_DIR              = "view";
+    const INCLUDE_VIEW_DIR      = "view/include";
+
     public $name;
     public $currentAccess;
     public $site;
@@ -136,7 +139,14 @@ class Website
         
         return $this;
     }
+
+    function getViewFilePath( string $filename ): ?string {
+        return $this->getFilePath( self::VIEW_DIR."/".$filename );
+    }
     
+    function getIncludeViewFilePath( string $filename ): ?string {
+        return $this->getFilePath( self::INCLUDE_VIEW_DIR."/".$filename );
+    }
     
     function getFilePath( string $filename ): ?string
     {
@@ -344,4 +354,25 @@ class Website
 
         return $url;
     }
+
+    function include( $filename, ?array $params=null ): void
+    {
+        foreach( $params ?? [] as $name => $value ){
+            $$name = $value;
+        }
+
+        $fullPath = $this->getFilePath( self::INCLUDE_VIEW_DIR."/".$filename);
+
+        if( !$fullPath ){
+            $this->wc->log->error( "Ressource file to be Included: \"".$filename."\" not found", false);
+        }
+        else
+        {
+            $this->wc->debug->toResume("Ressource view file to be Included: \"".$fullPath."\"", 'INCLUDE');
+            include $fullPath;
+        }
+
+        return;
+    }
+
 }

@@ -13,4 +13,4 @@ if( $this->content() )
     }
 }
 
-include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/view/text.php");
+include $this->wc->website->getFilePath( self::VIEW_DIR."/view/text.php");

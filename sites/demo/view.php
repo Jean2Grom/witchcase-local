@@ -55,7 +55,7 @@ if( isset($craft->attributes["contents"]) )
         }
     }
     
-    include $module->getDesignFile();
+    include $module->getViewFile();
 }
 
 

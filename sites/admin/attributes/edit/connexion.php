@@ -19,4 +19,4 @@ foreach( $profiles as $profileId => $profileItem )
     $sitesProfiles[ $siteLabel ][ $profileId ] = $profileItem;
 }
 
-include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/edit/connexion.php");
+include $this->wc->website->getFilePath( self::VIEW_DIR."/edit/connexion.php");

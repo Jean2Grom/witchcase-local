@@ -1,9 +1,9 @@
 <?php /** @var WC\Attribute $this */ 
 
-$designFile = $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/view/".$this->type.".php");
+$designFile = $this->wc->website->getFilePath( self::VIEW_DIR."/view/".$this->type.".php");
 
 if( !$designFile ){
-    $designFile = $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/view/default.php");
+    $designFile = $this->wc->website->getFilePath( self::VIEW_DIR."/view/default.php");
 }
 
 if( $designFile ){

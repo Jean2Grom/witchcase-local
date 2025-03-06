@@ -27,4 +27,4 @@ foreach( $allLocalisations as $key => $allLocalisations_item )
 }
 
 
-include $this->module->getDesignFile('attributes/edit/get_contents.php');
+include $this->module->getViewFile('attributes/edit/get_contents.php');

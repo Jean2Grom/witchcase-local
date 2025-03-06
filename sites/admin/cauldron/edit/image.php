@@ -18,4 +18,4 @@ if( $storagePath )
 
 $filename       = $this->content('file')?->content('filename')?->value() ?? "";
 
-include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/edit/image.php");
+include $this->wc->website->getFilePath( self::VIEW_DIR."/edit/image.php");

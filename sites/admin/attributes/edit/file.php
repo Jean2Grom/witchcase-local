@@ -5,4 +5,4 @@ $this->wc->website->context->addCssFile('attribute/file-edit.css');
 
 $srcFile = $this->getFile(); 
 
-include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/edit/file.php");
+include $this->wc->website->getFilePath( self::VIEW_DIR."/edit/file.php");

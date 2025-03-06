@@ -11,7 +11,7 @@ abstract class Attribute
 {
     const ATTRIBUTE_TYPE        = null;
     const DIR                   = "attributes";
-    const DESIGN_SUBFOLDER      = "view/attributes";
+    const VIEW_DIR              = "view/attributes";
 
     public $parameters     = [];
     public $dbFields       = [];

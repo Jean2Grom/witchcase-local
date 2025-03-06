@@ -14,10 +14,7 @@ class Module
     use ShortcutAccessTrait;
 
     const DEFAULT_FILE  = "default";   
-    
-    const DESIGN_SUBFOLDER              = "view";
-    const DESIGN_INCLUDES_SUBFOLDER     = "view/include";
-    
+        
     public $name;
     public $execFile;
     public $designFile;
@@ -88,7 +85,7 @@ class Module
         ob_start();
         include $this->execFile;        
         if( $this->view ){
-            include $this->getDesignFile();
+            include $this->getViewFile();
         }
         $result = ob_get_contents();
         ob_end_clean();
@@ -120,7 +117,7 @@ class Module
         return $this->result;
     }
     
-    function getDesignFile( ?string $designName=null, bool $mandatory=true )
+    function getViewFile( ?string $designName=null, bool $mandatory=true )
     {
         if( !empty($this->designFile) ){
             return $this->designFile;
@@ -133,11 +130,10 @@ class Module
             $designName .=  ".php";
         }
         
-        $filename           = self::DESIGN_SUBFOLDER."/".$designName;
-        $this->designFile   = $this->wc->website->getFilePath( $filename );
+        $this->designFile   = $this->wc->website->getViewFilePath( $designName );
         
         if( !$this->designFile ){
-            $this->wc->log->error("Can't get view file: ".$filename, $mandatory);
+            $this->wc->log->error("Can't get view file: ".$designName, $mandatory);
         }
         
         $this->wc->debug->toResume("Design file to be included : \"".$this->designFile."\"", 'MODULE '.$this->name);
@@ -147,7 +143,7 @@ class Module
     function view( ?string $designName=null, bool $mandatory=true )
     {
         $this->view = true;        
-        return $this->getDesignFile( $designName, $mandatory );
+        return $this->getViewFile( $designName, $mandatory );
     }
     
     function getImageFile( $filename ){
@@ -189,7 +185,7 @@ class Module
     
     function getIncludeDesignFile( $filename )
     {
-        $fullPath = $this->wc->website->getFilePath(self::DESIGN_INCLUDES_SUBFOLDER."/".$filename );
+        $fullPath = $this->wc->website->getIncludeViewFilePath($filename );
         
         if( !$fullPath ){
             return false;

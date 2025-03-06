@@ -71,7 +71,7 @@ class StringAttribute extends \WC\Attribute
         $inputAttributes['type']    = "text";
         $inputAttributes['value']   = $this->parameters['lenght']['value'];
         
-        include $this->module->getDesignFile('attributes/edit/parameters/simpleInput.php');
+        //include $this->module->getViewFile('attributes/edit/parameters/simpleInput.php');
         
         return;
     }

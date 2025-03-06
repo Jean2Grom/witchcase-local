@@ -28,4 +28,4 @@ foreach( $this->values["texts"] as $i => $text )
 for( $i=0; $i <= $max; $i++ )
 {   $values[$i]['external'] = $this->values["externals"][$i];   }
 
-include $this->module->getDesignFile('attributes/edit/links.php');
+include $this->module->getViewFile('attributes/edit/links.php');

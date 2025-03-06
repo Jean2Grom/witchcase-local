@@ -21,4 +21,4 @@ else {
     $externalDisplay = "Self window target";
 }
 
-include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/view/link.php" );
+include $this->wc->website->getFilePath( self::VIEW_DIR."/view/link.php" );

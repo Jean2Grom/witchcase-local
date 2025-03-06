@@ -61,4 +61,4 @@ else
     Cache::create($folder, 'contextData', $contextData );    
 }
 
-include $context->getDesignFile();
+include $context->getViewFile();

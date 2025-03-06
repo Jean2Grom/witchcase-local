@@ -26,4 +26,4 @@ foreach( $this->values["links"] as $i => $link )
     $values[$i]['link'] = $link;
 }
 
-include $this->module->getDesignFile('attributes/edit/images.php');
+include $this->module->getViewFile('attributes/edit/images.php');

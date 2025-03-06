@@ -109,6 +109,6 @@ $this->addCssFile('choose-witch.css');
         <span>Cauldrons Navigation</span>
     </h3>
     
-    <?php include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER.'/arborescence.php' ); ?>
+    <?php include $this->wc->website->getViewFilePath( 'arborescence.php' ); ?>
 </div>
 

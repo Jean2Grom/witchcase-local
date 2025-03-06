@@ -77,7 +77,7 @@ class Context
         return $this;
     }
     
-    function getDesignFile( ?string $designFile=null, bool $mandatory=true )
+    function getViewFile( ?string $designFile=null, bool $mandatory=true )
     {
         if( $this->designFile ){
             return $this->designFile;
@@ -104,7 +104,7 @@ class Context
     function view( ?string $designName=null, bool $mandatory=true )
     {
         $this->view = true;        
-        return $this->getDesignFile( $designName, $mandatory );
+        return $this->getViewFile( $designName, $mandatory );
     }
     
     
@@ -326,7 +326,7 @@ class Context
         
         include $this->execFile;
         if( $this->view ){
-            include $this->getDesignFile();
+            include $this->getViewFile();
         }
         
         return $this;

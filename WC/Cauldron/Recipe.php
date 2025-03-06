@@ -100,7 +100,7 @@ class Recipe
         else {
             $cauldron   = new Cauldron();
         }
-        //$cauldron           = new Cauldron();
+        
         $cauldron->wc       = $this->wc;
         $cauldron->name     = $name ?? $this->name;
         $cauldron->recipe   = $this->name;

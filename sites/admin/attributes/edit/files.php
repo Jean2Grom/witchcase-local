@@ -18,4 +18,4 @@ foreach( $this->values["titles"] as $i => $title )
     $values[$i]['title'] = $title;
 }
 
-include $this->module->getDesignFile('attributes/edit/files.php');
+include $this->module->getViewFile('attributes/edit/files.php');

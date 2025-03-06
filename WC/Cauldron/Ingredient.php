@@ -28,9 +28,9 @@ abstract class Ingredient implements CauldronContentInterface
         'text'          => 't', 
     ];
     
-    const TYPE                  = null;
-    const DIR                   = "cauldron/ingredient";
-    const DESIGN_SUBFOLDER      = "view/cauldron/ingredient";
+    const TYPE      = null;
+    const DIR       = "cauldron/ingredient";
+    const VIEW_DIR  = "view/cauldron/ingredient";
 
     public string $type;
     public $value;

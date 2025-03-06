@@ -12,4 +12,4 @@ if( $storagePath )
 
 $filename       = $this->content('filename')?->value() ?? "";
 
-include $this->wc->website->getFilePath( self::DESIGN_SUBFOLDER."/edit/wc-file.php" );
+include $this->wc->website->getFilePath( self::VIEW_DIR."/edit/wc-file.php" );

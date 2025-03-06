@@ -8,7 +8,6 @@ $cauldron = $cauldron ?? $this->witch("target")->cauldron();
 $this->addCssFile('content-edit.css');
 $this->addJsFile('triggers.js');
 
-$this->test();
 ?>
 
 <h1>
@@ -51,49 +50,8 @@ $this->test();
         <?php endif; ?>
     </p>
     
+    <?php $cauldron->draft()->edit(); ?>
 
-
-    <div class="fieldsets-container">
-        <?php foreach( $cauldron->draft()->contents() as $contentIndex => $content ): 
-            $input = "content[".$contentIndex."]";
-            ?>
-            <fieldset class="<?=$content->isCauldron()? 'cauldron': 'ingredient'?>">
-                <legend>
-                    <span   class="span-input-toggle" 
-                            data-input="<?=$input?>[name]" 
-                            data-value="<?=$content->name ?>"><?=$content->name ?></span>
-                    [<?=$content->type?>]                    
-                    <a class="up-fieldset">[&#8593;]</a>
-                    <a class="down-fieldset">[&#8595;]</a>
-                    <a class="remove-fieldset">[x]</a>
-                </legend>
-                <?php if( $content->exist() ): ?>
-                    <input  
-                        name="<?=$input?>[ID]" 
-                        value="<?=$content->id ?>" 
-                        type="hidden" 
-                    />
-                <?php endif; ?>
-                <input  
-                    name="<?=$input ?>[type]" 
-                    value="<?=$content->type ?>" 
-                    type="hidden" 
-                />
-                <?php $content->edit( 
-                    null, 
-                    [ 'input' => $input ]
-                ); ?>
-            </fieldset>
-        <?php endforeach; ?>        
-    </div>
-    
-    <?php $this->include(
-        'cauldron/add.php', 
-        [
-            'input'     => "content[new]",
-            'cauldron'  => $cauldron->draft()
-        ]
-    ); ?>
 </form>
 
 <?php if( $this->witch("target") ): ?>

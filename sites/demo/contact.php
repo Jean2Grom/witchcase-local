@@ -21,4 +21,4 @@ if( filter_has_var(INPUT_POST, "bouton_formulaire") )
 }
 
 
-include $module->getDesignFile();
+include $module->getViewFile();
