@@ -16,7 +16,7 @@ class Cairn
     /** @var Witch[] */
     private $witches;
 
-    /** @var Cauldrons[] */
+    /** @var Cauldron[] */
     private $cauldrons;
 
     private $crafts;
@@ -334,8 +334,8 @@ class Cairn
         {
             foreach( $this->searchByCauldronId($cauldron->id) as $witch )
             {
-                $witch->cauldron = $cauldron;
-                $cauldron->witches[ $witch->id ] = $witch;
+                $witch->cauldron                    = $cauldron;
+                $cauldron->witches[ $witch->id ]    = $witch;
             }
         
             $cauldron->orderWitches();
@@ -637,16 +637,18 @@ class Cairn
     private function recursiveSearchByCauldronId( Witch $witch, int $cauldronId ): array
     {
         $return = [];
-        foreach( $witch->daughters() as $daugther )
-        {
-            if( $daugther->cauldronId == $cauldronId ){
-                $return[] = $daugther;
+        if( $witch->daughters() ){
+            foreach( $witch->daughters() as $daugther )
+            {
+                if( $daugther->cauldronId == $cauldronId ){
+                    $return[] = $daugther;
+                }
+                
+                $return = array_merge( 
+                    $return, 
+                    $this->recursiveSearchByCauldronId( $daugther, $cauldronId )
+                );
             }
-            
-            $return = array_merge( 
-                $return, 
-                $this->recursiveSearchByCauldronId( $daugther, $cauldronId )
-            );
         }
 
         return $return;
