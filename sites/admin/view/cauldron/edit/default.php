@@ -1,17 +1,9 @@
 <?php 
 /**
  * @var WC\Cauldron $this 
- * @var ?string $input
+ * @var string $input
  */ 
-
-if( !isset($input) ){
-    $input = "content";
-}
-else {
-    $input .= "[content]";
-}
 ?>
-
 <div class="fieldsets-container">
     <?php if( empty($this->contents()) ): ?>
         <input  
@@ -19,7 +11,7 @@ else {
             value="" 
             type="hidden" 
         />
-                
+    
     <?php else: foreach( $this->contents() as $contentIndex => $content ): 
         $integrationCountClass  = substr_count($input, '[content]') % 4;
         $contentInput           = $input."[".$contentIndex."]";

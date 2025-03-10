@@ -403,8 +403,7 @@ class CauldronHandler
             }
         }
         
-        $workFolderName = mb_strtoupper( $folderStruct );
-        $cauldron->wc->debug($workFolderName);
+        $workFolderName = mb_strtoupper( $folderStruct );        
         if( substr($workFolderName, 0, 3) === "WC-" ){
             $workFolderName = substr($workFolderName, 3);
         }

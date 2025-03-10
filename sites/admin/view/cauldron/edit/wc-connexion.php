@@ -9,23 +9,23 @@
     <legend>email</legend>
     <?php if( $this->content('email')?->exist() ): ?>
         <input  
-            name="<?=$input?>[content][email][ID]" 
+            name="<?=$input?>[email][ID]" 
             value="<?=$this->content('email')?->id ?>" 
             type="hidden" 
         />
     <?php endif; ?>
     <!--input  
-        name="<?=$input?>[content][email][name]" 
+        name="<?=$input?>[email][name]" 
         value="email" 
         type="hidden" 
     />
     <input  
-        name="<?=$input?>[content][email][type]" 
+        name="<?=$input?>[email][type]" 
         value="string" 
         type="hidden" 
     /-->
     <input  
-        name="<?=$input?>[content][email][value]"
+        name="<?=$input?>[email][value]"
         value="<?=$this->content('email')?->value() ?? ""?>" 
         type="email" 
         placeholder="address@domain.ext"
@@ -34,23 +34,23 @@
     <legend>login</legend>
     <?php if( $this->content('login')?->exist() ): ?>
         <input  
-            name="<?=$input?>[content][login][ID]" 
+            name="<?=$input?>[login][ID]" 
             value="<?=$this->content('login')?->id ?>" 
             type="hidden" 
         />
     <?php endif; ?>
     <!--input 
-        name="<?=$input?>[content][login][name]" 
+        name="<?=$input?>[login][name]" 
         value="login" 
         type="hidden" 
     />
     <input 
-        name="<?=$input?>[content][login][type]" 
+        name="<?=$input?>[login][type]" 
         value="string" 
         type="hidden" 
     /-->
     <input   
-        name="<?=$input?>[content][login][value]" 
+        name="<?=$input?>[login][value]" 
         value="<?=$this->content('login')?->value() ?? ""?>" 
         type="text"
     />
@@ -58,30 +58,30 @@
     <legend>password</legend>
     <?php if( $this->content('pass_hash')?->exist() ): ?>
         <input  
-            name="<?=$input?>[content][pass_hash][ID]" 
+            name="<?=$input?>[pass_hash][ID]" 
             value="<?=$this->content('pass_hash')?->id ?>" 
             type="hidden"
         />
     <?php endif; ?>
     <!--input  
-        name="<?=$input?>[content][password][name]" 
+        name="<?=$input?>[password][name]" 
         value="pass_hash" 
         type="hidden"
     />
     <input 
-        name="<?=$input?>[content][password][type]" 
+        name="<?=$input?>[password][type]" 
         value="string" 
         type="hidden" 
     /-->
     <input 
-        name="<?=$input?>[content][password][value]"
+        name="<?=$input?>[password][value]"
         value="<?=$this->content('pass_hash')?->value()? "xxxxxxxxxxxxxxxxxx" : ""?>" 
         type="password" 
     />  
 
     <legend>confirm password</legend>
     <input 
-        name="<?=$input?>[content][password][confirm_value]" 
+        name="<?=$input?>[password][confirm_value]" 
         value="<?=$this->content('pass_hash')?->value()? "yyyyyyyyyyyyyyyyyy" : ""?>" 
         type="password" 
     />

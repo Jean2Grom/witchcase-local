@@ -8,28 +8,27 @@ $this->wc->website->context->addJsFile('cauldron/image-edit.js');
 
 $key = "_FILES__".md5( microtime().rand() );
 ?>
-
 <div class="image-edit-container">
     <legend>Image name</legend>
     <?php if ($this->content('name')->exist()): ?>
         <input  
-            name="<?=$input ?>[content][name][ID]"
+            name="<?=$input ?>[name][ID]"
             value="<?=$this->content('name')->id ?>" 
             type="hidden"
         />
     <?php endif; ?>
     <input  
-        name="<?=$input.'[content][name][name]' ?>"
+        name="<?=$input.'[name][name]' ?>"
         value="name" 
         type="hidden"
     />
     <input  
-        name="<?=$input.'[content][name][type]' ?>"
+        name="<?=$input.'[name][type]' ?>"
         value="string" 
         type="hidden"
     />
     <input  
-        name="<?=$input.'[content][name][value]' ?>"
+        name="<?=$input.'[name][value]' ?>"
         value="<?=$name ?>"
         class="image-input name"
         type="text"
@@ -38,18 +37,18 @@ $key = "_FILES__".md5( microtime().rand() );
     
     <?php if( $this->content('file')->exist() ): ?>
         <input  
-            name="<?=$input ?>[content][file][ID]"
+            name="<?=$input ?>[file][ID]"
             value="<?= $this->content('file')->id ?>" 
             type="hidden"
         />
     <?php endif; ?>
     <input  
-        name="<?=$input.'[content][file][name]' ?>"
+        name="<?=$input.'[file][name]' ?>"
         value="file" 
         type="hidden"
     />
     <input  
-        name="<?=$input.'[content][file][type]' ?>"
+        name="<?=$input.'[file][type]' ?>"
         value="wc-file" 
         type="hidden"
     />
@@ -60,7 +59,7 @@ $key = "_FILES__".md5( microtime().rand() );
 
             <input  type="hidden" 
                     class="current-image-focus"
-                    name="<?=$input.'[content][file][content][path][value]'?>" 
+                    name="<?=$input.'[file][content][path][value]'?>" 
                     value="<?=$storagePath ?>"  />            
         <?php endif; ?>
 
@@ -76,41 +75,41 @@ $key = "_FILES__".md5( microtime().rand() );
     <div class="file-input" <?= $storagePath ? 'style="display: none;"' : '' ?>>
         <?php if( $this->content('file')->content('storage-path')?->exist() ): ?>
             <input  
-                name="<?=$input.'[content][file][content][path][ID]' ?>"
+                name="<?=$input.'[file][content][path][ID]' ?>"
                 value="<?=$this->content('file')->content('storage-path')?->id ?>" 
                 type="hidden"
             />
         <?php endif; ?>
         <input  
-            name="<?=$input.'[content][file][content][path][name]' ?>"
+            name="<?=$input.'[file][content][path][name]' ?>"
             value="storage-path" 
             type="hidden"
         />
         <input  
-            name="<?=$input.'[content][file][content][path][type]' ?>"
+            name="<?=$input.'[file][content][path][type]' ?>"
             value="string" 
             type="hidden"
         />
         <input  
-            name="<?=$input.'[content][file][content][path][$_FILES]' ?>"
+            name="<?=$input.'[file][content][path][$_FILES]' ?>"
             value="<?=$key ?>" 
             type="hidden"
         />
 
         <?php if( $this->content('file')->content('filename')?->exist() ): ?>
             <input  
-                name="<?=$input.'[content][file][content][filename][ID]' ?>"
+                name="<?=$input.'[file][content][filename][ID]' ?>"
                 value="<?=$this->content('file')->content('filename')?->id ?>" 
                 type="hidden"
             />
         <?php endif; ?>
         <input  
-            name="<?=$input.'[content][file][content][filename][name]' ?>"
+            name="<?=$input.'[file][content][filename][name]' ?>"
             value="filename" 
             type="hidden"
         />
         <input  
-            name="<?=$input.'[content][file][content][filename][type]' ?>"
+            name="<?=$input.'[file][content][filename][type]' ?>"
             value="string" 
             type="hidden"
         />
@@ -123,7 +122,7 @@ $key = "_FILES__".md5( microtime().rand() );
             class="upload-image-input"
         />
         <input  
-            name="<?=$input.'[content][file][content][filename][value]' ?>"
+            name="<?=$input.'[file][content][filename][value]' ?>"
             value="<?=$filename ?>" 
             type="hidden"
             class="filename-image-input"
@@ -133,23 +132,23 @@ $key = "_FILES__".md5( microtime().rand() );
     <legend>Image caption</legend>
     <?php if ($this->content('caption')->exist()): ?>
         <input  
-            name="<?=$input ?>[content][caption][ID]"
+            name="<?=$input ?>[caption][ID]"
             value="<?=$this->content('caption')->id ?>" 
             type="hidden"
         />
     <?php endif; ?>
     <input  
-        name="<?=$input.'[content][caption][name]' ?>"
+        name="<?=$input.'[caption][name]' ?>"
         value="caption" 
         type="hidden"
     />
     <input  
-        name="<?=$input.'[content][caption][type]' ?>"
+        name="<?=$input.'[caption][type]' ?>"
         value="string" 
         type="hidden"
     />
     <input  
-        name="<?=$input.'[content][caption][value]' ?>"
+        name="<?=$input.'[caption][value]' ?>"
         value="<?=$caption ?>"
         type="text"
         class="image-input caption"

@@ -1,8 +1,5 @@
 <?php /** @var WC\Cauldron $this */ 
 
-$this->wc->website->context->addJsFile('cauldron/image-edit.js');
-$this->wc->website->context->addCssFile('cauldron/file-edit.css');
-
 $name      = $this->content('name')?->value() ?? "";
 $caption    = $this->content('caption')?->value() ?? "";
 
@@ -17,5 +14,12 @@ if( $storagePath )
 }
 
 $filename       = $this->content('file')?->content('filename')?->value() ?? "";
+
+if( !isset($input) ){
+    $input = "content";
+}
+else {
+    $input .= "[content]";
+}
 
 include $this->wc->website->getFilePath( self::VIEW_DIR."/edit/image.php");

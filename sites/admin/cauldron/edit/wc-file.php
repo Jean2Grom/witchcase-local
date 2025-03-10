@@ -12,4 +12,11 @@ if( $storagePath )
 
 $filename       = $this->content('filename')?->value() ?? "";
 
+if( !isset($input) ){
+    $input = "content";
+}
+else {
+    $input .= "[content]";
+}
+
 include $this->wc->website->getFilePath( self::VIEW_DIR."/edit/wc-file.php" );
