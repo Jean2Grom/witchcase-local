@@ -363,7 +363,7 @@ class Cauldron implements CauldronContentInterface
         return true;
     }
 
-    private function saveAction(): bool
+    protected function saveAction(): bool
     {
         if( !$this->validate() )
         {
@@ -514,7 +514,7 @@ class Cauldron implements CauldronContentInterface
         return true;
     }
 
-    private function deleteAction(): bool
+    protected function deleteAction(): bool
     {
         $result = true;
 
@@ -592,7 +592,7 @@ class Cauldron implements CauldronContentInterface
         if( !$params ){
             return $this;
         }
-
+        
         if( isset($params['name']) ){
             $this->name = htmlspecialchars($params['name']);
         }
