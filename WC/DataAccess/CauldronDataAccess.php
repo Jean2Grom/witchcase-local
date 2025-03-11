@@ -237,7 +237,7 @@ class CauldronDataAccess
         return $newLevelDepth;
     }
 
-    // TODO useless ?
+    
     static function getNewPosition( Cauldron $cauldron )
     {
         $depth = count($cauldron->position()) + 1;

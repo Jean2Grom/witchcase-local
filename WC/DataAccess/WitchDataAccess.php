@@ -207,7 +207,7 @@ class WitchDataAccess
         return $max + 1;
     }
         
-    static function getUrlsData(  WitchCase $wc, string $site, array $urls, int $excludedId=null )
+    static function getUrlsData(  WitchCase $wc, string $site, array $urls, ?int $excludedId=null )
     {
         $params = [ 
             'site'      => $site,

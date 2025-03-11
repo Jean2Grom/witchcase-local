@@ -136,13 +136,17 @@ class Cauldron implements CauldronContentInterface
             else
             {
                 $this->position = $this->parent->position();
-                $newIndex       = 1;
+                
+                $newIndex       = DataAccess::getNewPosition( $this->parent );
                 $this->depth    = $this->parent->depth + 1;
-                foreach( $this->parent->children as $child ){
-                    if( $child->levelPosition( $this->depth ) >= $newIndex ){
-                        $newIndex  = $child->levelPosition( $this->depth ) + 1;
-                    }
-                }
+
+                // $newIndex       = 1;
+                // $this->depth    = $this->parent->depth + 1;
+                // foreach( $this->parent->children as $child ){
+                //     if( $child->levelPosition( $this->depth ) >= $newIndex ){
+                //         $newIndex  = $child->levelPosition( $this->depth ) + 1;
+                //     }
+                // }
                 
                 $this->position[ $this->depth ] = $newIndex;
 
@@ -371,6 +375,8 @@ class Cauldron implements CauldronContentInterface
             return false;
         }
 
+        $this->position();
+
         if( $this->depth > $this->wc->cauldronDepth ){
             DataAccess::increaseDepth( $this->wc );
         }
@@ -560,10 +566,6 @@ class Cauldron implements CauldronContentInterface
 
     function addCauldron( Cauldron $cauldron ): bool
     {
-        if( $this->depth == $this->wc->cauldronDepth ){
-            DataAccess::increaseDepth( $this->wc );
-        }
-
         $cauldron->position = null;
         $cauldron->depth    = 0;
 
