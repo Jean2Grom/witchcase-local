@@ -31,7 +31,7 @@ class Website
     public $attributes;
     public $status;
     
-    public $debug;    
+    public bool $debug;    
     public $extensions;
     
     public $siteHeritages;
@@ -77,7 +77,7 @@ class Website
         $this->modules              = $this->wc->configuration->readSiteMergedVar('modules', $this) ?? [];
         $witchesConf                = $this->wc->configuration->readSiteMergedVar('witches', $this) ?? [];
         
-        $this->debug                = $this->wc->configuration->readSiteVar('debug', $this);
+        $this->debug                = (bool) $this->wc->configuration->readSiteVar('debug', $this);
         $this->status               = $this->wc->configuration->readSiteVar('status', $this);
         $defaultContext             = $this->wc->configuration->readSiteVar('defaultContext', $this);
         if( !empty($defaultContext) ){

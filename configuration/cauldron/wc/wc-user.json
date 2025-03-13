@@ -1,5 +1,6 @@
 {
     "name": "wc-user",
+    "class": "WC\\Cauldron\\UserCauldron",
     "composition": [
         {
             "mandatory": true,

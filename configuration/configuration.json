@@ -10,6 +10,7 @@
     },
     "cache": {
         "directory": "cache",
+        "createFolderRights": "755",
         "duration": 1,
         "durationUnit": "h",
         "folders": {
@@ -98,8 +99,8 @@
                     "craft": false
                 },
                 "children": {
-                    "depth": 1,
-                    "craft": false
+                    "depth": 2,
+                    "craft": 2
                 }
             },
             "user": {
@@ -109,6 +110,9 @@
         "recipes": {
             "allowed": "*",
             "forbidden": []
+        },
+        "storage": {
+            "files": "files"
         },
         "extensions": [
             "test"

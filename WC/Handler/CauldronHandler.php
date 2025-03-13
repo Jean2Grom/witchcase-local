@@ -53,7 +53,7 @@ class CauldronHandler
         
         foreach( $result as $row )
         {
-            $id                     = $row['id'];
+            $id                     = (int) $row['id'];
             $cauldronsList[ $id ]   = $cauldronsList[ $id ] ?? self::createFromData( $wc, $row );
             
             IngredientHandler::createFromDBRow( $cauldronsList[ $id ], $row );
