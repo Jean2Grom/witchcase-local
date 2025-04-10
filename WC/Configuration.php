@@ -10,11 +10,12 @@ use WC\Handler\RecipeHandler;
  */
 class Configuration 
 {
-    const WC_ENV_VAR_PREFIX = 'WC_';    
-    const DEFAULT_DIRECTORY = "configuration";
-    const CONFIG_FILE       = 'configuration.json';
-    const SITES_FILE        = 'sites.json';
-    const RECIPES_DIR       = "configuration/cauldron";
+    const WC_ENV_VAR_PREFIX         = 'WC_';    
+    const WC_ENV_VAR_FILE_SUFFIX    = '_FILE';    
+    const DEFAULT_DIRECTORY         = "configuration";
+    const CONFIG_FILE               = 'configuration.json';
+    const SITES_FILE                = 'sites.json';
+    const RECIPES_DIR               = "configuration/cauldron";
 
     const DEFAULT_STORAGE       = "files";
     const DEFAULT_DIR_RIGHTS    = "755";    // read/execute for all, write limited to self
@@ -38,7 +39,7 @@ class Configuration
      * @param string $configurationDirectory : path to configuration files directory
      * @param boolean $mandatory : if set to true, die process if configuration files not found
      */
-    function __construct( WitchCase $wc, string $configurationDirectory=null, bool $mandatory=true )
+    function __construct( WitchCase $wc, ?string $configurationDirectory=null, bool $mandatory=true )
     {
         $this->wc = $wc;
         
@@ -62,7 +63,16 @@ class Configuration
         $wcEnvVars = [];
         foreach( getenv() as $envVarName => $envVarValue ){
             if( str_starts_with($envVarName, self::WC_ENV_VAR_PREFIX) ){
-                $wcEnvVars['<'.$envVarName.'>'] = $envVarValue;
+                if( str_ends_with($envVarName, self::WC_ENV_VAR_FILE_SUFFIX) 
+                    && is_file($envVarValue) 
+                ){
+                    $wcEnvVars[
+                        '<'.substr($envVarName, 0, -strlen(self::WC_ENV_VAR_FILE_SUFFIX)).'>'
+                    ] = file_get_contents($envVarValue);
+                }
+                else {
+                    $wcEnvVars['<'.$envVarName.'>'] = $envVarValue;
+                }
             }
         }
         
