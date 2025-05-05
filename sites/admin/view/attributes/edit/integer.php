@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\IntegerAttribute $this */ ?>
+<?php /** @var WW\Attribute\IntegerAttribute $this */ ?>
 
 <input  type="number" 
         name="<?=$this->tableColumns['value']?>" 

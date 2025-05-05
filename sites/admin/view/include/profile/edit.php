@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */ ?>
+<?php /** @var WW\Module $this */ ?>
 
 <div class="box edit__profile" data-profile="<?=$profile->id?>">
    <form class="edit-profile-form" id="edit-profile-form-<?=$profile->id?>"  method="post" >
@@ -118,7 +118,7 @@
                         </button>
 
                         <a  style="display: none;"
-                            href="<?=$this->wc->website->getUrl("/view?id=") ?>"
+                            href="<?=$this->ww->website->getUrl("/view?id=") ?>"
                             class="policy-witch-display"
                             target="_blank">                            
                         </a>
@@ -255,7 +255,7 @@
                             </button>
                             
                             <a  <?=empty($policy->positionId)? 'style="display: none;"': '' ?>
-                                href="<?=$this->wc->website->getUrl("/view?id=".$policy->positionId) ?>"
+                                href="<?=$this->ww->website->getUrl("/view?id=".$policy->positionId) ?>"
                                 class="policy-witch-display"
                                 target="_blank">
                                 <?=!empty($policy->positionName)? $policy->positionName: '' ?>

@@ -1,27 +1,27 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-use WC\Structure;
-use WC\Attribute;
-use WC\Datatype\ExtendedDateTime;
-use WC\Tools;
+use WW\Structure;
+use WW\Attribute;
+use WW\Datatype\ExtendedDateTime;
+use WW\Tools;
 
-if( $this->wc->request->param("publishStructure") ){
+if( $this->ww->request->param("publishStructure") ){
     $action = "publishStructure";
 }
-elseif( $this->wc->request->param("deleteStructures") ){
+elseif( $this->ww->request->param("deleteStructures") ){
     $action = "deleteStructures";
 }
-elseif( $this->wc->request->param("view", 'get') ){
+elseif( $this->ww->request->param("view", 'get') ){
     $action = "viewStructure";
 }
-elseif( $this->wc->request->param("createStructure") 
-        || $this->wc->request->param("currentAction") === "creatingStructure"
+elseif( $this->ww->request->param("createStructure") 
+        || $this->ww->request->param("currentAction") === "creatingStructure"
 ){
     $action = "createStructure";
 }
-elseif( $this->wc->request->param("edit", 'get')
-        ||  $this->wc->request->param("deleteAttribute")
-        ||  $this->wc->request->param("addAttribute")
+elseif( $this->ww->request->param("edit", 'get')
+        ||  $this->ww->request->param("deleteAttribute")
+        ||  $this->ww->request->param("addAttribute")
 ){
     $action = "editStructure";
 }
@@ -32,9 +32,9 @@ else {
 $messages = [];
 if( $action === "publishStructure" )
 {
-    $structureName      = $this->wc->request->param("edit", 'get');
-    $structure          = new Structure( $this->wc,  $structureName );    
-    $attributesPost     = $this->wc->request->param("attributes", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+    $structureName      = $this->ww->request->param("edit", 'get');
+    $structure          = new Structure( $this->ww,  $structureName );    
+    $attributesPost     = $this->ww->request->param("attributes", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
     $attributesList     = Attribute::list();
     
     $attributes = [];
@@ -51,7 +51,7 @@ if( $action === "publishStructure" )
         $attributeName  = Tools::cleanupString($attributesPostData['name']);
         
         $attribute      = new $attributeClass(
-                                $this->wc,
+                                $this->ww,
                                 $attributeName,
                                 $parameters
                         );
@@ -73,12 +73,12 @@ if( $action === "publishStructure" )
 
 if( strcmp($action, "createStructure") == 0 )
 {
-    $structuresData = Structure::listStructures( $this->wc );
+    $structuresData = Structure::listStructures( $this->ww );
     
-    if( $this->wc->request->param("currentAction") === "creatingStructure" )
+    if( $this->ww->request->param("currentAction") === "creatingStructure" )
     {
         $nextStep = true;
-        $namePost = $this->wc->request->param("name");
+        $namePost = $this->ww->request->param("name");
         
         if( !$namePost )
         {
@@ -99,17 +99,17 @@ if( strcmp($action, "createStructure") == 0 )
         
         if( $nextStep )
         {
-            Structure::create($this->wc, $name);
+            Structure::create($this->ww, $name);
             
             $queryParams = [ "edit" => $name ];
             
-            $structureCopyPost = $this->wc->request->param("structureCopy");
+            $structureCopyPost = $this->ww->request->param("structureCopy");
             
             if( $structureCopyPost ){
                 $queryParams = [ "base" => $structureCopyPost ];
             }
             
-            header( 'Location: '.$this->witch->url($queryParams, $this->wc->website) );
+            header( 'Location: '.$this->witch->url($queryParams, $this->ww->website) );
             exit;
         }
     }
@@ -119,21 +119,21 @@ if( strcmp($action, "createStructure") == 0 )
 
 if( $action === "editStructure" )
 {
-    $structureName  = $this->wc->request->param("edit", 'get');
+    $structureName  = $this->ww->request->param("edit", 'get');
     
     // TODO Conf reading ?
     $attributesList = Attribute::list();
     
     $attributes = [];
-    if( $this->wc->request->param("currentAction") !== "editingStructure" )
+    if( $this->ww->request->param("currentAction") !== "editingStructure" )
     {
-        $baseStructure = $this->wc->request->param("base", 'get');
+        $baseStructure = $this->ww->request->param("base", 'get');
         
         if( $baseStructure ){
-            $structure = new Structure( $this->wc, $baseStructure );
+            $structure = new Structure( $this->ww, $baseStructure );
         }
         else {
-            $structure  = new Structure( $this->wc, $structureName );
+            $structure  = new Structure( $this->ww, $structureName );
         }
         
         foreach( $structure->attributes() as $attributeName => $attributeData ){
@@ -142,8 +142,8 @@ if( $action === "editStructure" )
     }
     else
     {
-        $deleteAttributePost    =   $this->wc->request->param("deleteAttribute", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
-        $attributesPost         =   $this->wc->request->param("attributes", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $deleteAttributePost    =   $this->ww->request->param("deleteAttribute", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $attributesPost         =   $this->ww->request->param("attributes", 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
         
         foreach( $attributesPost as $indice => $attributePostData ){
             if( !isset($deleteAttributePost[ $indice ]) )
@@ -162,9 +162,9 @@ if( $action === "editStructure" )
             }
         }
         
-        if( $this->wc->request->param("addAttribute") )
+        if( $this->ww->request->param("addAttribute") )
         {
-            $attributeType  = $this->wc->request->param("addAttributType");
+            $attributeType  = $this->ww->request->param("addAttributType");
             $attributeClass = $attributesList[ $attributeType ];
             
             $attributes[ "Nouvel Attribut ".$attributeType ] = [ 'class' => $attributeClass ];
@@ -178,8 +178,8 @@ if( $action === "editStructure" )
 
 if( $action === "viewStructure" )
 {
-    $structureName      = $this->wc->request->param('view');
-    $structure          = new Structure( $this->wc, $structureName );
+    $structureName      = $this->ww->request->param('view');
+    $structure          = new Structure( $this->ww, $structureName );
     
     $creationDateTime   = $structure->getLastModificationTime();
     $attributes         = $structure->attributes();
@@ -192,11 +192,11 @@ if( $action === "viewStructure" )
 
 if( $action === "deleteStructures" )
 {
-    $structureName = $this->wc->request->param("structure");
+    $structureName = $this->ww->request->param("structure");
     
     if( $structureName )
     {            
-        $structure = new Structure( $this->wc,  $structureName );
+        $structure = new Structure( $this->ww,  $structureName );
         
         if( !$structure->delete() ){
             $messages[] = "Deletion of ".$structureName." failed";
@@ -211,7 +211,7 @@ if( $action === "deleteStructures" )
 
 if( $action === "listStructures" )
 {
-    $structures = Structure::listStructures( $this->wc, true );
+    $structures = Structure::listStructures( $this->ww, true );
     $count      = count($structures);
     
     foreach( $structures as $key => $value )

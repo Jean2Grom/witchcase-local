@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute $this */ 
+<?php /** @var WW\Attribute $this */ 
 
 if( $this->content() ): ?>
     <a  <?php if( $this->content('external') ): ?>target="_blank"<?php endif; ?>

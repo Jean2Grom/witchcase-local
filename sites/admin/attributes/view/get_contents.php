@@ -1,9 +1,9 @@
 <?php
 
-//use WC\Localisation;
+//use WW\Localisation;
 
 if( $this->values['fk_localisation'] > 0){   
-    //$localisationCraft = new Localisation($this->module->wc, $this->values['fk_localisation']);
+    //$localisationCraft = new Localisation($this->module->ww, $this->values['fk_localisation']);
 }
 else {
     $localisationCraft = false;

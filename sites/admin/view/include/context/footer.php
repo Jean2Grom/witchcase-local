@@ -1,4 +1,4 @@
-<?php /** @var WC\Context $this */ ?>
+<?php /** @var WW\Context $this */ ?>
 
 Powered by
 <a  href="https://www.woodwiccan.com" 

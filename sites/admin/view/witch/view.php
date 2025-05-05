@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
 $this->addCssFile('view.css');
 $this->addCssFile('boxes.css');
@@ -25,7 +25,7 @@ $this->addContextArrayItems( 'tabs', [
 ]);
 ?>
 
-<?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
+<?php $this->include('alerts.php', ['alerts' => $this->ww->user->getAlerts()]); ?>
 
 <div><?php $this->include('witch/menu-info.php', [ 'witch' => $this->witch("target") ]); ?></div>
 <div><?php $this->include('witch/edit-menu-info.php', [ 'witch' => $this->witch("target") ]); ?></div>

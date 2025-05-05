@@ -1,6 +1,6 @@
 <?php 
 /**
- * @var WC\Witch $witch
+ * @var WW\Witch $witch
  * @var array $structuresList
  * @var bool $deletion
  */
@@ -12,7 +12,7 @@
             No craft
         </h3>
         <form method="post" 
-              action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
+              action="<?=$witch->ww->website->getUrl('edit?id='.$witch->id) ?>"
               id="witch-add-new-content">
             <select name="witch-content-structure" id="witch-content-structure">
                 <option value="">
@@ -90,7 +90,7 @@
                     Remove
                 <?php endif;?>
             </button>
-            <?php if( $witch->craft()->structure->type === WC\Craft\Content::TYPE ): ?>
+            <?php if( $witch->craft()->structure->type === WW\Craft\Content::TYPE ): ?>
                 <button class="trigger-action"
                         data-confirm="Are you sure to archive this content ?"
                         data-action="archive-craft"
@@ -100,7 +100,7 @@
                 </button>
             <?php endif; ?>
             <button class="trigger-href" 
-                    data-href="<?=$witch->wc->website->getUrl("edit-content?id=".$witch->id) ?>"
+                    data-href="<?=$witch->ww->website->getUrl("edit-content?id=".$witch->id) ?>"
                     id="content__edit">
                 <i class="fa fa-pencil"></i>
                 Edit
@@ -110,5 +110,5 @@
 </div>
 
 <form method="post" 
-      action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
+      action="<?=$witch->ww->website->getUrl('edit?id='.$witch->id) ?>"
       id="view-craft-action"></form>

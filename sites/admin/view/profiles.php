@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
 $this->addCssFile('boxes.css');
 $this->addJsFile('triggers.js');

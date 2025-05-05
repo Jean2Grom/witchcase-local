@@ -1,10 +1,10 @@
 <?php 
 /** 
- * @var WC\Cauldron $this 
+ * @var WW\Cauldron $this 
  * @var string $input 
  */
 
-$this->wc->website->context->addJsFile('cauldron/file-edit.js');
+$this->ww->website->context->addJsFile('cauldron/file-edit.js');
 ?>
 <div>
     <legend>Filename</legend>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<?php /** @var WC\Context $this */ 
+<?php /** @var WW\Context $this */ 
 
 $this->addCssFile('base.css');
 $this->addCssFile('basic.css');

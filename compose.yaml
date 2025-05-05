@@ -36,16 +36,16 @@ services:
     ports:
       - 9990:80
     volumes:
-      - ./WC:/var/www/html/WC
+      - ./WW:/var/www/html/WW
       - ./sites:/var/www/html/sites
       - ./configuration:/var/www/html/configuration
       - ww-vendor:/var/www/html/vendor
 
     environment:
-      WC_DB_SERVER: db
-      WC_DB_NAME: woodwiccan
-      WC_DB_USER: woodwiccan
-      WC_DB_PWD_FILE: /run/secrets/db-user-password
+      WW_DB_SERVER: db
+      WW_DB_NAME: woodwiccan
+      WW_DB_USER: woodwiccan
+      WW_DB_PWD_FILE: /run/secrets/db-user-password
     secrets:
       - db-root-password
       - db-user-password

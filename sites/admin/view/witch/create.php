@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
 $this->addCssFile('boxes.css');
 $this->addJsFile('triggers.js');
@@ -12,7 +12,7 @@ $this->addContextArrayItems( 'tabs', [
 ]);
 ?>
 
-<?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
+<?php $this->include('alerts.php', ['alerts' => $this->ww->user->getAlerts()]); ?>
 
 <h2 title="<?=$this->witch->data ?>">
     <?=$this->witch("target")->name ?>
@@ -131,7 +131,7 @@ $this->addContextArrayItems( 'tabs', [
                     <option value="">
                         No cauldron creation
                     </option>
-                    <?php foreach( $this->wc->configuration->recipes() as $recipe ): ?>
+                    <?php foreach( $this->ww->configuration->recipes() as $recipe ): ?>
                         <option value="<?=$recipe->name?>">
                             <?=$recipe->name?>
                         </option>
@@ -163,7 +163,7 @@ $this->addContextArrayItems( 'tabs', [
     </button>
     
     <button class="trigger-href" 
-            data-href="<?=$this->wc->website->getUrl("view?id=".$this->witch("target")->id)?>">
+            data-href="<?=$this->ww->website->getUrl("view?id=".$this->witch("target")->id)?>">
         <i class="fa fa-times"></i>
         Cancel
     </button>

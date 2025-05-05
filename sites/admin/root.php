@@ -1,20 +1,20 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
 $possibleActionsList = [
     'edit-data',
     'edit-priorities',
 ];
 
-$action = $this->wc->request->param('action');
+$action = $this->ww->request->param('action');
 if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$alerts = $this->wc->user->getAlerts();
+$alerts = $this->ww->user->getAlerts();
 switch( $action )
 {
     case 'edit-data':
-        $data = $this->wc->request->param('data');
+        $data = $this->ww->request->param('data');
         if( $data == $this->witch->data ){
             $alerts[] = [
                 'level'     =>  'warning',
@@ -36,7 +36,7 @@ switch( $action )
     break;
     
     case 'edit-priorities':
-        $priorities =  $this->wc->request->param('priorities', 'post',FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
+        $priorities =  $this->ww->request->param('priorities', 'post',FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
         
         $errors     = [];
         $success    = [];
@@ -109,6 +109,6 @@ $subTree = [
     'data'  =>  $this->getDaughters(),
 ];
 
-$createElementHref = $this->wc->website->getUrl("create?mother=".$this->witch->id);
+$createElementHref = $this->ww->website->getUrl("create?mother=".$this->witch->id);
 
 $this->view();

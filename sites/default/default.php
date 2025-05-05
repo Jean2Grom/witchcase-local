@@ -1,3 +1,3 @@
-<?php /** @var WC\Module $this */ 
+<?php /** @var WW\Module $this */ 
 
 $this->view();

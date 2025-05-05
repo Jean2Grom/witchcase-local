@@ -1,6 +1,6 @@
 <?php 
 /**
- * @var WC\Witch $witch
+ * @var WW\Witch $witch
  */
 ?>
 <div class="view__witch-menu-info">

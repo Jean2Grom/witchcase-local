@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\LinkAttribute $this */ ?>
+<?php /** @var WW\Attribute\LinkAttribute $this */ ?>
 
 <h2>URL</h2>
 <p>

@@ -1,6 +1,6 @@
 <?php 
 /**
- * @var WC\Witch $witch
+ * @var WW\Witch $witch
  * @var ?string $imgSrc
  */
 ?>
@@ -64,7 +64,7 @@
                 <td class="label">Direct Access</td>
                 <td class="value">
                     <a  target="_blank" 
-                        href="<?=$witch->url(null, (new WC\Website($witch->wc, $witch->site) )) ?? "" ?>">
+                        href="<?=$witch->url(null, (new WW\Website($witch->ww, $witch->site) )) ?? "" ?>">
                         <i class="fas fa-hand-sparkles" aria-hidden="true"></i>
                     </a>
                 </td>
@@ -90,6 +90,6 @@
 </div>
 
 <form method="post" 
-      action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
+      action="<?=$witch->ww->website->getUrl('edit?id='.$witch->id) ?>"
       id="view-info-action"></form>
 

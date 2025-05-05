@@ -1,6 +1,6 @@
 <?php 
 /** 
- * @var WC\Cauldron\Ingredient\IntegerIngredient $this 
+ * @var WW\Cauldron\Ingredient\IntegerIngredient $this 
  * @var string $input 
  */
 ?>

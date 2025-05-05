@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\ImageAttribute $this */ ?>
+<?php /** @var WW\Attribute\ImageAttribute $this */ ?>
 
 <?php if( $srcFile ): ?>
     <p>

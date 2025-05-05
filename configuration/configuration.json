@@ -1,10 +1,10 @@
 {
     "database": {
         "driver": "mysql",
-        "server": "<WC_DB_SERVER>",
-        "database": "<WC_DB_NAME>",
-        "user": "<WC_DB_USER>",
-        "password": "<WC_DB_PWD>",
+        "server": "<WW_DB_SERVER>",
+        "database": "<WW_DB_NAME>",
+        "user": "<WW_DB_USER>",
+        "password": "<WW_DB_PWD>",
         "port": "",
         "charset": "utf8mb4"
     },

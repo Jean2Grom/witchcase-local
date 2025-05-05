@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
 $possibleActionsList = [
     'save',
@@ -7,29 +7,29 @@ $possibleActionsList = [
     'delete',
 ];
 
-$action = $this->wc->request->param('action');
+$action = $this->ww->request->param('action');
 if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
 if( !$this->witch("target") )
 {
-    $this->wc->user->addAlert([
+    $this->ww->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Craft not found"
     ]);
-    header( 'Location: '.$this->wc->website->getFullUrl() );
+    header( 'Location: '.$this->ww->website->getFullUrl() );
     exit();
 }
 
 $craft      = $this->witch("target")->craft() ?? false;
 if( !$craft )
 {
-    $this->wc->user->addAlert([
+    $this->ww->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Craft not found"
     ]);
-    header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
+    header( 'Location: '.$this->ww->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
     exit();
 }
 
@@ -37,7 +37,7 @@ if( !$craft )
 $draft = $craft->getDraft();
 
 if( empty($draft) ){
-    $this->wc->user->addAlert([
+    $this->ww->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Draft can't be read"
     ]);
@@ -56,7 +56,7 @@ switch( $action )
         $params = [];
         foreach( $draft->getEditParams() as $param )
         {
-            $value = $this->wc->request->param($param['name'] ?? $param, 'post', $param['filter'] ??  FILTER_DEFAULT, $param['option'] ??  0 );                
+            $value = $this->ww->request->param($param['name'] ?? $param, 'post', $param['filter'] ??  FILTER_DEFAULT, $param['option'] ??  0 );                
             
             if( isset($value) ){
                 $params[ $param['name'] ?? $param ] = $value;
@@ -67,14 +67,14 @@ switch( $action )
 
         if( $saved === false )
         {
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, update canceled"
             ]);
             $return = false;
         }
         elseif( $saved === 0 && !$publish ){
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'warning',
                 'message'   =>  "No update"
             ]);
@@ -83,7 +83,7 @@ switch( $action )
         {
             if( $draft->publish() === false )
             {
-                $this->wc->user->addAlert([
+                $this->ww->user->addAlert([
                     'level'     =>  'error',
                     'message'   =>  "Error, publication canceled"
                 ]);
@@ -91,14 +91,14 @@ switch( $action )
                 $return = false;
             }
             else {
-                $this->wc->user->addAlert([
+                $this->ww->user->addAlert([
                     'level'     =>  'success',
                     'message'   =>  "Published"
                 ]);                
             }
         }
         else {
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'success',
                 'message'   =>  "Updated"
             ]);
@@ -106,30 +106,30 @@ switch( $action )
         
         if( $return )
         {
-            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
+            header( 'Location: '.$this->ww->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
             exit();
         }
     break;
     
     case 'delete':
         if( !$draft->remove() ){
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, remove canceled",
             ]);
         }
         else 
         {
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'success',
                 'message'   =>  "Draft removed"
             ]);            
-            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
+            header( 'Location: '.$this->ww->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
             exit();
         }
     break;    
 }
 
-$cancelHref = $this->wc->website->getUrl("view?id=".$this->witch("target")->id);
+$cancelHref = $this->ww->website->getUrl("view?id=".$this->witch("target")->id);
 
 $this->view();

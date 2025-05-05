@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
 $this->addCssFile('boxes.css');
 $this->addJsFile('triggers.js');
@@ -39,7 +39,7 @@ $this->addJsFile('root.js');
                     <?php foreach( $subTree['data'] as $daughter ): ?>
                         <tr>
                             <td>
-                                <a href="<?=$this->wc->website->baseUri."/view?id=".$daughter->id ?>">
+                                <a href="<?=$this->ww->website->baseUri."/view?id=".$daughter->id ?>">
                                     <?=$daughter->name ?>
                                 </a>
                             </td>

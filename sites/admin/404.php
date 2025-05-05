@@ -1,6 +1,6 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-if( $this->wc->user->connexion ){
+if( $this->ww->user->connexion ){
     $this->setContext('standard');
 }
 

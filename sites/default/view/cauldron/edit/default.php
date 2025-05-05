@@ -1,4 +1,4 @@
-<?php /** @var WC\Cauldron $this */ ?>
+<?php /** @var WW\Cauldron $this */ ?>
 
 <ul>
     <?php foreach( $this->contents() as $content ): ?>

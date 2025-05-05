@@ -1,4 +1,4 @@
-<?php /** @var WC\Context $this */ ?>
+<?php /** @var WW\Context $this */ ?>
 
 <link   <?php foreach( $attributes as $name => $value ): ?>
             <?=$name.'="'.addcslashes( $value, '"' ).'"'?>

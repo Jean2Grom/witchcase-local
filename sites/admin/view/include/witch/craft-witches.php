@@ -1,7 +1,7 @@
 <?php 
 /**
- * @var WC\Witch $witch
- * @var WC\Witch[] $craftWitches
+ * @var WW\Witch $witch
+ * @var WW\Witch[] $craftWitches
  */
 
 if( $witch->craft() ): ?>
@@ -27,7 +27,7 @@ if( $witch->craft() ): ?>
                 </thead>
                 <tbody>
                     <form method="post" 
-                          action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
+                          action="<?=$witch->ww->website->getUrl('edit?id='.$witch->id) ?>"
                           id="view-craft-witches-action">
                         <?php foreach( $craftWitches as $craftPositionWitch ): ?>
                             <tr>
@@ -57,7 +57,7 @@ if( $witch->craft() ): ?>
                                     <?php endforeach; ?>
                                 </td>
                                 <td>
-                                    <a href="<?=$witch->wc->website->getUrl("view?id=".$craftPositionWitch->id."#tab-craft-part") ?>">
+                                    <a href="<?=$witch->ww->website->getUrl("view?id=".$craftPositionWitch->id."#tab-craft-part") ?>">
                                         <?=$craftPositionWitch->name ?>
                                         <em><?=$craftPositionWitch->id == $witch->id? "(this witch)": '' ?></em>
                                     </a>

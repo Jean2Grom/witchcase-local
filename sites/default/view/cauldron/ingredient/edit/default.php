@@ -1,10 +1,10 @@
 <?php 
 /** 
- * @var WC\Cauldron\Ingredient $this 
+ * @var WW\Cauldron\Ingredient $this 
  * @var ?string $input 
  */
 
-use WC\Tools;
+use WW\Tools;
 
 $input = $input ?? $this->type.'['.Tools::cleanupString( $this->name ).']'; 
 ?>

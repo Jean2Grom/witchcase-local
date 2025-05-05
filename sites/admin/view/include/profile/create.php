@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */ ?>
+<?php /** @var WW\Module $this */ ?>
 
 <div class="box create__profile">
    <form id="create-profile-form" method="post" >
@@ -109,7 +109,7 @@
                         </button>
 
                         <a  style="display: none;"
-                            href="<?=$this->wc->website->getUrl("/view?id=") ?>"
+                            href="<?=$this->ww->website->getUrl("/view?id=") ?>"
                             class="policy-witch-display"
                             target="_blank">                            
                         </a>

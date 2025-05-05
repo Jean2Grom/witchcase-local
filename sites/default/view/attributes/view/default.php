@@ -1,7 +1,7 @@
-<?php /** @var WC\Attribute $this */ 
+<?php /** @var WW\Attribute $this */ 
 
 if( count($this->values) > 1 ){
-    $this->wc->dump($this->values);
+    $this->ww->dump($this->values);
 }
 else {
     echo $this->content();

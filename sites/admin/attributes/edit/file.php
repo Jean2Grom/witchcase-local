@@ -1,8 +1,8 @@
-<?php /** @var WC\Attribute\FileAttribute $this */ 
+<?php /** @var WW\Attribute\FileAttribute $this */ 
 
-$this->wc->website->context->addJsFile('attribute/file-edit.js');
-$this->wc->website->context->addCssFile('attribute/file-edit.css');
+$this->ww->website->context->addJsFile('attribute/file-edit.js');
+$this->ww->website->context->addCssFile('attribute/file-edit.css');
 
 $srcFile = $this->getFile(); 
 
-include $this->wc->website->getFilePath( self::VIEW_DIR."/edit/file.php");
+include $this->ww->website->getFilePath( self::VIEW_DIR."/edit/file.php");

@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\ConnexionAttribute $this */ ?>
+<?php /** @var WW\Attribute\ConnexionAttribute $this */ ?>
 
 <input  type="hidden"
         name="<?=$this->tableColumns['id']?>"

@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */ ?>
+<?php /** @var WW\Module $this */ ?>
 
 <div class="box view__profile" data-profile="<?=$profile->id?>">
     <h3>
@@ -27,7 +27,7 @@
                     </td>
                     <td>
                         <?php if( !empty($policy->positionId) ): ?>
-                            <a href="<?=$this->wc->website->getUrl("/view?id=".$policy->positionId) ?>"
+                            <a href="<?=$this->ww->website->getUrl("/view?id=".$policy->positionId) ?>"
                                target="_blank">
                                 <?=$policy->positionName ?? $policy->positionId ?>
                             </a>

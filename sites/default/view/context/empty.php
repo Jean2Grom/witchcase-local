@@ -1,3 +1,3 @@
-<?php /** @var WC\Context $this */ ?>
+<?php /** @var WW\Context $this */ ?>
 
 <?=$this->witch()->result() ?>

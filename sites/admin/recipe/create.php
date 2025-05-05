@@ -1,20 +1,20 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-use WC\Handler\RecipeHandler;
-use WC\Cauldron\Ingredient;
+use WW\Handler\RecipeHandler;
+use WW\Cauldron\Ingredient;
 
 $possibleActionsList = [
     'publish',
 ];
 
-$action = $this->wc->request->param('action');
+$action = $this->ww->request->param('action');
 if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$recipe      = RecipeHandler::createFromData($this->wc, []);
+$recipe      = RecipeHandler::createFromData($this->ww, []);
 
-$recipes     = $this->wc->configuration->recipes();
+$recipes     = $this->ww->configuration->recipes();
 $ingredients    = Ingredient::list();
 
 $possibleTypes = [];
@@ -31,15 +31,15 @@ switch( $action )
 {
     case 'publish':
 
-        if( empty($this->wc->request->param("name")) ){
-            $this->wc->user->addAlert([
+        if( empty($this->ww->request->param("name")) ){
+            $this->ww->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Recipe must have a name"
            ]);        
         }
         else 
         {
-            $inputs = $this->wc->request->inputs();
+            $inputs = $this->ww->request->inputs();
 
             $composition = [];
             foreach( array_keys($inputs) as $inputName ){
@@ -59,23 +59,23 @@ switch( $action )
                 }
             }
 
-            $recipe->name        = $this->wc->request->param("name");
+            $recipe->name        = $this->ww->request->param("name");
             $recipe->require     = getRequire( $inputs, $globalRequireInputPrefix );
             $recipe->composition = $composition;
 
-            if( !$recipe->save($this->wc->request->param("file")) ){
-                $this->wc->user->addAlert([
+            if( !$recipe->save($this->ww->request->param("file")) ){
+                $this->ww->user->addAlert([
                     'level'     =>  'error',
                     'message'   =>  "Recipe creation failed"
                ]);    
             }
             else 
             {
-                $this->wc->user->addAlert([
+                $this->ww->user->addAlert([
                     'level'     =>  'success',
                     'message'   =>  "Recipe \"".$recipe->name."\" created"
                ]);
-               header( 'Location: '.$this->wc->website->getFullUrl('recipe/edit', ['recipe' => $recipe->name]) );
+               header( 'Location: '.$this->ww->website->getFullUrl('recipe/edit', ['recipe' => $recipe->name]) );
                exit();
             }
         }

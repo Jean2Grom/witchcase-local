@@ -1,35 +1,35 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-use WC\Tools;
+use WW\Tools;
 
 if( !$this->witch("target") )
 {
-    $this->wc->user->addAlert([
+    $this->ww->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Cauldron Witch not found"
     ]);
 
-    header( 'Location: '.$this->wc->website->getFullUrl() );
+    header( 'Location: '.$this->ww->website->getFullUrl() );
     exit();
 }
 elseif( !$this->witch("target")->cauldron() )
 {
-    $this->wc->user->addAlert([
+    $this->ww->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Cauldron not found"
     ]);
     
-    header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$this->witch("target")->id) );
+    header( 'Location: '.$this->ww->website->getFullUrl('view?id='.$this->witch("target")->id) );
     exit();
 }
 elseif( !$this->witch("target")->cauldron()->draft() )
 {
-    $this->wc->user->addAlert([
+    $this->ww->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Draft can't be read"
     ]);
     
-    header( 'Location: '.$this->wc->website->getFullUrl('view?id='.$this->witch("target")->id) );
+    header( 'Location: '.$this->ww->website->getFullUrl('view?id='.$this->witch("target")->id) );
     exit();
 }
 
@@ -39,7 +39,7 @@ $cauldron       = $this->witch("target")->cauldron();
 $return         = false;
 
 switch( Tools::filterAction( 
-    $this->wc->request->param('action'),
+    $this->ww->request->param('action'),
     [
         'save',
         'save-and-return',
@@ -49,7 +49,7 @@ switch( Tools::filterAction(
 ) ){
     case 'publish':
         if( $cauldron->draft()->readInputs()->publish() === false ){
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, publication canceled"
             ]);
@@ -57,7 +57,7 @@ switch( Tools::filterAction(
         else 
         {
             $return = true;
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'success',
                 'message'   =>  "Published"
             ]);
@@ -72,19 +72,19 @@ switch( Tools::filterAction(
         if( $saved === false )
         {
             $return = false;
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, update canceled"
             ]);
         }
         elseif( $saved === 0 ){
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'warning',
                 'message'   =>  "No update"
             ]);
         }
         else {
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'success',
                 'message'   =>  "Draft Updated"
             ]);
@@ -93,7 +93,7 @@ switch( Tools::filterAction(
     
     case 'delete':
         if( !$cauldron->draft()->delete() ){
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Error, remove canceled",
             ]);
@@ -101,7 +101,7 @@ switch( Tools::filterAction(
         else 
         {
             $return     = true;
-            $this->wc->user->addAlert([
+            $this->ww->user->addAlert([
                 'level'     =>  'success',
                 'message'   =>  "Draft removed"
             ]);
@@ -111,7 +111,7 @@ switch( Tools::filterAction(
 
 if( $return )
 {
-    header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
+    header( 'Location: '.$this->ww->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]) );
     exit();
 }
 

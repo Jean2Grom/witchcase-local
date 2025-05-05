@@ -1,11 +1,11 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-use WC\DataAccess\RecipeDataAccess;
+use WW\DataAccess\RecipeDataAccess;
 
-$recipes = $this->wc->configuration->recipes();
+$recipes = $this->ww->configuration->recipes();
 
 $recipeArray = RecipeDataAccess::readUsage(
-    $this->wc, 
+    $this->ww, 
     array_keys($recipes)
 );
 

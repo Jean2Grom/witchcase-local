@@ -1,12 +1,12 @@
 <?php 
 /**
- * @var WC\Website[] $websitesList
- * @var WC\Witch $witch
+ * @var WW\Website[] $websitesList
+ * @var WW\Witch $witch
  */
 ?>
 <div class="box edit__witch-info">
     <form   method="post"
-            action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
+            action="<?=$witch->ww->website->getUrl('edit?id='.$witch->id) ?>"
             id="edit-witch-info">
         <h3 class="box-info">
             <?php if( $imgSrc ): ?>
@@ -41,7 +41,7 @@
             <select name="witch-status[no-site-selected]" 
                     id="witch-status-"  
                     data-init="<?=$witch->statusLevel ?>">
-                <?php foreach(  $witch->wc->configuration->read( "global", "status" ) as $statusKey => $statusLabel ): ?>
+                <?php foreach(  $witch->ww->configuration->read( "global", "status" ) as $statusKey => $statusLabel ): ?>
                     <option <?=($witch->statusLevel === $statusKey)? 'selected': '' ?>
                             value="<?=$statusKey ?>"><?=$statusLabel ?></option>
                 <?php endforeach; ?>

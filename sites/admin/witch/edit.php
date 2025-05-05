@@ -1,8 +1,8 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-use WC\Handler\WitchHandler;
-use WC\Structure;
-use WC\Craft\Draft;
+use WW\Handler\WitchHandler;
+use WW\Structure;
+use WW\Craft\Draft;
 
 $possibleActionsList = [
     'copy-witch',
@@ -23,7 +23,7 @@ $possibleActionsList = [
     
 ];
 
-$action = $this->wc->request->param('action');
+$action = $this->ww->request->param('action');
 if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
@@ -36,8 +36,8 @@ if( !$this->witch("target") )
         'message'   =>  "Undefined Target Witch"
     ];
     
-    $this->wc->user->addAlerts($alerts);
-    header( 'Location: '.$this->wc->website->getFullUrl() );
+    $this->ww->user->addAlerts($alerts);
+    header( 'Location: '.$this->ww->website->getFullUrl() );
     exit();
 }
 
@@ -45,8 +45,8 @@ $urlHash = "";
 switch( $action )
 {
     case 'copy-witch':
-        $originWitchId      = $this->wc->request->param('origin-witch', 'post', FILTER_VALIDATE_INT);
-        $destinationWitchId = $this->wc->request->param('destination-witch', 'post', FILTER_VALIDATE_INT);
+        $originWitchId      = $this->ww->request->param('origin-witch', 'post', FILTER_VALIDATE_INT);
+        $destinationWitchId = $this->ww->request->param('destination-witch', 'post', FILTER_VALIDATE_INT);
         if( !$originWitchId || !$destinationWitchId )
         {
             $alerts[] = [
@@ -56,8 +56,8 @@ switch( $action )
             break;
         }
         
-        $originWitch        = WitchHandler::fetch( $this->wc, $originWitchId );
-        $destinationWitch   = WitchHandler::fetch( $this->wc, $destinationWitchId );        
+        $originWitch        = WitchHandler::fetch( $this->ww, $originWitchId );
+        $destinationWitch   = WitchHandler::fetch( $this->ww, $destinationWitchId );        
         if( !$originWitch || !$destinationWitch )
         {
             $alerts[] = [
@@ -81,14 +81,14 @@ switch( $action )
             'message'   =>  "Witch was copied"
         ];
         
-        $this->wc->user->addAlerts($alerts);        
-        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $destinationWitch->id ]) );
+        $this->ww->user->addAlerts($alerts);        
+        header( 'Location: '.$this->ww->website->getFullUrl('view', [ 'id' => $destinationWitch->id ]) );
         exit();    
     break;    
     
     case 'move-witch':
-        $originWitchId      = $this->wc->request->param('origin-witch', 'post', FILTER_VALIDATE_INT);
-        $destinationWitchId = $this->wc->request->param('destination-witch', 'post', FILTER_VALIDATE_INT);
+        $originWitchId      = $this->ww->request->param('origin-witch', 'post', FILTER_VALIDATE_INT);
+        $destinationWitchId = $this->ww->request->param('destination-witch', 'post', FILTER_VALIDATE_INT);
         if( !$originWitchId || !$destinationWitchId )
         {
             $alerts[] = [
@@ -98,8 +98,8 @@ switch( $action )
             break;
         }
         
-        $originWitch        = WitchHandler::fetch( $this->wc, $originWitchId );
-        $destinationWitch   = WitchHandler::fetch( $this->wc, $destinationWitchId );        
+        $originWitch        = WitchHandler::fetch( $this->ww, $originWitchId );
+        $destinationWitch   = WitchHandler::fetch( $this->ww, $destinationWitchId );        
         if( !$originWitch || !$destinationWitch )
         {
             $alerts[] = [
@@ -123,13 +123,13 @@ switch( $action )
             'message'   =>  "Witch was moved"
         ];
         
-        $this->wc->user->addAlerts($alerts);
-        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $destinationWitch->id ]) );
+        $this->ww->user->addAlerts($alerts);
+        header( 'Location: '.$this->ww->website->getFullUrl('view', [ 'id' => $destinationWitch->id ]) );
         exit();    
     break;
     
     case 'edit-priorities':
-        $priorities = $this->wc->request->param('priorities', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY) ?? [];
+        $priorities = $this->ww->request->param('priorities', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY) ?? [];
         
         $errors     = [];
         $success    = [];
@@ -170,9 +170,9 @@ switch( $action )
     
     case 'create-new-witch':
         $newWitchData   = [
-            'name'      =>  trim($this->wc->request->param('new-witch-name') ?? ""),
-            'data'      =>  trim($this->wc->request->param('new-witch-data') ?? ""),
-            'priority'  =>  $this->wc->request->param('new-witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
+            'name'      =>  trim($this->ww->request->param('new-witch-name') ?? ""),
+            'data'      =>  trim($this->ww->request->param('new-witch-data') ?? ""),
+            'priority'  =>  $this->ww->request->param('new-witch-priority', 'POST', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? 0,
         ];
         
         if( $newWitchData['name'] === "" )
@@ -200,8 +200,8 @@ switch( $action )
             'message'   =>  "New witch created"
         ];
         
-        $this->wc->user->addAlerts($alerts);
-        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitch->id ]) );
+        $this->ww->user->addAlerts($alerts);
+        header( 'Location: '.$this->ww->website->getFullUrl('view', [ 'id' => $newWitch->id ]) );
         exit();
     break;    
     
@@ -213,8 +213,8 @@ switch( $action )
                 'message'   =>  "Witch removed"
             ];
 
-            $this->wc->user->addAlerts( $alerts );
-            header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->mother()->id ]) );
+            $this->ww->user->addAlerts( $alerts );
+            header( 'Location: '.$this->ww->website->getFullUrl('view', [ 'id' => $this->witch("target")->mother()->id ]) );
             exit();
         }
         
@@ -226,8 +226,8 @@ switch( $action )
     
     case 'save-witch-menu-info':        
         $witchNewData   = [
-            'name'      =>  trim($this->wc->request->param('witch-name') ?? ""),
-            'data'      =>  trim($this->wc->request->param('witch-data') ?? ""),
+            'name'      =>  trim($this->ww->request->param('witch-name') ?? ""),
+            'data'      =>  trim($this->ww->request->param('witch-data') ?? ""),
         ];
         
         if( $witchNewData['name'] === "" ){
@@ -260,12 +260,12 @@ switch( $action )
             'context'   => null,
         ];
 
-        $site       = trim($this->wc->request->param('witch-site') ?? "");        
+        $site       = trim($this->ww->request->param('witch-site') ?? "");        
         if( !empty($site) ){
             $witchNewData['site'] = $site;
         }
         
-        $statusArray = $this->wc->request->param('witch-status', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
+        $statusArray = $this->ww->request->param('witch-status', 'post', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
         if( $statusArray )
         {
             if( empty($site) && !empty($statusArray[ 'no-site-selected' ]) ){
@@ -279,21 +279,21 @@ switch( $action )
         
         if( !empty($site) )
         {
-            $invokeArray = $this->wc->request->param('witch-invoke', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+            $invokeArray = $this->ww->request->param('witch-invoke', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
             if( $invokeArray && !empty($invokeArray[ $site ]) ){
                 $witchNewData['invoke'] = $invokeArray[ $site ];
             }
             
             if( !empty($witchNewData['invoke']) )
             {
-                $contextArray = $this->wc->request->param('witch-context', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+                $contextArray = $this->ww->request->param('witch-context', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
                 if( $contextArray && !empty($contextArray[ $site ]) ){
                     $witchNewData['context'] = $contextArray[ $site ];
                 }
 
-                $autoUrl        = $this->wc->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-                $customFullUrl  = $this->wc->request->param('witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-                $customUrl      = $this->wc->request->param('witch-url');
+                $autoUrl        = $this->ww->request->param('witch-automatic-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+                $customFullUrl  = $this->ww->request->param('witch-full-url', 'POST', FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+                $customUrl      = $this->ww->request->param('witch-url');
 
                 if( !$autoUrl )
                 {
@@ -343,11 +343,11 @@ switch( $action )
     case 'create-craft':
         $urlHash = "#tab-craft-part";
         
-        $structure          = $this->wc->request->param('witch-content-structure');
+        $structure          = $this->ww->request->param('witch-content-structure');
         $isValidStructure   = false;
         
         if( !empty($structure) ){
-            foreach( Structure::listStructures( $this->wc ) as $structuresData ){
+            foreach( Structure::listStructures( $this->ww ) as $structuresData ){
                 if( $structuresData['name'] == $structure )
                 {
                     $isValidStructure = true;
@@ -357,7 +357,7 @@ switch( $action )
         }
         
         if( !$isValidStructure 
-            || !$this->witch("target")->addStructure(new Structure( $this->wc, $structure, Draft::TYPE )) 
+            || !$this->witch("target")->addStructure(new Structure( $this->ww, $structure, Draft::TYPE )) 
         ){
             $alerts[] = [
                 'level'     =>  'error',
@@ -366,7 +366,7 @@ switch( $action )
             break;
         }
         
-        header( 'Location: '.$this->wc->website->getFullUrl('edit-content', [ 'id' => $this->witch("target")->id ]) );
+        header( 'Location: '.$this->ww->website->getFullUrl('edit-content', [ 'id' => $this->witch("target")->id ]) );
         exit();
     break;
     
@@ -382,7 +382,7 @@ switch( $action )
             break;
         }
         
-        $id = $this->wc->request->param('imported-craft-witch', 'post', FILTER_VALIDATE_INT);
+        $id = $this->ww->request->param('imported-craft-witch', 'post', FILTER_VALIDATE_INT);
         if( !$id )
         {
             $alerts[] = [
@@ -392,7 +392,7 @@ switch( $action )
             break;
         }
         
-        $importCraftWitch = WitchHandler::fetch( $this->wc, $id );
+        $importCraftWitch = WitchHandler::fetch( $this->ww, $id );
         if( !$importCraftWitch || !$importCraftWitch->hasCraft() )
         {
             $alerts[] = [
@@ -471,7 +471,7 @@ switch( $action )
             break;
         }
         
-        $id = $this->wc->request->param('new-mother-witch-id', 'post', FILTER_VALIDATE_INT);
+        $id = $this->ww->request->param('new-mother-witch-id', 'post', FILTER_VALIDATE_INT);
         if( !$id )
         {
             $alerts[] = [
@@ -481,7 +481,7 @@ switch( $action )
             break;
         }
         
-        $motherWitch = WitchHandler::fetch( $this->wc, $id );
+        $motherWitch = WitchHandler::fetch( $this->ww, $id );
         if( !$motherWitch )
         {
             $alerts[] = [
@@ -516,8 +516,8 @@ switch( $action )
             'message'   =>  "New craft position's witch created"
         ];
         
-        $this->wc->user->addAlerts($alerts);
-        header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $newWitch->id ]).$urlHash );
+        $this->ww->user->addAlerts($alerts);
+        header( 'Location: '.$this->ww->website->getFullUrl('view', [ 'id' => $newWitch->id ]).$urlHash );
         exit();
     break;
     
@@ -535,7 +535,7 @@ switch( $action )
         
         $craftWitches = $this->witch("target")->craft()->getWitches();
         
-        $id = $this->wc->request->param('main', 'post', FILTER_VALIDATE_INT);
+        $id = $this->ww->request->param('main', 'post', FILTER_VALIDATE_INT);
         if( !$id || !in_array($id, array_keys($craftWitches)) )
         {
             $alerts[] = [
@@ -556,6 +556,6 @@ switch( $action )
     break;    
 }
 
-$this->wc->user->addAlerts($alerts);
-header( 'Location: '.$this->wc->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]).$urlHash );
+$this->ww->user->addAlerts($alerts);
+header( 'Location: '.$this->ww->website->getFullUrl('view', [ 'id' => $this->witch("target")->id ]).$urlHash );
 exit();

@@ -1,7 +1,7 @@
 <?php 
 /**
- * @var WC\Module $this
- * @var WC\Cauldron\Recipe $recipe
+ * @var WW\Module $this
+ * @var WW\Cauldron\Recipe $recipe
  * @var array $possibleTypes
  */
 
@@ -14,7 +14,7 @@ $this->addJsFile('triggers.js');
 </h1>
 <p><em><?=$this->witch->data?></em></p>
     
-<?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
+<?php $this->include('alerts.php', ['alerts' => $this->ww->user->getAlerts()]); ?>
 
 <form id="edit-action" method="post">
     <?php if( !empty($recipeName) ): ?>
@@ -156,7 +156,7 @@ $this->addJsFile('triggers.js');
             Save
         </button>
         <button class="trigger-href" 
-                data-href="<?=$this->wc->website->getUrl('recipe/view', ['recipe' => $recipe->name])?>">
+                data-href="<?=$this->ww->website->getUrl('recipe/view', ['recipe' => $recipe->name])?>">
             <i class="fa fa-times" aria-hidden="true"></i>
             Cancel
         </button>
@@ -169,7 +169,7 @@ $this->addJsFile('triggers.js');
             Publish
         </button>
         <button class="trigger-href" 
-                data-href="<?=$this->wc->website->getUrl('recipe')?>">
+                data-href="<?=$this->ww->website->getUrl('recipe')?>">
             <i class="fa fa-times" aria-hidden="true"></i>
             Cancel
         </button>

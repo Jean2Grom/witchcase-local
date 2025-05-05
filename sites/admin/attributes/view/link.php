@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\LinkAttribute $this */ 
+<?php /** @var WW\Attribute\LinkAttribute $this */ 
 
 $maxLenght  = 255;
 
@@ -21,4 +21,4 @@ else {
     $externalDisplay = "Self window target";
 }
 
-include $this->wc->website->getFilePath( self::VIEW_DIR."/view/link.php" );
+include $this->ww->website->getFilePath( self::VIEW_DIR."/view/link.php" );

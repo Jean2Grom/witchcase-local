@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */ ?>
+<?php /** @var WW\Module $this */ ?>
 
 <h1>Voir Structure : <?=$structure->name?></h1>
 
@@ -24,7 +24,7 @@
             <p>
                 <h3><?=$name?></h3>
                 <?=$parameterData['value']?>
-                <?php $this->wc->debug->dump($parameterData) ?>
+                <?php $this->ww->debug->dump($parameterData) ?>
             </p>
         <?php endforeach; endif; ?>
     </fieldset>

@@ -1,23 +1,23 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-use WC\Session;
-use WC\Website;
+use WW\Session;
+use WW\Website;
 
-const WC_CAPTCHA_ITERATIONS = 3;
+const WW_CAPTCHA_ITERATIONS = 3;
 
-$site           = $this->wc->request->param('site');
+$site           = $this->ww->request->param('site');
 if( $site )
 {
-    $session    = new Session($this->wc, $site);
-    $website    = new Website($this->wc, $site);
+    $session    = new Session($this->ww, $site);
+    $website    = new Website($this->ww, $site);
 }
 else 
 {
-    $session    = $this->wc->user->session;
-    $website    = $this->wc->user->website;
+    $session    = $this->ww->user->session;
+    $website    = $this->ww->user->website;
 }
 
-$iterations = $website->modules['ajax/captcha']['iterations'] ?? WC_CAPTCHA_ITERATIONS;
+$iterations = $website->modules['ajax/captcha']['iterations'] ?? WW_CAPTCHA_ITERATIONS;
 
 $id             = "wc-captcha-".md5(rand());   
 $match          = rand(0, $iterations - 1);

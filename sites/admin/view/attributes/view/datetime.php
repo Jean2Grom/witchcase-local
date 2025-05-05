@@ -1,3 +1,3 @@
-<?php /** @var WC\Attribute\DatetimeAttribute $this */ ?>
+<?php /** @var WW\Attribute\DatetimeAttribute $this */ ?>
 
 <p><?=$inputValue?></p>

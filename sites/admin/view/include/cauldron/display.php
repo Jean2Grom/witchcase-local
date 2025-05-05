@@ -1,6 +1,6 @@
 <?php 
 /**
- * @var WC\Witch $witch
+ * @var WW\Witch $witch
  */
 ?>
 <div class="box view__cauldron">
@@ -15,7 +15,7 @@
                 <option value="">
                     Select new cauldron recipe
                 </option>
-                <?php foreach( $witch->wc->configuration->recipes() as $recipe ): ?>
+                <?php foreach( $witch->ww->configuration->recipes() as $recipe ): ?>
                     <option value="<?=$recipe->name?>">
                         <?=$recipe->name?>
                     </option>
@@ -98,7 +98,7 @@
                 </button>
             <?php endif; */?>
             <button class="trigger-href" 
-                    data-href="<?=$witch->wc->website->getUrl("cauldron?id=".$witch->id) ?>">
+                    data-href="<?=$witch->ww->website->getUrl("cauldron?id=".$witch->id) ?>">
                 <i class="fa fa-pencil"></i>
                 Edit
             </button>

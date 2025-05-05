@@ -1,6 +1,6 @@
 {
     "name": "wc-connexion",
-    "class": "WC\\Cauldron\\ConnexionCauldron",
+    "class": "WW\\Cauldron\\ConnexionCauldron",
     "composition": [
         {
             "mandatory": true,

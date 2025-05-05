@@ -1,7 +1,7 @@
 <?php 
 /**
- * @var WC\Module $this
- * @var ?WC\Cauldron $cauldron
+ * @var WW\Module $this
+ * @var ?WW\Cauldron $cauldron
  */
 $cauldron = $cauldron ?? $this->witch("target")->cauldron();
 
@@ -15,7 +15,7 @@ $this->addJsFile('triggers.js');
 </h1>
 <p><em><?=$this->witch("target")->data?></em></p>
 
-<?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
+<?php $this->include('alerts.php', ['alerts' => $this->ww->user->getAlerts()]); ?>
 
 <form id="edit-action" method="post" enctype="multipart/form-data">
     <input type="hidden" name="MAX_FILE_SIZE" value="3000000" />
@@ -81,7 +81,7 @@ $this->addJsFile('triggers.js');
 <?php endif; ?>
 
 <button class="trigger-href" 
-        data-href="<?= $this->wc->website->getUrl('view', [ 'id' => $this->witch("target")->id ]) ?>">
+        data-href="<?= $this->ww->website->getUrl('view', [ 'id' => $this->witch("target")->id ]) ?>">
     <i class="fa fa-times"></i>
     Cancel
 </button>

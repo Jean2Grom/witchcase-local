@@ -1,11 +1,11 @@
 <?php 
 /**
- * @var WC\Witch $witch
+ * @var WW\Witch $witch
  */
 ?>
 <div class="box edit__witch-menu-info">
     <form   method="post"
-            action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
+            action="<?=$witch->ww->website->getUrl('edit?id='.$witch->id) ?>"
             id="edit-witch-menu-info">
         
         <p class="alert-message error" style="display: none;">Mandatory field</p>

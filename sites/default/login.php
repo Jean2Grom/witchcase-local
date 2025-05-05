@@ -1,19 +1,19 @@
-<?php /** @var WC\Module $this */ 
+<?php /** @var WW\Module $this */ 
 
-if( $this->wc->request->param("action") == "login" && $this->wc->user->connexion )
+if( $this->ww->request->param("action") == "login" && $this->ww->user->connexion )
 {
-    header( 'Location: '.$this->wc->website->getFullUrl() );
+    header( 'Location: '.$this->ww->website->getFullUrl() );
     exit();
 }
 
-$alerts = $this->wc->user->getAlerts();
-foreach( $this->wc->user->loginMessages as $message ){
+$alerts = $this->ww->user->getAlerts();
+foreach( $this->ww->user->loginMessages as $message ){
     $alerts[] = [
         'level'     =>  'warning',
         'message'   =>  $message,
     ];
 }
 
-$this->wc->user->disconnect();
+$this->ww->user->disconnect();
 
 $this->view();

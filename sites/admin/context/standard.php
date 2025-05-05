@@ -1,4 +1,4 @@
-<?php /** @var WC\Context $this */
+<?php /** @var WW\Context $this */
 
 if( $this->breadcrumb ){
     $breadcrumb = $this->breadcrumb;

@@ -1,6 +1,6 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-use WC\Handler\WitchHandler;
+use WW\Handler\WitchHandler;
 
 $currentId = $this->witch("target")?->id ?? $this->witch()?->id;
 
@@ -22,13 +22,13 @@ $obj = new class {
     }
 };
 
-$obj->baseUrl       = $this->wc->website->getUrl("view");
+$obj->baseUrl       = $this->ww->website->getUrl("view");
 $obj->unSafeMode    = $this->config['navigationUnSafeMode'] ?? false;
-$obj->currentSite   = $this->wc->website->site;
+$obj->currentSite   = $this->ww->website->site;
 
 $root = WitchHandler::recursiveTree( 
     $this->witch, 
-    $this->wc->website->sitesRestrictions, 
+    $this->ww->website->sitesRestrictions, 
     $currentId, 
     $this->maxStatus, 
     [$obj, "href"] 
@@ -39,8 +39,8 @@ $breadcrumb     = [ $this->witch->id ];
 $pathFound      = true;
 $daughters      = $root["daughters"];
 $draggble       = true;
-$clipboardUrl   = $this->wc->website->getUrl('clipboard');
-$createUrl      = $this->wc->website->getUrl('create-witch');
+$clipboardUrl   = $this->ww->website->getUrl('clipboard');
+$createUrl      = $this->ww->website->getUrl('create-witch');
 $urlHash        = 'tab-navigation';
 
 while( $pathFound )

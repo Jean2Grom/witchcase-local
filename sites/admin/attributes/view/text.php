@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\TextAttribute $this */ 
+<?php /** @var WW\Attribute\TextAttribute $this */ 
 
 $maxLenght  = 255;
 $value      = "";
@@ -13,4 +13,4 @@ if( $this->content() )
     }
 }
 
-include $this->wc->website->getFilePath( self::VIEW_DIR."/view/text.php");
+include $this->ww->website->getFilePath( self::VIEW_DIR."/view/text.php");

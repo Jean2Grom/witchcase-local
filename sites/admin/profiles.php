@@ -1,7 +1,7 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-use WC\User\Profile;
-use WC\Website;
+use WW\User\Profile;
+use WW\Website;
 
 $possibleActionsList = [
     'create-profile',
@@ -18,13 +18,13 @@ if( filter_has_var(INPUT_POST, "action") ){
     }
 }
 
-$alerts = $this->wc->user->getAlerts();
+$alerts = $this->ww->user->getAlerts();
 switch( $action )
 {
     case 'create-profile':
         
         $profileData = [
-            'name'      =>  trim($this->wc->request->param('profile-name') ?? ""),
+            'name'      =>  trim($this->ww->request->param('profile-name') ?? ""),
         ];
         
         if( empty($profileData['name']) )
@@ -36,22 +36,22 @@ switch( $action )
             break;
         }
         
-        $site                   = trim($this->wc->request->param('profile-site') ?? "");
+        $site                   = trim($this->ww->request->param('profile-site') ?? "");
         $profileData['site']    = $site;
         
-        $policyIds  = $this->wc->request->param('policy-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
-        $witches    = $this->wc->request->param('policy-witch-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
-        $custom     = $this->wc->request->param('policy-custom', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $policyIds  = $this->ww->request->param('policy-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
+        $witches    = $this->ww->request->param('policy-witch-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $custom     = $this->ww->request->param('policy-custom', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
         
-        $modulesRaw = $this->wc->request->param('policy-module', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
+        $modulesRaw = $this->ww->request->param('policy-module', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
         $modules    = $modulesRaw[ $site ] ?? [];
         
-        $statusRaw  = $this->wc->request->param('policy-status', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
+        $statusRaw  = $this->ww->request->param('policy-status', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
         $status     = $statusRaw[ $site ] ?? [];        
         
-        $witchesRulesAncestor       = $this->wc->request->param('policy-witch-rules-ancestors', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
-        $witchesRulesSelf           = $this->wc->request->param('policy-witch-rules-self', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
-        $witchesRulesDescendants    = $this->wc->request->param('policy-witch-rules-descendants', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $witchesRulesAncestor       = $this->ww->request->param('policy-witch-rules-ancestors', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $witchesRulesSelf           = $this->ww->request->param('policy-witch-rules-self', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $witchesRulesDescendants    = $this->ww->request->param('policy-witch-rules-descendants', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
         
         $profileData['policies'] = [];
         foreach( $policyIds as $key => $pId )
@@ -88,7 +88,7 @@ switch( $action )
             break;
         }
         
-        $newProfileId = Profile::createNew( $this->wc, $profileData );
+        $newProfileId = Profile::createNew( $this->ww, $profileData );
         if( !$newProfileId )
         {
             $alerts[] = [
@@ -106,7 +106,7 @@ switch( $action )
     
     case 'edit-profile': 
         $profileData = [
-            'id'      =>  $this->wc->request->param('profile-id', 'post', FILTER_VALIDATE_INT),
+            'id'      =>  $this->ww->request->param('profile-id', 'post', FILTER_VALIDATE_INT),
         ];
         
         
@@ -119,26 +119,26 @@ switch( $action )
             break;
         }
         
-        $profileData['name']    = trim($this->wc->request->param('profile-name') ?? "");
-        $profileData['site']    = trim($this->wc->request->param('profile-site') ?? "");
+        $profileData['name']    = trim($this->ww->request->param('profile-name') ?? "");
+        $profileData['site']    = trim($this->ww->request->param('profile-site') ?? "");
         
         $site                   = $profileData['site'] !== '*'? $profileData['site']: 'all';
         
-        $policyIds  = $this->wc->request->param('policy-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
-        $witches    = $this->wc->request->param('policy-witch-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
-        $custom     = $this->wc->request->param('policy-custom', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $policyIds  = $this->ww->request->param('policy-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
+        $witches    = $this->ww->request->param('policy-witch-id', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $custom     = $this->ww->request->param('policy-custom', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
         
-        $modulesRaw = $this->wc->request->param('policy-module', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
+        $modulesRaw = $this->ww->request->param('policy-module', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
         $modules    = $modulesRaw[ $site ] ?? [];
         
-        $statusRaw  = $this->wc->request->param('policy-status', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
+        $statusRaw  = $this->ww->request->param('policy-status', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []; 
         $status     = $statusRaw[ $site ] ?? [];        
         
-        $witchesRulesAncestor       = $this->wc->request->param('policy-witch-rules-ancestors', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
-        $witchesRulesSelf           = $this->wc->request->param('policy-witch-rules-self', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
-        $witchesRulesDescendants    = $this->wc->request->param('policy-witch-rules-descendants', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $witchesRulesAncestor       = $this->ww->request->param('policy-witch-rules-ancestors', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $witchesRulesSelf           = $this->ww->request->param('policy-witch-rules-self', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $witchesRulesDescendants    = $this->ww->request->param('policy-witch-rules-descendants', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
         
-        $profileData['policiesToDelete'] = array_filter($this->wc->request->param('policy-deleted', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []);
+        $profileData['policiesToDelete'] = array_filter($this->ww->request->param('policy-deleted', 'post', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []);
         
         $profileData['policies'] = [];
         foreach( $policyIds as $key => $pId )
@@ -170,7 +170,7 @@ switch( $action )
             $profileData['policies'][] = $data;
         }
         
-        if( !Profile::edit( $this->wc, $profileData ) )
+        if( !Profile::edit( $this->ww, $profileData ) )
         {
             $alerts[] = [
                 'level'     =>  'error',
@@ -187,7 +187,7 @@ switch( $action )
     break;
 
     case 'delete-profile':
-        $profileId = $this->wc->request->param('profile-id', 'post', FILTER_VALIDATE_INT);
+        $profileId = $this->ww->request->param('profile-id', 'post', FILTER_VALIDATE_INT);
         if( empty($profileId) )
         {
             $alerts[] = [
@@ -197,7 +197,7 @@ switch( $action )
             break;
         }
         
-        $profile = Profile::createFromId($this->wc, $profileId);
+        $profile = Profile::createFromId($this->ww, $profileId);
         if( !$profile )
         {
             $alerts[] = [
@@ -223,20 +223,20 @@ switch( $action )
     break;
 }
 
-$profiles = Profile::listProfiles( $this->wc );
+$profiles = Profile::listProfiles( $this->ww );
 
-$sites  = $this->wc->website->sitesRestrictions;
+$sites  = $this->ww->website->sitesRestrictions;
 if( !$sites ){
-    $sites = array_keys($this->wc->configuration->sites);
+    $sites = array_keys($this->ww->configuration->sites);
 }
 
 $websitesList   = [];
 foreach( $sites as $site ){
-    if( $site == $this->wc->website->name ){
-        $website = $this->wc->website;
+    if( $site == $this->ww->website->name ){
+        $website = $this->ww->website;
     }
     else {
-        $website = new Website( $this->wc, $site );
+        $website = new Website( $this->ww, $site );
     }
     
     if( $website->site == $website->name ) {
@@ -253,6 +253,6 @@ foreach( $websitesList as $website ){
 $allSitesModulesList = array_unique($allSitesModulesListBuffer);
 asort( $allSitesModulesList );
 
-$statusGlobal = $this->wc->configuration->read("global", "status");
+$statusGlobal = $this->ww->configuration->read("global", "status");
 
 $this->view();

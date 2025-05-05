@@ -1,6 +1,6 @@
 <?php 
 /**
- * @var WC\Cauldron $this 
+ * @var WW\Cauldron $this 
  * @var string $input
  */ 
 ?>
@@ -46,7 +46,7 @@
     <?php endforeach; endif; ?>
 </div>
 
-<?php $this->wc->website->include(
+<?php $this->ww->website->include(
     'cauldron/add.php', 
     [
         'input'     => $input."[new]",

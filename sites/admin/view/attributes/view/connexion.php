@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\ConnexionAttribute $this */ ?>
+<?php /** @var WW\Attribute\ConnexionAttribute $this */ ?>
 
 <p>
     <strong>name&nbsp;:</strong>

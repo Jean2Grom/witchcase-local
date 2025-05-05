@@ -1,8 +1,8 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-$reset = $this->wc->cache->reset();
+$reset = $this->ww->cache->reset();
 
-$this->wc->user->addAlerts([[
+$this->ww->user->addAlerts([[
     'level'     =>  $reset? 'success': 'error',
     'message'   =>  $reset? 'Cache has been removed': 'Cache removing has failed',    
 ]]);

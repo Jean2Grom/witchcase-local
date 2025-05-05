@@ -1,4 +1,4 @@
-<?php /** @var WC\Context $this */ ?>
+<?php /** @var WW\Context $this */ ?>
 
 <?php if( count($this->witch('menu')?->daughters() ?? []) > 0 ): ?>
     <a class="side-nav-toggler">
@@ -15,11 +15,11 @@
 </div>
 
 <div class="header-user">
-    <?php if( $this->wc->user->connexion ): ?>
+    <?php if( $this->ww->user->connexion ): ?>
         <i class="fa fa-user"></i>
         &nbsp;
         <a  href="<?=$this->website->getUrl( "view?id=".$this->witch("user")->id ) ?>">
-            <?=$this->wc->user->name ?>
+            <?=$this->ww->user->name ?>
         </a>
         &nbsp;
         <a href="<?=$this->website->getUrl("login") ?>">

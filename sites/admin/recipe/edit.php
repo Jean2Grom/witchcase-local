@@ -1,32 +1,32 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-use WC\Cauldron\Ingredient;
+use WW\Cauldron\Ingredient;
 
 $possibleActionsList = [
     'save',
 ];
 
-$action = $this->wc->request->param('action');
+$action = $this->ww->request->param('action');
 if( !in_array($action, $possibleActionsList) ){
     $action = false;
 }
 
-$recipeName = $this->wc->request->param('recipe');
+$recipeName = $this->ww->request->param('recipe');
 if( $recipeName ){
-    $recipe = $this->wc->configuration->recipe( $recipeName );
+    $recipe = $this->ww->configuration->recipe( $recipeName );
 }
 
 if( !$recipe )
 {
-    $this->wc->user->addAlert([
+    $this->ww->user->addAlert([
         'level'     =>  'error',
         'message'   =>  "Recipe not found"
     ]);
-    header( 'Location: '.$this->wc->website->getFullUrl('recipe') );
+    header( 'Location: '.$this->ww->website->getFullUrl('recipe') );
     exit();
 }
 
-$recipes     = $this->wc->configuration->recipes();
+$recipes     = $this->ww->configuration->recipes();
 $ingredients    = Ingredient::list();
 
 $possibleTypes = [];
@@ -43,15 +43,15 @@ switch( $action )
 {
     case 'save':
 
-        if( $this->wc->request->param("recipe") !== $recipe->name ){
-            $this->wc->user->addAlert([
+        if( $this->ww->request->param("recipe") !== $recipe->name ){
+            $this->ww->user->addAlert([
                 'level'     =>  'error',
                 'message'   =>  "Recipe mismatch"
            ]);        
         }
         else 
         {
-            $inputs = $this->wc->request->inputs();
+            $inputs = $this->ww->request->inputs();
 
             $composition = [];
             foreach( array_keys($inputs) as $inputName ){
@@ -71,23 +71,23 @@ switch( $action )
                 }
             }
 
-            $recipe->name        = $this->wc->request->param("name");
+            $recipe->name        = $this->ww->request->param("name");
             $recipe->require     = getRequire( $inputs, $globalRequireInputPrefix );
             $recipe->composition = $composition;
 
-            if( !$recipe->save($this->wc->request->param("file")) ){
-                $this->wc->user->addAlert([
+            if( !$recipe->save($this->ww->request->param("file")) ){
+                $this->ww->user->addAlert([
                     'level'     =>  'error',
                     'message'   =>  "Recipe update failed"
                ]);    
             }
             else 
             {
-                $this->wc->user->addAlert([
+                $this->ww->user->addAlert([
                     'level'     =>  'success',
                     'message'   =>  "Recipe \"".$possibleTypes[ $recipe->name ]."\" updated"
                ]);
-               header( 'Location: '.$this->wc->website->getFullUrl('recipe/view', ['recipe' => $recipe->name]) );
+               header( 'Location: '.$this->ww->website->getFullUrl('recipe/view', ['recipe' => $recipe->name]) );
                exit();
             }
         }

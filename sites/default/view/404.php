@@ -1,9 +1,9 @@
-<?php /** @var WC\Module $this */ ?>
+<?php /** @var WW\Module $this */ ?>
 
 <h1>404</h1>
 <p>Not Found</p>
 <p>
-    <a href="<?=$this->wc->website->getRootUrl() ?>">
+    <a href="<?=$this->ww->website->getRootUrl() ?>">
         Back Home
     </a>
 </p>

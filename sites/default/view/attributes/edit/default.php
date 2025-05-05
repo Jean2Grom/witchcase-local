@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute $this */ 
+<?php /** @var WW\Attribute $this */ 
 
 if( count($this->tableColumns) == 1 && count($this->values) == 1 ): ?>
     <input  type="text" 
@@ -6,6 +6,6 @@ if( count($this->tableColumns) == 1 && count($this->values) == 1 ): ?>
             id="<?=array_values($this->tableColumns)[0]?>" 
             value="<?=htmlentities(array_values($this->values)[0] ?? '')?>" />
 <?php else: 
-    $this->wc->dump($this->tableColumns);
-    $this->wc->dump($this->values);    
+    $this->ww->dump($this->tableColumns);
+    $this->ww->dump($this->values);    
 endif; 

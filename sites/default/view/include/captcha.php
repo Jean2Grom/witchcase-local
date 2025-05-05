@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */ 
+<?php /** @var WW\Module $this */ 
 
 /**
  * - To add a captcha check into your form, you have to add this code :
@@ -7,25 +7,25 @@
  * 
  * - To check captcha validation in PHP file, use this test : 
  * 
- * $this->wc->user->session->read('captcha') === $this->wc->request->param('captcha')
+ * $this->ww->user->session->read('captcha') === $this->ww->request->param('captcha')
  * 
  * - To display "Wrong Catpcha" or custom label :
  * 
- * $this->wc->user->session->write('captcha-error', true|"CUSTOM_LABEL");
+ * $this->ww->user->session->write('captcha-error', true|"CUSTOM_LABEL");
  */
 
-use WC\Website;
+use WW\Website;
 
 $this->addCssFile('captcha.css');
 $this->addJsFile('captcha.js');
 
 $id = "wc-captcha-container-".md5(rand());   
-if( $this->wc->website->site === "admin" ){
-    $wcCaptchaUrl = $this->wc->website->getUrl('captcha');
+if( $this->ww->website->site === "admin" ){
+    $wwCaptchaUrl = $this->ww->website->getUrl('captcha');
 }
 else {
-    $wcCaptchaUrl   =   (new Website( $this->wc, "admin" ))->getUrl('captcha');
-    $wcCaptchaUrl   .=  "?site=".$this->wc->website->name;
+    $wwCaptchaUrl   =   (new Website( $this->ww, "admin" ))->getUrl('captcha');
+    $wwCaptchaUrl   .=  "?site=".$this->ww->website->name;
 }
 ?>
 <div class="wc-captcha-container" id="<?=$id?>">
@@ -34,7 +34,7 @@ else {
     </div>
 </div>
 <script>
-    var wcCaptchaUrl        = '<?=$wcCaptchaUrl ?>';
+    var wcCaptchaUrl        = '<?=$wwCaptchaUrl ?>';
     var wcCaptchaId         = '<?=$id ?>';
-    var wcCaptchaSiteTarget = '<?=$this->wc->website->name ?>';
+    var wcCaptchaSiteTarget = '<?=$this->ww->website->name ?>';
 </script>

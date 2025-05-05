@@ -1,11 +1,11 @@
 <?php 
 /**
- * @var WC\Witch $witch
+ * @var WW\Witch $witch
  */
 ?>
 <div class="box create__witch">
     <form   method="post"
-            action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>"
+            action="<?=$witch->ww->website->getUrl('edit?id='.$witch->id) ?>"
             id="create-witch-info">
         <h3>
             <i class="fa fa-folder-open"></i>

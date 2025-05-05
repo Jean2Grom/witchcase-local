@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<?php /** @var WC\Context $this */
+<?php /** @var WW\Context $this */
 
 $this->addCssFile('base.css');
 $this->addCssFile('header-footer.css');
@@ -47,7 +47,7 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
                 </div>
 
                 <div class="tabs">
-                    <?php if( $this->wc->cairn->invokation("arborescence") ): ?>
+                    <?php if( $this->ww->cairn->invokation("arborescence") ): ?>
                         <div class="tabs__item">
                            <a href="#tab-navigation">
                                <i class="fas fa-sitemap"></i> 
@@ -106,21 +106,21 @@ $this->addJsLibFile('jquery-3.6.0.min.js');
                     <?php if( !$this->witch() ): ?>
                         <div class="tabs-target__item selected" id="tab-current">404</div>
                     <?php elseif( !$this->tabs ): ?>
-                        <div class="tabs-target__item selected" id="tab-current"><?=$this->wc->cairn->invokation() ?></div>
+                        <div class="tabs-target__item selected" id="tab-current"><?=$this->ww->cairn->invokation() ?></div>
                     <?php else: ?>
-                        <?=$this->wc->cairn->invokation() ?>
+                        <?=$this->ww->cairn->invokation() ?>
                     <?php endif; ?>
 
                     <?php if( $this->witch("arborescence") ): ?>
                         <div class="tabs-target__item" id="tab-navigation">
-                            <?=$this->wc->cairn->invokation("arborescence") ?>
+                            <?=$this->ww->cairn->invokation("arborescence") ?>
                         </div>
                     <?php endif; ?>
                 </div>
             </main>
             
             <?php if( $this->witch("chooseWitch") ): ?>
-                <?=$this->wc->cairn->invokation("chooseWitch") ?>
+                <?=$this->ww->cairn->invokation("chooseWitch") ?>
             <?php endif; ?>
             
             <footer><?php include $this->getIncludeViewFile('footer.php'); ?></footer>

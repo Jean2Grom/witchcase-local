@@ -1,6 +1,6 @@
 <?php 
 /**
- * @var WC\Witch $witch
+ * @var WW\Witch $witch
  */
 
 if( $witch->cauldron() ): ?>
@@ -11,7 +11,7 @@ if( $witch->cauldron() ): ?>
         </h3>
 
         <form   method="post" 
-                action="<?=$witch->wc->website->getUrl('view', [ 'id' => $witch->id ]) ?>#tab-cauldron-part"
+                action="<?=$witch->ww->website->getUrl('view', [ 'id' => $witch->id ]) ?>#tab-cauldron-part"
                 id="view-cauldron-witches-action">
             <input type="hidden" id="cauldron-new-witch-id" name="cauldron-new-witch-id" value="" />
             <input type="hidden" id="cauldron-witch-id" name="cauldron-witch-id" value="" />
@@ -88,7 +88,7 @@ if( $witch->cauldron() ): ?>
                                             <em>(this witch)</em>
                                         </span>
                                     <?php else: ?>
-                                        <a href="<?=$witch->wc->website->getUrl( "view", ['id'=> $witchItem->id] ) ?>#tab-cauldron-part">
+                                        <a href="<?=$witch->ww->website->getUrl( "view", ['id'=> $witchItem->id] ) ?>#tab-cauldron-part">
                                             <?=$witchItem->name ?>
                                         </a>
                                     <?php endif; ?>

@@ -1,6 +1,6 @@
 <?php 
 /** 
- * @var WC\Cauldron $this 
+ * @var WW\Cauldron $this 
  * @var string $input 
  */
 ?>

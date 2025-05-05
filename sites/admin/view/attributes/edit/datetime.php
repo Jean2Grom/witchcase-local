@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\DatetimeAttribute $this */ ?>
+<?php /** @var WW\Attribute\DatetimeAttribute $this */ ?>
 
 <input  type="datetime-local" 
         name="<?=$this->tableColumns['value']?>" 

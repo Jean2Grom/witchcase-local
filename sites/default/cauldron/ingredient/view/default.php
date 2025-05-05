@@ -1,9 +1,9 @@
-<?php /** @var WC\Cauldron\Ingredient $this */ 
+<?php /** @var WW\Cauldron\Ingredient $this */ 
 
-$viewFile = $this->wc->website->getFilePath( self::VIEW_DIR."/view/".$this->type.".php");
+$viewFile = $this->ww->website->getFilePath( self::VIEW_DIR."/view/".$this->type.".php");
 
 if( !$viewFile ){
-    $viewFile = $this->wc->website->getFilePath( self::VIEW_DIR."/view/default.php");
+    $viewFile = $this->ww->website->getFilePath( self::VIEW_DIR."/view/default.php");
 }
 
 if( $viewFile ){

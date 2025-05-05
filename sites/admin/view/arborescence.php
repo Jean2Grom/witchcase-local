@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
 $this->addJsFile('fontawesome.js');
 $this->addCssFile('arborescence-menu.css');
@@ -16,7 +16,7 @@ $key = "arborescence_".md5(microtime().rand());
     arborescencesInputs[ "<?=$key ?>" ] = {
         "treeData": <?=json_encode($tree)?>,
         "currentId": <?=$currentId ?? 0?>,
-        "currentSite": "<?=$this->wc->website->name?>",
+        "currentSite": "<?=$this->ww->website->name?>",
         "breadcrumb": <?=json_encode($breadcrumb)?>,
         "draggable": <?=$draggble ?? null ? "true": "false"?>,
         "clipboardUrl": <?=($clipboardUrl ?? null)? '"'.$clipboardUrl.'"': "null" ?>,

@@ -1,10 +1,10 @@
 <?php
 /** 
- * @var WC\Cauldron $this 
+ * @var WW\Cauldron $this 
  * @var string $input 
  */
 
-$this->wc->website->context->addJsFile('cauldron/image-edit.js');
+$this->ww->website->context->addJsFile('cauldron/image-edit.js');
 
 $key = "_FILES__".md5( microtime().rand() );
 ?>

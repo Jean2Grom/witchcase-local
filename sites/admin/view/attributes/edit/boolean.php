@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\BooleanAttribute $this */ ?>
+<?php /** @var WW\Attribute\BooleanAttribute $this */ ?>
 
 <div>
   <input type="radio" 

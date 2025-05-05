@@ -1,15 +1,15 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
-use WC\Cauldron;
-use WC\Handler\CauldronHandler;
+use WW\Cauldron;
+use WW\Handler\CauldronHandler;
 
 // $conf = [
 //     'user',
 //     1,
 // ];
-//$this->wc->dump( $conf );
-//$result = CauldronHandler::fetch($this->wc, [1]);
-//$this->wc->dump( $result, 'bbb');
+//$this->ww->dump( $conf );
+//$result = CauldronHandler::fetch($this->ww, [1]);
+//$this->ww->dump( $result, 'bbb');
 
 
 $obj = new class {
@@ -22,11 +22,11 @@ $obj = new class {
     }
 };
 
-$obj->baseUrl       = $this->wc->website->getUrl("view");
+$obj->baseUrl       = $this->ww->website->getUrl("view");
 
 $tree       = [1 => recursiveTree( 
-    CauldronHandler::fetch($this->wc, [1])[1], 
-    $this->wc->website->sitesRestrictions, 
+    CauldronHandler::fetch($this->ww, [1])[1], 
+    $this->ww->website->sitesRestrictions, 
     1, 
     [$obj, "href"]  
 )];
@@ -98,7 +98,7 @@ function recursiveTree( Cauldron $cauldron, array|bool $sitesRestrictions=false,
 
 
 
- /** @var WC\Module $this */
+ /** @var WW\Module $this */
 
 //$this->addJsLibFile('jquery-3.6.0.min.js');
 $this->addCssFile('choose-witch.css');
@@ -109,6 +109,6 @@ $this->addCssFile('choose-witch.css');
         <span>Cauldrons Navigation</span>
     </h3>
     
-    <?php include $this->wc->website->getViewFilePath( 'arborescence.php' ); ?>
+    <?php include $this->ww->website->getViewFilePath( 'arborescence.php' ); ?>
 </div>
 

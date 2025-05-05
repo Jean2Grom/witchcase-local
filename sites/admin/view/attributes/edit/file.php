@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\FileAttribute $this */ ?>
+<?php /** @var WW\Attribute\FileAttribute $this */ ?>
 
 <div class="current-file-display" <?=$srcFile? '': 'style="display: none;"' ?>>
     <?php if( $srcFile ): ?>

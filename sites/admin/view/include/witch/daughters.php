@@ -1,7 +1,7 @@
 <?php 
 /**
- * @var WC\Website[] $websitesList
- * @var WC\Witch $witch
+ * @var WW\Website[] $websitesList
+ * @var WW\Witch $witch
  */
 ?>
 <div class="box view__daughters">
@@ -15,7 +15,7 @@
             <tr>
                 <td class="label"><em>Mother</em></td>
                 <td class="value">
-                    <a href="<?=$witch->wc->website->getUrl("view?id=".$witch->mother()->id) ?>">
+                    <a href="<?=$witch->ww->website->getUrl("view?id=".$witch->mother()->id) ?>">
                         <?=$witch->mother() ?>
                     </a>
                 </td>
@@ -31,7 +31,7 @@
         
         <form method="post" 
               id="view-daughters-action" 
-              action="<?=$witch->wc->website->getUrl('edit?id='.$witch->id) ?>">
+              action="<?=$witch->ww->website->getUrl('edit?id='.$witch->id) ?>">
             <table >
                 <thead>
                     <tr>
@@ -55,12 +55,12 @@
                     <?php foreach( $witch->daughters() as $daughter ): ?>
                         <tr>
                             <td>
-                                <a href="<?=$witch->wc->website->getUrl("view?id=".$daughter->id) ?>">
+                                <a href="<?=$witch->ww->website->getUrl("view?id=".$daughter->id) ?>">
                                     <?=$daughter->name ?>
                                 </a>
                             </td>   
                             <td class="full">
-                                <a href="<?=$witch->wc->website->getUrl("view?id=".$daughter->id."#tab-craft-part") ?>"
+                                <a href="<?=$witch->ww->website->getUrl("view?id=".$daughter->id."#tab-craft-part") ?>"
                                    class="text-center">
                                     <em><?=$daughter->getCraftStructure() ?></em>
                                     <?php if( !$daughter->hasCraft() ): ?>

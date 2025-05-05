@@ -1,4 +1,4 @@
-<?php /** @var WC\Module $this */
+<?php /** @var WW\Module $this */
 
 $this->addCssFile('boxes.css');
 $this->addJsFile('triggers.js');
@@ -8,7 +8,7 @@ $this->addJsFile('triggers.js');
     <h1><?=$this->witch()->name?></h1>
     <p><?=$this->witch()->data?></p>
 
-    <?php $this->include('alerts.php', ['alerts' => $this->wc->user->getAlerts()]); ?>
+    <?php $this->include('alerts.php', ['alerts' => $this->ww->user->getAlerts()]); ?>
 
     <div id="navHeader">
         <h2><?=count( $recipeArray )?> Recipe structures</h2>
@@ -27,7 +27,7 @@ $this->addJsFile('triggers.js');
             <?php foreach( $recipeArray as $recipe => $data ): ?>
                 <tr>
                     <td>
-                        <a href="<?=$this->wc->website->getUrl( 'recipe/view', ['recipe' => $recipe] )?>">
+                        <a href="<?=$this->ww->website->getUrl( 'recipe/view', ['recipe' => $recipe] )?>">
                             <?=$data['name']?>
                         </a>
                     </td>
@@ -35,10 +35,10 @@ $this->addJsFile('triggers.js');
                     <td><span class="text-center"><?=$data['witches']?></span></td>
                     <td>
                         <div class="text-center">
-                            <a href="<?=$this->wc->website->getUrl( 'recipe/view', ['recipe' => $recipe] )?>">
+                            <a href="<?=$this->ww->website->getUrl( 'recipe/view', ['recipe' => $recipe] )?>">
                                 <i class="fa fa-eye"></i>
                             </a>
-                            <a href="<?=$this->wc->website->getUrl( 'recipe/edit', ['recipe' => $recipe] )?>">
+                            <a href="<?=$this->ww->website->getUrl( 'recipe/edit', ['recipe' => $recipe] )?>">
                                 <i class="fa fa-pencil"></i>
                             </a>
                         </div>
@@ -49,7 +49,7 @@ $this->addJsFile('triggers.js');
     </table>
     
     <div class="box__actions">
-        <button class="trigger-href" data-href="<?=$this->wc->website->getUrl('recipe/create')?>">
+        <button class="trigger-href" data-href="<?=$this->ww->website->getUrl('recipe/create')?>">
             <i class="fa fa-plus" aria-hidden="true"></i>
             Add New Recipe
         </button>

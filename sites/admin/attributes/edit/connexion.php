@@ -1,8 +1,8 @@
-<?php /** @var WC\Attribute\ConnexionAttribute $this */ 
+<?php /** @var WW\Attribute\ConnexionAttribute $this */ 
 
-use WC\User\Profile;
+use WW\User\Profile;
 
-$profiles = Profile::listProfiles( $this->wc );
+$profiles = Profile::listProfiles( $this->ww );
 
 $sitesProfiles = [];
 foreach( $profiles as $profileId => $profileItem )
@@ -19,4 +19,4 @@ foreach( $profiles as $profileId => $profileItem )
     $sitesProfiles[ $siteLabel ][ $profileId ] = $profileItem;
 }
 
-include $this->wc->website->getFilePath( self::VIEW_DIR."/edit/connexion.php");
+include $this->ww->website->getFilePath( self::VIEW_DIR."/edit/connexion.php");

@@ -1,3 +1,3 @@
-<?php /** @var WC\Cauldron\Ingredient $this */ 
+<?php /** @var WW\Cauldron\Ingredient $this */ 
 
 echo $this;

@@ -1,4 +1,4 @@
-<?php /** @var WC\Attribute\DecimalAttribute $this */ ?>
+<?php /** @var WW\Attribute\DecimalAttribute $this */ ?>
 
 <input  type="number" 
         name="<?=$this->tableColumns['value']?>" 
