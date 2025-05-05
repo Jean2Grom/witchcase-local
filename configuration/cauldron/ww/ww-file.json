@@ -1,5 +1,5 @@
 {
-    "name": "wc-file",
+    "name": "ww-file",
     "class": "WW\\Cauldron\\FileCauldron",
     "require": {
         "max": "0"

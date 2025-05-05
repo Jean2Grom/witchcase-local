@@ -43,7 +43,7 @@ function recursiveTree( Cauldron $cauldron, array|bool $sitesRestrictions=false,
     foreach( $cauldron->contents() as $content )
     {
         if( $sitesRestrictions 
-            && $content->type === "wc-site-folder" 
+            && $content->type === "ww-site-folder" 
             && !in_array($content->name, $sitesRestrictions) 
         ){
             continue;
@@ -67,12 +67,12 @@ function recursiveTree( Cauldron $cauldron, array|bool $sitesRestrictions=false,
     
     $cauldronIcon   = true;
     $invokeIcon     = false;
-    if( in_array($cauldron->type, [ "root", "wc-site-folder", "wc-recipe-folder" ]) )
+    if( in_array($cauldron->type, [ "root", "ww-site-folder", "ww-recipe-folder" ]) )
     {
         $cauldronIcon   = false;
         $invokeIcon     = false;    
     }
-    elseif( $cauldron->parent?->type === "wc-recipe-folder" )
+    elseif( $cauldron->parent?->type === "ww-recipe-folder" )
     {
         $cauldronIcon   = true;
         $invokeIcon     = true;    

@@ -522,7 +522,7 @@ class CauldronHandler
         {
             $params = [
                 'name'      =>  $site,
-                'recipe'    =>  "wc-site-folder",
+                'recipe'    =>  "ww-site-folder",
             ];
 
             $siteCauldron = self::createFromData( $ww, $params );
@@ -550,7 +550,7 @@ class CauldronHandler
         {
             $params = [
                 'name'      =>  $recipe,
-                'recipe'    =>  "wc-recipe-folder",
+                'recipe'    =>  "ww-recipe-folder",
             ];
 
             $recipeCauldron = self::createFromData( $ww, $params );

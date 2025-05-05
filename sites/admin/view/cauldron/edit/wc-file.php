@@ -4,7 +4,7 @@
  * @var string $input 
  */
 
-$this->ww->website->context->addJsFile('cauldron/wc-file-edit.js');
+$this->ww->website->context->addJsFile('cauldron/ww-file-edit.js');
 
 $key = "_FILES__".md5(microtime().rand());
 ?>

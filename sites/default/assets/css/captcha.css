@@ -1,21 +1,21 @@
-.wc-captcha-container {
+.ww-captcha-container {
     background-color: #FFF;
     padding: 6px;
     border-radius: 8px;
     width: fit-content;
 }
-.wc-captcha {
+.ww-captcha {
     display: flex;
     align-items: flex-start;
 }
-.wc-captcha-col {
+.ww-captcha-col {
     display: flex;
     flex-direction: column;
     margin-right: 8px;
     justify-content: space-between;
     align-items: center;
 }
-.wc-captcha-col fieldset {
+.ww-captcha-col fieldset {
     margin-bottom: 8px;
     width: 120px;
     text-align: center;
@@ -24,18 +24,18 @@
     font-size: 0.8em;
     font-weight: bold;
 }
-    .wc-captcha-col fieldset input {
+    .ww-captcha-col fieldset input {
         margin-top: 4px;
         max-width: 55px;
     }
-.wc-captcha-image {
+.ww-captcha-image {
     border: 1px solid #424242;
     border-radius: 15px;
     box-shadow: 4px 4px 4px #999;
     opacity: 0.8;
     margin-bottom: 8px;
 }
-.wc-captcha-error {
+.ww-captcha-error {
     color: #dc3545;
     border: 1px solid;
     width: fit-content;
@@ -43,13 +43,13 @@
     border-radius: 10px;
     margin: 0 0 4px 16px;    
     
-    animation-name: wcCaptchaFadeOut;
+    animation-name: wwCaptchaFadeOut;
     animation-duration: 1s;
     animation-fill-mode: forwards;
     animation-delay: 8s;
 }
 
-@keyframes wcCaptchaFadeOut{
+@keyframes wwCaptchaFadeOut{
     0%{ opacity: 1; }
     100%{ 
         opacity: 0; 

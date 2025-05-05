@@ -34,8 +34,8 @@ class Cauldron implements CauldronContentInterface
     const STATUS_DRAFT          = 0;
     const STATUS_ARCHIVED       = 1;
 
-    const DRAFT_FOLDER_STRUCT   = "wc-drafts-folder";
-    const ARCHIVE_FOLDER_STRUCT = "wc-archives-folder";
+    const DRAFT_FOLDER_STRUCT   = "ww-drafts-folder";
+    const ARCHIVE_FOLDER_STRUCT = "ww-archives-folder";
 
     const DIR                   = "cauldron";
     const VIEW_DIR              = "view/cauldron";

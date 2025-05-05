@@ -19,4 +19,4 @@ else {
     $input .= "[content]";
 }
 
-include $this->ww->website->getFilePath( self::VIEW_DIR."/edit/wc-file.php" );
+include $this->ww->website->getFilePath( self::VIEW_DIR."/edit/ww-file.php" );

@@ -19,7 +19,7 @@ else
 
 $iterations = $website->modules['ajax/captcha']['iterations'] ?? WW_CAPTCHA_ITERATIONS;
 
-$id             = "wc-captcha-".md5(rand());   
+$id             = "ww-captcha-".md5(rand());   
 $match          = rand(0, $iterations - 1);
 $captchaImages  = [];
 $hintImage      = null;

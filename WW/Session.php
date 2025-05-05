@@ -41,8 +41,8 @@ class Session
         if( is_object($value) )
         {
             $value = serialize($value);
-            $_SESSION[ $this->namespace ][ 'wcObjectsHashArray' ] = array_replace(
-                $_SESSION[ $this->namespace ][ 'wcObjectsHashArray' ] ?? [],
+            $_SESSION[ $this->namespace ][ 'wwObjectsHashArray' ] = array_replace(
+                $_SESSION[ $this->namespace ][ 'wwObjectsHashArray' ] ?? [],
                 [ $name => hash_hmac('sha256', $value, session_id()) ]
             );
         }
@@ -55,7 +55,7 @@ class Session
     function read( string $name ): mixed
     {
         $value      = $_SESSION[ $this->namespace ][ $name ] ?? false;
-        $objectHash = $_SESSION[ $this->namespace ][ 'wcObjectsHashArray' ][ $name ] ?? false;
+        $objectHash = $_SESSION[ $this->namespace ][ 'wwObjectsHashArray' ][ $name ] ?? false;
         
         if( $objectHash && hash_hmac('sha256', $value, session_id()) === $objectHash ){
             return unserialize($value);
@@ -66,7 +66,7 @@ class Session
     
     function delete( string $name ): self
     {
-        $_SESSION[ $this->namespace ][ 'wcObjectsHashArray' ][ $name ]    = null;
+        $_SESSION[ $this->namespace ][ 'wwObjectsHashArray' ][ $name ]    = null;
         $_SESSION[ $this->namespace ][ $name ]                            = null;
         
         return $this;

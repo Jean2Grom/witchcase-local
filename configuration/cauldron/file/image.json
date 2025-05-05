@@ -9,7 +9,7 @@
         {
             "mandatory": true,
             "name": "file",
-            "type": "wc-file"
+            "type": "ww-file"
         },
         {
             "name": "caption",

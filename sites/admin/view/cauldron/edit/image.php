@@ -49,7 +49,7 @@ $key = "_FILES__".md5( microtime().rand() );
     />
     <input  
         name="<?=$input.'[file][type]' ?>"
-        value="wc-file" 
+        value="ww-file" 
         type="hidden"
     />
     <div class="image-display" <?=$storagePath? '': 'style="display: none;"' ?>>

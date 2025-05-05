@@ -1,4 +1,4 @@
-@keyframes wcBasicFadeOut{
+@keyframes wwBasicFadeOut{
     0%{ opacity: 1; }
     100%{ 
         opacity: 0; 
@@ -9,7 +9,7 @@
 }
 
 .alert-message {
-    animation-name: wcBasicFadeOut;
+    animation-name: wwBasicFadeOut;
     animation-duration: 1s;
     animation-fill-mode: forwards;
     animation-delay: 8s;

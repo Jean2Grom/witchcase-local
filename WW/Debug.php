@@ -385,7 +385,7 @@ class Debug
                 $styleAttribute .= $property.": ".$value."; "; 
             }
                         
-            echo "<div id=\"wc-debug\" style=\"".$styleAttribute."\">";
+            echo "<div id=\"ww-debug\" style=\"".$styleAttribute."\">";
             
             echo "<div style=\"color: red;position: fixed;cursor: pointer\" ";
             echo "onclick=\"toggleWcDebug();\">[X]</div>";
@@ -398,8 +398,8 @@ class Debug
             
             echo "<script>";
             echo    "function toggleWcDebug(){ ";
-            echo        "if( document.getElementById('wc-debug').style.display !== 'none' ){ document.getElementById('wc-debug').style.display = 'none' } ";
-            echo        "else { document.getElementById('wc-debug').style.display = 'block'; } ";
+            echo        "if( document.getElementById('ww-debug').style.display !== 'none' ){ document.getElementById('ww-debug').style.display = 'none' } ";
+            echo        "else { document.getElementById('ww-debug').style.display = 'block'; } ";
             echo    "} ";
             echo    "document.addEventListener('keyup', (event) => { ";
             echo        "if( event.key === 'Escape' ){ toggleWcDebug(); } ";

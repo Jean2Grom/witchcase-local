@@ -1,8 +1,0 @@
-{
-    "name": "wc-site-folder",
-    "require": {
-        "accept": [
-            "wc-recipe-folder"
-        ]
-    }
-}

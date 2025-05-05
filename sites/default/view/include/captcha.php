@@ -19,7 +19,7 @@ use WW\Website;
 $this->addCssFile('captcha.css');
 $this->addJsFile('captcha.js');
 
-$id = "wc-captcha-container-".md5(rand());   
+$id = "ww-captcha-container-".md5(rand());   
 if( $this->ww->website->site === "admin" ){
     $wwCaptchaUrl = $this->ww->website->getUrl('captcha');
 }
@@ -28,13 +28,13 @@ else {
     $wwCaptchaUrl   .=  "?site=".$this->ww->website->name;
 }
 ?>
-<div class="wc-captcha-container" id="<?=$id?>">
-    <div class="wc-captcha">
+<div class="ww-captcha-container" id="<?=$id?>">
+    <div class="ww-captcha">
         <i class="fa fa-circle-notch fa-spin"></i>
     </div>
 </div>
 <script>
-    var wcCaptchaUrl        = '<?=$wwCaptchaUrl ?>';
-    var wcCaptchaId         = '<?=$id ?>';
-    var wcCaptchaSiteTarget = '<?=$this->ww->website->name ?>';
+    var wwCaptchaUrl        = '<?=$wwCaptchaUrl ?>';
+    var wwCaptchaId         = '<?=$id ?>';
+    var wwCaptchaSiteTarget = '<?=$this->ww->website->name ?>';
 </script>

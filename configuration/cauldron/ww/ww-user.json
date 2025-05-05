@@ -1,5 +1,5 @@
 {
-    "name": "wc-user",
+    "name": "ww-user",
     "class": "WW\\Cauldron\\UserCauldron",
     "composition": [
         {
@@ -20,7 +20,7 @@
         {
             "mandatory": true,
             "name" : "profiles",
-            "type": "wc-profiles-array"
+            "type": "ww-profiles-array"
         }
     ]
 }

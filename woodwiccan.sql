@@ -45,10 +45,10 @@ CREATE TABLE `archive__test` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `archive__wc-user`
+-- Structure de la table `archive__ww-user`
 --
 
-CREATE TABLE `archive__wc-user` (
+CREATE TABLE `archive__ww-user` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -96,16 +96,16 @@ CREATE TABLE `cauldron` (
 
 INSERT INTO `cauldron` (`id`, `target`, `status`, `name`, `recipe`, `data`, `priority`, `creator`, `created`, `modificator`, `modified`, `level_1`, `level_2`, `level_3`, `level_4`, `level_5`, `level_6`, `level_7`, `level_8`, `level_9`) VALUES
 (1, NULL, NULL, 'ROOT', 'root', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2024-11-27 15:08:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(2, NULL, NULL, 'admin', 'wc-site-folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2024-11-27 16:13:42', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(3, NULL, NULL, 'wc-user', 'wc-recipe-folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2024-11-27 16:15:12', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(4, NULL, NULL, 'Administrateur', 'wc-user', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-08 15:53:14', 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, NULL, NULL, 'admin', 'ww-site-folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2024-11-27 16:13:42', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, NULL, NULL, 'ww-user', 'ww-recipe-folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2024-11-27 16:15:12', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, NULL, NULL, 'Administrateur', 'ww-user', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-08 15:53:14', 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
 (5, NULL, NULL, 'profiles', 'folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-08 15:53:30', 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL),
-(7, NULL, NULL, 'Jean', 'wc-user', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-08 15:53:44', 1, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL),
+(7, NULL, NULL, 'Jean', 'ww-user', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-08 15:53:44', 1, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL),
 (8, NULL, NULL, 'profiles', 'folder', NULL, 0, NULL, '2024-06-11 15:42:06', NULL, '2025-01-28 10:03:52', 1, 1, 2, 2, NULL, NULL, NULL, NULL, NULL),
-(149, NULL, NULL, 'folder', 'wc-recipe-folder', NULL, 0, NULL, '2024-10-08 15:37:41', NULL, '2024-11-27 16:15:09', 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(408, NULL, NULL, 'identifier', 'wc-recipe-folder', NULL, 0, NULL, '2025-01-10 16:21:37', NULL, '2025-01-10 16:21:37', 1, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(770, NULL, NULL, 'link', 'wc-recipe-folder', NULL, 0, NULL, '2025-03-06 17:17:29', NULL, '2025-03-06 17:17:29', 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(773, NULL, NULL, 'wc-file', 'wc-recipe-folder', NULL, 0, NULL, '2025-03-10 09:19:15', NULL, '2025-03-10 09:19:15', 1, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(149, NULL, NULL, 'folder', 'ww-recipe-folder', NULL, 0, NULL, '2024-10-08 15:37:41', NULL, '2024-11-27 16:15:09', 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(408, NULL, NULL, 'identifier', 'ww-recipe-folder', NULL, 0, NULL, '2025-01-10 16:21:37', NULL, '2025-01-10 16:21:37', 1, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(770, NULL, NULL, 'link', 'ww-recipe-folder', NULL, 0, NULL, '2025-03-06 17:17:29', NULL, '2025-03-06 17:17:29', 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(773, NULL, NULL, 'ww-file', 'ww-recipe-folder', NULL, 0, NULL, '2025-03-10 09:19:15', NULL, '2025-03-10 09:19:15', 1, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -134,10 +134,10 @@ CREATE TABLE `content__test` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `content__wc-user`
+-- Structure de la table `content__ww-user`
 --
 
-CREATE TABLE `content__wc-user` (
+CREATE TABLE `content__ww-user` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -150,10 +150,10 @@ CREATE TABLE `content__wc-user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `content__wc-user`
+-- Déchargement des données de la table `content__ww-user`
 --
 
-INSERT INTO `content__wc-user` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
+INSERT INTO `content__ww-user` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
 (1, 'Administrateur', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01', 'WoodWiccan', 'Administrateur', 1);
 
 -- --------------------------------------------------------
@@ -184,10 +184,10 @@ CREATE TABLE `draft__test` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `draft__wc-user`
+-- Structure de la table `draft__ww-user`
 --
 
-CREATE TABLE `draft__wc-user` (
+CREATE TABLE `draft__ww-user` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `creator` int DEFAULT NULL,
@@ -201,10 +201,10 @@ CREATE TABLE `draft__wc-user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `draft__wc-user`
+-- Déchargement des données de la table `draft__ww-user`
 --
 
-INSERT INTO `draft__wc-user` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `content_key`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
+INSERT INTO `draft__ww-user` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `content_key`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
 (1, 'Administrateur', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34', 1, 'WoodWiccan', 'Administrateur', 3);
 
 -- --------------------------------------------------------
@@ -381,12 +381,12 @@ INSERT INTO `ingredient__text` (`id`, `cauldron_fk`, `name`, `value`, `priority`
 (44, 228, 'content to remove', '<p><strong>content</strong><br></p>', 100),
 (52, 223, 'content to remove', '<p><strong>content</strong><br></p>', 200),
 (53, 371, 'content to remove', '<p><strong>content</strong><br></p>', 200),
-(115, 374, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
-(116, 378, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
-(117, 385, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
-(118, 390, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
-(119, 214, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400),
-(121, 395, 'text', '<p><strong>contentwcwxcwx</strong><br></p>', 400);
+(115, 374, 'text', '<p><strong>contentwwwxcwx</strong><br></p>', 400),
+(116, 378, 'text', '<p><strong>contentwwwxcwx</strong><br></p>', 400),
+(117, 385, 'text', '<p><strong>contentwwwxcwx</strong><br></p>', 400),
+(118, 390, 'text', '<p><strong>contentwwwxcwx</strong><br></p>', 400),
+(119, 214, 'text', '<p><strong>contentwwwxcwx</strong><br></p>', 400),
+(121, 395, 'text', '<p><strong>contentwwwxcwx</strong><br></p>', 400);
 
 -- --------------------------------------------------------
 
@@ -415,9 +415,9 @@ CREATE TABLE `user__connexion` (
 --
 
 INSERT INTO `user__connexion` (`id`, `name`, `email`, `login`, `pass_hash`, `craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name`, `modifier`, `modified`, `creator`, `created`) VALUES
-(1, 'Administrator', 'adminstrator@woodwiccan', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
-(2, 'Jean', 'jean.de.gromard@gmail.com', 'jean', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
-(3, 'Administrator', 'adminstrator@woodwiccan', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'draft__wc-user', 'connexion', 'id', 'connection', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34'),
+(1, 'Administrator', 'adminstrator@woodwiccan', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__ww-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
+(2, 'Jean', 'jean.de.gromard@gmail.com', 'jean', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__ww-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
+(3, 'Administrator', 'adminstrator@woodwiccan', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'draft__ww-user', 'connexion', 'id', 'connection', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34'),
 (4, 'admin', 'admin@nimp.fr', 'bbb', '$2y$10$s3sYPL.8Fukd5gPT49aQGOmddgohaqQC6wGKbRamnhUGN8pwtWU9K', 'content__test', 'connexion', 'id', 'nouvel-attribut-connexion', 1, '2024-10-09 16:22:38', 1, '2024-10-09 16:22:38');
 
 -- --------------------------------------------------------
@@ -532,7 +532,7 @@ INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `c
 (1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (2, 'Admin WoodWiccan', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 400, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', -300, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 4, 200, 'content__wc-user', 1, NULL, 1, '', '2024-03-01 15:46:01', 0, 1, 1, 1, NULL, NULL, NULL, NULL, NULL),
+(4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 4, 200, 'content__ww-user', 1, NULL, 1, '', '2024-03-01 15:46:01', 0, 1, 1, 1, NULL, NULL, NULL, NULL, NULL),
 (5, 'Home', '', 'admin', '', 0, 'root', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', -400, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL),
 (6, 'Login', 'Module de déconnexion/connexion', 'admin', 'login', 0, 'login', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 800, 1, 2, 1, NULL, NULL, NULL, NULL, NULL),
 (7, 'Witch', 'Visualisation des Witches, c\'est a dire de chaque point de l\'arborescence -appelé ici Matriarcat. Chacun de ces points peut être associé à un contenu et/ou à un module exécutable. \r\nOn peut également définir une URL permettant de cibler cette witch.', 'admin', 'view', 0, 'witch/view', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 700, 1, 2, 2, NULL, NULL, NULL, NULL, NULL),
@@ -564,9 +564,9 @@ ALTER TABLE `archive__test`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `archive__wc-user`
+-- Index pour la table `archive__ww-user`
 --
-ALTER TABLE `archive__wc-user`
+ALTER TABLE `archive__ww-user`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -592,9 +592,9 @@ ALTER TABLE `content__test`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `content__wc-user`
+-- Index pour la table `content__ww-user`
 --
-ALTER TABLE `content__wc-user`
+ALTER TABLE `content__ww-user`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -604,9 +604,9 @@ ALTER TABLE `draft__test`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `draft__wc-user`
+-- Index pour la table `draft__ww-user`
 --
-ALTER TABLE `draft__wc-user`
+ALTER TABLE `draft__ww-user`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -707,9 +707,9 @@ ALTER TABLE `archive__test`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT pour la table `archive__wc-user`
+-- AUTO_INCREMENT pour la table `archive__ww-user`
 --
-ALTER TABLE `archive__wc-user`
+ALTER TABLE `archive__ww-user`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -725,9 +725,9 @@ ALTER TABLE `content__test`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT pour la table `content__wc-user`
+-- AUTO_INCREMENT pour la table `content__ww-user`
 --
-ALTER TABLE `content__wc-user`
+ALTER TABLE `content__ww-user`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
@@ -737,9 +737,9 @@ ALTER TABLE `draft__test`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT pour la table `draft__wc-user`
+-- AUTO_INCREMENT pour la table `draft__ww-user`
 --
-ALTER TABLE `draft__wc-user`
+ALTER TABLE `draft__ww-user`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --

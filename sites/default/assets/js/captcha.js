@@ -1,6 +1,6 @@
 function  generateWcCaptcha()
 {
-    fetch( wcCaptchaUrl )
+    fetch( wwCaptchaUrl )
     .then( (response) => {
         if( !response.ok ){
             throw new Error(`HTTP error, status = ${response.status}`);
@@ -9,9 +9,9 @@ function  generateWcCaptcha()
         return response.text();
     })
     .then( (WcCaptchaHTML) => {
-        document.querySelector("#"+wcCaptchaId).innerHTML = WcCaptchaHTML;
+        document.querySelector("#"+wwCaptchaId).innerHTML = WcCaptchaHTML;
 
-        document.querySelector("#"+wcCaptchaId+' .wc-captcha-refresh')
+        document.querySelector("#"+wwCaptchaId+' .ww-captcha-refresh')
             .addEventListener("click", (e) => {
                 e.preventDefault();
                 generateWcCaptcha();
@@ -19,7 +19,7 @@ function  generateWcCaptcha()
             });        
     })
     .catch((error) => {
-        document.querySelector("#"+wcCaptchaId).innerHTML = "<p>Captcha loading failure...</p>";
+        document.querySelector("#"+wwCaptchaId).innerHTML = "<p>Captcha loading failure...</p>";
     });
 }
 

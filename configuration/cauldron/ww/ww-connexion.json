@@ -1,5 +1,5 @@
 {
-    "name": "wc-connexion",
+    "name": "ww-connexion",
     "class": "WW\\Cauldron\\ConnexionCauldron",
     "composition": [
         {
