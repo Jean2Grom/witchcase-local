@@ -78,10 +78,10 @@ class Cauldron implements CauldronContentInterface
     public ?self $draft         = null;
 
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
     /**
      * Property setting 

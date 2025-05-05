@@ -1,6 +1,6 @@
 {
     "admin": {
-        "debug": false,
+        "debug": true,
         "access": [
             "localhost/admin"
         ],

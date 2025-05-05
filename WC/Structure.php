@@ -24,12 +24,12 @@ class Structure
     public $exist;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
-    function __construct( WitchCase $wc, string $structureOrTableName, ?string $forcedType=null )
+    function __construct( WoodWiccan $wc, string $structureOrTableName, ?string $forcedType=null )
     {
         $this->wc = $wc;
         
@@ -134,7 +134,7 @@ class Structure
         return $this->lastModified;
     }
     
-    static function create( WitchCase $wc, string $structureName )
+    static function create( WoodWiccan $wc, string $structureName )
     {
         foreach( Craft::TYPES as $type )
         {
@@ -256,7 +256,7 @@ class Structure
         return StructureDA::createCraft($this->wc, $craftTable, $name, $contentKey);
     }
     
-    static function listStructures( WitchCase $wc, bool $countElements=false )
+    static function listStructures( WoodWiccan $wc, bool $countElements=false )
     {
         $structures = StructureDA::listStructures($wc);
         

@@ -41,10 +41,10 @@ class Context
     private $customVars  = [];
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
     function __construct( Website $website, ?string $initialContext=null )
     {

@@ -1,7 +1,7 @@
 <?php
 namespace WC\DataAccess;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Witch;
 use WC\Handler\WitchHandler;
 use WC\Cairn;
@@ -16,7 +16,7 @@ use WC\Attribute;
  */
 class User
 {    
-    static function getUserLoginData( WitchCase $wc, string $login, ?string $site=null  )
+    static function getUserLoginData( WoodWiccan $wc, string $login, ?string $site=null  )
     {
         if( empty($login) ){
             return [];
@@ -135,7 +135,7 @@ class User
         return $userConnexionData;
     }
     
-    static function getUserWitchFromConnexionData( WitchCase $wc, $connexionData ) 
+    static function getUserWitchFromConnexionData( WoodWiccan $wc, $connexionData ) 
     {
         $savedConnexionData     = $wc->user->connexionData ?? [];
         $savedConnexionValue    = $wc->user->connexion ?? false;
@@ -159,7 +159,7 @@ class User
     }
     
     
-    static function getPublicProfileData(  WitchCase $wc, string $profile, ?string $site=null )
+    static function getPublicProfileData(  WoodWiccan $wc, string $profile, ?string $site=null )
     {
         $query = "";
         $query  .=  "SELECT `user__profile`.`id` AS `profile_id` ";
@@ -236,7 +236,7 @@ class User
     }
     
     
-    static function getProfiles( WitchCase $wc, array $conditions=[] )
+    static function getProfiles( WoodWiccan $wc, array $conditions=[] )
     {
         $query = "";
         $query  .=  "SELECT `profile`.`id` AS `profile_id` ";
@@ -345,7 +345,7 @@ class User
         return $profilesData;
     }
     
-    static function insertProfile( WitchCase $wc, string $name, string $site )
+    static function insertProfile( WoodWiccan $wc, string $name, string $site )
     {
         if( empty($name) || empty($site) ){
             return false;
@@ -358,7 +358,7 @@ class User
         return $wc->db->insertQuery($query, [ 'name' => $name, 'site' => $site ]);
     }
     
-    static function insertPolicies( WitchCase $wc, int $profileId, array $data )
+    static function insertPolicies( WoodWiccan $wc, int $profileId, array $data )
     {
         if( empty($profileId) || empty($data) ){
             return false;
@@ -425,7 +425,7 @@ class User
         return $wc->db->insertQuery($query, $params, true);
     }
     
-    static function updateProfile( WitchCase $wc, int $profileId, array $data )
+    static function updateProfile( WoodWiccan $wc, int $profileId, array $data )
     {
         if( empty($profileId) || empty($data['name']) || empty($data['site']) ){
             return false;
@@ -450,7 +450,7 @@ class User
         return $wc->db->updateQuery($query, $params);
     }
     
-    static function deletePolicies( WitchCase $wc, array $policiesToDelete ) 
+    static function deletePolicies( WoodWiccan $wc, array $policiesToDelete ) 
     {
         if( empty($policiesToDelete) ){
             return false;
@@ -468,7 +468,7 @@ class User
         return $wc->db->deleteQuery($query, $params, true);
     }
     
-    static function updatePolicies( WitchCase $wc, int $profileId, array $data )
+    static function updatePolicies( WoodWiccan $wc, int $profileId, array $data )
     {
         if( empty($profileId) || empty($data) ){
             return false;
@@ -521,7 +521,7 @@ class User
     }
     
     
-    static function deleteProfile( WitchCase $wc, int $profileId ) 
+    static function deleteProfile( WoodWiccan $wc, int $profileId ) 
     {
         if( empty($profileId) ){
             return false;
@@ -535,7 +535,7 @@ class User
     }
     
     
-    static function insertConnexion( WitchCase $wc, array $data, array $craftAttributeData )
+    static function insertConnexion( WoodWiccan $wc, array $data, array $craftAttributeData )
     {
         if( empty($data['login']) || empty($data['email']) ){
             return false;
@@ -598,7 +598,7 @@ class User
     }
     
     
-    static function updateConnexion( WitchCase $wc, int $connexionId, array $data, array $craftAttributeData )
+    static function updateConnexion( WoodWiccan $wc, int $connexionId, array $data, array $craftAttributeData )
     {
         if( empty($connexionId) || empty($data) ){
             return false;
@@ -659,7 +659,7 @@ class User
         return $updateCounter;
     }
     
-    static private function selectConnexionProfilesIds( WitchCase $wc, int $connexionId ): array
+    static private function selectConnexionProfilesIds( WoodWiccan $wc, int $connexionId ): array
     {
         $query = "";
         $query  .=  "SELECT fk_profile ";
@@ -676,7 +676,7 @@ class User
         return $return;
     }
     
-    static private function deleteConnexionProfilesIds( WitchCase $wc, int $connexionId, array $profilesIds )
+    static private function deleteConnexionProfilesIds( WoodWiccan $wc, int $connexionId, array $profilesIds )
     {
         if( empty($connexionId) ){
             return false;
@@ -701,7 +701,7 @@ class User
         return $wc->db->deleteQuery($query, $params, true);
     }
     
-    static private function insertConnexionProfilesIds( WitchCase $wc, int $connexionId, array $profilesIds )
+    static private function insertConnexionProfilesIds( WoodWiccan $wc, int $connexionId, array $profilesIds )
     {
         if( empty($connexionId) ){
             return false;
@@ -727,7 +727,7 @@ class User
     }
     
     
-    static function checkEmailLoginValidity( WitchCase $wc, string $login, string $email, ?int $contentKeyId=null )
+    static function checkEmailLoginValidity( WoodWiccan $wc, string $login, string $email, ?int $contentKeyId=null )
     {
         if( empty($login) && empty($email) ){
             return false;

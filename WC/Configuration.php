@@ -29,17 +29,17 @@ class Configuration
     public $createFolderRights;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
     /**
-     * @param WitchCase $wc : container
+     * @param WoodWiccan $wc : container
      * @param string $configurationDirectory : path to configuration files directory
      * @param boolean $mandatory : if set to true, die process if configuration files not found
      */
-    function __construct( WitchCase $wc, ?string $configurationDirectory=null, bool $mandatory=true )
+    function __construct( WoodWiccan $wc, ?string $configurationDirectory=null, bool $mandatory=true )
     {
         $this->wc = $wc;
         

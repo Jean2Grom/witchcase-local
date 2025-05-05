@@ -1,7 +1,7 @@
 <?php
 namespace WC\DataAccess;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Craft;
 
 /**
@@ -14,7 +14,7 @@ class Structure
 {
     const CACHE_FOLDER = "structure";
     
-    static function readTableStructure( WitchCase $wc, string $table ) 
+    static function readTableStructure( WoodWiccan $wc, string $table ) 
     {
         if( empty($table) ){
             return false;
@@ -43,7 +43,7 @@ class Structure
         return $columns;
     }
     
-    static function readTableCreateTime( WitchCase $wc, string $table )
+    static function readTableCreateTime( WoodWiccan $wc, string $table )
     {
         if( empty($table) ){
             return false;
@@ -60,7 +60,7 @@ class Structure
         return $result['time'] ?? false;
     }
     
-    static function createStructureTable( WitchCase $wc, string $table, array $columns )
+    static function createStructureTable( WoodWiccan $wc, string $table, array $columns )
     { 
         if( empty($table) || empty($columns) ){
             return false;
@@ -74,7 +74,7 @@ class Structure
         return $wc->db->createQuery($query);
     }
     
-    static function updateStructureTable( WitchCase $wc, string $table, array $addColumns=[], array $removeColumns=[], array $changeColumns=[] )
+    static function updateStructureTable( WoodWiccan $wc, string $table, array $addColumns=[], array $removeColumns=[], array $changeColumns=[] )
     { 
         if( empty($table) || (empty( $addColumns ) && empty( $removeColumns ) && empty( $changeColumns )) ){
             return false;
@@ -106,7 +106,7 @@ class Structure
         return true;
     }
     
-    static function getWitchDataFromStructureTables( WitchCase $wc, array $tables )
+    static function getWitchDataFromStructureTables( WoodWiccan $wc, array $tables )
     {
         if( empty($tables) ){
             return false;
@@ -131,7 +131,7 @@ class Structure
     }
     
     
-    static function deleteStructureTable( WitchCase $wc, string $table )
+    static function deleteStructureTable( WoodWiccan $wc, string $table )
     { 
         if( empty($table) ){
             return false;
@@ -146,7 +146,7 @@ class Structure
         return true;
     }
 
-    static function listStructures( WitchCase $wc )
+    static function listStructures( WoodWiccan $wc )
     {
         $query = "";
         $query  .=  "SELECT table_name AS tn ";
@@ -178,7 +178,7 @@ class Structure
         return $structures;
     }
     
-    static function countElements( WitchCase $wc, string $structure )
+    static function countElements( WoodWiccan $wc, string $structure )
     {
         if( empty($structure) ){
             return false;
@@ -196,7 +196,7 @@ class Structure
         return $count;
     }
     
-    static function createCraft( WitchCase $wc, string $table, ?string $name=null, ?int $contentKey=null )
+    static function createCraft( WoodWiccan $wc, string $table, ?string $name=null, ?int $contentKey=null )
     {
         if( empty($table) ){
             return false;

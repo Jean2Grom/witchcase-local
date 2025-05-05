@@ -1,7 +1,7 @@
 <?php
 namespace WC\DataAccess;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Cauldron;
 use WC\Cauldron\Ingredient;
 use WC\Witch;
@@ -14,7 +14,7 @@ class CauldronDataAccess
         'children' => "childrenJointure",
     ];
 
-    static function getDepth( WitchCase $wc, bool $useCache=true ): int
+    static function getDepth( WoodWiccan $wc, bool $useCache=true ): int
     {
         if( $useCache ){
             $depth = $wc->cache->read( 'system', 'depth-cauldron' );
@@ -34,7 +34,7 @@ class CauldronDataAccess
         return (int) $depth;
     }
 
-    static function cauldronRequest( WitchCase $wc, array $configuration, bool $getWitches=true )
+    static function cauldronRequest( WoodWiccan $wc, array $configuration, bool $getWitches=true )
     {
         // Determine the list of fields in select part of query
         $query  =   "SELECT DISTINCT `c`.`".implode( "`, `c`.`", Cauldron::FIELDS)."` ";
@@ -222,7 +222,7 @@ class CauldronDataAccess
         return $jointure;
     }
 
-    static function increaseDepth( WitchCase $wc ): int
+    static function increaseDepth( WoodWiccan $wc ): int
     {
         $wc->cache->delete( 'system', 'depth-cauldron' );
         $newLevelDepth = self::getDepth($wc, false) + 1;
@@ -336,7 +336,7 @@ class CauldronDataAccess
         return $cauldron->wc->db->deleteQuery( $query,  ['id' => $cauldron->id] );
     }
 
-    static function updateTargetID( WitchCase $wc, int $oldTargetID, int $newTargetID )
+    static function updateTargetID( WoodWiccan $wc, int $oldTargetID, int $newTargetID )
     {
         $query = "";
         $query  .=  "UPDATE `cauldron` ";
@@ -346,7 +346,7 @@ class CauldronDataAccess
         return $wc->db->updateQuery( $query, ['old' => $oldTargetID, 'new' => $newTargetID] );
     }
 
-    static function getStorageStructure( WitchCase $wc )
+    static function getStorageStructure( WoodWiccan $wc )
     {
         $query = "";
         $separator = "SELECT DISTINCT ";

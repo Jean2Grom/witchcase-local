@@ -2,7 +2,7 @@
 namespace WC\DataAccess;
 
 use WC\Handler\CauldronHandler;
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Witch;
 use WC\Handler\WitchHandler as Handler;
 use WC\Module;
@@ -22,7 +22,7 @@ class Summoning
     ];
     
     
-    private static function witchesInstanciate( WitchCase $wc, $configuration, $result )
+    private static function witchesInstanciate( WoodWiccan $wc, $configuration, $result )
     {
         $witches        = [];
         $witchesList    = [];
@@ -210,7 +210,7 @@ class Summoning
     }
     
     
-    private static function witchesRequest( WitchCase $wc, $configuration )
+    private static function witchesRequest( WoodWiccan $wc, $configuration )
     {
         $userConnexionJointure = !empty($configuration['user']) && $wc->user->connexion;
         
@@ -474,7 +474,7 @@ class Summoning
         return $wc->db->selectQuery($query, $parameters);
     }
 
-    private static function childrenJointure( WitchCase $wc, $mother, $daughter, $depth=1 )
+    private static function childrenJointure( WoodWiccan $wc, $mother, $daughter, $depth=1 )
     {
         $m = function (int $level) use ($mother): string {
             return "`".$mother."`.`level_".$level."`";
@@ -507,12 +507,12 @@ class Summoning
         return $jointure;
     }
     
-    private static function parentsJointure( WitchCase $wc, $daughter, $mother, $depth=1 )
+    private static function parentsJointure( WoodWiccan $wc, $daughter, $mother, $depth=1 )
     {
         return self::childrenJointure( $wc, $mother, $daughter, $depth );
     }
     
-    private static function sistersJointure( WitchCase $wc, $witch, $sister, $depth=1 )
+    private static function sistersJointure( WoodWiccan $wc, $witch, $sister, $depth=1 )
     {
         $w = function (int $level) use ($witch): string {
             return "`".$witch."`.`level_".$level."`";
@@ -562,7 +562,7 @@ class Summoning
     }
     
     
-    static function witches( WitchCase $wc, $configuration )
+    static function witches( WoodWiccan $wc, $configuration )
     {
         if( empty($configuration['id']) 
                 && empty($configuration['url'])
@@ -581,7 +581,7 @@ class Summoning
     }
     
 
-    static function cauldrons( WitchCase $wc, $configuration )
+    static function cauldrons( WoodWiccan $wc, $configuration )
     {
         $cauldronsConf = [];
         foreach( $configuration as $type => $typeConfiguration )

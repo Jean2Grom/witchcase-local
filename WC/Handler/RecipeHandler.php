@@ -1,7 +1,7 @@
 <?php 
 namespace WC\Handler;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Cauldron\Recipe;
 use WC\Cauldron\Ingredient;
 
@@ -10,11 +10,11 @@ class RecipeHandler
 
     /**
      * Cauldron factory class, implements Cauldron with data provided
-     * @param WitchCase $wc
+     * @param WoodWiccan $wc
      * @param array $data
      * @return Recipe
      */
-    static function createFromData(  WitchCase $wc, array $data ): Recipe
+    static function createFromData(  WoodWiccan $wc, array $data ): Recipe
     {
         $recipe      = new Recipe();
         $recipe->wc  = $wc;
@@ -27,11 +27,11 @@ class RecipeHandler
     }  
 
     /**
-     * @param WitchCase $wc
+     * @param WoodWiccan $wc
      * @param string $file
      * @return ?Recipe
      */
-    static function createFromFile(  WitchCase $wc, string $file ): ?Recipe
+    static function createFromFile(  WoodWiccan $wc, string $file ): ?Recipe
     {
         $jsonData = self::extractJsonDataFromFile( $file );
         if( !$jsonData ){

@@ -1,7 +1,7 @@
 <?php
 namespace WC\DataAccess;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 
 /**
  * Class to aggregate recipe related data access functions
@@ -11,7 +11,7 @@ use WC\WitchCase;
  */
 class RecipeDataAccess 
 {
-    static function readUsage( WitchCase $wc, array $recipes ) 
+    static function readUsage( WoodWiccan $wc, array $recipes ) 
     {
         if( empty($recipes) ){
             return false;

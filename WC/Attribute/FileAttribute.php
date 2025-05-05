@@ -17,7 +17,7 @@ class FileAttribute extends \WC\Attribute
     
     public $directory;
     
-    function __construct( \WC\WitchCase $wc, string $attributeName, array $params=[] )
+    function __construct( \WC\WoodWiccan $wc, string $attributeName, array $params=[] )
     {
         parent::__construct( $wc, $attributeName, $params );
         

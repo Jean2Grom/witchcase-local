@@ -2,6 +2,6 @@
 
 require 'vendor/autoload.php';
 
-$wc = new \WC\WitchCase();
+$wc = new \WC\WoodWiccan();
 
 $wc->injest()->run();

@@ -1,7 +1,7 @@
 <?php
 namespace WC\DataAccess;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Cairn;
 
 /**
@@ -13,7 +13,7 @@ use WC\Cairn;
 class WitchDataAccess
 {
 
-    static function getDepth( WitchCase $wc, bool $useCache=true ): int
+    static function getDepth( WoodWiccan $wc, bool $useCache=true ): int
     {
         if( $useCache ){
             $depth = $wc->cache->read( 'system', 'depth' );
@@ -33,7 +33,7 @@ class WitchDataAccess
         return (int) $depth;
     }
     
-    static function fetch( WitchCase $wc, int $id )
+    static function fetch( WoodWiccan $wc, int $id )
     {
         if( empty($id) ){
             return false;
@@ -48,7 +48,7 @@ class WitchDataAccess
         return $data;
     }
 
-    static function search( WitchCase $wc, array $params, bool $or=false )
+    static function search( WoodWiccan $wc, array $params, bool $or=false )
     {
         if( !$params ){
             return false;
@@ -68,7 +68,7 @@ class WitchDataAccess
         return $wc->db->selectQuery( $query, $params );
     }
     
-    static function update( WitchCase $wc, array $params, array $conditions )
+    static function update( WoodWiccan $wc, array $params, array $conditions )
     {
         if( empty($params) || empty($conditions) ){
             return false;
@@ -98,7 +98,7 @@ class WitchDataAccess
         return $wc->db->updateQuery( $query, $params );
     }
     
-    static function updates( WitchCase $wc, array $params, array $conditions )
+    static function updates( WoodWiccan $wc, array $params, array $conditions )
     {
         if( empty($params) 
             || empty($conditions) 
@@ -134,7 +134,7 @@ class WitchDataAccess
         return $wc->db->updateQuery( $query, $params, true );
     }
     
-    static function create( WitchCase $wc, array $params )
+    static function create( WoodWiccan $wc, array $params )
     {
         if( isset($params['id']) ){
             unset($params['id']);
@@ -165,7 +165,7 @@ class WitchDataAccess
         return $wc->db->insertQuery($query, $params);
     }
     
-    static function increasePlateformDepth( WitchCase $wc ): int
+    static function increasePlateformDepth( WoodWiccan $wc ): int
     {
         $wc->cache->delete( 'system', 'depth' );
         $newLevelDepth = self::getDepth($wc, false) + 1;
@@ -180,7 +180,7 @@ class WitchDataAccess
         return $newLevelDepth;
     }
     
-    static function getNewDaughterIndex( WitchCase $wc, array $position=[] )
+    static function getNewDaughterIndex( WoodWiccan $wc, array $position=[] )
     {
         $depth = count($position) + 1;
         
@@ -207,7 +207,7 @@ class WitchDataAccess
         return $max + 1;
     }
         
-    static function getUrlsData(  WitchCase $wc, string $site, array $urls, ?int $excludedId=null )
+    static function getUrlsData(  WoodWiccan $wc, string $site, array $urls, ?int $excludedId=null )
     {
         $params = [ 
             'site'      => $site,
@@ -242,7 +242,7 @@ class WitchDataAccess
         return $wc->db->selectQuery($query, $params);
     }
     
-    static function fetchAncestors( WitchCase $wc, int $witchId, bool $toRoot=true, mixed $sitesRestriction=null )
+    static function fetchAncestors( WoodWiccan $wc, int $witchId, bool $toRoot=true, mixed $sitesRestriction=null )
     {
         $depth = 1;
         if( $toRoot ){
@@ -274,7 +274,7 @@ class WitchDataAccess
         return $witches['fetchAncestors']->mother;
     }
     
-    static function fetchDescendants(  WitchCase $wc, int $witchId, bool $completeSubtree=true, ?array $sitesRestriction=null ): array
+    static function fetchDescendants(  WoodWiccan $wc, int $witchId, bool $completeSubtree=true, ?array $sitesRestriction=null ): array
     {
         $depth = 1;
         if( $completeSubtree ){
@@ -302,7 +302,7 @@ class WitchDataAccess
         return $witches['fetchDescendants']->daughters ?? [];
     }
     
-    static function delete( WitchCase $wc, array $witchesToDeleteIds ): bool
+    static function delete( WoodWiccan $wc, array $witchesToDeleteIds ): bool
     {
         if( empty($witchesToDeleteIds) ){
             return true;

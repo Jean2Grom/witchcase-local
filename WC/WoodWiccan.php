@@ -5,11 +5,11 @@ use WC\DataAccess\CauldronDataAccess;
 use WC\DataAccess\WitchDataAccess;
 
 /**
- * WitchCase container class to allow whole access to Kernel
+ * WoodWiccan container class to allow whole access to Kernel
  * 
  * @author Jean2Grom
  */
-class WitchCase 
+class WoodWiccan 
 {
     /** 
      * Class dedicated for debugging WC projects

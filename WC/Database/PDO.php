@@ -1,7 +1,7 @@
 <?php
 namespace WC\Database;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 
 /**
  * PDO database driver
@@ -13,12 +13,12 @@ class PDO implements DatabaseInterface
     public $pdo;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
-    function __construct( WitchCase $wc, $parameters )
+    function __construct( WoodWiccan $wc, $parameters )
     {
         $this->wc   = $wc;
         

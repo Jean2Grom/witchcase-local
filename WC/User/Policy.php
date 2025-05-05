@@ -1,7 +1,7 @@
 <?php
 namespace WC\User;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Website;
 
 /**
@@ -28,12 +28,12 @@ class Policy
     public Profile $profile;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
-    function __construct( WitchCase $wc, Profile $profile )
+    function __construct( WoodWiccan $wc, Profile $profile )
     {
         $this->wc       = $wc;
         $this->profile  = $profile;

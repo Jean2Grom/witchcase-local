@@ -1,7 +1,7 @@
 <?php 
 namespace WC\Handler;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Cauldron;
 use WC\Cauldron\Ingredient;
 use WC\DataAccess\CauldronDataAccess AS DataAccess;
@@ -19,10 +19,10 @@ class CauldronHandler
 
     /**
      * Fetch cauldrons from configuration array
-     * @var Witchcase $wc
+     * @var WoodWiccan $wc
      * @var array $configuration
      */
-    static function fetch( WitchCase $wc, array $configuration, bool $getWitches=true )
+    static function fetch( WoodWiccan $wc, array $configuration, bool $getWitches=true )
     {
         $result = DataAccess::cauldronRequest($wc, $configuration, $getWitches);
         
@@ -36,12 +36,12 @@ class CauldronHandler
 
     /**
      * PRIVATE instanciate Cauldrons and Ingredients from configuration and data access results
-     * @var Witchcase $wc
+     * @var WoodWiccan $wc
      * @var array $configuration
      * @var array $result
      * @return Cauldron[] 
      */
-    private static function instanciate( WitchCase $wc, array $configuration, array $result ): array
+    private static function instanciate( WoodWiccan $wc, array $configuration, array $result ): array
     {
         $return         = [];
         $cauldronsList  = [];
@@ -153,11 +153,11 @@ class CauldronHandler
 
     /**
      * Cauldron factory class, implements Cauldron with data provided
-     * @param WitchCase $wc
+     * @param WoodWiccan $wc
      * @param array $data
      * @return Cauldron
      */
-    static function createFromData(  WitchCase $wc, array $data ): Cauldron
+    static function createFromData(  WoodWiccan $wc, array $data ): Cauldron
     {
         $class = $wc->configuration->recipe( $data['recipe'] )?->class;
         if( $class ){
@@ -488,10 +488,10 @@ class CauldronHandler
 
  
     /**
-     * @var WitchCase $wc
+     * @var WoodWiccan $wc
      * @return Cauldron|false
      */
-    static function getStorageStructure(  WitchCase $wc, ?string $site=null, ?string $recipe=null ): Cauldron|false 
+    static function getStorageStructure(  WoodWiccan $wc, ?string $site=null, ?string $recipe=null ): Cauldron|false 
     {
         $result = DataAccess::getStorageStructure( $wc );
 

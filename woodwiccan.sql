@@ -12,7 +12,7 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 --
--- Base de données : `witchcase`
+-- Base de données : `woodwiccan`
 --
 
 -- --------------------------------------------------------
@@ -154,7 +154,7 @@ CREATE TABLE `content__wc-user` (
 --
 
 INSERT INTO `content__wc-user` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
-(1, 'Administrateur', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01', 'Witchcase', 'Administrateur', 1);
+(1, 'Administrateur', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01', 'WoodWiccan', 'Administrateur', 1);
 
 -- --------------------------------------------------------
 
@@ -205,7 +205,7 @@ CREATE TABLE `draft__wc-user` (
 --
 
 INSERT INTO `draft__wc-user` (`id`, `name`, `creator`, `created`, `modificator`, `modified`, `content_key`, `last-name@string#value`, `first-name@string#value`, `connection@connexion#id`) VALUES
-(1, 'Administrateur', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34', 1, 'Witchcase', 'Administrateur', 3);
+(1, 'Administrateur', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34', 1, 'WoodWiccan', 'Administrateur', 3);
 
 -- --------------------------------------------------------
 
@@ -353,7 +353,7 @@ CREATE TABLE `ingredient__string` (
 --
 
 INSERT INTO `ingredient__string` (`id`, `cauldron_fk`, `name`, `value`, `priority`) VALUES
-(1, 4, 'last-name', 'Witchcase', 0),
+(1, 4, 'last-name', 'WoodWiccan', 0),
 (2, 4, 'fist-name', 'Administrateur', 0),
 (113, 7, 'fist-name', 'Jean', 2300),
 (114, 7, 'last-name', 'Gromard', 2200);
@@ -415,9 +415,9 @@ CREATE TABLE `user__connexion` (
 --
 
 INSERT INTO `user__connexion` (`id`, `name`, `email`, `login`, `pass_hash`, `craft_table`, `craft_attribute`, `craft_attribute_var`, `attribute_name`, `modifier`, `modified`, `creator`, `created`) VALUES
-(1, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
+(1, 'Administrator', 'adminstrator@woodwiccan', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
 (2, 'Jean', 'jean.de.gromard@gmail.com', 'jean', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'content__wc-user', 'connexion', 'id', 'connection', NULL, '2024-03-01 15:46:01', NULL, '2024-03-01 15:46:01'),
-(3, 'Administrator', 'adminstrator@witchcase', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'draft__wc-user', 'connexion', 'id', 'connection', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34'),
+(3, 'Administrator', 'adminstrator@woodwiccan', 'admin', '$2y$11$11FgVhXijP654xVeVG/VjeKIQnyRjVx0AsQ2QGQXiEx0VJeWeaGJ.', 'draft__wc-user', 'connexion', 'id', 'connection', 1, '2024-04-04 14:58:34', 1, '2024-04-04 14:58:34'),
 (4, 'admin', 'admin@nimp.fr', 'bbb', '$2y$10$s3sYPL.8Fukd5gPT49aQGOmddgohaqQC6wGKbRamnhUGN8pwtWU9K', 'content__test', 'connexion', 'id', 'nouvel-attribut-connexion', 1, '2024-10-09 16:22:38', 1, '2024-10-09 16:22:38');
 
 -- --------------------------------------------------------
@@ -530,7 +530,7 @@ CREATE TABLE `witch` (
 
 INSERT INTO `witch` (`id`, `name`, `data`, `site`, `url`, `status`, `invoke`, `cauldron`, `cauldron_priority`, `craft_table`, `craft_fk`, `alias`, `is_main`, `context`, `datetime`, `priority`, `level_1`, `level_2`, `level_3`, `level_4`, `level_5`, `level_6`, `level_7`, `level_8`) VALUES
 (1, 'Root', 'Ici se trouve la racine de la plateforme. C\'est à partir d\'ici que sont créées les homes de chaque site de la plateforme.', NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(2, 'Admin WitchCase', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 400, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 'Admin WoodWiccan', 'Site d\'administration', NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', 400, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (3, 'Utilisateurs', '', 'admin', 'utilisateurs', 0, '', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', -300, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
 (4, 'Administrateur', '', 'admin', 'utilisateurs/administrateur', 0, '', 4, 200, 'content__wc-user', 1, NULL, 1, '', '2024-03-01 15:46:01', 0, 1, 1, 1, NULL, NULL, NULL, NULL, NULL),
 (5, 'Home', '', 'admin', '', 0, 'root', NULL, 0, NULL, NULL, NULL, 1, NULL, '2024-03-01 15:46:01', -400, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL),

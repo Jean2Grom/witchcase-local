@@ -1,7 +1,7 @@
 <?php 
 namespace WC\Handler;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Witch;
 use WC\DataAccess\WitchDataAccess as DataAccess;
 use WC\Datatype\ExtendedDateTime;
@@ -12,11 +12,11 @@ class WitchHandler
 
     /**
      * Witch factory class, implements witch whith data provided
-     * @param WitchCase $wc
+     * @param WoodWiccan $wc
      * @param array $data
      * @return Witch
      */
-    static function instanciate(  WitchCase $wc, array $data ): Witch
+    static function instanciate(  WoodWiccan $wc, array $data ): Witch
     {
         $witch      = new Witch();
         $witch->wc  = $wc;
@@ -87,11 +87,11 @@ class WitchHandler
 
     /**
      * Witch factory class, reads witch data associated whith id
-     * @param WitchCase $wc
+     * @param WoodWiccan $wc
      * @param int $id   witch id to create
      * @return Witch|false implemented Witch object, boolean false if data not found
      */
-    static function fetch( WitchCase $wc, int $id ): Witch|false
+    static function fetch( WoodWiccan $wc, int $id ): Witch|false
     {
         $data = DataAccess::fetch( $wc, $id );
         
@@ -105,13 +105,13 @@ class WitchHandler
     
     /**
      * Check new urls validity, add a suffix if it's not
-     * @param WitchCase $wc
+     * @param WoodWiccan $wc
      * @param string $site
      * @param array $urlArray
      * @param ?int $excludedId
      * @return ?string
      */
-    static function checkUrls( WitchCase $wc, string $site, array $urlArray, ?int $excludedId=null ): ?string
+    static function checkUrls( WoodWiccan $wc, string $site, array $urlArray, ?int $excludedId=null ): ?string
     {
         if( !$urlArray ){
             return null;
@@ -170,10 +170,10 @@ class WitchHandler
     /**
      * If with creation is at the top leaf of matriarcal arborescence,
      * Add a new level to witches genealogical tree
-     * @param WitchCase $wc
+     * @param WoodWiccan $wc
      * @return bool
      */
-    static function addLevel( WitchCase $wc ): bool
+    static function addLevel( WoodWiccan $wc ): bool
     {
         $depth = DataAccess::increasePlateformDepth($wc);
         if( $depth == $wc->depth ){
@@ -401,7 +401,7 @@ class WitchHandler
         return $witch;
     }
 
-    static function search( WitchCase $wc, array $params )
+    static function search( WoodWiccan $wc, array $params )
     {
         $result = DataAccess::search( $wc, $params );
 

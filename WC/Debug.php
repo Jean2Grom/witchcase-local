@@ -69,16 +69,16 @@ class Debug
     public $refMemoryUsage;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
     /**
      * 
-     * @param WitchCase $wc container
+     * @param WoodWiccan $wc container
      */
-    function __construct( WitchCase $wc )
+    function __construct( WoodWiccan $wc )
     {
         $this->wc           = $wc;
         $this->enabled      = false;
@@ -203,7 +203,7 @@ class Debug
                 elseif( $i==$depth ){
                     $string .=  get_class($variable).' {...}'; 
                 }
-                elseif( $i > 0 && get_class($variable) === "WC\\WitchCase" ){
+                elseif( $i > 0 && get_class($variable) === "WC\\WoodWiccan" ){
                     $string .=  get_class($variable).' {...}'; 
                 }
                 else 

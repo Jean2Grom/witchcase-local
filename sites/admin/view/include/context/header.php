@@ -9,8 +9,8 @@
 <div class="logo">
     <a href="<?=$this->website->getRootUrl()?>">
         <img    src="<?=$this->imageSrc("logo.jpg"); ?>" 
-                alt="Witchcase" 
-                title="Witchcase"/>
+                alt="WoodWiccan" 
+                title="WoodWiccan"/>
     </a>
 </div>
 

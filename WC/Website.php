@@ -51,12 +51,12 @@ class Website
     public Cairn $cairn;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
-    function __construct( WitchCase $wc, string $name, ?string $siteAccess=null )
+    function __construct( WoodWiccan $wc, string $name, ?string $siteAccess=null )
     {
         $this->wc               = $wc;
         $this->name             = $name;

@@ -5,7 +5,7 @@ use WC\DataAccess\Craft as CraftDA;
 use WC\DataAccess\WitchCrafting;
 use WC\Handler\WitchHandler;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Datatype\ExtendedDateTime;
 use WC\Craft\Draft;
 use WC\Attribute;
@@ -83,12 +83,12 @@ class Craft
     public Structure $structure;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
-    function __construct( WitchCase $wc, Structure $structure, array $data=null )
+    function __construct( WoodWiccan $wc, Structure $structure, array $data=null )
     {
         $this->wc           = $wc;
         $this->exist        = false;
@@ -144,7 +144,7 @@ class Craft
         return $this->properties[$name];
     }    
     
-    static function factory( WitchCase $wc, Structure $structure, array $data=null )
+    static function factory( WoodWiccan $wc, Structure $structure, array $data=null )
     {
         $className  = __CLASS__."\\".ucfirst($structure->type);
         

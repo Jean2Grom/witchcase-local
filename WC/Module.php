@@ -32,10 +32,10 @@ class Module
     public Witch $witch;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
     function __construct( Witch $witch, string $moduleName )
     {

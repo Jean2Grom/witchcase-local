@@ -1,7 +1,7 @@
 <?php
 namespace WC\DataAccess;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Craft\Draft;
 use WC\Craft\Archive;
 
@@ -13,7 +13,7 @@ use WC\Craft\Archive;
  */
 class Craft 
 {
-    static function getRelatedCraftsIds( WitchCase $wc, string $table, int $id )
+    static function getRelatedCraftsIds( WoodWiccan $wc, string $table, int $id )
     {
         if( empty($table) || empty($id) ){
             return false;
@@ -36,7 +36,7 @@ class Craft
         return $ids;
     }
     
-    static function countWitches( WitchCase $wc, ?string $table, ?int $id )
+    static function countWitches( WoodWiccan $wc, ?string $table, ?int $id )
     {
         if( empty($table) || empty($id) ){
             return false;
@@ -56,7 +56,7 @@ class Craft
         return $wc->db->countQuery($query, $params);
     }
     
-    static function getWitches( WitchCase $wc, string $table, int $id )
+    static function getWitches( WoodWiccan $wc, string $table, int $id )
     {
         if( empty($table) || empty($id) ){
             return false;
@@ -76,7 +76,7 @@ class Craft
         return $wc->db->selectQuery($query, $params);
     }
         
-    static function getWitchesFromContentKey( WitchCase $wc, string $table, int $contentKey )
+    static function getWitchesFromContentKey( WoodWiccan $wc, string $table, int $contentKey )
     {
         if( empty($table) || empty($contentKey) ){
             return false;
@@ -101,7 +101,7 @@ class Craft
         return $wc->db->selectQuery($query, $params);
     }
     
-    static function delete( WitchCase $wc, string $table, int $id )
+    static function delete( WoodWiccan $wc, string $table, int $id )
     {
         if( empty($table) || empty($id) ){
             return false;
@@ -119,7 +119,7 @@ class Craft
         return $wc->db->deleteQuery($query, [ 'id' => $id ]);
     }
     
-    static function cleanupContentKey( WitchCase $wc, string $structureName, int $contentKey )
+    static function cleanupContentKey( WoodWiccan $wc, string $structureName, int $contentKey )
     {
         if( empty($structureName) || empty($contentKey) ){
             return false;
@@ -188,7 +188,7 @@ class Craft
         return;
     }
     
-    static function update( WitchCase $wc, string $table, array $fields, array $conditions )
+    static function update( WoodWiccan $wc, string $table, array $fields, array $conditions )
     {
         if( empty($table) || empty($fields) || empty($conditions) ){
             return false;

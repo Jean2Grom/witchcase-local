@@ -1,7 +1,7 @@
 <?php
 namespace WC\DataAccess;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Witch;
 use WC\Module;
 use WC\Structure;
@@ -17,7 +17,7 @@ class WitchCrafting
 {
     const CACHE_FOLDER = "craft";
     
-    static function readCraftData( WitchCase $wc, array $summoningConfiguration, array $witches )
+    static function readCraftData( WoodWiccan $wc, array $summoningConfiguration, array $witches )
     {
         $targetsToCraft = [];
         foreach( $summoningConfiguration as $type => $typeConfiguration )
@@ -208,7 +208,7 @@ class WitchCrafting
     }
     
     
-    static function getCraftDataFromIds( WitchCase $wc, string $table,  array $ids )
+    static function getCraftDataFromIds( WoodWiccan $wc, string $table,  array $ids )
     {
         $craftedData     = [];
         $idList          = [];
@@ -233,7 +233,7 @@ class WitchCrafting
         return $craftedData;
     }
     
-    static function craftQueryFromIds( WitchCase $wc, string $table, array $ids ): array
+    static function craftQueryFromIds( WoodWiccan $wc, string $table, array $ids ): array
     {
         if( empty($table) || empty($ids) ){
             return [];
@@ -286,7 +286,7 @@ class WitchCrafting
     }
     
     
-    static function craftQueryFromAttributeSearch( WitchCase $wc, Structure $structure, array $criterias, bool $excludeCriterias=true )
+    static function craftQueryFromAttributeSearch( WoodWiccan $wc, Structure $structure, array $criterias, bool $excludeCriterias=true )
     {
         if( empty($criterias) ){
             return [];

@@ -1,8 +1,8 @@
 {
-    "name": "jean2grom/witchcase-local",
+    "name": "jean2grom/woodwiccan-local",
     "type": "project",
-    "description": "Local implementation of witchcase project",
-    "homepage": "https://witchcase.com/",
+    "description": "Local implementation of woodwiccan project",
+    "homepage": "https://woodwiccan.com/",
     "license": "MIT",
     "autoload": {
         "psr-4": {

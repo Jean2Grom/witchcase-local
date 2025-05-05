@@ -3,7 +3,7 @@ namespace WC\Cauldron;
 
 use WC\Cauldron;
 use WC\Configuration;
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Handler\RecipeHandler as Handler;
 use WC\Cauldron\Ingredient;
 
@@ -19,10 +19,10 @@ class Recipe
     var ?array $composition;
 
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
 
 
     /**

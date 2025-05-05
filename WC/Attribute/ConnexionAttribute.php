@@ -22,7 +22,7 @@ class ConnexionAttribute extends \WC\Attribute
     public $login;
     public $email;
     
-    function __construct( \WC\WitchCase $wc, string $attributeName, array $params=[], ?Craft $craft=null )
+    function __construct( \WC\WoodWiccan $wc, string $attributeName, array $params=[], ?Craft $craft=null )
     {
         parent::__construct( $wc, $attributeName, $params, $craft );
         

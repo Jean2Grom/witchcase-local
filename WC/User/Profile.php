@@ -1,7 +1,7 @@
 <?php
 namespace WC\User;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\DataAccess\User as UserDA;
 use WC\Website;
 
@@ -18,12 +18,12 @@ class Profile
     public $policies;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
-    function __construct( WitchCase $wc )
+    function __construct( WoodWiccan $wc )
     {
         $this->wc = $wc;
         
@@ -32,14 +32,14 @@ class Profile
         $this->policies = [];
     }
     
-    static function createFromId( WitchCase $wc, int $id )
+    static function createFromId( WoodWiccan $wc, int $id )
     {
         $profiles = self::listProfiles( $wc, [ '`profile`.`id`' => $id ] );
         
         return $profiles[ $id ] ?? false;
     }
     
-    static function createFromData(  WitchCase $wc, array $data )
+    static function createFromData(  WoodWiccan $wc, array $data )
     {
         $profile = new self( $wc );
         
@@ -93,7 +93,7 @@ class Profile
         return true;
     }
     
-    static function listProfiles( WitchCase $wc, array $conditions=[] )
+    static function listProfiles( WoodWiccan $wc, array $conditions=[] )
     {
         $profiles = [];
         foreach( UserDA::getProfiles($wc, $conditions) as $profileDataItem ){
@@ -104,7 +104,7 @@ class Profile
     }
     
     
-    static function createNew( WitchCase $wc, array $newProfileData=[] )
+    static function createNew( WoodWiccan $wc, array $newProfileData=[] )
     {
         if( empty($newProfileData['name']) || empty($newProfileData['site']) ){
             return false;
@@ -130,7 +130,7 @@ class Profile
     }
     
     
-    static function edit( WitchCase $wc, array $profileData=[] )
+    static function edit( WoodWiccan $wc, array $profileData=[] )
     {
         if( empty($profileData['id']) ){
             return false;

@@ -3,7 +3,7 @@
 ?>
 
 <div id="bloc1">
-    <h2>CONTACTEZ WITCHCASE</h2>
+    <h2>CONTACTEZ WOOD WICCAN</h2>
     
     <? if( !$result ) { ?>
         <div id="text-contact">

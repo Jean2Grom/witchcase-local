@@ -24,12 +24,12 @@ class Log
     public $errorLogFP;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
-    function __construct( WitchCase $wc, $logFilename=false )
+    function __construct( WoodWiccan $wc, $logFilename=false )
     {
         $this->wc               =   $wc;
         $systemConfiguration    =   $this->wc->configuration->read('system');
@@ -126,7 +126,7 @@ class Log
                         break;
                     }
                     elseif(
-                        !in_array( $class, ["WC\\Log", "WC\\Debug", "WC\\WitchCase"] )
+                        !in_array( $class, ["WC\\Log", "WC\\Debug", "WC\\WoodWiccan"] )
                         && !in_array( $function, ["prefix", "error", "debug", "dump"] )
                     ){
                         break;

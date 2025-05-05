@@ -20,4 +20,4 @@
 
 <link   rel="stylesheet" 
         media="screen and (max-width: 800px)" 
-        href="/sites/witchcase/view/css/responsive.css" />
+        href="/sites/woodwiccan/view/css/responsive.css" />

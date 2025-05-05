@@ -1,7 +1,7 @@
 <?php 
 namespace WC\Cauldron;
 
-use WC\WitchCase;
+use WC\WoodWiccan;
 use WC\Cauldron;
 use WC\Handler\IngredientHandler as Handler;
 use WC\DataAccess\IngredientDataAccess as DataAccess;
@@ -54,10 +54,10 @@ abstract class Ingredient implements CauldronContentInterface
     public ?Cauldron $cauldron = null;
     
     /** 
-     * WitchCase container class to allow whole access to Kernel
-     * @var WitchCase
+     * WoodWiccan container class to allow whole access to Kernel
+     * @var WoodWiccan
      */
-    public WitchCase $wc;
+    public WoodWiccan $wc;
     
 
     function __construct()
