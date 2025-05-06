@@ -14,18 +14,16 @@
     </a>
 </div>
 
-<div class="header-user">
-    <?php if( $this->ww->user->connexion ): ?>
-        <i class="fa fa-user"></i>
-        &nbsp;
+<?php if( $this->ww->user->connexion ): ?>
+    <div class="header-user">
         <a  href="<?=$this->website->getUrl( "view?id=".$this->witch("user")->id ) ?>">
+            <i class="fa fa-user"></i>
+            &nbsp;
             <?=$this->ww->user->name ?>
         </a>
         &nbsp;
         <a href="<?=$this->website->getUrl("login") ?>">
             <i class="fa fa-times"></i>
         </a>
-    <?php else: ?>
-        &nbsp;
-    <?php endif; ?>    
-</div>
+    </div>
+<?php endif; ?>    

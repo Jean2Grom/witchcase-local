@@ -10,11 +10,14 @@ header {
     justify-content: space-between;
     align-items: center;
 }
-    header img {
-        height: 16vw;
-    }
     header .header-user {
         min-width: 55px;
+        padding: 8px;
+        /*
+        border: 1px solid;
+        border-radius: 8px;
+        box-shadow: 4px 4px 4px #999;
+        */
     }
     header .side-nav-toggler {
         position: absolute;
@@ -27,17 +30,11 @@ footer {
 }
 
 @media screen and (min-device-width: 480px) {
-    header img {
-        height: 12vw;
-    }
     header .logo {
         margin-left: 5vw;
     }    
 }
 @media screen and (min-device-width: 768px) {
-    header img {
-        height: 8vw;
-    }
     header .side-nav-toggler {
         display: none;
     }
@@ -46,8 +43,5 @@ footer {
     }    
 }
 @media screen and (min-device-width: 1024px) {
-    header img {
-        height: 82px;
-    }
 }
 
