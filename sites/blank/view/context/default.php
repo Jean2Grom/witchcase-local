@@ -8,7 +8,7 @@
     <?php $this->favicon() ?>
     <style>
         body {
-            background: url("<?=$this->getImageFile("background.jpg")?>") no-repeat center center fixed; 
+            background: url("<?=$this->getImageFile("background.png")?>") no-repeat center center fixed; 
             -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
